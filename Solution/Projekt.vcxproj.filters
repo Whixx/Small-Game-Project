@@ -75,6 +75,9 @@
     <ClCompile Include="ShadowMap.cpp">
       <Filter>Class cpp.Files</Filter>
     </ClCompile>
+    <ClCompile Include="MazeBitmapGenerator.cpp">
+      <Filter>Class cpp.Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Display.h">
@@ -126,6 +129,9 @@
       <Filter>Class h.Files</Filter>
     </ClInclude>
     <ClInclude Include="ShadowMap.h">
+      <Filter>Class h.Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MazeBitmapGenerator.h">
       <Filter>Class h.Files</Filter>
     </ClInclude>
   </ItemGroup>
