@@ -10,15 +10,12 @@ out vec3 WorldNormalOut;
 
 uniform sampler2D texture;
 uniform sampler2D normalMap;
-uniform sampler2D specularMap;
-
-uniform float illuminated;
 
 void main()
 {	
 	// Deferred rendering Geometry pass
 	WorldPosOut = posWorld1.xyz;
-	TextureRGBOut = texture2D(texture,texCoords).xyz * illuminated;
+	TextureRGBOut = texture2D(texture,texCoords).xyz;
 
 	// Sample the normalMap
 	WorldNormalOut = texture2D(normalMap, texCoords).xyz;
@@ -26,6 +23,4 @@ void main()
 	WorldNormalOut = normalize((WorldNormalOut * 2.0) - 1.0);
 	// Transform the normal from tangent space to world space
 	WorldNormalOut = normalize(TBN * WorldNormalOut);
-
-    
 }
