@@ -192,7 +192,7 @@ int main()
 
 	// Create Lights
 	PointLightHandler lights;
-	glm::vec3 lightColor = glm::vec3(1.0f, 0.7f, 0.7f);
+	glm::vec3 lightColor = glm::vec3(1.5f, 0.5f, 0.4f);
 	lights.createLight(OH.getObject(torch)->GetPos(), lightColor);
 	/*lights.createLight(glm::vec3(-7.0f, 7.0f, -3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	lights.createLight(glm::vec3(7.0f, 7.0f, 15.0f), glm::vec3(0.3f, 0.0f, 0.0f));*/
@@ -219,7 +219,6 @@ int main()
 		lastTime = glfwGetTime();
 
 
-
 		//UPDATE
 
 		// DEN SOM GÖR OBJECT KLASSER GÖR DETTA TILL EN FUNKTION
@@ -233,12 +232,15 @@ int main()
 		OH.getObject(cubes[0])->GetRot().x = sinf(counter);
 
 		// Update the torch in front of the player
-		OH.getObject(torch)->GetPos() = glm::vec3(camera.getCameraPosition().x, camera.getCameraPosition().y - 2, camera.getCameraPosition().z + 2);
-		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 1.8f, OH.getObject(torch)->GetPos().z);
+		OH.getObject(torch)->GetPos() = glm::vec3(camera.getCameraPosition().x + camera.getForwardVector().x,
+			camera.getCameraPosition().y,
+			camera.getCameraPosition().z + 2) + camera.getRightVector().x;
+
+		//OH.getObject(torch)->GetPos() = camera.getForwardVector();
+		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 2.0, OH.getObject(torch)->GetPos().z);
 
 		// Here a cube map is calculated and stored in the shadowMap FBO
 		shadowPass(&shadowShader, &OH, &lights, &shadowMap, &camera);
-
 
 
 		// ================== Geometry Pass - Deffered Rendering ==================
@@ -349,6 +351,15 @@ void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Came
 	// Update and Draw all objects
 	for (unsigned int i = 0; i < OH->getNrOfObjects(); i++)
 	{
+		// Giving the torch object more light
+		if (OH->getObject(i) == OH->getObject(torch)) 
+		{
+			geometryPass->sendFloat("illuminated", 5.0f);
+		}
+		else 
+		{
+			geometryPass->sendFloat("illuminiated", 1.0f);
+		}
 		geometryPass->Update(OH->getObject(i)->GetTransform(), *camera);
 		OH->getObject(i)->bindTexture();
 		OH->getObject(i)->Draw();
