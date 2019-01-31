@@ -34,6 +34,7 @@ enum objectIndices
 	sword,
 	ground,
 	moon,
+	torch,
 	nrOfIndices
 };
 
@@ -131,6 +132,7 @@ int main()
 	Texture brickTexture("Textures/brickwall.jpg", "NormalMaps/brickwall_normal.jpg");
 	Texture snowTexture("Textures/basicSnow.jpg", "NormalMaps/flat_normal.jpg");
 	Texture moonTexture("Textures/moon.png", "NormalMaps/flat_normal.jpg");
+	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
 
 	ObjectHandler OH = ObjectHandler();
 
@@ -138,6 +140,7 @@ int main()
 	Mesh swordMesh;
 	Mesh groundMesh;
 	Mesh moonMesh;
+	Mesh torchMesh;
 
 	int cubes[2];
 	for (int i = 0; i < 2; i++)
@@ -147,6 +150,7 @@ int main()
 	int sword = OH.CreateObject("ObjectFiles/srd.obj", &swordMesh, transform, &swordTexture);
 	int ground = OH.CreateObject("ObjectFiles/SnowTerrain.obj", &groundMesh, transform, &snowTexture);
 	int moon = OH.CreateObject("ObjectFiles/moon.obj", &moonMesh, transform, &moonTexture);
+	int torch = OH.CreateObject("ObjectFiles/torch.obj", &torchMesh, transform, &torchTexture);
 
 	setStartPositions(&OH);
 	//=================================================================================//
@@ -188,7 +192,8 @@ int main()
 
 	// Create Lights
 	PointLightHandler lights;
-	lights.createLight(glm::vec3(7.0f, 9.0f, -6.0f), glm::vec3(2.0f, 2.0f, 2.0f));
+	glm::vec3 lightColor = glm::vec3(1.0f, 0.7f, 0.7f);
+	lights.createLight(OH.getObject(torch)->GetPos(), lightColor);
 	/*lights.createLight(glm::vec3(-7.0f, 7.0f, -3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	lights.createLight(glm::vec3(7.0f, 7.0f, 15.0f), glm::vec3(0.3f, 0.0f, 0.0f));*/
 
@@ -218,7 +223,7 @@ int main()
 		//UPDATE
 
 		// DEN SOM GÖR OBJECT KLASSER GÖR DETTA TILL EN FUNKTION
-		for (int i = 0; i < OH.getNrOfObjects(); i++)
+		for (unsigned int i = 0; i < OH.getNrOfObjects(); i++)
 		{
 			//OH.getObject(i).Update();
 		}
@@ -227,7 +232,10 @@ int main()
 		// här ska object uppdateras om de ska röras eller nått
 		OH.getObject(cubes[0])->GetRot().x = sinf(counter);
 
-	
+		// Update the torch in front of the player
+		OH.getObject(torch)->GetPos() = glm::vec3(camera.getCameraPosition().x, camera.getCameraPosition().y - 2, camera.getCameraPosition().z + 2);
+		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 1.8f, OH.getObject(torch)->GetPos().z);
+
 		// Here a cube map is calculated and stored in the shadowMap FBO
 		shadowPass(&shadowShader, &OH, &lights, &shadowMap, &camera);
 
@@ -245,7 +253,9 @@ int main()
 		bloomBuffer.copyDepth(SCREENWIDTH, SCREENHEIGHT, gBuffer.getFBO());
 
 		// Draw lightSpheres
-		lightSpherePass(&pointLightPass, &bloomBuffer, &lights, &camera, counter);
+		#ifdef DEBUG
+			lightSpherePass(&pointLightPass, &bloomBuffer, &lights, &camera, counter);
+		#endif
 			
 		// Blur the bright texture
 		blurPass(&blurShader, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
@@ -293,7 +303,7 @@ void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glm::vec3 lightPos;
 
 	// For each light, we create a matrix and draws each light.
-	for (int i = 0; i < PLH->getNrOfLights(); i++)
+	for (unsigned int i = 0; i < PLH->getNrOfLights(); i++)
 	{
 		shadowTransforms = PLH->getShadowTransform(i);
 
@@ -306,7 +316,7 @@ void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		shadowShader->sendFloat("farPlane", (float)FAR_PLANE);
 		shadowShader->sendVec3("lightPos", lightPos.x, lightPos.y, lightPos.z);
 
-		for (int j = 0; j < OH->getNrOfObjects(); j++)
+		for (unsigned int j = 0; j < OH->getNrOfObjects(); j++)
 		{
 			shadowShader->Update(OH->getObject(j)->GetTransform(), *camera);
 			OH->getObject(j)->bindTexture();
@@ -337,7 +347,7 @@ void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Came
 	
 
 	// Update and Draw all objects
-	for (int i = 0; i < OH->getNrOfObjects(); i++)
+	for (unsigned int i = 0; i < OH->getNrOfObjects(); i++)
 	{
 		geometryPass->Update(OH->getObject(i)->GetTransform(), *camera);
 		OH->getObject(i)->bindTexture();
@@ -424,13 +434,13 @@ void lightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLigh
 	glCullFace(GL_BACK);
 
 	// translate lights
-	lights->getTransform(0)->GetPos().x = sinf(counter * 5) * 2 + 7;
+	//lights->getTransform(0)->GetPos().x = sinf(counter * 5) * 2 + 7;
 
 
 	lights->updateShadowTransform(0);
 
 	pointLightPass->Bind();
-	for (int i = 0; i < lights->getNrOfLights(); i++)
+	for (unsigned int i = 0; i < lights->getNrOfLights(); i++)
 	{
 		pointLightPass->Update(*lights->getTransform(i), *camera);
 		lights->Draw(i);
@@ -549,6 +559,9 @@ void setStartPositions(ObjectHandler * OH)
 
 	OH->getObject(sword)->GetRot().x = -(PI / 2);
 	OH->getObject(sword)->GetRot().z = (PI / 16);
+
+	OH->getObject(torch)->GetPos() = glm::vec3(0.0f, -10.0f, 0.0f);
+	OH->getObject(torch)->GetScale() *= 0.3;
 }
 
 void keyboardControls(Display *display, Camera *camera)
