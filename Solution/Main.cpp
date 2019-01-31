@@ -130,7 +130,10 @@ int main()
 	Mesh torchMesh;
 
 	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
-	int torch = OH.CreateObject("ObjectFiles/torch.obj", &torchMesh, transform, &torchTexture);
+	int torch = OH.CreateObject("ObjectFiles/torch.obj", &torchMesh, &torchTexture);
+
+	OH.getObject(torch)->GetPos() = glm::vec3(0.0f, -10.0f, 0.0f);
+	OH.getObject(torch)->GetScale() *= 0.3;
 
 	//=================================================================================//
 
@@ -522,8 +525,7 @@ void setStartPositions(ObjectHandler * OH)
 	// Transformations
 
 
-	OH->getObject(torch)->GetPos() = glm::vec3(0.0f, -10.0f, 0.0f);
-	OH->getObject(torch)->GetScale() *= 0.3;
+	
 }
 
 void keyboardControls(Display *display, Camera *camera)
