@@ -122,5 +122,5 @@ void MazeBitmapGenerator::generateMaze()
 		g_Maze[cellIndex()] = Mask[dir];
 	}
 
-	std::cout << std::endl;
+	//std::cout << std::endl;
 }

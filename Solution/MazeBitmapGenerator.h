@@ -21,6 +21,7 @@ public:
 	int randomInt4();
 	bool isDirValid(eDirection dir);
 	eDirection getDirection();
+	void generateMaze();
 
 
 private:
