@@ -120,6 +120,7 @@ int main()
 	
 
 	//=========================== Creating Objects ====================================//
+	Mesh groundMesh;
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
 
 	ObjectHandler OH = ObjectHandler();

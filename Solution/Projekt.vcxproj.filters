@@ -76,7 +76,7 @@
       <Filter>Class cpp.Files</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
-      <Filter>Class cpp.Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -132,7 +132,7 @@
       <Filter>Class h.Files</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
-      <Filter>Class h.Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
