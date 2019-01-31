@@ -34,7 +34,7 @@ int SCREENWIDTH = 800;
 int SCREENHEIGHT = 600;
 
 // Update functions
-void updateAllObjects(ObjectHandler &OH);
+void updateAllObjects(double dt, ObjectHandler &OH);
 
 // Shader pass functions
 void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Camera *camera);
@@ -125,7 +125,7 @@ int main()
 
 	ObjectHandler OH = ObjectHandler();
 
-	Player player();
+	Player player = Player();
 
 	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
 
@@ -195,7 +195,8 @@ int main()
 
 
 		// ================== UPDATE ==================
-		updateAllObjects(OH);
+		player.Update(deltaTime, camera);
+		updateAllObjects(deltaTime, OH);
 
 
 	
@@ -252,11 +253,11 @@ int main()
 	return 0;
 }
 
-void updateAllObjects(ObjectHandler & OH)
+void updateAllObjects(double dt, ObjectHandler & OH)
 {
 	for (int i = 0; i < OH.getNrOfObjects(); i++)
 	{
-		OH.getObject(i)->Update();
+		OH.getObject(i)->Update(dt);
 	}
 }
 

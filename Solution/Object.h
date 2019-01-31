@@ -23,7 +23,7 @@ public:
 	glm::vec3& GetRot();
 	glm::vec3& GetScale();
 
-	virtual void Update();
+	virtual void Update(double dt);
 	virtual void Draw();
 
 	void bindTexture();
