@@ -10,14 +10,14 @@ ObjectHandler::~ObjectHandler()
 
 }
 
-int ObjectHandler::CreateObject(Mesh *mesh, Transform transform, Texture *texture)
+int ObjectHandler::CreateObject(Mesh *mesh,  Texture *texture)
 {
-	this->allObjects[this->numberOfObjects] = Object(mesh, transform, texture, this->numberOfObjects);
+	this->allObjects[this->numberOfObjects] = Object(mesh, texture, this->numberOfObjects);
 
 	return this->numberOfObjects++;
 }
 
-int ObjectHandler::CreateObject(const char* filePath, Mesh *mesh, Transform transform, Texture *texture)
+int ObjectHandler::CreateObject(const char* filePath, Mesh *mesh, Texture *texture)
 {
 	bool loaded = false;
 	loaded = mesh->createMesh(filePath);
@@ -35,7 +35,7 @@ int ObjectHandler::CreateObject(const char* filePath, Mesh *mesh, Transform tran
 #endif // DEBUG
 	}
 
-	this->allObjects[this->numberOfObjects] = Object(mesh, transform, texture, this->numberOfObjects);
+	this->allObjects[this->numberOfObjects] = Object(mesh, texture, this->numberOfObjects);
 
 	return this->numberOfObjects++;
 }

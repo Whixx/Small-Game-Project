@@ -14,8 +14,8 @@ public:
 	ObjectHandler();
 	~ObjectHandler();
 
-	int CreateObject(Mesh *mesh, Transform transform, Texture *texture);
-	int CreateObject(const char* filePath, Mesh *mesh, Transform transform, Texture *texture);
+	int CreateObject(Mesh *mesh, Texture *texture);
+	int CreateObject(const char* filePath, Mesh *mesh, Texture *texture);
 
 	unsigned int getNrOfObjects();
 	Object* getObject(int index);

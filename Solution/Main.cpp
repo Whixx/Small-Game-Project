@@ -17,6 +17,7 @@
 #include "Blur.h"
 #include "FinalFBO.h"
 #include "ShadowMap.h"
+#include "Player.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -27,22 +28,17 @@
 
 #define PI 3.1415926535
 
-enum objectIndices
-{
-	cube1,
-	cube2,
-	sword,
-	ground,
-	moon,
-	nrOfIndices
-};
+
 
 int SCREENWIDTH = 800;
 int SCREENHEIGHT = 600;
 
+// Update functions
+void updateAllObjects(ObjectHandler &OH);
+
 // Shader pass functions
 void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Camera *camera);
-void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, Texture* snowTexture, Texture* swordTexture, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc);
+void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc);
 void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenQuad, GLuint *program, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, GLuint cameraLocationLP, Camera *camera);
 void lightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, double counter);
 void blurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle);
@@ -124,31 +120,13 @@ int main()
 	
 
 	//=========================== Creating Objects ====================================//
-	
-	// Transform includes all three matrices, each object has its own transform
-	Transform transform;
-	Texture swordTexture("Textures/swordTexture.jpg", "NormalMaps/sword_normal.png");
-	Texture brickTexture("Textures/brickwall.jpg", "NormalMaps/brickwall_normal.jpg");
-	Texture snowTexture("Textures/basicSnow.jpg", "NormalMaps/flat_normal.jpg");
-	Texture moonTexture("Textures/moon.png", "NormalMaps/flat_normal.jpg");
 
 	ObjectHandler OH = ObjectHandler();
 
-	Mesh cubeMesh;
-	Mesh swordMesh;
-	Mesh groundMesh;
-	Mesh moonMesh;
+	Player player();
 
-	int cubes[2];
-	for (int i = 0; i < 2; i++)
-	{
-		cubes[i] = OH.CreateObject("ObjectFiles/cube.obj", &cubeMesh, transform, &brickTexture);
-	}
-	int sword = OH.CreateObject("ObjectFiles/srd.obj", &swordMesh, transform, &swordTexture);
-	int ground = OH.CreateObject("ObjectFiles/SnowTerrain.obj", &groundMesh, transform, &snowTexture);
-	int moon = OH.CreateObject("ObjectFiles/moon.obj", &moonMesh, transform, &moonTexture);
+	
 
-	setStartPositions(&OH);
 	//=================================================================================//
 
 	ShadowMap shadowMap;
@@ -214,28 +192,19 @@ int main()
 		lastTime = glfwGetTime();
 
 
+		// ================== UPDATE ==================
+		updateAllObjects(OH);
 
-		//UPDATE
-
-		// DEN SOM GÖR OBJECT KLASSER GÖR DETTA TILL EN FUNKTION
-		for (int i = 0; i < OH.getNrOfObjects(); i++)
-		{
-			//OH.getObject(i).Update();
-		}
-
-
-		// här ska object uppdateras om de ska röras eller nått
-		OH.getObject(cubes[0])->GetRot().x = sinf(counter);
 
 	
+
+
 		// Here a cube map is calculated and stored in the shadowMap FBO
 		shadowPass(&shadowShader, &OH, &lights, &shadowMap, &camera);
 
-
-
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, counter, &geometryPass, &camera, &OH, &snowTexture, &swordTexture, cameraLocationGP, texLoc, normalTexLoc);
+		DRGeometryPass(&gBuffer, counter, &geometryPass, &camera, &OH, cameraLocationGP, texLoc, normalTexLoc);
 
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
@@ -281,6 +250,14 @@ int main()
 	return 0;
 }
 
+void updateAllObjects(ObjectHandler & OH)
+{
+	for (int i = 0; i < OH.getNrOfObjects(); i++)
+	{
+		OH.getObject(i)->Update();
+	}
+}
+
 void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Camera *camera)
 {
 	glEnable(GL_DEPTH_TEST);
@@ -319,7 +296,7 @@ void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, Texture *snowTexture, Texture *swordTexture, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc)
+void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc)
 {
 	geometryPass->Bind();
 
@@ -529,26 +506,9 @@ void prepareTexture(GLuint textureLoc, GLuint normalMapLoc)
 
 void setStartPositions(ObjectHandler * OH)
 {
-	// Initial positions for all cubes
-	glm::vec3 cubePositions[2] =
-	{
-		glm::vec3(10.0f, 7.0f, -3.0f),
-		glm::vec3(-7.0f, 7.0f, -3.0f)
-	};
-
 	// Transformations
 
-	OH->getObject(cube1)->GetPos() = cubePositions[cube1];
-	OH->getObject(cube2)->GetPos() = cubePositions[cube2];
-	OH->getObject(sword)->GetPos() = glm::vec3(0.0f, 15.0f, 0.0f);
-	OH->getObject(ground)->GetPos() = glm::vec3(0.0f, 0.0f, 0.0f);
-	OH->getObject(moon)->GetPos() = glm::vec3(500.0f, 500.0f, 500.0f);
-	OH->getObject(moon)->GetScale() = glm::vec3(100, 100, 100);
 
-	OH->getObject(cube1)->GetScale() = glm::vec3(4, 3, 0.01);
-
-	OH->getObject(sword)->GetRot().x = -(PI / 2);
-	OH->getObject(sword)->GetRot().z = (PI / 16);
 }
 
 void keyboardControls(Display *display, Camera *camera)

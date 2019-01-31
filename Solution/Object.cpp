@@ -1,11 +1,17 @@
 #include "Object.h"
 
-Object::Object(Mesh *mesh, Transform transform, Texture *texture, unsigned int m_id)
+Object::Object(Mesh *mesh, Texture *texture)
 {
 	this->mesh = mesh;
-	this->transform = transform;
 	this->texture = texture;
-	this->m_id = m_id;
+	this->m_id = -1;
+}
+
+Object::Object(Mesh * mesh, Texture * texture, unsigned int id)
+{
+	this->mesh = mesh;
+	this->texture = texture;
+	this->m_id = id;
 }
 
 Object::Object()
@@ -40,6 +46,10 @@ glm::vec3 & Object::GetRot()
 glm::vec3 & Object::GetScale()
 {
 	return this->transform.GetScale();
+}
+
+void Object::Update()
+{
 }
 
 void Object::Draw()
