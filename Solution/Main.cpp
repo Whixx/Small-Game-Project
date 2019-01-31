@@ -129,7 +129,7 @@ int main()
 	Transform transform;
 	Texture swordTexture("Textures/swordTexture.jpg", "NormalMaps/sword_normal.png");
 	Texture brickTexture("Textures/brickwall.jpg", "NormalMaps/brickwall_normal.jpg");
-	Texture snowTexture("Textures/basicSnow.jpg", "NormalMaps/flat_normal.jpg");
+	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
 	Texture moonTexture("Textures/moon.png", "NormalMaps/flat_normal.jpg");
 
 	ObjectHandler OH = ObjectHandler();
@@ -145,7 +145,7 @@ int main()
 		cubes[i] = OH.CreateObject("ObjectFiles/cube.obj", &cubeMesh, transform, &brickTexture);
 	}
 	int sword = OH.CreateObject("ObjectFiles/srd.obj", &swordMesh, transform, &swordTexture);
-	int ground = OH.CreateObject("ObjectFiles/SnowTerrain.obj", &groundMesh, transform, &snowTexture);
+	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, transform, &groundTexture);
 	int moon = OH.CreateObject("ObjectFiles/moon.obj", &moonMesh, transform, &moonTexture);
 
 	setStartPositions(&OH);
@@ -235,7 +235,7 @@ int main()
 
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, counter, &geometryPass, &camera, &OH, &snowTexture, &swordTexture, cameraLocationGP, texLoc, normalTexLoc);
+		DRGeometryPass(&gBuffer, counter, &geometryPass, &camera, &OH, &groundTexture, &swordTexture, cameraLocationGP, texLoc, normalTexLoc);
 
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
