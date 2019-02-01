@@ -38,7 +38,7 @@ void updateAllObjects(double dt, ObjectHandler &OH);
 
 // Shader pass functions
 void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Camera *camera);
-void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc);
+void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc, int torch);
 void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenQuad, GLuint *program, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, GLuint cameraLocationLP, Camera *camera);
 void lightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, double counter);
 void blurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle);
@@ -174,7 +174,7 @@ int main()
 
 	// Create Lights
 	PointLightHandler lights;
-	glm::vec3 lightColor = glm::vec3(1.0f, 0.7f, 0.7f);
+	glm::vec3 lightColor = glm::vec3(1.5f, 0.7f, 0.7f);
 	lights.createLight(OH.getObject(torch)->GetPos(), lightColor);
 	/*lights.createLight(glm::vec3(-7.0f, 7.0f, -3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	lights.createLight(glm::vec3(7.0f, 7.0f, 15.0f), glm::vec3(0.3f, 0.0f, 0.0f));*/
@@ -218,7 +218,7 @@ int main()
 
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, counter, &geometryPass, &camera, &OH, cameraLocationGP, texLoc, normalTexLoc);
+		DRGeometryPass(&gBuffer, counter, &geometryPass, &camera, &OH, cameraLocationGP, texLoc, normalTexLoc, torch);
 
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
@@ -312,7 +312,7 @@ void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc)
+void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc, int torch)
 {
 	geometryPass->Bind();
 
@@ -332,6 +332,14 @@ void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Came
 	// Update and Draw all objects
 	for (unsigned int i = 0; i < OH->getNrOfObjects(); i++)
 	{
+		if (OH->getObject(i) == OH->getObject(torch))
+		{
+			geometryPass->sendFloat("illuminated", 5.0f);
+		}
+		else
+		{
+			geometryPass->sendFloat("illuminated", 1.0f);
+		}
 		geometryPass->Update(OH->getObject(i)->GetTransform(), *camera);
 		OH->getObject(i)->bindTexture();
 		OH->getObject(i)->Draw();
@@ -522,10 +530,7 @@ void prepareTexture(GLuint textureLoc, GLuint normalMapLoc)
 
 void setStartPositions(ObjectHandler * OH)
 {
-	// Transformations
 
-
-	
 }
 
 void keyboardControls(Display *display, Camera *camera)
