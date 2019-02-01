@@ -17,7 +17,7 @@ void main()
 {	
 	// Deferred rendering Geometry pass
 	WorldPosOut = posWorld1.xyz;
-	TextureRGBOut = texture2D(texture,texCoords).xyz * illuminated;
+	TextureRGBOut = texture2D(texture,texCoords).xyz;// * illuminated;
 
 	// Sample the normalMap
 	WorldNormalOut = texture2D(normalMap, texCoords).xyz;

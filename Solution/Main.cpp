@@ -233,7 +233,7 @@ int main()
 		#endif
 			
 		// Blur the bright texture
-		blurPass(&blurShader, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
+		//blurPass(&blurShader, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
 
 		// Combine the bright texture and the scene and store the Result in FinalFBO.
 		finalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
@@ -334,7 +334,7 @@ void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Came
 	{
 		if (OH->getObject(i) == OH->getObject(torch))
 		{
-			geometryPass->sendFloat("illuminated", 5.0f);
+			geometryPass->sendFloat("illuminated", 3.0f);
 		}
 		else
 		{

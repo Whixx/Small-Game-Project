@@ -18,3 +18,9 @@ Solution/Release/*.obj
 *.ipdb
 
 *.iobj
+
+Solution/\.vs/Projekt/v15/Browse\.VC\.opendb
+
+Solution/\.vs/Projekt/v15/Browse\.VC\.db
+
+Solution/\.vs/Projekt/v15/\.suo
