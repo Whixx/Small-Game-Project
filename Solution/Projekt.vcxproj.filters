@@ -75,6 +75,9 @@
     <ClCompile Include="ShadowMap.cpp">
       <Filter>Class cpp.Files</Filter>
     </ClCompile>
+    <ClCompile Include="Maze.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Display.h">
@@ -127,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="ShadowMap.h">
       <Filter>Class h.Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Maze.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +188,15 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="shadowShader.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeShader.gs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeShader.fs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

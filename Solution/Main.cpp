@@ -17,6 +17,7 @@
 #include "Blur.h"
 #include "FinalFBO.h"
 #include "ShadowMap.h"
+#include "Maze.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -65,6 +66,15 @@ int main()
 
 	Display display(SCREENWIDTH, SCREENHEIGHT);
 
+	Maze maze;
+	maze.loadBMP("Bitmap/Maze.bmp");
+	
+
+	Shader mazeShader;
+	mazeShader.CreateShader(".\\mazeShader.vs", GL_VERTEX_SHADER);
+	mazeShader.CreateShader(".\\mazeShader.gs", GL_GEOMETRY_SHADER);
+	mazeShader.CreateShader(".\\mazeShader.fs", GL_FRAGMENT_SHADER);
+
 	Shader shadowShader;
 	shadowShader.CreateShader(".\\shadowShader.vs", GL_VERTEX_SHADER);
 	shadowShader.CreateShader(".\\shadowShader.gs", GL_GEOMETRY_SHADER);
@@ -101,6 +111,7 @@ int main()
 
 	// False = Pos and Texcoord
 	// True  = Pos and Color
+	mazeShader.initiateShaders(false);
 	shadowShader.initiateShaders(false);
 	geometryPass.initiateShaders(false);
 	lightPass.initiateShaders(false);
@@ -109,7 +120,9 @@ int main()
 	blurShader.initiateShaders(false);
 	finalBloomShader.initiateShaders(false);
 	finalShader.initiateShaders(false);
+	
 
+	mazeShader.validateShaders();
 	shadowShader.validateShaders();
 	geometryPass.validateShaders();
 	// LightPass is validated before its drawcall (to fix a bug), so its not validated here
@@ -131,6 +144,8 @@ int main()
 	Texture brickTexture("Textures/brickwall.jpg", "NormalMaps/brickwall_normal.jpg");
 	Texture snowTexture("Textures/basicSnow.jpg", "NormalMaps/flat_normal.jpg");
 	Texture moonTexture("Textures/moon.png", "NormalMaps/flat_normal.jpg");
+
+	Texture bmpTexture ("Bitmap/test.bmp", "NormalMaps/flat_normal.jpg");
 
 	ObjectHandler OH = ObjectHandler();
 
@@ -208,15 +223,26 @@ int main()
 
 	GLuint viewProjection = glGetUniformLocation(*pointLightPass.getProgram(), "viewProjectionMatrix");
 
+	mazeShader.Bind();
+
+	GLuint cameraLocationTest = glGetUniformLocation(*mazeShader.getProgram(), "cameraPos");
+
 	while(!display.IsWindowClosed())
 	{
 		deltaTime = currentTime - lastTime;
 		lastTime = glfwGetTime();
 
+		
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		sendCameraLocationToGPU(cameraLocationTest, &camera);
+		bmpTexture.Bind(0);
+		fullScreenTriangle.Draw();
 
 		//UPDATE
 
+		/*
 		// DEN SOM GÖR OBJECT KLASSER GÖR DETTA TILL EN FUNKTION
 		for (int i = 0; i < OH.getNrOfObjects(); i++)
 		{
@@ -261,6 +287,8 @@ int main()
 
 		// Render everything
 		finalPass(&finalFBO, &finalShader, &fullScreenTriangle);
+
+		*/
 
 		// Check for mouse/keyboard inputs and handle the camera movement
 		mouseControls(&display, &camera);

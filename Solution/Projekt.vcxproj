@@ -140,6 +140,7 @@
     <ClCompile Include="FinalFBO.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Maze.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Display.h" />
     <ClInclude Include="FinalFBO.h" />
     <ClInclude Include="GBuffer.h" />
+    <ClInclude Include="Maze.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectHandler.h" />
@@ -185,6 +187,9 @@
     <None Include="geometryPass.fs" />
     <None Include="geometryPass.gs" />
     <None Include="geometryPass.vs" />
+    <None Include="mazeShader.fs" />
+    <None Include="mazeShader.gs" />
+    <None Include="mazeShader.vs" />
     <None Include="particleShader.fs" />
     <None Include="particleShader.vs" />
     <None Include="pointLightShader.fs" />
