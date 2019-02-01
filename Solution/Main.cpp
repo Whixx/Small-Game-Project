@@ -17,6 +17,7 @@
 #include "Blur.h"
 #include "FinalFBO.h"
 #include "ShadowMap.h"
+#include "InputHandler.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -54,9 +55,6 @@ void sendCameraLocationToGPU(GLuint cameraLocation, Camera *camera);
 void prepareTexture(GLuint textureLoc, GLuint normalMapLoc);
 
 void setStartPositions(ObjectHandler *OH);
-
-void keyboardControls(Display *display, Camera *camera);
-void mouseControls(Display *display, Camera *camera);
 
 int main()
 {
@@ -121,8 +119,8 @@ int main()
 	finalShader.validateShaders();
 
 	Camera camera(glm::vec3(-15, 25, -53), 70.0f, (float)SCREENWIDTH / (float)SCREENHEIGHT, 0.01f, 1000.0f);
-	
-
+	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetKeyCallback(display.GetWindow(), InputHandler::key_callback);
 	//=========================== Creating Objects ====================================//
 	
 	// Transform includes all three matrices, each object has its own transform
@@ -132,6 +130,7 @@ int main()
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
 	Texture moonTexture("Textures/moon.png", "NormalMaps/flat_normal.jpg");
 
+	InputHandler IH = InputHandler();
 	ObjectHandler OH = ObjectHandler();
 
 	Mesh cubeMesh;
@@ -263,8 +262,8 @@ int main()
 		finalPass(&finalFBO, &finalShader, &fullScreenTriangle);
 
 		// Check for mouse/keyboard inputs and handle the camera movement
-		mouseControls(&display, &camera);
-		keyboardControls(&display, &camera);
+		IH.mouseControls(&display, &camera);
+		IH.keyboardControls(&display, &camera);
 
 		camera.updateViewMatrix();
 
@@ -549,69 +548,4 @@ void setStartPositions(ObjectHandler * OH)
 
 	OH->getObject(sword)->GetRot().x = -(PI / 2);
 	OH->getObject(sword)->GetRot().z = (PI / 16);
-}
-
-void keyboardControls(Display *display, Camera *camera)
-{
-	int keyboardButton;
-	// Check for keyboard inputs, used to move the camera around.
-	// WASD for movearound, RF (Rise,Fall) and space to set the initial camera position & viewDir.
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_W);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveForward();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_S);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveBackward();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_D);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveRight();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_A);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveLeft();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_R);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveUp();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_F);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveDown();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_SPACE);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->setCameraPosition(camera->getStartCameraPosition());
-		camera->setForwardVector(camera->getStartForwardVector());
-	}
-}
-
-void mouseControls(Display *display, Camera *camera)
-{
-	double mouseXpos;
-	double mouseYpos;
-	int mouseState;
-
-	// Check for mouse inputs, used to drag the camera view around
-	mouseState = glfwGetMouseButton(display->getWindow(), GLFW_MOUSE_BUTTON_LEFT);
-
-	// Find mouseposition (This function updates the X,Y values of the mouse position.
-	glfwGetCursorPos(display->getWindow(), &mouseXpos, &mouseYpos);
-	if (mouseState == GLFW_PRESS)
-	{
-		//std::cout << "pressed" << std::endl;
-		camera->mouseUpdate(glm::vec2(mouseXpos, mouseYpos));
-	}
-	else if (mouseState == GLFW_RELEASE)
-	{
-	
-	}
 }

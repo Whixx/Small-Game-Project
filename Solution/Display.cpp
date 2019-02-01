@@ -48,6 +48,11 @@ void Display::SetTitle(string newTitle)
 	glfwSetWindowTitle(window, newTitle.c_str());
 }
 
+GLFWwindow* Display::GetWindow()
+{
+	return window;
+}
+
 Display::~Display()
 {
 	glfwDestroyWindow(this->window);
@@ -55,7 +60,3 @@ Display::~Display()
 	exit(EXIT_SUCCESS);
 }
 
-GLFWwindow * Display::getWindow()
-{
-	return this->window;
-}

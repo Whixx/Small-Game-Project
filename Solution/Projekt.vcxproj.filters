@@ -75,6 +75,9 @@
     <ClCompile Include="ShadowMap.cpp">
       <Filter>Class cpp.Files</Filter>
     </ClCompile>
+    <ClCompile Include="InputHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Display.h">
@@ -127,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="ShadowMap.h">
       <Filter>Class h.Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputHandler.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
