@@ -48,7 +48,7 @@ glm::vec3 & Object::GetScale()
 	return this->transform.GetScale();
 }
 
-void Object::Update()
+void Object::Update(double dt)
 {
 }
 

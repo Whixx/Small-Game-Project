@@ -1,10 +1,5 @@
 #include "Player.h"
 
-Player::Player(Mesh * mesh, Texture * texture) 
-	: Object(mesh, texture)
-{
-}
-
 Player::Player()
 {
 }
@@ -13,10 +8,11 @@ Player::~Player()
 {
 }
 
-void Player::Update()
+void Player::Update(double dt, Camera camera)
 {
-}
+	// Set player position to the cameras position
+	transform.SetPos(camera.getCameraPosition());
 
-void Player::Draw()
-{
+	// Collision
+
 }
