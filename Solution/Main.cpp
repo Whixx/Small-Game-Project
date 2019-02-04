@@ -18,6 +18,7 @@
 #include "FinalFBO.h"
 #include "ShadowMap.h"
 #include "Player.h"
+#include "Maze.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -124,9 +125,12 @@ int main()
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
 	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
 
+	// The maze
+	Maze maze = Maze("Bitmap/kollision_test.bmp");
+
 	ObjectHandler OH = ObjectHandler();
 
-	Player player = Player();
+	Player player = Player(&maze);
 	Mesh torchMesh;
 
 	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
