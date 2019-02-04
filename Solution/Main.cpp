@@ -116,7 +116,7 @@ int main()
 	finalBloomShader.validateShaders();
 	finalShader.validateShaders();
 
-	Camera camera(glm::vec3(-15, 25, -53), 70.0f, (float)SCREENWIDTH / (float)SCREENHEIGHT, 0.01f, 1000.0f);
+	Camera camera(glm::vec3(-1, 1, 1), 70.0f, (float)SCREENWIDTH / (float)SCREENHEIGHT, 0.01f, 1000.0f);
 	
 
 	//=========================== Creating Objects ====================================//
@@ -133,7 +133,7 @@ int main()
 	int torch = OH.CreateObject("ObjectFiles/torch.obj", &torchMesh, &torchTexture);
 
 	OH.getObject(torch)->GetPos() = glm::vec3(0.0f, -10.0f, 0.0f);
-	OH.getObject(torch)->GetScale() *= 0.3;
+	OH.getObject(torch)->GetScale() *= 0.1;
 
 	//=================================================================================//
 
@@ -174,8 +174,10 @@ int main()
 
 	// Create Lights
 	PointLightHandler lights;
-	glm::vec3 lightColor = glm::vec3(1.5f, 0.7f, 0.7f);
-	lights.createLight(OH.getObject(torch)->GetPos(), lightColor);
+	PointLight torchLight;
+	float torchLightIntensity = 2.0f;
+	torchLight.GetColor() = glm::vec3(1.0f, 0.5f, 0.5f) * torchLightIntensity;
+	lights.createLight(OH.getObject(torch)->GetPos(), torchLight.GetColor());
 	/*lights.createLight(glm::vec3(-7.0f, 7.0f, -3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	lights.createLight(glm::vec3(7.0f, 7.0f, 15.0f), glm::vec3(0.3f, 0.0f, 0.0f));*/
 
@@ -204,15 +206,16 @@ int main()
 		// ================== UPDATE ==================
 		player.Update(deltaTime, camera);
 		updateAllObjects(deltaTime, OH);
-
-
-	
-
-
-		// Update the torch in front of the player
-		OH.getObject(torch)->GetPos() = glm::vec3(camera.getCameraPosition().x, camera.getCameraPosition().y - 2, camera.getCameraPosition().z + 2);
-		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 1.8f, OH.getObject(torch)->GetPos().z);
-
+		lights.updateShadowTransform(0);
+			
+		// Update the torch in front of the player'
+		OH.getObject(torch)->GetPos() = camera.getCameraPosition()
+			+ camera.getForwardVector() * 1.0f
+			+ camera.getRightVector() * 0.5f
+			+ camera.getUpVector() * -0.5f;
+		//OH.getObject(torch)->GetRot() = camera.getCameraPosition();
+		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 0.8f, OH.getObject(torch)->GetPos().z);
+		
 		// Here a cube map is calculated and stored in the shadowMap FBO
 		shadowPass(&shadowShader, &OH, &lights, &shadowMap, &camera);
 
@@ -233,7 +236,7 @@ int main()
 		#endif
 			
 		// Blur the bright texture
-		//blurPass(&blurShader, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
+		blurPass(&blurShader, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
 
 		// Combine the bright texture and the scene and store the Result in FinalFBO.
 		finalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
@@ -247,13 +250,12 @@ int main()
 		// Render everything
 		finalPass(&finalFBO, &finalShader, &fullScreenTriangle);
 
+		//std::cout << "x: " << camera.getCameraPosition().x << " y: " << camera.getCameraPosition().y << " z: " << camera.getCameraPosition().z << std::endl;
+
 		// Check for mouse/keyboard inputs and handle the camera movement
 		mouseControls(&display, &camera);
 		keyboardControls(&display, &camera);
-
 		camera.updateViewMatrix();
-
-		//std::cout << "x: " << camera.getCameraPosition().x << " y: " << camera.getCameraPosition().y << " z: " << camera.getCameraPosition().z << std::endl;
 
 		display.SwapBuffers(SCREENWIDTH, SCREENHEIGHT);
 
@@ -424,11 +426,7 @@ void lightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLigh
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	// translate lights
-	//lights->getTransform(0)->GetPos().x = sinf(counter * 5) * 2 + 7;
-
-
-	lights->updateShadowTransform(0);
+	//lights->updateShadowTransform(0);
 
 	pointLightPass->Bind();
 	for (unsigned int i = 0; i < lights->getNrOfLights(); i++)
