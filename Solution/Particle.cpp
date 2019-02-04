@@ -77,7 +77,7 @@ void Particle::sort()
 	std::sort(&particleArray[0], &particleArray[maxParticles]);
 }
 
-void Particle::generateParticles(float deltaTime)
+void Particle::generateParticles(float deltaTime, glm::vec3 particlePos)
 {
 	int newParticlesToCreate = 2;
 
@@ -88,36 +88,34 @@ void Particle::generateParticles(float deltaTime)
 
 		// Set the start values of the new particle
 		// Life (Length in seconds which describes how long the particle should be alive)
-		this->particleArray[index].life = 12.0f;
+		this->particleArray[index].life = 2.0f;
+		
 		// Position
-		int max = 30;
-		int min = -30;
+		this->particleArray[index].pos.x = particlePos.x;
+		this->particleArray[index].pos.y = particlePos.y + 0.5f;
+		this->particleArray[index].pos.z = particlePos.z;
 
-		// Between -30 and 30 in X and Z because thats how big our plane is
-		this->particleArray[index].pos.x = ((float(rand()) / float(RAND_MAX)) * (max - min)) + min;
-		this->particleArray[index].pos.y = 40;
-		this->particleArray[index].pos.z = ((float(rand()) / float(RAND_MAX)) * (max - min)) + min;
 
 		// Speed
-		//float spread = 1.5f;
-		glm::vec3 mainDir = glm::vec3(0.0f, -1.0f, 0.0f);
+		float speed = 0.80f;
+		glm::vec3 mainDir = glm::vec3(0.0f, 1.0f, 0.0f);
 
 		glm::vec3 randomDir = glm::vec3(
-			(rand() % 2000 - 1000.0f) / 1000.0f,
-			(rand() % 2000 - 1000.0f) / 1000.0f,
-			(rand() % 2000 - 1000.0f) / 1000.0f
+			(rand() % 2000 - 1000.0f) / 2000.0f,
+			(rand() % 2000 - 1000.0f) / 2000.0f,
+			(rand() % 2000 - 1000.0f) / 2000.0f
 		);
 
-		this->particleArray[index].speed = mainDir + randomDir; //* spread;
+		this->particleArray[index].speed = (mainDir + randomDir) * speed;
 
-		// Color (White as snow)
+		// Color (white)
 		this->particleArray[index].r = 255;
 		this->particleArray[index].g = 255;
 		this->particleArray[index].b = 255;
-		this->particleArray[index].a = rand() % 256;
+		this->particleArray[index].a = 255;
 
 		// Size
-		this->particleArray[index].size = 0.1;
+		this->particleArray[index].size = 0.2f;
 	}
 }
 
@@ -133,7 +131,6 @@ void Particle::simulateParticles(glm::vec3 cameraPosition, float deltaTime)
 		// If the particle is still alive
 		if (tempParticle.life > 0.0f)
 		{
-
 			// Decrease the life of each particle
 			tempParticle.life -= deltaTime;
 
@@ -142,10 +139,24 @@ void Particle::simulateParticles(glm::vec3 cameraPosition, float deltaTime)
 			{
 				// Update the attributes of the particle
 				// Speed
-				tempParticle.speed += glm::vec3(0.0f, -9.82f, 0.0f) * deltaTime * 0.5f / 15.0f;
+				tempParticle.speed += deltaTime * 0.01f;
 
 				// Position
 				tempParticle.pos += tempParticle.speed * deltaTime;
+
+				// Fading out
+				if (tempParticle.a > 0.0f)
+				{
+					tempParticle.a -= deltaTime * 140;
+					if (tempParticle.a < 0.0f)
+					{
+						tempParticle.a == 0.0f;
+					}
+				}
+
+				// Changing color (white -> red)
+				tempParticle.b -= deltaTime * 130.0;
+				tempParticle.g -= deltaTime * 130.0;
 
 				// CameraDistance
 				tempParticle.cameradistance = glm::length(tempParticle.pos - cameraPosition);
@@ -244,4 +255,14 @@ void Particle::draw()
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
+}
+
+void Particle::bindTexture()
+{
+	this->texture->Bind(0);
+}
+
+void Particle::setTexture(Texture* texture)
+{
+	this->texture = texture;
 }

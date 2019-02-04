@@ -43,7 +43,7 @@ void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenQua
 void lightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, double counter);
 void blurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle);
 void finalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle);
-void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime);
+void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime, glm::vec3 position);
 void finalPass(FinalFBO * finalFBO, Shader * finalShader, Mesh *fullScreenTriangle);
 
 void sendCameraLocationToGPU(GLuint cameraLocation, Camera *camera);
@@ -118,7 +118,6 @@ int main()
 
 	Camera camera(glm::vec3(-1, 1, 1), 70.0f, (float)SCREENWIDTH / (float)SCREENHEIGHT, 0.01f, 1000.0f);
 	
-
 	//=========================== Creating Objects ====================================//
 	Mesh groundMesh;
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
@@ -132,7 +131,6 @@ int main()
 	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
 	int torch = OH.CreateObject("ObjectFiles/torch.obj", &torchMesh, &torchTexture);
 
-	OH.getObject(torch)->GetPos() = glm::vec3(0.0f, -10.0f, 0.0f);
 	OH.getObject(torch)->GetScale() *= 0.1;
 
 	//=================================================================================//
@@ -175,8 +173,8 @@ int main()
 	// Create Lights
 	PointLightHandler lights;
 	PointLight torchLight;
-	float torchLightIntensity = 2.0f;
-	torchLight.GetColor() = glm::vec3(1.0f, 0.5f, 0.5f) * torchLightIntensity;
+	float torchLightIntensity = 3.0f;
+	torchLight.GetColor() = glm::vec3(1.0f, 0.3f, 0.3f) * torchLightIntensity;
 	lights.createLight(OH.getObject(torch)->GetPos(), torchLight.GetColor());
 	/*lights.createLight(glm::vec3(-7.0f, 7.0f, -3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	lights.createLight(glm::vec3(7.0f, 7.0f, 15.0f), glm::vec3(0.3f, 0.0f, 0.0f));*/
@@ -184,6 +182,8 @@ int main()
 	lights.initiateLights(lightPass.getProgram());
 
 	Particle particle;
+	Texture particleTexture("Textures/particle.png", "NormalMaps/flat_normal.jpg");
+	particle.setTexture(&particleTexture);
 	
 	// Tell the shaders the name of the camera (GP = GeometeryPass, LP = LightPass)
 	GLuint cameraLocationGP = glGetUniformLocation(*geometryPass.getProgram(), "cameraPosGP");
@@ -202,7 +202,6 @@ int main()
 		deltaTime = currentTime - lastTime;
 		lastTime = glfwGetTime();
 
-
 		// ================== UPDATE ==================
 		player.Update(deltaTime, camera);
 		updateAllObjects(deltaTime, OH);
@@ -212,9 +211,8 @@ int main()
 		OH.getObject(torch)->GetPos() = camera.getCameraPosition()
 			+ camera.getForwardVector() * 1.0f
 			+ camera.getRightVector() * 0.5f
-			+ camera.getUpVector() * -0.5f;
-		//OH.getObject(torch)->GetRot() = camera.getCameraPosition();
-		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 0.8f, OH.getObject(torch)->GetPos().z);
+			+ camera.getUpVector() *-0.5f;
+		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 1.5f, OH.getObject(torch)->GetPos().z);
 		
 		// Here a cube map is calculated and stored in the shadowMap FBO
 		shadowPass(&shadowShader, &OH, &lights, &shadowMap, &camera);
@@ -245,7 +243,7 @@ int main()
 		finalFBO.copyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.getFBO());
 
 		// Draw particles to the FinalFBO
-		particlePass(&finalFBO, &particle, &camera, &particleShader, deltaTime);
+		particlePass(&finalFBO, &particle, &camera, &particleShader, deltaTime, OH.getObject(torch)->GetPos());
 
 		// Render everything
 		finalPass(&finalFBO, &finalShader, &fullScreenTriangle);
@@ -309,8 +307,8 @@ void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		}
 	}
 
-	glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
 	shadowShader->unBind();
+	glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
 	glDisable(GL_DEPTH_TEST);
 }
 
@@ -328,8 +326,6 @@ void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Came
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glEnable(GL_DEPTH_TEST);
-
-	
 
 	// Update and Draw all objects
 	for (unsigned int i = 0; i < OH->getNrOfObjects(); i++)
@@ -382,7 +378,7 @@ void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenTri
 }
 
 // This function draws particles to the screen.
-void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime)
+void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime, glm::vec3 position)
 {
 	finalFBO->bindForWriting();
 
@@ -393,7 +389,7 @@ void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 	GLuint viewProjection = glGetUniformLocation(*particleShader->getProgram(), "viewProjectionMatrix");
 
 	// Create new particles
-	particle->generateParticles(deltaTime);
+	particle->generateParticles(deltaTime, position);
 
 	// Simulate all the particles
 	particle->simulateParticles(camera->getCameraPosition(), deltaTime);
@@ -409,11 +405,18 @@ void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 	glUniform3f(cameraUpWorldPS, camera->getUpVector().x, camera->getUpVector().y, camera->getUpVector().z);
 	glUniformMatrix4fv(viewProjection, 1, GL_FALSE, &camera->getViewProjection()[0][0]);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+	particle->bindTexture();
+
 	// Bind the buffers holding the particles
 	particle->bind();
 
 	// Draw the particles, send a draw call to the GPU
 	particle->draw();
+
+	glDisable(GL_BLEND);
 
 	// Unbind the shader
 	particleShader->unBind();
@@ -425,8 +428,6 @@ void lightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLigh
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-
-	//lights->updateShadowTransform(0);
 
 	pointLightPass->Bind();
 	for (unsigned int i = 0; i < lights->getNrOfLights(); i++)

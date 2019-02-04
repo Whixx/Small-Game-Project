@@ -7,6 +7,7 @@
 #include <cstdlib>
 // algorithm for usage of std::sort()
 #include <algorithm>
+#include "Texture.h"
 
 #define maxParticles 10000
 
@@ -32,11 +33,13 @@ public:
 	Particle();
 	~Particle();
 
-	void generateParticles(float deltaTime);
+	void generateParticles(float deltaTime, glm::vec3 particlePos);
 	void simulateParticles(glm::vec3 cameraPosition, float deltaTime);
 	void update();
 	void bind();
 	void draw();
+	void bindTexture();
+	void setTexture(Texture* texture);
 private:
 	GLuint billboard_vertex_buffer;
 	GLuint particles_position_buffer;
@@ -45,6 +48,7 @@ private:
 	ParticleStruct particleArray[maxParticles];
 	GLfloat* particlePosSizeBuffer;
 	GLubyte* particleColorBuffer;
+	Texture* texture;
 
 	// variables to find unused particles.. meaning particles that should be removed (life < 0)
 	int lastUsedParticle;
