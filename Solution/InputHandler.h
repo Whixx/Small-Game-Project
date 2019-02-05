@@ -13,8 +13,8 @@ public:
 	virtual ~InputHandler();
 
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	void mouseControls(Display *display, Camera *camera);
-	void keyboardControls(Display *display, Camera *camera);
+	void mouseControls(Display *display, Camera *camera, float elapsedTime);
+	void keyboardControls(Display *display, Camera *camera, float elapsedTime);
 private:
 	static bool mouseLock;
 };

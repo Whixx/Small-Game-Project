@@ -1,10 +1,11 @@
 #include "Camera.h"
 
-Camera::Camera(const glm::vec3& pos, float fov, float aspect, float zNear, float zFar)
+Camera::Camera(const glm::vec3& pos, float fov, float aspect, float zNear, float zFar, glm::vec3 vector)
 {
 	this->projectionMatrix = glm::perspective(fov, aspect, zNear, zFar);
 	this->cameraPosition = pos;
-	this->forwardVector = glm::vec3(0.3, -0.1, 1);
+	this->forwardVector = vector;
+	this->walkingVector = vector;
 	this->upVector = glm::vec3(0, 1, 0);
 	viewMatrix = glm::lookAt(this->cameraPosition, this->cameraPosition + this->forwardVector, this->upVector);
 
@@ -67,38 +68,37 @@ void Camera::setForwardVector(glm::vec3 forwardVector)
 	this->forwardVector = forwardVector;
 }
 
-void Camera::moveForward()
+void Camera::moveForward(float elapsedTime)
 {
-	this->cameraPosition += this->movementSpeed * this->forwardVector;
+	this->cameraPosition += this->movementSpeed * this->walkingVector * elapsedTime;
 }
 
-void Camera::moveBackward()
+void Camera::moveBackward(float elapsedTime)
 {
-	this->cameraPosition -= this->movementSpeed * this->forwardVector;
+	this->cameraPosition -= this->movementSpeed * this->walkingVector * elapsedTime;
 }
 
-void Camera::moveRight()
+void Camera::moveRight(float elapsedTime)
 {
-	this->cameraPosition += this->movementSpeed * this->rotateAround;
+	this->cameraPosition += this->movementSpeed * this->rotateAround * elapsedTime;
 }
 
-void Camera::moveLeft()
+void Camera::moveLeft(float elapsedTime)
 {
-	this->cameraPosition -= this->movementSpeed * this->rotateAround;
+	this->cameraPosition -= this->movementSpeed * this->rotateAround * elapsedTime;
 }
 
-void Camera::moveUp()
+void Camera::moveUp(float elapsedTime)
 {
-	this->cameraPosition += this->movementSpeed * this->upVector;
+	this->cameraPosition += this->movementSpeed * this->upVector * elapsedTime;
 }
 
-void Camera::moveDown()
+void Camera::moveDown(float elapsedTime)
 {
-	this->cameraPosition -= this->movementSpeed * this->upVector;
+	this->cameraPosition -= this->movementSpeed * this->upVector * elapsedTime;
 }
 
-
-void Camera::updateCamera(const glm::vec2& newMousePosition)
+void Camera::updateCamera(const glm::vec2& newMousePosition, float elapsedTime)
 {
 	// Get mouse delta vector, how much the mouse has moved
 	this->mouseDelta = newMousePosition - this->oldMousePosition;
@@ -107,6 +107,7 @@ void Camera::updateCamera(const glm::vec2& newMousePosition)
 	{
 		//Update the horizontal view
 		this->forwardVector = glm::mat3(glm::rotate(-mouseDelta.x *this->rotationalSpeed, this->upVector)) * this->forwardVector;
+		walkingVector = glm::mat3(glm::rotate(-mouseDelta.x *this->rotationalSpeed, this->upVector)) * walkingVector;
 
 		//Update the vertical view
 		this->rotateAround = glm::cross(this->forwardVector, this->upVector);
@@ -119,3 +120,4 @@ void Camera::updateViewMatrix()
 {
 	this->viewMatrix = glm::lookAt(this->cameraPosition, this->cameraPosition + this->forwardVector, this->upVector);
 }
+

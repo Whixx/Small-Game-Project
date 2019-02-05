@@ -114,7 +114,11 @@ int main()
 	finalBloomShader.validateShaders();
 	finalShader.validateShaders();
 
-	Camera camera(glm::vec3(-15, 25, -53), 70.0f, (float)SCREENWIDTH / (float)SCREENHEIGHT, 0.01f, 1000.0f);
+	Player player = Player();
+	player.SetPlayerSpeed(5.0f);
+	player.SetPlayerHeight(2.0f);
+
+	Camera camera(glm::vec3(0, player.GetPlayerHeight() , 0), 70.0f, (float)SCREENWIDTH / (float)SCREENHEIGHT, 0.01f, 1000.0f, player.GetWalkingVector());
 	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetKeyCallback(display.GetWindow(), InputHandler::key_callback);
 	//=========================== Creating Objects ====================================//
@@ -125,7 +129,6 @@ int main()
 	InputHandler IH = InputHandler();
 	ObjectHandler OH = ObjectHandler();
 
-	Player player = Player();
 	Mesh torchMesh;
 
 	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
@@ -196,8 +199,9 @@ int main()
 
 	while(!display.IsWindowClosed())
 	{
+		currentTime = glfwGetTime();
 		deltaTime = currentTime - lastTime;
-		lastTime = glfwGetTime();
+		lastTime = currentTime;
 
 
 		// ================== UPDATE ==================
@@ -247,11 +251,11 @@ int main()
 		finalPass(&finalFBO, &finalShader, &fullScreenTriangle);
 
 		// Check for mouse/keyboard inputs and handle the camera movement
-		IH.mouseControls(&display, &camera);
-		IH.keyboardControls(&display, &camera);
+		IH.mouseControls(&display, &camera, deltaTime);
+		IH.keyboardControls(&display, &camera, deltaTime);
 
 		camera.updateViewMatrix();
-
+		
 		//std::cout << "x: " << camera.getCameraPosition().x << " y: " << camera.getCameraPosition().y << " z: " << camera.getCameraPosition().z << std::endl;
 
 		display.SwapBuffers(SCREENWIDTH, SCREENHEIGHT);
@@ -259,7 +263,6 @@ int main()
 		display.SetTitle("FPS: " + to_string(1/deltaTime));
 
 		counter += deltaTime * 0.5;
-		currentTime = glfwGetTime();
 	}
 	glfwTerminate();
 	return 0;

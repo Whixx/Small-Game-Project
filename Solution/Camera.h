@@ -3,16 +3,17 @@
 
 #include <glm\glm.hpp>
 #include <glm/gtx/transform.hpp>
+
 class Camera
 {
 public:
-	Camera(const glm::vec3& pos, float fov, float aspect, float zNear, float zFar);
-
+	Camera(const glm::vec3& pos, float fov, float aspect, float zNear, float zFar, glm::vec3 vector);
+	
 	glm::mat4 getViewProjection() const;
 	virtual ~Camera();
 
 	// These functions are for camera control and movement
-	void updateCamera(const glm::vec2& newMousePosition);
+	void updateCamera(const glm::vec2& newMousePosition, float elapsedTime);
 	void setCameraPosition(glm::vec3 camPos);
 	void setForwardVector(glm::vec3 forwardVector);
 
@@ -24,24 +25,26 @@ public:
 	glm::vec3 getRightVector();
 
 
-	void moveForward();
-	void moveBackward();
-	void moveRight();
-	void moveLeft();
-	void moveUp();
-	void moveDown();
+	void moveForward(float elapsedTime);
+	void moveBackward(float elapsedTime);
+	void moveRight(float elapsedTime);
+	void moveLeft(float elapsedTime);
+	void moveUp(float elapsedTime);
+	void moveDown(float elapsedTime);
 
 	void updateViewMatrix();
+	
 private:
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewMatrix;
 	glm::vec3 cameraPosition;
 	glm::vec3 forwardVector;	// Viewvector // frontal view
 	glm::vec3 upVector;
-
+	glm::vec3 walkingVector;
+	
 	glm::vec3 startCameraPosition;
 	glm::vec3 startForwardVector;
-
+	
 	// Used for mouseUpdate
 	glm::vec2 oldMousePosition;
 	glm::vec2 mouseDelta;
@@ -49,7 +52,6 @@ private:
 	glm::vec3 rotateAround;
 	const float rotationalSpeed = 0.01f;
 	const float movementSpeed = 0.2f;
-
 };
 
 #endif
