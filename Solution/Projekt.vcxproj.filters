@@ -75,7 +75,11 @@
     <ClCompile Include="ShadowMap.cpp">
       <Filter>Class cpp.Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Player.cpp">
+=======
+    <ClCompile Include="InputHandler.cpp">
+>>>>>>> mouseLookAround
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -131,7 +135,11 @@
     <ClInclude Include="ShadowMap.h">
       <Filter>Class h.Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="Player.h">
+=======
+    <ClInclude Include="InputHandler.h">
+>>>>>>> mouseLookAround
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

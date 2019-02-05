@@ -13,10 +13,10 @@ public:
 	void SwapBuffers(int width, int height);
 	bool IsWindowClosed();
 	void SetTitle(string newTitle);
+	GLFWwindow* GetWindow();
 
 	virtual ~Display();
 
-	GLFWwindow *getWindow();
 private:
 	GLFWwindow *window;
 
