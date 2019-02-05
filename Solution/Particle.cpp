@@ -88,22 +88,22 @@ void Particle::generateParticles(float deltaTime, glm::vec3 particlePos)
 
 		// Set the start values of the new particle
 		// Life (Length in seconds which describes how long the particle should be alive)
-		this->particleArray[index].life = 2.0f;
+		this->particleArray[index].life = 1.5f;
 		
 		// Position
-		this->particleArray[index].pos.x = particlePos.x;
-		this->particleArray[index].pos.y = particlePos.y + 0.5f;
-		this->particleArray[index].pos.z = particlePos.z;
-
+		float randomPos = ((rand() % 100) - 50) / 700.0f;
+		this->particleArray[index].pos.x = particlePos.x + randomPos;
+		this->particleArray[index].pos.y = particlePos.y + 0.45f;
+		this->particleArray[index].pos.z = particlePos.z + randomPos;
 
 		// Speed
 		float speed = 0.80f;
 		glm::vec3 mainDir = glm::vec3(0.0f, 1.0f, 0.0f);
 
 		glm::vec3 randomDir = glm::vec3(
-			(rand() % 2000 - 1000.0f) / 2000.0f,
-			(rand() % 2000 - 1000.0f) / 2000.0f,
-			(rand() % 2000 - 1000.0f) / 2000.0f
+			(rand() % 2000 - 1000.0f) / 5000.0f,
+			(rand() % 2000 - 1000.0f) / 5000.0f,
+			(rand() % 2000 - 1000.0f) / 5000.0f
 		);
 
 		this->particleArray[index].speed = (mainDir + randomDir) * speed;
@@ -112,10 +112,10 @@ void Particle::generateParticles(float deltaTime, glm::vec3 particlePos)
 		this->particleArray[index].r = 255;
 		this->particleArray[index].g = 255;
 		this->particleArray[index].b = 255;
-		this->particleArray[index].a = 255;
+		this->particleArray[index].a = 150;
 
 		// Size
-		this->particleArray[index].size = 0.2f;
+		this->particleArray[index].size = 0.3f;
 	}
 }
 
@@ -144,20 +144,26 @@ void Particle::simulateParticles(glm::vec3 cameraPosition, float deltaTime)
 				// Position
 				tempParticle.pos += tempParticle.speed * deltaTime;
 
-				// Fading out
-				if (tempParticle.a > 0.0f)
+				if (tempParticle.life >= 0.8f)
 				{
-					tempParticle.a -= deltaTime * 140;
-					if (tempParticle.a < 0.0f)
-					{
-						tempParticle.a == 0.0f;
-					}
+					// Changing color (white -> red)
+					tempParticle.b = (tempParticle.life / 1.5) * 255.0f;
+					tempParticle.g = (tempParticle.life / 1.5) * 255.0f;
+
+					// Fading out
+					tempParticle.a = (tempParticle.life / 1.5) * 150.0f;
 				}
+				else
+				{
+					// Set particle as smoke
+					tempParticle.r = 50;
+					tempParticle.g = 50;
+					tempParticle.b = 50;
 
-				// Changing color (white -> red)
-				tempParticle.b -= deltaTime * 130.0;
-				tempParticle.g -= deltaTime * 130.0;
-
+					// Fading out
+					tempParticle.a = (tempParticle.life / 1.0) * 150.0f;
+				}
+				
 				// CameraDistance
 				tempParticle.cameradistance = glm::length(tempParticle.pos - cameraPosition);
 

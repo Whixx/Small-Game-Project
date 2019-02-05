@@ -9,10 +9,11 @@ uniform sampler2D particleTexture;
 
 void main()
 {
-	vec4 texColor = texture(particleTexture, UV) * finalColor;
+	vec4 texColor = texture(particleTexture, UV);
 	if (texColor.a < 0.1) 
 	{
         discard;
 	}
-	fragment_Color = texColor;
+
+	fragment_Color = texColor * finalColor;
 }

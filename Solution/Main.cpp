@@ -30,8 +30,8 @@
 
 
 
-int SCREENWIDTH = 800;
-int SCREENHEIGHT = 600;
+int SCREENWIDTH = 1920;
+int SCREENHEIGHT = 1080;
 
 // Update functions
 void updateAllObjects(double dt, ObjectHandler &OH);
@@ -132,7 +132,7 @@ int main()
 	int torch = OH.CreateObject("ObjectFiles/torch.obj", &torchMesh, &torchTexture);
 
 	OH.getObject(torch)->GetScale() *= 0.1;
-
+	
 	//=================================================================================//
 
 	ShadowMap shadowMap;
@@ -173,7 +173,7 @@ int main()
 	// Create Lights
 	PointLightHandler lights;
 	PointLight torchLight;
-	float torchLightIntensity = 3.0f;
+	float torchLightIntensity = 2.0f;
 	torchLight.GetColor() = glm::vec3(1.0f, 0.3f, 0.3f) * torchLightIntensity;
 	lights.createLight(OH.getObject(torch)->GetPos(), torchLight.GetColor());
 	/*lights.createLight(glm::vec3(-7.0f, 7.0f, -3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -211,7 +211,7 @@ int main()
 		OH.getObject(torch)->GetPos() = camera.getCameraPosition()
 			+ camera.getForwardVector() * 1.0f
 			+ camera.getRightVector() * 0.5f
-			+ camera.getUpVector() *-0.5f;
+			+ camera.getUpVector() * -0.5f;
 		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 1.5f, OH.getObject(torch)->GetPos().z);
 		
 		// Here a cube map is calculated and stored in the shadowMap FBO
@@ -405,6 +405,8 @@ void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 	glUniform3f(cameraUpWorldPS, camera->getUpVector().x, camera->getUpVector().y, camera->getUpVector().z);
 	glUniformMatrix4fv(viewProjection, 1, GL_FALSE, &camera->getViewProjection()[0][0]);
 
+	// Disable depthbuffer and enable blend
+	glDepthMask(false);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
@@ -417,6 +419,7 @@ void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 	particle->draw();
 
 	glDisable(GL_BLEND);
+	glDepthMask(true);
 
 	// Unbind the shader
 	particleShader->unBind();
