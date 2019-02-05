@@ -12,7 +12,7 @@ Texture::Texture(const std::string& textureName, const std::string& normalMapNam
 Texture::Texture(const Texture & other)
 {
 	this->m_texture = other.m_texture;
-	this->m_normalMap = other.m_normalMap;
+	//this->m_normalMap = other.m_normalMap;
 }
 
 void Texture::operator=(const Texture & other)
@@ -30,7 +30,7 @@ Texture::~Texture()
 void Texture::create(const std::string & fileName, bool nMap)
 {
 	int width, height, numComponents;
-	unsigned char* imageData = stbi_load(fileName.c_str(), &width, &height, &numComponents, 4);
+	unsigned char* imageData = stbi_load(fileName.c_str(), &width, &height, &numComponents, 3);
 
 	if (imageData == NULL)
 	{
@@ -48,14 +48,14 @@ void Texture::create(const std::string & fileName, bool nMap)
 		glBindTexture(GL_TEXTURE_2D, m_normalMap);
 	}
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_NEAREST);
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// Skickar texturen till GPU'n
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
 
 	stbi_image_free(imageData);
 }
@@ -67,8 +67,8 @@ void Texture::Bind(unsigned int unit)
 		glActiveTexture(GL_TEXTURE0 + unit * 2);
 		glBindTexture(GL_TEXTURE_2D, m_texture);
 
-		glActiveTexture(GL_TEXTURE0 + unit * 2 + 1);
-		glBindTexture(GL_TEXTURE_2D, m_normalMap);
+		//glActiveTexture(GL_TEXTURE0 + unit * 2 + 1);
+		//glBindTexture(GL_TEXTURE_2D, m_normalMap);
 	}
 	else
 	{

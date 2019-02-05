@@ -24,8 +24,6 @@
 // Finns en main funktion i GLEW, därmed måste vi undefinera den innan vi kan använda våran main
 #undef main
 
-
-
 #define PI 3.1415926535
 
 enum objectIndices
@@ -66,8 +64,8 @@ int main()
 
 	Display display(SCREENWIDTH, SCREENHEIGHT);
 
-	Maze maze;
-	maze.loadBMP("Bitmap/Maze.bmp");
+	//Maze maze;
+	//maze.loadBMP("Bitmap/Maze.bmp");
 	
 
 	Shader mazeShader;
@@ -133,19 +131,20 @@ int main()
 	finalBloomShader.validateShaders();
 	finalShader.validateShaders();
 
-	Camera camera(glm::vec3(-15, 25, -53), 70.0f, (float)SCREENWIDTH / (float)SCREENHEIGHT, 0.01f, 1000.0f);
+	Camera camera(glm::vec3(0, 0, 0), 70.0f, (float)SCREENWIDTH / (float)SCREENHEIGHT, 0.01f, 1000.0f);
 	
+	camera.setForwardVector(glm::normalize(glm::vec3(30, 0, 30)));
 
 	//=========================== Creating Objects ====================================//
 	
 	// Transform includes all three matrices, each object has its own transform
 	Transform transform;
-	Texture swordTexture("Textures/swordTexture.jpg", "NormalMaps/sword_normal.png");
-	Texture brickTexture("Textures/brickwall.jpg", "NormalMaps/brickwall_normal.jpg");
-	Texture snowTexture("Textures/basicSnow.jpg", "NormalMaps/flat_normal.jpg");
-	Texture moonTexture("Textures/moon.png", "NormalMaps/flat_normal.jpg");
+	//Texture swordTexture("Textures/swordTexture.jpg", "NormalMaps/sword_normal.png");
+	//Texture brickTexture("Textures/brickwall.jpg", "NormalMaps/brickwall_normal.jpg");
+	//Texture snowTexture("Textures/basicSnow.jpg", "NormalMaps/flat_normal.jpg");
+	//Texture moonTexture("Textures/moon.png", "NormalMaps/flat_normal.jpg");
 
-	Texture bmpTexture ("Bitmap/test.bmp", "NormalMaps/flat_normal.jpg");
+	Texture bmpTexture ("Bitmap/test.png", "NormalMaps/flat_normal.jpg");
 
 	ObjectHandler OH = ObjectHandler();
 
@@ -157,11 +156,11 @@ int main()
 	int cubes[2];
 	for (int i = 0; i < 2; i++)
 	{
-		cubes[i] = OH.CreateObject("ObjectFiles/cube.obj", &cubeMesh, transform, &brickTexture);
+		cubes[i] = OH.CreateObject("ObjectFiles/cube.obj", &cubeMesh, transform, &bmpTexture);
 	}
-	int sword = OH.CreateObject("ObjectFiles/srd.obj", &swordMesh, transform, &swordTexture);
-	int ground = OH.CreateObject("ObjectFiles/SnowTerrain.obj", &groundMesh, transform, &snowTexture);
-	int moon = OH.CreateObject("ObjectFiles/moon.obj", &moonMesh, transform, &moonTexture);
+	//int sword = OH.CreateObject("ObjectFiles/srd.obj", &swordMesh, transform, &swordTexture);
+	//int ground = OH.CreateObject("ObjectFiles/SnowTerrain.obj", &groundMesh, transform, &snowTexture);
+	//int moon = OH.CreateObject("ObjectFiles/moon.obj", &moonMesh, transform, &moonTexture);
 
 	setStartPositions(&OH);
 	//=================================================================================//
@@ -236,10 +235,35 @@ int main()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		
+
+		//glEnable(GL_CULL_FACE);
+		//glCullFace(GL_BACK);
+
+
+		//FEEEL
 		sendCameraLocationToGPU(cameraLocationTest, &camera);
 		bmpTexture.Bind(0);
-		fullScreenTriangle.Draw();
+		OH.getObject(cubes[1])->GetPos() = glm::vec3(0.0, 0.0, 0.0);
+		glm::mat4 a = OH.getObject(cubes[1])->getWorldMatrix();
+		
+		mazeShader.Update(OH.getObject(cubes[1])->GetTransform(), camera);
+		
+		OH.getObject(cubes[1])->Draw();
 
+
+
+
+		// Rätt, som de ska va sen
+		//maze.Draw();
+
+
+
+
+
+
+
+		//glDisable(GL_CULL_FACE);
 		//UPDATE
 
 		/*

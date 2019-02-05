@@ -15,6 +15,7 @@ private:
 	int height;
 	int numComponents;
 	GLuint m_texture;
+
 public:
 	Maze();
 	~Maze();
@@ -22,7 +23,7 @@ public:
 
 	bool loadBMP(const std::string& fileName);
 	unsigned char readPixel(unsigned int x, unsigned int y);
-
+	void Draw();
 	void bind(unsigned int textureUnit);
 };
 #endif
