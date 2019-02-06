@@ -13,12 +13,13 @@ class MazeGeneratePNG
 public:
 	MazeGeneratePNG(int height, int width);
 
-	int wall = 0;
-	int path = 1;
+	int wall = 1;
+	int path = 0;
 	void set_cell(int y, int x, int value); // can be used to set exit points on the maze (or other stuff)
 	int get_cell(int y, int x);
 	void generate(void);
 	void setupColorData();
+	void setupColorDataForColor();
 	void draw_png();
 
 private:

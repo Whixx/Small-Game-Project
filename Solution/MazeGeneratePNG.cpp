@@ -133,7 +133,9 @@ void MazeGeneratePNG::replace(int set_to_replace, int sample_set)
 
 void MazeGeneratePNG::draw_png()
 {
-	setupColorData();
+	// Color png
+
+	setupColorDataForColor();
 
 	std::vector<unsigned char> a;
 	for (int y = 0; y < this->height; y++)
@@ -155,7 +157,197 @@ void MazeGeneratePNG::draw_png()
 	{
 		std::cout << "maze.png written to Bitmap-folder" << std::endl;
 	}
+
+
+
+
+	// Black-White png
+
+	setupColorData();
+
+	std::vector<unsigned char> b;
+	for (int y = 0; y < this->height; y++)
+	{
+		for (int x = 0; x < this->width; x++)
+		{
+			b.push_back(image[y][x][0]);
+			b.push_back(image[y][x][1]);
+			b.push_back(image[y][x][2]);
+		}
+	}
+
+
+	if (!stbi_write_png("Bitmap/maze_d.png", this->width, this->height, 3, b.data(), 3 * width))
+	{
+		std::cout << "THIS SHIT FAILED maze_d.png not written" << std::endl;
+	}
+	else
+	{
+		std::cout << "maze_d.png written to Bitmap-folder" << std::endl;
+	}
 }
+
+void MazeGeneratePNG::setupColorDataForColor()
+{
+	// set up image vectors to hold color data
+	image.resize(this->height);
+	for (int y = 0; y < this->height; y++)
+	{
+		image[y].resize(this->width);
+		for (int x = 0; x < this->width; x++)
+		{
+			image[y][x].resize(3);
+		}
+	}
+
+	// sets colors, white for walls, black for path
+	for (int y = 0; y < height; y++)
+	{
+		for (int x = 0; x < width; x++)
+		{
+			if (get_cell(y, x) == wall)
+			{
+				bool closeby[4]; // false for floor
+				// Read closeby pixels
+				// 
+				//    _0_
+				// 3 | . | 1
+				//   |___|
+				//	   2
+
+				// Assume its surrounded by walls
+				closeby[0] = wall;
+				closeby[1] = wall;
+				closeby[2] = wall;
+				closeby[3] = wall;
+
+
+				// If at the edge, keep the assumption else check if there is a floor or wall
+				if (y == 0)
+					closeby[2] = get_cell(y + 1, x);
+				else if (y == height - 1)
+					closeby[0] = get_cell(y - 1, x);
+				else
+				{
+					closeby[0] = get_cell(y - 1, x);
+					closeby[2] = get_cell(y + 1, x);
+				}
+
+				if (x == 0)
+					closeby[1] = get_cell(y, x + 1);
+				else if (x == width - 1)
+					closeby[3] = get_cell(y, x - 1);
+				else
+				{
+					closeby[1] = get_cell(y, x + 1);
+					closeby[3] = get_cell(y, x - 1);
+				}
+
+
+
+				// Check which wall type it is based on closeby
+				if (closeby[0] && closeby[1] && closeby[2] && closeby[3]) // 0. Empty
+				{
+					image[y][x][0] = 0;
+					image[y][x][1] = 0;
+					image[y][x][2] = 0;
+				}
+				else if (!closeby[0] && closeby[1] && closeby[2] && closeby[3]) // 1. Single wall closeby
+				{
+					image[y][x][0] = 100;
+					image[y][x][1] = 0;
+					image[y][x][2] = 255;
+				}
+				else if (closeby[0] && closeby[1] && !closeby[2] && closeby[3]) // 2.
+				{
+					image[y][x][0] = 100;
+					image[y][x][1] = 255;
+					image[y][x][2] = 0;
+				}
+				else if (closeby[0] && !closeby[1] && closeby[2] && closeby[3]) // 3.
+				{
+					image[y][x][0] = 100;
+					image[y][x][1] = 255;
+					image[y][x][2] = 255;
+				}
+				else if (closeby[0] && closeby[1] && closeby[2] && !closeby[3]) // 4.
+				{
+					image[y][x][0] = 100;
+					image[y][x][1] = 0;
+					image[y][x][2] = 0;
+				}
+				else if (!closeby[0] && !closeby[1] && closeby[2] && closeby[3]) // 5. Double wall closeby
+				{
+					image[y][x][0] = 200;
+					image[y][x][1] = 0;
+					image[y][x][2] = 255;
+				}
+				else if (!closeby[0] && closeby[1] && closeby[2] && !closeby[3]) // 6.
+				{
+					image[y][x][0] = 200;
+					image[y][x][1] = 255;
+					image[y][x][2] = 0;
+				}
+				else if (closeby[0] && closeby[1] && !closeby[2] && !closeby[3]) // 7.
+				{
+					image[y][x][0] = 200;
+					image[y][x][1] = 0;
+					image[y][x][2] = 0;
+				}
+				else if (closeby[0] && !closeby[1] && !closeby[2] && closeby[3]) // 8.
+				{
+					image[y][x][0] = 200;
+					image[y][x][1] = 255;
+					image[y][x][2] = 255;
+				}
+				else if (!closeby[0] && !closeby[1] && closeby[2] && !closeby[3]) // 9. Tripple wall closeby
+				{
+					image[y][x][0] = 255;
+					image[y][x][1] = 0;
+					image[y][x][2] = 255;
+				}
+				else if (!closeby[0] && !closeby[1] && !closeby[2] && closeby[3]) // 10.
+				{
+					image[y][x][0] = 255;
+					image[y][x][1] = 255;
+					image[y][x][2] = 0;
+				}
+				else if (closeby[0] && !closeby[1] && !closeby[2] && !closeby[3]) // 11.
+				{
+					image[y][x][0] = 255;
+					image[y][x][1] = 0;
+					image[y][x][2] = 0;
+				}
+				else if (!closeby[0] && closeby[1] && !closeby[2] && !closeby[3]) // 12.
+				{
+					image[y][x][0] = 255;
+					image[y][x][1] = 255;
+					image[y][x][2] = 255;
+				}
+				else if (closeby[0] && !closeby[1] && closeby[2] && !closeby[3]) // 13. Double wall closeby Ex
+				{
+					image[y][x][0] = 50;
+					image[y][x][1] = 0;
+					image[y][x][2] = 0;
+				}
+				else if (!closeby[0] && closeby[1] && !closeby[2] && closeby[3]) // 14.
+				{
+					image[y][x][0] = 50;
+					image[y][x][1] = 255;
+					image[y][x][2] = 255;
+				}
+			}
+			else if (get_cell(y, x) == path)
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					image[y][x][i] = 0;
+				}
+			}
+		}
+	}
+}
+
 
 void MazeGeneratePNG::setupColorData()
 {
@@ -175,15 +367,18 @@ void MazeGeneratePNG::setupColorData()
 	{
 		for (int x = 0; x < width; x++)
 		{
-			for (int z = 0; z < 3; z++)
+			if (get_cell(y, x) == wall)
 			{
-				if (get_cell(y, x) == wall)
+				for(int i = 0; i < 3; i++)
 				{
-					image[y][x][z] = 255;
+					image[y][x][i] = 255;
 				}
-				else if (get_cell(y, x) == path)
+			}
+			else if (get_cell(y, x) == path)
+			{
+				for (int i = 0; i < 3; i++)
 				{
-					image[y][x][z] = 0;
+					image[y][x][i] = 0;
 				}
 			}
 		}
