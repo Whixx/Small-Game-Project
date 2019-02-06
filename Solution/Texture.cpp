@@ -6,7 +6,7 @@
 Texture::Texture(const std::string& textureName, const std::string& normalMapName)
 {
 	create(textureName, 0);
-	create(normalMapName, 1);
+	//create(normalMapName, 1);
 }
 
 Texture::Texture(const Texture & other)
@@ -18,7 +18,7 @@ Texture::Texture(const Texture & other)
 void Texture::operator=(const Texture & other)
 {
 	this->m_texture = other.m_texture;
-	this->m_normalMap = other.m_normalMap;
+	//this->m_normalMap = other.m_normalMap;
 }
 
 Texture::~Texture()
@@ -55,7 +55,7 @@ void Texture::create(const std::string & fileName, bool nMap)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// Skickar texturen till GPU'n
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB_INTEGER, GL_UNSIGNED_BYTE, imageData);
 
 	stbi_image_free(imageData);
 }

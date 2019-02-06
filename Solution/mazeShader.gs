@@ -7,33 +7,34 @@ in vec2 texCoord0[];
 out vec2 texCoords;
 out vec4 color;
 
+uniform usampler2D texture;
+
 uniform vec3 cameraPos;
 
 uniform mat4 transformationMatrix; 
 uniform mat4 WorldMatrix;
 
-uniform sampler2D texture;
+
 
 void main()
 {
-	vec3 pixelValue;
+	uvec3 pixelValue;
 	
 
-	vec3 red = vec3(1.0f, 0.0f, 0.0f);
-	vec3 white = vec3(1.0f, 1.0f, 1.0f);
+	vec3 red = vec3(1, 0, 0);
+	uvec3 temp = uvec3(255,0,0);
+	vec3 white = vec3(1, 1, 1);
+	uvec3 whiteBig = uvec3(255,255,255);
 	vec3 black = vec3(0.0f, 0.0f, 0.0f);
 	vec3 blue = vec3(0.0f, 0.0f, 1.0f);
 
 	for(int i = 0; i < 64; i++)
 	{
-		for(int j= 5; j < 64; j++)
+		for(int j = 0; j < 64; j++)
 		{
-			float worldX = float(i)/63.0f;
-			float worldY = float(j)/63.0f;
-	
-			pixelValue = texture(texture,vec2(worldX, worldY)).rgb;
-	
-			if(pixelValue != black)
+			pixelValue = texelFetch(texture, ivec2(i,j), 0).rgb;
+			
+			if(pixelValue == temp)
 			{
 				// Left Bottom vertex
 				gl_Position = transformationMatrix * vec4(i - 0.5f, 0, j, 1.0f);
@@ -53,35 +54,19 @@ void main()
 				EndPrimitive();
 				
 				
-				//// Left Bottom vertex
-				//gl_Position = transformationMatrix * vec4(i - 0.5f, 0, j, 1.0f);
-				//EmitVertex();
-				//
-				//// Right Top vertex
-				//gl_Position = transformationMatrix * vec4(i + 0.5f, 1, j, 1.0f);
-				//EmitVertex();
-				//
-				//// Right Bottom vertex
-				//gl_Position = transformationMatrix * vec4(i + 0.5, 0, j, 1.0f);
-				//EmitVertex();
-				//
-				//EndPrimitive();
-	
-	
-	
-	
-	
-				//gl_Position = vec4(-0.5,-0.5,0,1.0f);
-				//EmitVertex();
-				//
-				//gl_Position = vec4(0.5,-0.5,0,1.0f);
-				//EmitVertex();
-				//
-				//gl_Position = vec4(0.0, 0.5,0, 1.0f);
-				//EmitVertex();
-				//
-				//EndPrimitive();
-	
+				// Left Bottom vertex
+				gl_Position = transformationMatrix * vec4(i - 0.5f, 0, j, 1.0f);
+				EmitVertex();
+				
+				// Right Top vertex
+				gl_Position = transformationMatrix * vec4(i + 0.5f, 1, j, 1.0f);
+				EmitVertex();
+				
+				// Right Bottom vertex
+				gl_Position = transformationMatrix * vec4(i + 0.5, 0, j, 1.0f);
+				EmitVertex();
+				
+				EndPrimitive();
 			}
 		}
 	}

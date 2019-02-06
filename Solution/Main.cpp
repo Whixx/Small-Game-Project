@@ -217,12 +217,15 @@ int main()
 	GLint texLoc;
 	GLint normalTexLoc;
 
-	texLoc = glGetUniformLocation(*geometryPass.getProgram(), "texture");
+	//texLoc = glGetUniformLocation(*geometryPass.getProgram(), "texture");
+	
 	normalTexLoc = glGetUniformLocation(*geometryPass.getProgram(), "normalMap");
 
 	GLuint viewProjection = glGetUniformLocation(*pointLightPass.getProgram(), "viewProjectionMatrix");
 
 	mazeShader.Bind();
+
+	texLoc = glGetUniformLocation(*mazeShader.getProgram(), "texture");
 
 	GLuint cameraLocationTest = glGetUniformLocation(*mazeShader.getProgram(), "cameraPos");
 
@@ -241,7 +244,11 @@ int main()
 		//glCullFace(GL_BACK);
 
 
+
 		//FEEEL
+		
+		glUniform1i(texLoc, 0);
+
 		sendCameraLocationToGPU(cameraLocationTest, &camera);
 		bmpTexture.Bind(0);
 		OH.getObject(cubes[1])->GetPos() = glm::vec3(0.0, 0.0, 0.0);
