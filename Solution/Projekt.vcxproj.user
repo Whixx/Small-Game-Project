@@ -4,6 +4,10 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup>
+<<<<<<< HEAD
     <ShowAllFiles>true</ShowAllFiles>
+=======
+    <ShowAllFiles>false</ShowAllFiles>
+>>>>>>> generateMazeBitmap
   </PropertyGroup>
 </Project>
