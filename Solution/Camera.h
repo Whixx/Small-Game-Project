@@ -12,7 +12,7 @@ public:
 	virtual ~Camera();
 
 	// These functions are for camera control and movement
-	void mouseUpdate(const glm::vec2& newMousePosition);
+	void updateCamera(const glm::vec2& newMousePosition);
 	void setCameraPosition(glm::vec3 camPos);
 	void setForwardVector(glm::vec3 forwardVector);
 

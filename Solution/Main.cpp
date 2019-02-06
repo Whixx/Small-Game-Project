@@ -17,32 +17,29 @@
 #include "Blur.h"
 #include "FinalFBO.h"
 #include "ShadowMap.h"
+#include "InputHandler.h"
+#include "Player.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
-// Finns en main funktion i GLEW, därmed måste vi undefinera den innan vi kan använda våran main
+// Finns en main funktion i GLEW, dï¿½rmed mï¿½ste vi undefinera den innan vi kan anvï¿½nda vï¿½ran main
 #undef main
 
 
 
 #define PI 3.1415926535
 
-enum objectIndices
-{
-	cube1,
-	cube2,
-	sword,
-	ground,
-	moon,
-	nrOfIndices
-};
+
 
 int SCREENWIDTH = 800;
 int SCREENHEIGHT = 600;
 
+// Update functions
+void updateAllObjects(double dt, ObjectHandler &OH);
+
 // Shader pass functions
 void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Camera *camera);
-void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, Texture* snowTexture, Texture* swordTexture, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc);
+void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc);
 void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenQuad, GLuint *program, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, GLuint cameraLocationLP, Camera *camera);
 void lightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, double counter);
 void blurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle);
@@ -54,9 +51,6 @@ void sendCameraLocationToGPU(GLuint cameraLocation, Camera *camera);
 void prepareTexture(GLuint textureLoc, GLuint normalMapLoc);
 
 void setStartPositions(ObjectHandler *OH);
-
-void keyboardControls(Display *display, Camera *camera);
-void mouseControls(Display *display, Camera *camera);
 
 int main()
 {
@@ -120,35 +114,27 @@ int main()
 	finalBloomShader.validateShaders();
 	finalShader.validateShaders();
 
-	Camera camera(glm::vec3(-15, 25, -53), 70.0f, (float)SCREENWIDTH / (float)SCREENHEIGHT, 0.01f, 1000.0f);
-	
-
+	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetKeyCallback(display.GetWindow(), InputHandler::key_callback);
+	Camera camera(glm::vec3(0, 2, 0), 70.0f, (float)SCREENWIDTH / (float)SCREENHEIGHT, 0.01f, 1000.0f);
 	//=========================== Creating Objects ====================================//
-	
-	// Transform includes all three matrices, each object has its own transform
-	Transform transform;
-	Texture swordTexture("Textures/swordTexture.jpg", "NormalMaps/sword_normal.png");
-	Texture brickTexture("Textures/brickwall.jpg", "NormalMaps/brickwall_normal.jpg");
-	Texture snowTexture("Textures/basicSnow.jpg", "NormalMaps/flat_normal.jpg");
-	Texture moonTexture("Textures/moon.png", "NormalMaps/flat_normal.jpg");
+	Mesh groundMesh;
+	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
+	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
 
+	InputHandler IH = InputHandler();
 	ObjectHandler OH = ObjectHandler();
 
-	Mesh cubeMesh;
-	Mesh swordMesh;
-	Mesh groundMesh;
-	Mesh moonMesh;
+	Player player = Player();
+	Mesh torchMesh;
 
-	int cubes[2];
-	for (int i = 0; i < 2; i++)
-	{
-		cubes[i] = OH.CreateObject("ObjectFiles/cube.obj", &cubeMesh, transform, &brickTexture);
-	}
-	int sword = OH.CreateObject("ObjectFiles/srd.obj", &swordMesh, transform, &swordTexture);
-	int ground = OH.CreateObject("ObjectFiles/SnowTerrain.obj", &groundMesh, transform, &snowTexture);
-	int moon = OH.CreateObject("ObjectFiles/moon.obj", &moonMesh, transform, &moonTexture);
+	//TODO: Byta ground.png till floor.png
+	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
+	int torch = OH.CreateObject("ObjectFiles/torch.obj", &torchMesh, &torchTexture);
 
-	setStartPositions(&OH);
+	OH.getObject(torch)->GetPos() = glm::vec3(0.0f, -10.0f, 0.0f);
+	OH.getObject(torch)->GetScale() *= 0.3;
+
 	//=================================================================================//
 
 	ShadowMap shadowMap;
@@ -188,7 +174,8 @@ int main()
 
 	// Create Lights
 	PointLightHandler lights;
-	lights.createLight(glm::vec3(7.0f, 9.0f, -6.0f), glm::vec3(2.0f, 2.0f, 2.0f));
+	glm::vec3 lightColor = glm::vec3(1.0f, 0.7f, 0.7f);
+	lights.createLight(OH.getObject(torch)->GetPos(), lightColor);
 	/*lights.createLight(glm::vec3(-7.0f, 7.0f, -3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	lights.createLight(glm::vec3(7.0f, 7.0f, 15.0f), glm::vec3(0.3f, 0.0f, 0.0f));*/
 
@@ -214,28 +201,24 @@ int main()
 		lastTime = glfwGetTime();
 
 
+		// ================== UPDATE ==================
+		player.Update(deltaTime, camera);
+		updateAllObjects(deltaTime, OH);
 
-		//UPDATE
-
-		// DEN SOM GÖR OBJECT KLASSER GÖR DETTA TILL EN FUNKTION
-		for (int i = 0; i < OH.getNrOfObjects(); i++)
-		{
-			//OH.getObject(i).Update();
-		}
-
-
-		// här ska object uppdateras om de ska röras eller nått
-		OH.getObject(cubes[0])->GetRot().x = sinf(counter);
 
 	
+
+
+		// Update the torch in front of the player
+		OH.getObject(torch)->GetPos() = glm::vec3(camera.getCameraPosition().x, camera.getCameraPosition().y - 2, camera.getCameraPosition().z + 2);
+		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 1.8f, OH.getObject(torch)->GetPos().z);
+
 		// Here a cube map is calculated and stored in the shadowMap FBO
 		shadowPass(&shadowShader, &OH, &lights, &shadowMap, &camera);
 
-
-
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, counter, &geometryPass, &camera, &OH, &snowTexture, &swordTexture, cameraLocationGP, texLoc, normalTexLoc);
+		DRGeometryPass(&gBuffer, counter, &geometryPass, &camera, &OH, cameraLocationGP, texLoc, normalTexLoc);
 
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
@@ -245,7 +228,9 @@ int main()
 		bloomBuffer.copyDepth(SCREENWIDTH, SCREENHEIGHT, gBuffer.getFBO());
 
 		// Draw lightSpheres
-		lightSpherePass(&pointLightPass, &bloomBuffer, &lights, &camera, counter);
+		#ifdef DEBUG
+			lightSpherePass(&pointLightPass, &bloomBuffer, &lights, &camera, counter);
+		#endif
 			
 		// Blur the bright texture
 		blurPass(&blurShader, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
@@ -263,8 +248,8 @@ int main()
 		finalPass(&finalFBO, &finalShader, &fullScreenTriangle);
 
 		// Check for mouse/keyboard inputs and handle the camera movement
-		mouseControls(&display, &camera);
-		keyboardControls(&display, &camera);
+		IH.mouseControls(&display, &camera);
+		IH.keyboardControls(&display, &camera);
 
 		camera.updateViewMatrix();
 
@@ -281,6 +266,14 @@ int main()
 	return 0;
 }
 
+void updateAllObjects(double dt, ObjectHandler & OH)
+{
+	for (int i = 0; i < OH.getNrOfObjects(); i++)
+	{
+		OH.getObject(i)->Update(dt);
+	}
+}
+
 void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Camera *camera)
 {
 	glEnable(GL_DEPTH_TEST);
@@ -293,7 +286,7 @@ void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glm::vec3 lightPos;
 
 	// For each light, we create a matrix and draws each light.
-	for (int i = 0; i < PLH->getNrOfLights(); i++)
+	for (unsigned int i = 0; i < PLH->getNrOfLights(); i++)
 	{
 		shadowTransforms = PLH->getShadowTransform(i);
 
@@ -306,7 +299,7 @@ void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		shadowShader->sendFloat("farPlane", (float)FAR_PLANE);
 		shadowShader->sendVec3("lightPos", lightPos.x, lightPos.y, lightPos.z);
 
-		for (int j = 0; j < OH->getNrOfObjects(); j++)
+		for (unsigned int j = 0; j < OH->getNrOfObjects(); j++)
 		{
 			shadowShader->Update(OH->getObject(j)->GetTransform(), *camera);
 			OH->getObject(j)->bindTexture();
@@ -319,7 +312,7 @@ void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, Texture *snowTexture, Texture *swordTexture, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc)
+void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc)
 {
 	geometryPass->Bind();
 
@@ -337,7 +330,7 @@ void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Came
 	
 
 	// Update and Draw all objects
-	for (int i = 0; i < OH->getNrOfObjects(); i++)
+	for (unsigned int i = 0; i < OH->getNrOfObjects(); i++)
 	{
 		geometryPass->Update(OH->getObject(i)->GetTransform(), *camera);
 		OH->getObject(i)->bindTexture();
@@ -424,13 +417,13 @@ void lightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLigh
 	glCullFace(GL_BACK);
 
 	// translate lights
-	lights->getTransform(0)->GetPos().x = sinf(counter * 5) * 2 + 7;
+	//lights->getTransform(0)->GetPos().x = sinf(counter * 5) * 2 + 7;
 
 
 	lights->updateShadowTransform(0);
 
 	pointLightPass->Bind();
-	for (int i = 0; i < lights->getNrOfLights(); i++)
+	for (unsigned int i = 0; i < lights->getNrOfLights(); i++)
 	{
 		pointLightPass->Update(*lights->getTransform(i), *camera);
 		lights->Draw(i);
@@ -529,89 +522,8 @@ void prepareTexture(GLuint textureLoc, GLuint normalMapLoc)
 
 void setStartPositions(ObjectHandler * OH)
 {
-	// Initial positions for all cubes
-	glm::vec3 cubePositions[2] =
-	{
-		glm::vec3(10.0f, 7.0f, -3.0f),
-		glm::vec3(-7.0f, 7.0f, -3.0f)
-	};
-
 	// Transformations
 
-	OH->getObject(cube1)->GetPos() = cubePositions[cube1];
-	OH->getObject(cube2)->GetPos() = cubePositions[cube2];
-	OH->getObject(sword)->GetPos() = glm::vec3(0.0f, 15.0f, 0.0f);
-	OH->getObject(ground)->GetPos() = glm::vec3(0.0f, 0.0f, 0.0f);
-	OH->getObject(moon)->GetPos() = glm::vec3(500.0f, 500.0f, 500.0f);
-	OH->getObject(moon)->GetScale() = glm::vec3(100, 100, 100);
 
-	OH->getObject(cube1)->GetScale() = glm::vec3(4, 3, 0.01);
-
-	OH->getObject(sword)->GetRot().x = -(PI / 2);
-	OH->getObject(sword)->GetRot().z = (PI / 16);
-}
-
-void keyboardControls(Display *display, Camera *camera)
-{
-	int keyboardButton;
-	// Check for keyboard inputs, used to move the camera around.
-	// WASD for movearound, RF (Rise,Fall) and space to set the initial camera position & viewDir.
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_W);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveForward();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_S);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveBackward();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_D);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveRight();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_A);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveLeft();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_R);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveUp();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_F);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveDown();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_SPACE);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->setCameraPosition(camera->getStartCameraPosition());
-		camera->setForwardVector(camera->getStartForwardVector());
-	}
-}
-
-void mouseControls(Display *display, Camera *camera)
-{
-	double mouseXpos;
-	double mouseYpos;
-	int mouseState;
-
-	// Check for mouse inputs, used to drag the camera view around
-	mouseState = glfwGetMouseButton(display->getWindow(), GLFW_MOUSE_BUTTON_LEFT);
-
-	// Find mouseposition (This function updates the X,Y values of the mouse position.
-	glfwGetCursorPos(display->getWindow(), &mouseXpos, &mouseYpos);
-	if (mouseState == GLFW_PRESS)
-	{
-		//std::cout << "pressed" << std::endl;
-		camera->mouseUpdate(glm::vec2(mouseXpos, mouseYpos));
-	}
-	else if (mouseState == GLFW_RELEASE)
-	{
 	
-	}
 }

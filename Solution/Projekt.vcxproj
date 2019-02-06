@@ -89,6 +89,7 @@
     <Link>
       <AdditionalLibraryDirectories>.\Libraries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;glew32s.lib;glfw3.lib;glfw3dll.lib;SDL2.lib;SDL2main.lib;SDL2test.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -139,11 +140,13 @@
     <ClCompile Include="Display.cpp" />
     <ClCompile Include="FinalFBO.cpp" />
     <ClCompile Include="GBuffer.cpp" />
+    <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
     <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
@@ -161,10 +164,12 @@
     <ClInclude Include="Display.h" />
     <ClInclude Include="FinalFBO.h" />
     <ClInclude Include="GBuffer.h" />
+    <ClInclude Include="InputHandler.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectHandler.h" />
     <ClInclude Include="Particle.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShadowMap.h" />

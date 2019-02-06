@@ -98,7 +98,7 @@ void Camera::moveDown()
 }
 
 
-void Camera::mouseUpdate(const glm::vec2& newMousePosition)
+void Camera::updateCamera(const glm::vec2& newMousePosition)
 {
 	// Get mouse delta vector, how much the mouse has moved
 	this->mouseDelta = newMousePosition - this->oldMousePosition;
