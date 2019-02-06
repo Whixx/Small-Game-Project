@@ -22,6 +22,10 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define STBI_MSC_SECURE_CRT
+#include "MazeGeneratePNG.h"
+
 // Finns en main funktion i GLEW, d�rmed m�ste vi undefinera den innan vi kan anv�nda v�ran main
 #undef main
 
@@ -56,6 +60,16 @@ int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CRT_SECURE_NO_WARNINGS;
+
+	// generate the maze png, height and width must be odd numbers else the result will be wrong
+	int mazeHeight = 51;
+	int mazeWidth = 51;
+	MazeGeneratePNG mazeGen(mazeHeight, mazeWidth);
+	// set_cell can be used to set "entrance and exit" etc
+	//mazeGen.set_cell(0, 1, mazeGen.path);
+	//mazeGen.set_cell(mazeHeight - 1, mazeWidth - 2, mazeGen.path);
+	mazeGen.generate();
+	mazeGen.draw_png();
 
 	Display display(SCREENWIDTH, SCREENHEIGHT);
 
