@@ -166,10 +166,7 @@
     <ClInclude Include="FinalFBO.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="InputHandler.h" />
-<<<<<<< HEAD
-=======
     <ClInclude Include="MazeGeneratePNG.h" />
->>>>>>> generateMazeBitmap
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectHandler.h" />

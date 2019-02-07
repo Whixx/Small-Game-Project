@@ -23,7 +23,6 @@
     <ClCompile Include="MazeGeneratePNG.cpp" />
   </ItemGroup>
   <ItemGroup>
-<<<<<<< HEAD
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -135,11 +134,10 @@
     <ClInclude Include="ShadowMap.h">
       <Filter>Class h.Files</Filter>
     </ClInclude>
-<<<<<<< HEAD
     <ClInclude Include="Player.h">
-=======
+      <Filter>Class h.Files</Filter>
+    </ClInclude>
     <ClInclude Include="InputHandler.h">
->>>>>>> mouseLookAround
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -198,7 +196,6 @@
     <None Include="shadowShader.fs">
       <Filter>Shader Files</Filter>
     </None>
-=======
     <ClInclude Include="Bloom.h" />
     <ClInclude Include="Blur.h" />
     <ClInclude Include="Camera.h" />
@@ -239,6 +236,5 @@
     <None Include="shadowShader.fs" />
     <None Include="shadowShader.gs" />
     <None Include="shadowShader.vs" />
->>>>>>> generateMazeBitmap
   </ItemGroup>
 </Project>
