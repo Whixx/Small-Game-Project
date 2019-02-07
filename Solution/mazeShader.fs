@@ -1,6 +1,5 @@
 #version 440
 
-in vec2 texCoords;
 in vec3 color;
 
 out vec4 fragment_color;

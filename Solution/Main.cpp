@@ -65,7 +65,7 @@ int main()
 	Display display(SCREENWIDTH, SCREENHEIGHT);
 
 	Maze maze;
-	maze.LoadMaze("Bitmap/test.png");
+	maze.LoadMaze("Bitmap/maze.png");
 	
 
 	Shader mazeShader;
@@ -144,8 +144,6 @@ int main()
 	//Texture snowTexture("Textures/basicSnow.jpg", "NormalMaps/flat_normal.jpg");
 	//Texture moonTexture("Textures/moon.png", "NormalMaps/flat_normal.jpg");
 
-	//Texture bmpTexture ("Bitmap/test.png", "NormalMaps/flat_normal.jpg");
-
 	ObjectHandler OH = ObjectHandler();
 
 	Mesh cubeMesh;
@@ -215,7 +213,7 @@ int main()
 	GLint texLoc;
 	GLint normalTexLoc;
 
-	//texLoc = glGetUniformLocation(*geometryPass.getProgram(), "texture");
+	texLoc = glGetUniformLocation(*geometryPass.getProgram(), "texture");
 	
 	normalTexLoc = glGetUniformLocation(*geometryPass.getProgram(), "normalMap");
 
@@ -244,36 +242,19 @@ int main()
 		//glCullFace(GL_BACK);
 
 		
-		//glm::mat4 a = OH.getObject(cubes[1])->getWorldMatrix();
 		glm::mat4 a = camera.getViewProjection();
-
-		//FEEEL
 		
 		maze.BindTexture(0);
 		glUniform1i(texLoc, 0);
 		 
+		mazeShader.sendInt("width", maze.GetWidth());
+		mazeShader.sendInt("height", maze.GetHeight());
 		mazeShader.setMat4("viewProjection", a);
 
 		sendCameraLocationToGPU(cameraLocationTest, &camera);
 		
-
-		//maze.Draw(64,64);
-		fullScreenTriangle.Draw();
-
-		
-
-
-
-
-
-		// Rätt, som de ska va sen
-		//maze.Draw();
-
-
-
-
-
-
+		glEnable(GL_DEPTH_TEST);
+		maze.Draw();
 
 		//glDisable(GL_CULL_FACE);
 		//UPDATE

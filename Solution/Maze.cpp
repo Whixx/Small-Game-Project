@@ -14,19 +14,28 @@ Maze::~Maze()
 	stbi_image_free(imageData);
 }
 
+int Maze::GetHeight()
+{
+	return this->height;
+}
+
+int Maze::GetWidth()
+{
+	return this->width;
+}
+
 // Loading the .bmp file and returning the width,height and pointer to the first pixel in the file.
 void Maze::LoadMaze(const std::string & fileName)
 {
-	int width, height, numComponents;
-	unsigned char* imageData = stbi_load(fileName.c_str(), &width, &height, &numComponents, 3);
+	this->imageData = stbi_load(fileName.c_str(), &this->width, &this->height, &this->numComponents, 3);
 
-	if (imageData == NULL)
+	if (this->imageData == NULL)
 	{
 		std::cerr << "Loading failed for texture: " << fileName << std::endl;
 	}
 
-	glGenTextures(1, &m_texture);
-	glBindTexture(GL_TEXTURE_2D, m_texture);
+	glGenTextures(1, &this->m_texture);
+	glBindTexture(GL_TEXTURE_2D, this->m_texture);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_NEAREST);
@@ -35,9 +44,7 @@ void Maze::LoadMaze(const std::string & fileName)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// Skickar texturen till GPU'n
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
-
-	stbi_image_free(imageData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, this->imageData);
 }
 
 unsigned char Maze::readPixel(unsigned int x, unsigned int y)
@@ -45,10 +52,11 @@ unsigned char Maze::readPixel(unsigned int x, unsigned int y)
 	return this->imageData[x*y*this->numComponents];
 }
 
-void Maze::Draw(unsigned int width, unsigned int height)
+void Maze::Draw()
 {
-	glDrawArrays(GL_POINTS, 0, width * height);
-	//glDrawElements(GL_POINTS, width* height, GL_UNSIGNED_INT, (void*)0);
+	std::cout << "width: " << this->width << std::endl;
+	std::cout << "height: " << this->height << std::endl;
+	glDrawArrays(GL_POINTS, 0, this->width * this->height);
 }
 
 void Maze::BindTexture(unsigned int textureUnit)

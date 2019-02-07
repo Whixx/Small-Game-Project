@@ -1,13 +1,13 @@
 #version 440
 
 layout (points) in;
-layout (triangle_strip, max_vertices=24) out;
+layout (triangle_strip, max_vertices=18) out;
 
 out vec3 color;
 
 uniform sampler2D texture;
 
-//uniform vec3 cameraPos;
+uniform vec3 cameraPos;
 
 uniform mat4 viewProjection; 
 
@@ -83,11 +83,6 @@ void main()
 	pixelValue.r = floor(pixelValue.r);
 	pixelValue.g = floor(pixelValue.g);
 	pixelValue.b = floor(pixelValue.b);
-
-	drawSW_n(0, 2, vec3(1.0f,0.0f,1.0f));
-	drawSW_s(2, 0, vec3(1.0f,0.0f,1.0f));
-	drawSW_e(5, 10, vec3(1.0f,0.0f,1.0f));
-	drawSW_w(10, 5, vec3(1.0f,0.0f,1.0f));
 
 	// Draw walls depending on the color of each pixel
 	if(pixelValue == SW_n)

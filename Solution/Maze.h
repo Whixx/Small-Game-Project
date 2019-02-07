@@ -20,10 +20,13 @@ public:
 	Maze();
 	~Maze();
 
+	int GetHeight();
+	int GetWidth();
+
 
 	void LoadMaze(const std::string& fileName);
 	unsigned char readPixel(unsigned int x, unsigned int y);
-	void Draw(unsigned int width, unsigned int height);
+	void Draw();
 	void BindTexture(unsigned int textureUnit);
 };
 #endif
