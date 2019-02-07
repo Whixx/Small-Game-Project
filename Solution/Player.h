@@ -5,6 +5,7 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "Display.h"
+#include "Maze.h"
 
 using namespace std;
 
@@ -34,6 +35,8 @@ public:
 private:
 	Camera playerCamera;
 	Transform transform;
+
+	Maze* maze;
 	float playerSpeed;
 	float playerHeight;
 	glm::vec3 walkingVector;

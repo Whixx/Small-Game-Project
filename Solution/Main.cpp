@@ -19,6 +19,7 @@
 #include "ShadowMap.h"
 #include "InputHandler.h"
 #include "Player.h"
+#include "Maze.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -131,8 +132,12 @@ int main()
 	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
 
 	InputHandler IH = InputHandler();
+	// The maze
+	Maze maze = Maze("Bitmap/kollision_test.bmp");
+
 	ObjectHandler OH = ObjectHandler();
-	
+
+	Player player = Player();
 	Mesh torchMesh;
 
 	//TODO: Byta ground.png till floor.png

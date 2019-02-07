@@ -1,10 +1,12 @@
 #include "Player.h"
+#include <iostream> // TODO: Remove after testing
 
 Player::Player(float height, float fov, float near, float far, glm::vec3 walkingVector)
 	:playerCamera(glm::vec3(0, height, 0), fov, (float)SCREENWIDTH / (float)SCREENHEIGHT, near, far, walkingVector)
 {
 	this->playerSpeed = 0;
 	this->walkingVector = walkingVector;
+	this->maze = maze;
 }
 
 Player::~Player()
@@ -108,7 +110,21 @@ void Player::Update(double dt)
 {
 	// Set player position to the cameras position
 	transform.SetPos(playerCamera.getCameraPosition());
+	// Test variables
+	double x = 0.0;
+	double y = 0.0;
 
-	// Collision
+
+	// Move player
+	x = 3.0;
+	y = 0.0;
+
+
+	// Check collision
+	if (maze->IsWallAtWorld(x, y))
+	{
+		// Don't move
+		cout << "V�GGGGG" << endl; // TODO: Remove after testing
+	}
 
 }
