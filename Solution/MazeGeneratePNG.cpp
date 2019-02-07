@@ -2,11 +2,11 @@
 
 MazeGeneratePNG::MazeGeneratePNG(int height, int width)
 {
-	// height and width must be odd numbers for the maze to be "correct"
-	if ((!(height % 2)) || (!(width % 2)))
-	{
-		throw std::invalid_argument("Height and width must be odd numbers!");
-	}
+	//// height and width must be odd numbers for the maze to be "correct"
+	//if ((!(height % 2)) || (!(width % 2)))
+	//{
+	//	throw std::invalid_argument("Height and width must be odd numbers!");
+	//}
 
 	this->height = height;
 	this->width = width;
@@ -21,6 +21,10 @@ MazeGeneratePNG::MazeGeneratePNG(int height, int width)
 			grid[y][x] = wall;
 		}
 	}
+}
+
+MazeGeneratePNG::~MazeGeneratePNG()
+{
 }
 
 void MazeGeneratePNG::set_cell(int y, int x, int value)
@@ -134,13 +138,12 @@ void MazeGeneratePNG::replace(int set_to_replace, int sample_set)
 void MazeGeneratePNG::draw_png()
 {
 	// Color png
-
 	setupColorDataForColor();
 
 	std::vector<unsigned char> a;
-	for (int y = 0; y < this->height; y++)
+	for (int y = 0; y < this->height+1; y++)
 	{
-		for (int x = 0; x < this->width; x++)
+		for (int x = 0; x < this->width+1; x++)
 		{
 			a.push_back(image[y][x][0]);
 			a.push_back(image[y][x][1]);
@@ -148,8 +151,7 @@ void MazeGeneratePNG::draw_png()
 		}
 	}
 
-
-	if (!stbi_write_png("Bitmap/maze.png", this->width, this->height, 3, a.data(), 3 * width))
+	if (!stbi_write_png("Bitmap/maze.png", this->width+1, this->height+1, 3, a.data(), 3 * (width+1)))
 	{
 		std::cout << "THIS SHIT FAILED maze.png not written" << std::endl;
 	}
@@ -158,17 +160,13 @@ void MazeGeneratePNG::draw_png()
 		std::cout << "maze.png written to Bitmap-folder" << std::endl;
 	}
 
-
-
-
 	// Black-White png
-
 	setupColorData();
 
 	std::vector<unsigned char> b;
-	for (int y = 0; y < this->height; y++)
+	for (int y = 0; y < this->height+1; y++)
 	{
-		for (int x = 0; x < this->width; x++)
+		for (int x = 0; x < this->width+1; x++)
 		{
 			b.push_back(image[y][x][0]);
 			b.push_back(image[y][x][1]);
@@ -176,8 +174,7 @@ void MazeGeneratePNG::draw_png()
 		}
 	}
 
-
-	if (!stbi_write_png("Bitmap/maze_d.png", this->width, this->height, 3, b.data(), 3 * width))
+	if (!stbi_write_png("Bitmap/maze_d.png", this->width+1, this->height+1, 3, b.data(), 3 * (width+1)))
 	{
 		std::cout << "THIS SHIT FAILED maze_d.png not written" << std::endl;
 	}
@@ -190,14 +187,31 @@ void MazeGeneratePNG::draw_png()
 void MazeGeneratePNG::setupColorDataForColor()
 {
 	// set up image vectors to hold color data
-	image.resize(this->height);
-	for (int y = 0; y < this->height; y++)
+	// added +1 to make the maze 64*64 pixels for use in shaders
+	int newHeight = this->height + 1;
+	int newWidth = this->width + 1;
+
+	image.resize(newHeight);
+	for (int y = 0; y < newHeight; y++)
 	{
-		image[y].resize(this->width);
-		for (int x = 0; x < this->width; x++)
+		image[y].resize(newWidth);
+		for (int x = 0; x < newWidth; x++)
 		{
 			image[y][x].resize(3);
 		}
+	}
+
+	for (int i = 0; i < newWidth; i++)
+	{
+		image[height][i][0] = 0;
+		image[height][i][1] = 0;
+		image[height][i][2] = 0;
+	}
+	for (int i = 0; i < newHeight; i++)
+	{
+		image[width][i][0] = 0;
+		image[width][i][1] = 0;
+		image[width][i][2] = 0;
 	}
 
 	// sets colors, white for walls, black for path
@@ -221,7 +235,6 @@ void MazeGeneratePNG::setupColorDataForColor()
 				closeby[2] = wall;
 				closeby[3] = wall;
 
-
 				// If at the edge, keep the assumption else check if there is a floor or wall
 				if (y == 0)
 					closeby[2] = get_cell(y + 1, x);
@@ -242,8 +255,6 @@ void MazeGeneratePNG::setupColorDataForColor()
 					closeby[1] = get_cell(y, x + 1);
 					closeby[3] = get_cell(y, x - 1);
 				}
-
-
 
 				// Check which wall type it is based on closeby
 				if (closeby[0] && closeby[1] && closeby[2] && closeby[3]) // 0. Empty
@@ -348,18 +359,34 @@ void MazeGeneratePNG::setupColorDataForColor()
 	}
 }
 
-
 void MazeGeneratePNG::setupColorData()
 {
 	// set up image vectors to hold color data
-	image.resize(this->height);
-	for (int y = 0; y < this->height; y++)
+	// added +1 to make the maze 64*64 pixels for use in shaders
+	int newHeight = this->height + 1;
+	int newWidth = this->width + 1;
+
+	image.resize(newHeight);
+	for (int y = 0; y < newHeight; y++)
 	{
-		image[y].resize(this->width);
-		for (int x = 0; x < this->width; x++)
+		image[y].resize(newWidth);
+		for (int x = 0; x < newWidth; x++)
 		{
 			image[y][x].resize(3);
 		}
+	}
+
+	for (int i = 0; i < newWidth; i++)
+	{
+		image[height][i][0] = 0;
+		image[height][i][1] = 0;
+		image[height][i][2] = 0;
+	}
+	for (int i = 0; i < newHeight; i++)
+	{
+		image[width][i][0] = 0;
+		image[width][i][1] = 0;
+		image[width][i][2] = 0;
 	}
 
 	// sets colors, white for walls, black for path

@@ -12,6 +12,7 @@ class MazeGeneratePNG
 {
 public:
 	MazeGeneratePNG(int height, int width);
+	~MazeGeneratePNG();
 
 	int wall = 1;
 	int path = 0;
