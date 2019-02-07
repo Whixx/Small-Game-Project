@@ -2,7 +2,7 @@
 #include <glew/glew.h>
 #include <iostream>
 
-Display::Display(int width, int height)
+Display::Display()
 {
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
@@ -10,7 +10,7 @@ Display::Display(int width, int height)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-	this->window = glfwCreateWindow(width, height, "Open GL Project", NULL, NULL);
+	this->window = glfwCreateWindow(SCREENWIDTH, SCREENHEIGHT, "Open GL Project", NULL, NULL);
 
 	if (!window)
 	{
@@ -19,7 +19,6 @@ Display::Display(int width, int height)
 	}
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
-
 
 	// Glew init behövs för att glCreateProgram ska funka
 	GLenum status = glewInit();

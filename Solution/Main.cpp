@@ -25,14 +25,7 @@
 // Finns en main funktion i GLEW, d�rmed m�ste vi undefinera den innan vi kan anv�nda v�ran main
 #undef main
 
-
-
 #define PI 3.1415926535
-
-
-
-int SCREENWIDTH = 800;
-int SCREENHEIGHT = 600;
 
 // Update functions
 void updateAllObjects(double dt, ObjectHandler &OH);
@@ -57,7 +50,7 @@ int main()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CRT_SECURE_NO_WARNINGS;
 
-	Display display(SCREENWIDTH, SCREENHEIGHT);
+	Display display;
 
 	Shader shadowShader;
 	shadowShader.CreateShader(".\\shadowShader.vs", GL_VERTEX_SHADER);
@@ -103,7 +96,7 @@ int main()
 	blurShader.initiateShaders(false);
 	finalBloomShader.initiateShaders(false);
 	finalShader.initiateShaders(false);
-
+	
 	shadowShader.validateShaders();
 	geometryPass.validateShaders();
 	// LightPass is validated before its drawcall (to fix a bug), so its not validated here
@@ -114,11 +107,11 @@ int main()
 	finalBloomShader.validateShaders();
 	finalShader.validateShaders();
 
-	Player player = Player();
+	glm::vec3 playerVector = glm::vec3(0.3f, 0, 1);
+	float playerHeight = 2.0f;
+	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, playerVector);
 	player.SetPlayerSpeed(5.0f);
-	player.SetPlayerHeight(2.0f);
 
-	Camera camera(glm::vec3(0, player.GetPlayerHeight() , 0), 70.0f, (float)SCREENWIDTH / (float)SCREENHEIGHT, 0.01f, 1000.0f, player.GetWalkingVector());
 	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetKeyCallback(display.GetWindow(), InputHandler::key_callback);
 	//=========================== Creating Objects ====================================//
@@ -128,7 +121,7 @@ int main()
 
 	InputHandler IH = InputHandler();
 	ObjectHandler OH = ObjectHandler();
-
+	
 	Mesh torchMesh;
 
 	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
@@ -170,9 +163,11 @@ int main()
 	double counter = 0.0;
 
 	// Initiate timer
-	double currentTime = glfwGetTime();
-	double lastTime = 0;
+	double currentTime = 0;
+	double lastTime = glfwGetTime();
 	double deltaTime = 0;
+	double constLastTime = 0;
+	int nrOfFrames = 0;
 
 	// Create Lights
 	PointLightHandler lights;
@@ -199,40 +194,31 @@ int main()
 
 	while(!display.IsWindowClosed())
 	{
-		currentTime = glfwGetTime();
-		deltaTime = currentTime - lastTime;
-		lastTime = currentTime;
-
-
 		// ================== UPDATE ==================
-		player.Update(deltaTime, camera);
+		player.Update(deltaTime);
 		updateAllObjects(deltaTime, OH);
 
-
-	
-
-
 		// Update the torch in front of the player
-		OH.getObject(torch)->GetPos() = glm::vec3(camera.getCameraPosition().x, camera.getCameraPosition().y - 2, camera.getCameraPosition().z + 2);
+		OH.getObject(torch)->GetPos() = glm::vec3(player.GetCamera()->getCameraPosition().x, player.GetCamera()->getCameraPosition().y - 2, player.GetCamera()->getCameraPosition().z + 2);
 		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 1.8f, OH.getObject(torch)->GetPos().z);
 
 		// Here a cube map is calculated and stored in the shadowMap FBO
-		shadowPass(&shadowShader, &OH, &lights, &shadowMap, &camera);
+		shadowPass(&shadowShader, &OH, &lights, &shadowMap, player.GetCamera());
 
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, counter, &geometryPass, &camera, &OH, cameraLocationGP, texLoc, normalTexLoc);
+		DRGeometryPass(&gBuffer, counter, &geometryPass, player.GetCamera(), &OH, cameraLocationGP, texLoc, normalTexLoc);
 
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
-		DRLightPass(&gBuffer, &bloomBuffer, &fullScreenTriangle, lightPass.getProgram(), &lightPass, &shadowMap, &lights, cameraLocationLP, &camera);
+		DRLightPass(&gBuffer, &bloomBuffer, &fullScreenTriangle, lightPass.getProgram(), &lightPass, &shadowMap, &lights, cameraLocationLP, player.GetCamera());
 
 		// Copy the depth from the gBuffer to the bloomBuffer
 		bloomBuffer.copyDepth(SCREENWIDTH, SCREENHEIGHT, gBuffer.getFBO());
 
 		// Draw lightSpheres
 		#ifdef DEBUG
-			lightSpherePass(&pointLightPass, &bloomBuffer, &lights, &camera, counter);
+			lightSpherePass(&pointLightPass, &bloomBuffer, &lights, player.GetCamera(), counter);
 		#endif
 			
 		// Blur the bright texture
@@ -245,23 +231,34 @@ int main()
 		finalFBO.copyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.getFBO());
 
 		// Draw particles to the FinalFBO
-		particlePass(&finalFBO, &particle, &camera, &particleShader, deltaTime);
+		particlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime);
 
 		// Render everything
 		finalPass(&finalFBO, &finalShader, &fullScreenTriangle);
 
-		// Check for mouse/keyboard inputs and handle the camera movement
-		IH.mouseControls(&display, &camera, deltaTime);
-		IH.keyboardControls(&display, &camera, deltaTime);
+		// Check for mouse/keyboard inputs and handle the fps independent camera movement
+		constLastTime = currentTime;
+		currentTime = glfwGetTime();
+		deltaTime = currentTime - constLastTime;
+		IH.mouseControls(&display, &player, deltaTime);
+		IH.keyboardControls(&display, &player, deltaTime);
 
-		camera.updateViewMatrix();
+		player.GetCamera()->updateViewMatrix();
 		
 		//std::cout << "x: " << camera.getCameraPosition().x << " y: " << camera.getCameraPosition().y << " z: " << camera.getCameraPosition().z << std::endl;
 
 		display.SwapBuffers(SCREENWIDTH, SCREENHEIGHT);
 
-		display.SetTitle("FPS: " + to_string(1/deltaTime));
-
+		// Measure fps
+		nrOfFrames++;
+		if (currentTime - lastTime >= 1.0) 
+		{ 
+			// If last print was more than 1 sec ago, print and reset timer
+			display.SetTitle("FPS: " + to_string((int)(1000.0 / (double)nrOfFrames)));
+			nrOfFrames = 0;
+			lastTime += 1.0;
+		}
+	
 		counter += deltaTime * 0.5;
 	}
 	glfwTerminate();
