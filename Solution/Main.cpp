@@ -56,20 +56,17 @@ void prepareTexture(GLuint textureLoc, GLuint normalMapLoc);
 
 void setStartPositions(ObjectHandler *OH);
 
+// height and width must be odd numbers else the resulting maze will be off
+void generateMazeBitmaps(int height, int width);
+
 int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CRT_SECURE_NO_WARNINGS;
 
-	// generate the maze png, height and width must be odd numbers else the result will be wrong
-	int mazeHeight = 51;
-	int mazeWidth = 51;
-	MazeGeneratePNG mazeGen(mazeHeight, mazeWidth);
-	// set_cell can be used to set "entrance and exit" etc
-	//mazeGen.set_cell(0, 1, mazeGen.path);
-	//mazeGen.set_cell(mazeHeight - 1, mazeWidth - 2, mazeGen.path);
-	mazeGen.generate();
-	mazeGen.draw_png();
+	// height and width must be odd numbers else the resulting maze will be off
+	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
+	generateMazeBitmaps(63, 63);
 
 	Display display(SCREENWIDTH, SCREENHEIGHT);
 
@@ -540,4 +537,16 @@ void setStartPositions(ObjectHandler * OH)
 
 
 	
+}
+
+void generateMazeBitmaps(int height, int width)
+{
+	MazeGeneratePNG mazeGen(height, width);
+
+	// set_cell can be used to set "entrance and exit" etc
+	//mazeGen.set_cell(0, 1, mazeGen.path);
+	//mazeGen.set_cell(mazeHeight - 1, mazeWidth - 2, mazeGen.path);
+
+	mazeGen.generate();
+	mazeGen.draw_png();
 }
