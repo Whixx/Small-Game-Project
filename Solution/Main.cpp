@@ -125,7 +125,6 @@ int main()
 
 	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetKeyCallback(display.GetWindow(), InputHandler::key_callback);
-	Camera camera(glm::vec3(0, 2, 0), 70.0f, (float)SCREENWIDTH / (float)SCREENHEIGHT, 0.01f, 1000.0f);
 	//=========================== Creating Objects ====================================//
 	Mesh groundMesh;
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
