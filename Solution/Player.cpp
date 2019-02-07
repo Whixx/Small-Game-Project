@@ -6,7 +6,7 @@ Player::Player(float height, float fov, float near, float far, glm::vec3 walking
 {
 	this->playerSpeed = 0;
 	this->walkingVector = walkingVector;
-	this->maze = maze;
+	//this->maze = maze;
 }
 
 Player::~Player()
@@ -93,14 +93,14 @@ void Player::updateMouse(const glm::vec2& newMousePosition, float elapsedTime)
 
 		//Update the vertical view limited to 45 degrees
 		playerCamera.setRotateAround(glm::cross(playerCamera.getForwardVector(), playerCamera.getUpVector()));
-		if (glm::dot(glm::normalize(playerCamera.getForwardVector()), glm::normalize(this->walkingVector)) > 0.45f)
-		{
+		//if (glm::dot(glm::normalize(playerCamera.getForwardVector()), glm::normalize(this->walkingVector)) > 0.45f)
+		//{
 			playerCamera.setForwardVector(glm::mat3(glm::rotate(-playerCamera.getMouseDelta().y * playerCamera.getRotationalSpeed() * elapsedTime, playerCamera.getRotateAround())) * playerCamera.getForwardVector());
-		}
-		else
-		{
-			playerCamera.setForwardVector(glm::mat3(glm::rotate(playerCamera.getMouseDelta().y * playerCamera.getRotationalSpeed() * elapsedTime, playerCamera.getRotateAround())) * playerCamera.getForwardVector());
-		}
+		//}
+		//else
+		//{
+		//	playerCamera.setForwardVector(glm::mat3(glm::rotate(playerCamera.getMouseDelta().y * playerCamera.getRotationalSpeed() * elapsedTime, playerCamera.getRotateAround())) * playerCamera.getForwardVector());
+		//}
 	}
 
 	playerCamera.setOldMousePosition(newMousePosition);
@@ -110,21 +110,22 @@ void Player::Update(double dt)
 {
 	// Set player position to the cameras position
 	transform.SetPos(playerCamera.getCameraPosition());
+
 	// Test variables
 	double x = 0.0;
 	double y = 0.0;
-
 
 	// Move player
 	x = 3.0;
 	y = 0.0;
 
-
+	/*
 	// Check collision
 	if (maze->IsWallAtWorld(x, y))
 	{
 		// Don't move
 		cout << "V�GGGGG" << endl; // TODO: Remove after testing
 	}
+	*/
 
 }

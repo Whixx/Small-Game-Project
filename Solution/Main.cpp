@@ -120,7 +120,7 @@ int main()
 	finalShader.validateShaders();
 
 	glm::vec3 playerVector = glm::vec3(0.3f, 0, 1);
-	float playerHeight = 2.0f;
+	float playerHeight = 10.0f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, playerVector);
 	player.SetPlayerSpeed(5.0f);
 
@@ -137,7 +137,6 @@ int main()
 
 	ObjectHandler OH = ObjectHandler();
 
-	Player player = Player();
 	Mesh torchMesh;
 
 	//TODO: Byta ground.png till floor.png
@@ -220,10 +219,10 @@ int main()
 		lights.updateShadowTransform(0);
 			
 		// Update the torch in front of the player'
-		OH.getObject(torch)->GetPos() = camera.getCameraPosition()
-			+ camera.getForwardVector() * 1.0f
-			+ camera.getRightVector() * 0.5f
-			+ camera.getUpVector() * -0.5f;
+		OH.getObject(torch)->GetPos() = player.GetCamera()->getCameraPosition()
+			+ player.GetCamera()->getForwardVector() * 1.0f
+			+ player.GetCamera()->getRightVector() * 0.5f
+			+ player.GetCamera()->getUpVector() * -0.5f;
 		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 1.5f, OH.getObject(torch)->GetPos().z);
 		
 		// Here a cube map is calculated and stored in the shadowMap FBO
@@ -231,7 +230,7 @@ int main()
 
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, counter, &geometryPass, &camera, &OH, cameraLocationGP, texLoc, normalTexLoc, torch);
+		DRGeometryPass(&gBuffer, counter, &geometryPass, player.GetCamera(), &OH, cameraLocationGP, texLoc, normalTexLoc, torch);
 
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
@@ -255,7 +254,7 @@ int main()
 		finalFBO.copyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.getFBO());
 
 		// Draw particles to the FinalFBO
-		particlePass(&finalFBO, &particle, &camera, &particleShader, deltaTime, OH.getObject(torch)->GetPos());
+		particlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, OH.getObject(torch)->GetPos());
 
 		// Render everything
 		finalPass(&finalFBO, &finalShader, &fullScreenTriangle);
