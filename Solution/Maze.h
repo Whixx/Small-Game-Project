@@ -21,10 +21,10 @@ public:
 	~Maze();
 
 
-	bool loadBMP(const std::string& fileName);
+	void LoadMaze(const std::string& fileName);
 	unsigned char readPixel(unsigned int x, unsigned int y);
-	void Draw();
-	void bind(unsigned int textureUnit);
+	void Draw(unsigned int width, unsigned int height);
+	void BindTexture(unsigned int textureUnit);
 };
 #endif
 

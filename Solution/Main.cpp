@@ -18,14 +18,12 @@
 #include "FinalFBO.h"
 #include "ShadowMap.h"
 #include "Maze.h"
-
 #include <glm/gtc/type_ptr.hpp>
 
 // Finns en main funktion i GLEW, därmed måste vi undefinera den innan vi kan använda våran main
 #undef main
 
 #define PI 3.1415926535
-
 enum objectIndices
 {
 	cube1,
@@ -62,10 +60,12 @@ int main()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CRT_SECURE_NO_WARNINGS;
 
+
+
 	Display display(SCREENWIDTH, SCREENHEIGHT);
 
-	//Maze maze;
-	//maze.loadBMP("Bitmap/Maze.bmp");
+	Maze maze;
+	maze.LoadMaze("Bitmap/test.png");
 	
 
 	Shader mazeShader;
@@ -144,7 +144,7 @@ int main()
 	//Texture snowTexture("Textures/basicSnow.jpg", "NormalMaps/flat_normal.jpg");
 	//Texture moonTexture("Textures/moon.png", "NormalMaps/flat_normal.jpg");
 
-	Texture bmpTexture ("Bitmap/test.png", "NormalMaps/flat_normal.jpg");
+	//Texture bmpTexture ("Bitmap/test.png", "NormalMaps/flat_normal.jpg");
 
 	ObjectHandler OH = ObjectHandler();
 
@@ -154,10 +154,10 @@ int main()
 	Mesh moonMesh;
 
 	int cubes[2];
-	for (int i = 0; i < 2; i++)
-	{
-		cubes[i] = OH.CreateObject("ObjectFiles/cube.obj", &cubeMesh, transform, &bmpTexture);
-	}
+	//for (int i = 0; i < 2; i++)
+	//{
+	//	cubes[i] = OH.CreateObject("ObjectFiles/cube.obj", &cubeMesh, transform, &brickTexture);
+	//}
 	//int sword = OH.CreateObject("ObjectFiles/srd.obj", &swordMesh, transform, &swordTexture);
 	//int ground = OH.CreateObject("ObjectFiles/SnowTerrain.obj", &groundMesh, transform, &snowTexture);
 	//int moon = OH.CreateObject("ObjectFiles/moon.obj", &moonMesh, transform, &moonTexture);
@@ -181,8 +181,6 @@ int main()
 	finalFBO.Init(SCREENWIDTH, SCREENHEIGHT);
 
 	
-
-
 	// https://rauwendaal.net/2014/06/14/rendering-a-screen-covering-triangle-in-opengl/
 	Vertex fullScreenVerticesTriangle[] =
 	{ 
@@ -226,8 +224,10 @@ int main()
 	mazeShader.Bind();
 
 	texLoc = glGetUniformLocation(*mazeShader.getProgram(), "texture");
+	//GLuint viewProjectionLoc = glGetUniformLocation(*mazeShader.getProgram(), "viewProjection");
 
 	GLuint cameraLocationTest = glGetUniformLocation(*mazeShader.getProgram(), "cameraPos");
+
 
 	while(!display.IsWindowClosed())
 	{
@@ -243,20 +243,25 @@ int main()
 		//glEnable(GL_CULL_FACE);
 		//glCullFace(GL_BACK);
 
-
+		
+		//glm::mat4 a = OH.getObject(cubes[1])->getWorldMatrix();
+		glm::mat4 a = camera.getViewProjection();
 
 		//FEEEL
 		
+		maze.BindTexture(0);
 		glUniform1i(texLoc, 0);
+		 
+		mazeShader.setMat4("viewProjection", a);
 
 		sendCameraLocationToGPU(cameraLocationTest, &camera);
-		bmpTexture.Bind(0);
-		OH.getObject(cubes[1])->GetPos() = glm::vec3(0.0, 0.0, 0.0);
-		glm::mat4 a = OH.getObject(cubes[1])->getWorldMatrix();
 		
-		mazeShader.Update(OH.getObject(cubes[1])->GetTransform(), camera);
+
+		//maze.Draw(64,64);
+		fullScreenTriangle.Draw();
+
 		
-		OH.getObject(cubes[1])->Draw();
+
 
 
 

@@ -76,7 +76,7 @@
       <Filter>Class cpp.Files</Filter>
     </ClCompile>
     <ClCompile Include="Maze.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Class cpp.Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -132,7 +132,7 @@
       <Filter>Class h.Files</Filter>
     </ClInclude>
     <ClInclude Include="Maze.h">
-      <Filter>Header Files</Filter>
+      <Filter>Class h.Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
