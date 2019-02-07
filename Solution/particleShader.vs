@@ -5,6 +5,7 @@ layout(location = 1) in vec4 positionSize;
 layout(location = 2) in vec4 color;
 
 out vec4 finalColor;
+out vec2 UV;
 
 uniform vec3 cameraRightWorldPS;
 uniform vec3 cameraUpWorldPS;
@@ -20,5 +21,6 @@ void main()
 	vec3 finalVertexPosition = centerPosition + (cameraRightWorldPS * vertices.x * size) + (cameraUpWorldPS * vertices.y * size);
 
 	gl_Position = viewProjectionMatrix * vec4(finalVertexPosition, 1.0f);
+	UV = vertices.xy + vec2(0.5, 0.5);
 	finalColor = color;
 }
