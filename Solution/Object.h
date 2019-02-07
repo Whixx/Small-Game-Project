@@ -11,10 +11,11 @@ using namespace std;
 class Object
 {
 public:
-	Object(Mesh *mesh, Transform transform, Texture *texture, unsigned int m_id = 0);
+	Object(Mesh *mesh, Texture *texture);
+	Object(Mesh *mesh, Texture *texture, unsigned int id);
 	// Default constructor
 	Object();
-	~Object();
+	virtual ~Object();
 
 	glm::mat4 getWorldMatrix() const;
 	Transform GetTransform() const;
@@ -22,8 +23,8 @@ public:
 	glm::vec3& GetRot();
 	glm::vec3& GetScale();
 
-	void Update();
-	void Draw();
+	virtual void Update(double dt);
+	virtual void Draw();
 
 	void bindTexture();
 

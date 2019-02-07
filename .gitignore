@@ -1,8 +1,6 @@
 
 Solution/\.vs/Projekt/v15/ipch/AutoPCH/
 
-Solution/\.vs/Projekt/v15/
-
 Solution/Debug/*.obj
 
 Solution/Release/*.obj
@@ -20,3 +18,7 @@ Solution/Release/*.obj
 *.ipdb
 
 *.iobj
+
+Solution/\.vs/Projekt/v15/\.suo
+
+Solution/\.vs/Projekt/v15/Browse\.VC\.db

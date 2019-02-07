@@ -1,188 +1,218 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Shader Files">
-      <UniqueIdentifier>{762b9982-d729-42e9-87bf-4b9986c74b7e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Class h.Files">
-      <UniqueIdentifier>{7da5a14f-9a6f-4f06-807e-a2c12e1c1ea5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Class cpp.Files">
-      <UniqueIdentifier>{ba5f417f-2bb1-4637-8b80-6016a82b6dc4}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Bloom.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Blur.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Class cpp Files</Filter>
     </ClCompile>
     <ClCompile Include="Display.cpp">
-      <Filter>Class cpp.Files</Filter>
+      <Filter>Class cpp Files</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Class cpp.Files</Filter>
+    <ClCompile Include="FinalFBO.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>Class cpp Files</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
-      <Filter>Class cpp.Files</Filter>
+      <Filter>Class cpp Files</Filter>
     </ClCompile>
-    <ClCompile Include="stb_image.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Class cpp.Files</Filter>
+    <ClCompile Include="MazeGeneratePNG.cpp">
+      <Filter>Class cpp Files</Filter>
     </ClCompile>
     <ClCompile Include="Object.cpp">
-      <Filter>Class cpp.Files</Filter>
+      <Filter>Class cpp Files</Filter>
     </ClCompile>
     <ClCompile Include="ObjectHandler.cpp">
-      <Filter>Class cpp.Files</Filter>
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLight.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowMap.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Class cpp Files</Filter>
     </ClCompile>
     <ClCompile Include="timer.c">
       <Filter>Resource Files</Filter>
     </ClCompile>
-    <ClCompile Include="GBuffer.cpp">
-      <Filter>Class cpp.Files</Filter>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PointLight.cpp">
-      <Filter>Class cpp.Files</Filter>
+    <ClCompile Include="stb_image.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Class cpp.Files</Filter>
+    <ClCompile Include="InputHandler.cpp">
+      <Filter>Class cpp Files</Filter>
     </ClCompile>
-    <ClCompile Include="Particle.cpp">
-      <Filter>Class cpp.Files</Filter>
+    <ClCompile Include="Player.cpp">
+      <Filter>Class cpp Files</Filter>
     </ClCompile>
-    <ClCompile Include="Bloom.cpp">
-      <Filter>Class cpp.Files</Filter>
+    <ClCompile Include="Maze.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Blur.cpp">
-      <Filter>Class cpp.Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FinalFBO.cpp">
-      <Filter>Class cpp.Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShadowMap.cpp">
-      <Filter>Class cpp.Files</Filter>
+    <ClCompile Include="CollisionHandler.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Display.h">
-      <Filter>Class h.Files</Filter>
+    <ClInclude Include="Bloom.h">
+      <Filter>Class h Files</Filter>
     </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Class h.Files</Filter>
+    <ClInclude Include="Blur.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Display.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FinalFBO.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputHandler.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MazeGeneratePNG.h">
+      <Filter>Class h Files</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
-      <Filter>Class h.Files</Filter>
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectHandler.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMap.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Class h Files</Filter>
     </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Class h.Files</Filter>
+    <ClInclude Include="stb_image_write.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Class h.Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Object.h">
-      <Filter>Class h.Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectHandler.h">
-      <Filter>Class h.Files</Filter>
-    </ClInclude>
     <ClInclude Include="timer.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="GBuffer.h">
-      <Filter>Class h.Files</Filter>
+    <ClInclude Include="Maze.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PointLight.h">
-      <Filter>Class h.Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Particle.h">
-      <Filter>Class h.Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Bloom.h">
-      <Filter>Class h.Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Blur.h">
-      <Filter>Class h.Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FinalFBO.h">
-      <Filter>Class h.Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ShadowMap.h">
-      <Filter>Class h.Files</Filter>
+    <ClInclude Include="CollisionHandler.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="lightPass.fs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="lightPass.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="geometryPass.fs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="geometryPass.gs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="geometryPass.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="particleShader.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="particleShader.fs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="pointLightShader.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="pointLightShader.fs">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="blurShader.fs">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="blurShader.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="finalBloomShader.fs">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="finalBloomShader.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="finalShader.vs">
+    <None Include="finalBloomShader.fs">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="finalShader.fs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="shadowShader.vs">
+    <None Include="finalShader.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="shadowShader.gs">
+    <None Include="geometryPass.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="geometryPass.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="geometryPass.gs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="lightPass.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="lightPass.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="particleShader.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="particleShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="pointLightShader.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="pointLightShader.vs">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="shadowShader.fs">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="shadowShader.gs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="shadowShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{a4e71a77-31b7-42d0-bc40-a03cd0c981ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{9be8009d-960b-4858-92da-0fad773fb98d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class cpp Files">
+      <UniqueIdentifier>{2b87467b-65c3-4b91-a292-b50ca7f1ba22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class h Files">
+      <UniqueIdentifier>{019102f3-8753-4a27-ba16-15e13ff5823d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Files">
+      <UniqueIdentifier>{d839dbcb-4c6f-48ee-9fd6-778f61c29419}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{acb8e726-c731-4c4d-9103-c01e99e13672}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

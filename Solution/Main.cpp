@@ -17,37 +17,32 @@
 #include "Blur.h"
 #include "FinalFBO.h"
 #include "ShadowMap.h"
+#include "InputHandler.h"
+#include "Player.h"
+#include "Maze.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
-// Finns en main funktion i GLEW, därmed måste vi undefinera den innan vi kan använda våran main
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define STBI_MSC_SECURE_CRT
+#include "MazeGeneratePNG.h"
+
+// Finns en main funktion i GLEW, dï¿½rmed mï¿½ste vi undefinera den innan vi kan anvï¿½nda vï¿½ran main
 #undef main
-
-
 
 #define PI 3.1415926535
 
-enum objectIndices
-{
-	cube1,
-	cube2,
-	sword,
-	ground,
-	moon,
-	nrOfIndices
-};
-
-int SCREENWIDTH = 800;
-int SCREENHEIGHT = 600;
+// Update functions
+void updateAllObjects(double dt, ObjectHandler &OH);
 
 // Shader pass functions
 void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Camera *camera);
-void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, Texture* snowTexture, Texture* swordTexture, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc);
+void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc, int torch);
 void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenQuad, GLuint *program, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, GLuint cameraLocationLP, Camera *camera);
 void lightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, double counter);
 void blurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle);
 void finalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle);
-void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime);
+void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime, glm::vec3 position);
 void finalPass(FinalFBO * finalFBO, Shader * finalShader, Mesh *fullScreenTriangle);
 
 void sendCameraLocationToGPU(GLuint cameraLocation, Camera *camera);
@@ -55,15 +50,19 @@ void prepareTexture(GLuint textureLoc, GLuint normalMapLoc);
 
 void setStartPositions(ObjectHandler *OH);
 
-void keyboardControls(Display *display, Camera *camera);
-void mouseControls(Display *display, Camera *camera);
+// height and width must be odd numbers else the resulting maze will be off
+void generateMazeBitmaps(int height, int width);
 
 int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CRT_SECURE_NO_WARNINGS;
 
-	Display display(SCREENWIDTH, SCREENHEIGHT);
+	// height and width must be odd numbers else the resulting maze will be off
+	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
+	generateMazeBitmaps(63, 63);
+
+	Display display;
 
 	Shader shadowShader;
 	shadowShader.CreateShader(".\\shadowShader.vs", GL_VERTEX_SHADER);
@@ -109,7 +108,7 @@ int main()
 	blurShader.initiateShaders(false);
 	finalBloomShader.initiateShaders(false);
 	finalShader.initiateShaders(false);
-
+	
 	shadowShader.validateShaders();
 	geometryPass.validateShaders();
 	// LightPass is validated before its drawcall (to fix a bug), so its not validated here
@@ -120,35 +119,32 @@ int main()
 	finalBloomShader.validateShaders();
 	finalShader.validateShaders();
 
-	Camera camera(glm::vec3(-15, 25, -53), 70.0f, (float)SCREENWIDTH / (float)SCREENHEIGHT, 0.01f, 1000.0f);
-	
+	glm::vec3 playerVector = glm::vec3(0.3f, 0, 1);
+	float playerHeight = 10.0f;
+	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, playerVector);
+	player.SetPlayerSpeed(5.0f);
 
+	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetKeyCallback(display.GetWindow(), InputHandler::key_callback);
 	//=========================== Creating Objects ====================================//
-	
-	// Transform includes all three matrices, each object has its own transform
-	Transform transform;
-	Texture swordTexture("Textures/swordTexture.jpg", "NormalMaps/sword_normal.png");
-	Texture brickTexture("Textures/brickwall.jpg", "NormalMaps/brickwall_normal.jpg");
-	Texture snowTexture("Textures/basicSnow.jpg", "NormalMaps/flat_normal.jpg");
-	Texture moonTexture("Textures/moon.png", "NormalMaps/flat_normal.jpg");
+	Mesh groundMesh;
+	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
+	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
+
+	InputHandler IH = InputHandler();
+	// The maze
+	Maze maze = Maze("Bitmap/kollision_test.bmp");
 
 	ObjectHandler OH = ObjectHandler();
 
-	Mesh cubeMesh;
-	Mesh swordMesh;
-	Mesh groundMesh;
-	Mesh moonMesh;
+	Mesh torchMesh;
 
-	int cubes[2];
-	for (int i = 0; i < 2; i++)
-	{
-		cubes[i] = OH.CreateObject("ObjectFiles/cube.obj", &cubeMesh, transform, &brickTexture);
-	}
-	int sword = OH.CreateObject("ObjectFiles/srd.obj", &swordMesh, transform, &swordTexture);
-	int ground = OH.CreateObject("ObjectFiles/SnowTerrain.obj", &groundMesh, transform, &snowTexture);
-	int moon = OH.CreateObject("ObjectFiles/moon.obj", &moonMesh, transform, &moonTexture);
+	//TODO: Byta ground.png till floor.png
+	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
+	int torch = OH.CreateObject("ObjectFiles/torch.obj", &torchMesh, &torchTexture);
 
-	setStartPositions(&OH);
+	OH.getObject(torch)->GetScale() *= 0.1;
+	
 	//=================================================================================//
 
 	ShadowMap shadowMap;
@@ -182,19 +178,26 @@ int main()
 	double counter = 0.0;
 
 	// Initiate timer
-	double currentTime = glfwGetTime();
-	double lastTime = 0;
+	double currentTime = 0;
+	double lastTime = glfwGetTime();
 	double deltaTime = 0;
+	double constLastTime = 0;
+	int nrOfFrames = 0;
 
 	// Create Lights
 	PointLightHandler lights;
-	lights.createLight(glm::vec3(7.0f, 9.0f, -6.0f), glm::vec3(2.0f, 2.0f, 2.0f));
+	PointLight torchLight;
+	float torchLightIntensity = 2.0f;
+	torchLight.GetColor() = glm::vec3(1.0f, 0.3f, 0.3f) * torchLightIntensity;
+	lights.createLight(OH.getObject(torch)->GetPos(), torchLight.GetColor());
 	/*lights.createLight(glm::vec3(-7.0f, 7.0f, -3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	lights.createLight(glm::vec3(7.0f, 7.0f, 15.0f), glm::vec3(0.3f, 0.0f, 0.0f));*/
 
 	lights.initiateLights(lightPass.getProgram());
 
 	Particle particle;
+	Texture particleTexture("Textures/particle.png", "NormalMaps/flat_normal.jpg");
+	particle.setTexture(&particleTexture);
 	
 	// Tell the shaders the name of the camera (GP = GeometeryPass, LP = LightPass)
 	GLuint cameraLocationGP = glGetUniformLocation(*geometryPass.getProgram(), "cameraPosGP");
@@ -210,42 +213,36 @@ int main()
 
 	while(!display.IsWindowClosed())
 	{
-		deltaTime = currentTime - lastTime;
-		lastTime = glfwGetTime();
-
-
-
-		//UPDATE
-
-		// DEN SOM GÖR OBJECT KLASSER GÖR DETTA TILL EN FUNKTION
-		for (int i = 0; i < OH.getNrOfObjects(); i++)
-		{
-			//OH.getObject(i).Update();
-		}
-
-
-		// här ska object uppdateras om de ska röras eller nått
-		OH.getObject(cubes[0])->GetRot().x = sinf(counter);
-
-	
+		// ================== UPDATE ==================
+		player.Update(deltaTime);
+		updateAllObjects(deltaTime, OH);
+		lights.updateShadowTransform(0);
+			
+		// Update the torch in front of the player'
+		OH.getObject(torch)->GetPos() = player.GetCamera()->getCameraPosition()
+			+ player.GetCamera()->getForwardVector() * 1.0f
+			+ player.GetCamera()->getRightVector() * 0.5f
+			+ player.GetCamera()->getUpVector() * -0.5f;
+		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 1.5f, OH.getObject(torch)->GetPos().z);
+		
 		// Here a cube map is calculated and stored in the shadowMap FBO
-		shadowPass(&shadowShader, &OH, &lights, &shadowMap, &camera);
-
-
+		shadowPass(&shadowShader, &OH, &lights, &shadowMap, player.GetCamera());
 
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, counter, &geometryPass, &camera, &OH, &snowTexture, &swordTexture, cameraLocationGP, texLoc, normalTexLoc);
+		DRGeometryPass(&gBuffer, counter, &geometryPass, player.GetCamera(), &OH, cameraLocationGP, texLoc, normalTexLoc, torch);
 
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
-		DRLightPass(&gBuffer, &bloomBuffer, &fullScreenTriangle, lightPass.getProgram(), &lightPass, &shadowMap, &lights, cameraLocationLP, &camera);
+		DRLightPass(&gBuffer, &bloomBuffer, &fullScreenTriangle, lightPass.getProgram(), &lightPass, &shadowMap, &lights, cameraLocationLP, player.GetCamera());
 
 		// Copy the depth from the gBuffer to the bloomBuffer
 		bloomBuffer.copyDepth(SCREENWIDTH, SCREENHEIGHT, gBuffer.getFBO());
 
 		// Draw lightSpheres
-		lightSpherePass(&pointLightPass, &bloomBuffer, &lights, &camera, counter);
+		#ifdef DEBUG
+			lightSpherePass(&pointLightPass, &bloomBuffer, &lights, player.GetCamera(), counter);
+		#endif
 			
 		// Blur the bright texture
 		blurPass(&blurShader, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
@@ -257,28 +254,46 @@ int main()
 		finalFBO.copyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.getFBO());
 
 		// Draw particles to the FinalFBO
-		particlePass(&finalFBO, &particle, &camera, &particleShader, deltaTime);
+		particlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, OH.getObject(torch)->GetPos());
 
 		// Render everything
 		finalPass(&finalFBO, &finalShader, &fullScreenTriangle);
 
-		// Check for mouse/keyboard inputs and handle the camera movement
-		mouseControls(&display, &camera);
-		keyboardControls(&display, &camera);
+		// Check for mouse/keyboard inputs and handle the fps independent camera movement
+		constLastTime = currentTime;
+		currentTime = glfwGetTime();
+		deltaTime = currentTime - constLastTime;
+		IH.mouseControls(&display, &player, deltaTime);
+		IH.keyboardControls(&display, &player, deltaTime);
 
-		camera.updateViewMatrix();
-
+		player.GetCamera()->updateViewMatrix();
+		
 		//std::cout << "x: " << camera.getCameraPosition().x << " y: " << camera.getCameraPosition().y << " z: " << camera.getCameraPosition().z << std::endl;
 
 		display.SwapBuffers(SCREENWIDTH, SCREENHEIGHT);
 
-		display.SetTitle("FPS: " + to_string(1/deltaTime));
-
+		// Measure fps
+		nrOfFrames++;
+		if (currentTime - lastTime >= 1.0) 
+		{ 
+			// If last print was more than 1 sec ago, print and reset timer
+			display.SetTitle("FPS: " + to_string((int)(1000.0 / (double)nrOfFrames)));
+			nrOfFrames = 0;
+			lastTime += 1.0;
+		}
+	
 		counter += deltaTime * 0.5;
-		currentTime = glfwGetTime();
 	}
 	glfwTerminate();
 	return 0;
+}
+
+void updateAllObjects(double dt, ObjectHandler & OH)
+{
+	for (int i = 0; i < OH.getNrOfObjects(); i++)
+	{
+		OH.getObject(i)->Update(dt);
+	}
 }
 
 void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Camera *camera)
@@ -293,7 +308,7 @@ void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glm::vec3 lightPos;
 
 	// For each light, we create a matrix and draws each light.
-	for (int i = 0; i < PLH->getNrOfLights(); i++)
+	for (unsigned int i = 0; i < PLH->getNrOfLights(); i++)
 	{
 		shadowTransforms = PLH->getShadowTransform(i);
 
@@ -306,7 +321,7 @@ void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		shadowShader->sendFloat("farPlane", (float)FAR_PLANE);
 		shadowShader->sendVec3("lightPos", lightPos.x, lightPos.y, lightPos.z);
 
-		for (int j = 0; j < OH->getNrOfObjects(); j++)
+		for (unsigned int j = 0; j < OH->getNrOfObjects(); j++)
 		{
 			shadowShader->Update(OH->getObject(j)->GetTransform(), *camera);
 			OH->getObject(j)->bindTexture();
@@ -314,12 +329,12 @@ void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		}
 	}
 
-	glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
 	shadowShader->unBind();
+	glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, Texture *snowTexture, Texture *swordTexture, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc)
+void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc, int torch)
 {
 	geometryPass->Bind();
 
@@ -334,11 +349,17 @@ void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Came
 	
 	glEnable(GL_DEPTH_TEST);
 
-	
-
 	// Update and Draw all objects
-	for (int i = 0; i < OH->getNrOfObjects(); i++)
+	for (unsigned int i = 0; i < OH->getNrOfObjects(); i++)
 	{
+		if (OH->getObject(i) == OH->getObject(torch))
+		{
+			geometryPass->sendFloat("illuminated", 3.0f);
+		}
+		else
+		{
+			geometryPass->sendFloat("illuminated", 1.0f);
+		}
 		geometryPass->Update(OH->getObject(i)->GetTransform(), *camera);
 		OH->getObject(i)->bindTexture();
 		OH->getObject(i)->Draw();
@@ -379,7 +400,7 @@ void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenTri
 }
 
 // This function draws particles to the screen.
-void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime)
+void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime, glm::vec3 position)
 {
 	finalFBO->bindForWriting();
 
@@ -390,7 +411,7 @@ void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 	GLuint viewProjection = glGetUniformLocation(*particleShader->getProgram(), "viewProjectionMatrix");
 
 	// Create new particles
-	particle->generateParticles(deltaTime);
+	particle->generateParticles(deltaTime, position);
 
 	// Simulate all the particles
 	particle->simulateParticles(camera->getCameraPosition(), deltaTime);
@@ -406,11 +427,21 @@ void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 	glUniform3f(cameraUpWorldPS, camera->getUpVector().x, camera->getUpVector().y, camera->getUpVector().z);
 	glUniformMatrix4fv(viewProjection, 1, GL_FALSE, &camera->getViewProjection()[0][0]);
 
+	// Disable depthbuffer and enable blend
+	glDepthMask(false);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+	particle->bindTexture();
+
 	// Bind the buffers holding the particles
 	particle->bind();
 
 	// Draw the particles, send a draw call to the GPU
 	particle->draw();
+
+	glDisable(GL_BLEND);
+	glDepthMask(true);
 
 	// Unbind the shader
 	particleShader->unBind();
@@ -423,14 +454,8 @@ void lightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLigh
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	// translate lights
-	lights->getTransform(0)->GetPos().x = sinf(counter * 5) * 2 + 7;
-
-
-	lights->updateShadowTransform(0);
-
 	pointLightPass->Bind();
-	for (int i = 0; i < lights->getNrOfLights(); i++)
+	for (unsigned int i = 0; i < lights->getNrOfLights(); i++)
 	{
 		pointLightPass->Update(*lights->getTransform(i), *camera);
 		lights->Draw(i);
@@ -529,89 +554,17 @@ void prepareTexture(GLuint textureLoc, GLuint normalMapLoc)
 
 void setStartPositions(ObjectHandler * OH)
 {
-	// Initial positions for all cubes
-	glm::vec3 cubePositions[2] =
-	{
-		glm::vec3(10.0f, 7.0f, -3.0f),
-		glm::vec3(-7.0f, 7.0f, -3.0f)
-	};
 
-	// Transformations
-
-	OH->getObject(cube1)->GetPos() = cubePositions[cube1];
-	OH->getObject(cube2)->GetPos() = cubePositions[cube2];
-	OH->getObject(sword)->GetPos() = glm::vec3(0.0f, 15.0f, 0.0f);
-	OH->getObject(ground)->GetPos() = glm::vec3(0.0f, 0.0f, 0.0f);
-	OH->getObject(moon)->GetPos() = glm::vec3(500.0f, 500.0f, 500.0f);
-	OH->getObject(moon)->GetScale() = glm::vec3(100, 100, 100);
-
-	OH->getObject(cube1)->GetScale() = glm::vec3(4, 3, 0.01);
-
-	OH->getObject(sword)->GetRot().x = -(PI / 2);
-	OH->getObject(sword)->GetRot().z = (PI / 16);
 }
 
-void keyboardControls(Display *display, Camera *camera)
+void generateMazeBitmaps(int height, int width)
 {
-	int keyboardButton;
-	// Check for keyboard inputs, used to move the camera around.
-	// WASD for movearound, RF (Rise,Fall) and space to set the initial camera position & viewDir.
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_W);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveForward();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_S);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveBackward();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_D);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveRight();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_A);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveLeft();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_R);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveUp();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_F);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->moveDown();
-	}
-	keyboardButton = glfwGetKey(display->getWindow(), GLFW_KEY_SPACE);
-	if (keyboardButton == GLFW_PRESS)
-	{
-		camera->setCameraPosition(camera->getStartCameraPosition());
-		camera->setForwardVector(camera->getStartForwardVector());
-	}
-}
+	MazeGeneratePNG mazeGen(height, width);
 
-void mouseControls(Display *display, Camera *camera)
-{
-	double mouseXpos;
-	double mouseYpos;
-	int mouseState;
+	// set_cell can be used to set "entrance and exit" etc
+	//mazeGen.set_cell(0, 1, mazeGen.path);
+	//mazeGen.set_cell(mazeHeight - 1, mazeWidth - 2, mazeGen.path);
 
-	// Check for mouse inputs, used to drag the camera view around
-	mouseState = glfwGetMouseButton(display->getWindow(), GLFW_MOUSE_BUTTON_LEFT);
-
-	// Find mouseposition (This function updates the X,Y values of the mouse position.
-	glfwGetCursorPos(display->getWindow(), &mouseXpos, &mouseYpos);
-	if (mouseState == GLFW_PRESS)
-	{
-		//std::cout << "pressed" << std::endl;
-		camera->mouseUpdate(glm::vec2(mouseXpos, mouseYpos));
-	}
-	else if (mouseState == GLFW_RELEASE)
-	{
-	
-	}
+	mazeGen.generate();
+	mazeGen.draw_png();
 }
