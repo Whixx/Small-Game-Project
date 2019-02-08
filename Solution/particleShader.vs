@@ -18,7 +18,9 @@ void main()
 
 	// Make the particle a billboard (= allways show the front of the particule to the camera)
 	// We do this by adding the starting position, and then changing the vertices depending on x or y
-	vec3 finalVertexPosition = centerPosition + (cameraRightWorldPS * vertices.x * size) + (cameraUpWorldPS * vertices.y * size);
+	vec3 finalVertexPosition = centerPosition
+	 + (cameraRightWorldPS * vertices.x * size)
+	 + (cameraUpWorldPS * vertices.y * size);
 
 	gl_Position = viewProjectionMatrix * vec4(finalVertexPosition, 1.0f);
 	UV = vertices.xy + vec2(0.5, 0.5);
