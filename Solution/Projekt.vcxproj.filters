@@ -61,11 +61,14 @@
     <ClCompile Include="Player.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
-    <ClCompile Include="Maze.cpp">
+    <ClCompile Include="MainFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CollisionHandler.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Maze.cpp">
+      <Filter>Class cpp Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -126,17 +129,20 @@
     <ClInclude Include="stb_image_write.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="timer.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="Maze.h">
+    <ClInclude Include="MainFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
     <ClInclude Include="CollisionHandler.h">
-      <Filter>Header Files</Filter>
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Maze.h">
+      <Filter>Class h Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
