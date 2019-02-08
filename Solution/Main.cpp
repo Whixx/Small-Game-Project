@@ -425,8 +425,8 @@ void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 	particleShader->Bind();
 
 	// Send Uniforms
-	glUniform3f(cameraRightWorldPS, camera->getRightVector().x, camera->getRightVector().y, camera->getRightVector().z);
-	glUniform3f(cameraUpWorldPS, camera->getUpVector().x, camera->getUpVector().y, camera->getUpVector().z);
+	glUniform3f(cameraRightWorldPS, camera->getViewProjection()[0][0], camera->getViewProjection()[1][0], camera->getViewProjection()[2][0]);
+	glUniform3f(cameraUpWorldPS, camera->getViewProjection()[0][1], camera->getViewProjection()[1][1], camera->getViewProjection()[2][1]);
 	glUniformMatrix4fv(viewProjection, 1, GL_FALSE, &camera->getViewProjection()[0][0]);
 
 	// Disable depthbuffer and enable blend
