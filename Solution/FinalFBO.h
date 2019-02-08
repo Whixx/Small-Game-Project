@@ -17,16 +17,16 @@ public:
 	~FinalFBO();
 
 	bool Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT);
-	void bindForWriting();
-	void bindForReading(GLuint textureUnit);
+	void BindForWriting();
+	void BindForReading(GLuint textureUnit);
 
-	void copyDepth(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT, GLuint fboRead);
+	void CopyDepth(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT, GLuint fboRead);
 
-	GLuint getFBO();
+	GLuint GetFBO();
 private:
-	GLuint m_fbo;
-	GLuint m_colorBuffers[FINALFBO_NUM_TEXTURES];
-	GLuint m_depthTexture;
+	GLuint fbo;
+	GLuint colorBuffers[FINALFBO_NUM_TEXTURES];
+	GLuint depthTexture;
 };
 
 #endif

@@ -1,17 +1,14 @@
 #include "InputHandler.h"
 
-
-
 InputHandler::InputHandler()
 {
 }
-
 
 InputHandler::~InputHandler()
 {
 }
 
-void InputHandler::key_callback(GLFWwindow * window, int key, int scancode, int action, int mods)
+void InputHandler::Key_callback(GLFWwindow * window, int key, int scancode, int action, int mods)
 {
 	if (key == GLFW_KEY_E && action == GLFW_PRESS)
 	{
@@ -23,20 +20,20 @@ void InputHandler::key_callback(GLFWwindow * window, int key, int scancode, int 
 	}
 }
 
-void InputHandler::mouseControls(Display * display, Player * player, float elapsedTime)
+void InputHandler::MouseControls(Display * display, Player * player, float elapsedTime)
 {
 	double mouseXpos;
 	double mouseYpos;
 
 	// Find mouseposition (This function updates the X,Y values of the mouse position.
 	glfwGetCursorPos(display->GetWindow(), &mouseXpos, &mouseYpos);
-	if (mouseLock)
+	if (this->mouseLock)
 	{
 		player->updateMouse(glm::vec2(mouseXpos, mouseYpos), elapsedTime);
 	}
 }
 
-void InputHandler::keyboardControls(Display * display, Player * player, float elapsedTime)
+void InputHandler::KeyboardControls(Display * display, Player * player, float elapsedTime)
 {
 	int keyboardButton;
 	// Check for keyboard inputs, used to move the camera around.
@@ -74,8 +71,8 @@ void InputHandler::keyboardControls(Display * display, Player * player, float el
 	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_SPACE);
 	if (keyboardButton == GLFW_PRESS)
 	{
-		player->setCameraPosition(player->getStartCameraPosition());
-		player->setForwardVector(player->getStartForwardVector());
+		player->SetCameraPosition(player->GetStartCameraPosition());
+		player->SetForwardVector(player->GetStartForwardVector());
 	}
 }
 

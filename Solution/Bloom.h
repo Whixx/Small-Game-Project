@@ -18,20 +18,20 @@ public:
 	~BloomBuffer();
 
 	bool Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT);
-	void bindForWriting();
-	void bindForReading();
+	void BindForWriting();
+	void BindForReading();
 
-	void bindForReadingBloomMap(int textureUnit);
-	void bindForReadingDiffuse();
+	void BindForReadingBloomMap(int textureUnit);
+	void BindForReadingDiffuse();
 
-	void copyDepth(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT, GLuint fboRead);
+	void CopyDepth(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT, GLuint fboRead);
 
-	GLuint getFBO();
+	GLuint GetFBO();
 
 private:
-	GLuint m_fbo;
-	GLuint m_colorBuffers[BLOOMBUFFER_NUM_TEXTURES];
-	GLuint m_depthTexture;
+	GLuint fbo;
+	GLuint colorBuffers[BLOOMBUFFER_NUM_TEXTURES];
+	GLuint depthTexture;
 };
 
 #endif

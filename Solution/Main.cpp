@@ -125,7 +125,7 @@ int main()
 	player.SetPlayerSpeed(5.0f);
 
 	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetKeyCallback(display.GetWindow(), InputHandler::key_callback);
+	glfwSetKeyCallback(display.GetWindow(), InputHandler::Key_callback);
 	//=========================== Creating Objects ====================================//
 	Mesh groundMesh;
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
@@ -219,10 +219,10 @@ int main()
 		lights.updateShadowTransform(0);
 			
 		// Update the torch in front of the player'
-		OH.getObject(torch)->GetPos() = player.GetCamera()->getCameraPosition()
-			+ player.GetCamera()->getForwardVector() * 1.0f
-			+ player.GetCamera()->getRightVector() * 0.5f
-			+ player.GetCamera()->getUpVector() * -0.5f;
+		OH.getObject(torch)->GetPos() = player.GetCamera()->GetCameraPosition()
+			+ player.GetCamera()->GetForwardVector() * 1.0f
+			+ player.GetCamera()->GetRightVector() * 0.5f
+			+ player.GetCamera()->GetUpVector() * -0.5f;
 		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 1.5f, OH.getObject(torch)->GetPos().z);
 		
 		// Here a cube map is calculated and stored in the shadowMap FBO
@@ -237,7 +237,7 @@ int main()
 		DRLightPass(&gBuffer, &bloomBuffer, &fullScreenTriangle, lightPass.getProgram(), &lightPass, &shadowMap, &lights, cameraLocationLP, player.GetCamera());
 
 		// Copy the depth from the gBuffer to the bloomBuffer
-		bloomBuffer.copyDepth(SCREENWIDTH, SCREENHEIGHT, gBuffer.getFBO());
+		bloomBuffer.CopyDepth(SCREENWIDTH, SCREENHEIGHT, gBuffer.GetFBO());
 
 		// Draw lightSpheres
 		#ifdef DEBUG
@@ -251,7 +251,7 @@ int main()
 		finalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
 
 		// Copy the depth from the bloomBuffer to the finalFBO
-		finalFBO.copyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.getFBO());
+		finalFBO.CopyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.GetFBO());
 
 		// Draw particles to the FinalFBO
 		particlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, OH.getObject(torch)->GetPos());
@@ -263,12 +263,12 @@ int main()
 		constLastTime = currentTime;
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - constLastTime;
-		IH.mouseControls(&display, &player, deltaTime);
-		IH.keyboardControls(&display, &player, deltaTime);
+		IH.MouseControls(&display, &player, deltaTime);
+		IH.KeyboardControls(&display, &player, deltaTime);
 
-		player.GetCamera()->updateViewMatrix();
+		player.GetCamera()->UpdateViewMatrix();
 		
-		//std::cout << "x: " << camera.getCameraPosition().x << " y: " << camera.getCameraPosition().y << " z: " << camera.getCameraPosition().z << std::endl;
+		//std::cout << "x: " << camera.GetCameraPosition().x << " y: " << camera.GetCameraPosition().y << " z: " << camera.GetCameraPosition().z << std::endl;
 
 		display.SwapBuffers(SCREENWIDTH, SCREENHEIGHT);
 
@@ -376,8 +376,8 @@ void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenTri
 	sendCameraLocationToGPU(cameraLocationLP, camera);
 
 	// Bloom buffer, write finalColor and brightness.
-	bloomBuffer->bindForWriting();
-	bloomBuffer->bindForReading();
+	bloomBuffer->BindForWriting();
+	bloomBuffer->BindForReading();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	gBuffer->BindForReading();
@@ -402,7 +402,7 @@ void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenTri
 // This function draws particles to the screen.
 void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime, glm::vec3 position)
 {
-	finalFBO->bindForWriting();
+	finalFBO->BindForWriting();
 
 	// We need the camera right/up vector and the camera location in world space to be able to make billboards out of the particles
 	// PS = ParticleShader
@@ -414,7 +414,7 @@ void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 	particle->generateParticles(deltaTime, position);
 
 	// Simulate all the particles
-	particle->simulateParticles(camera->getCameraPosition(), deltaTime);
+	particle->simulateParticles(camera->GetCameraPosition(), deltaTime);
 
 	// Update the buffers holding the particles
 	particle->update();
@@ -423,9 +423,9 @@ void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 	particleShader->Bind();
 
 	// Send Uniforms
-	glUniform3f(cameraRightWorldPS, camera->getRightVector().x, camera->getRightVector().y, camera->getRightVector().z);
-	glUniform3f(cameraUpWorldPS, camera->getUpVector().x, camera->getUpVector().y, camera->getUpVector().z);
-	glUniformMatrix4fv(viewProjection, 1, GL_FALSE, &camera->getViewProjection()[0][0]);
+	glUniform3f(cameraRightWorldPS, camera->GetRightVector().x, camera->GetRightVector().y, camera->GetRightVector().z);
+	glUniform3f(cameraUpWorldPS, camera->GetUpVector().x, camera->GetUpVector().y, camera->GetUpVector().z);
+	glUniformMatrix4fv(viewProjection, 1, GL_FALSE, &camera->GetViewProjection()[0][0]);
 
 	// Disable depthbuffer and enable blend
 	glDepthMask(false);
@@ -449,7 +449,7 @@ void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 
 void lightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, double counter)
 {
-	bloomBuffer->bindForWriting();
+	bloomBuffer->BindForWriting();
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -475,19 +475,19 @@ void blurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuff
 
 	for (int i = 0; i < timesToBlur; i++)
 	{
-		blurBuffers->bindForWriting(!horizontal);
+		blurBuffers->BindForWriting(!horizontal);
 
 		// First we read from the bloom fbo, to get a starting point of the blur. Then after that we will
 		// blur the "blurred" texture over and over again, swapping between vertical and horizontal blurring.
 		if (firstBlur == true)
 		{
-			bloomBuffer->bindForReadingBloomMap(0);
+			bloomBuffer->BindForReadingBloomMap(0);
 			blurShader->sendInt("horizontal", !horizontal);
 			blurShader->sendInt("scene", 0);
 		}
 		else
 		{
-			blurBuffers->bindForReading(horizontal, 0);
+			blurBuffers->BindForReading(horizontal, 0);
 			blurShader->sendInt("horizontal", !horizontal);
 
 			blurShader->sendInt("scene", 0);
@@ -509,16 +509,16 @@ void blurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuff
 
 void finalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle)
 {
-	finalFBO->bindForWriting();
+	finalFBO->BindForWriting();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	finalBloomShader->Bind();
 
-	bloomBuffer->bindForReadingDiffuse();
+	bloomBuffer->BindForReadingDiffuse();
 	finalBloomShader->sendInt("scene", 0);
 
-	blurBuffers->bindForReading(1, 1);
+	blurBuffers->BindForReading(1, 1);
 	finalBloomShader->sendInt("bright", 1);
 
 	glDisable(GL_DEPTH_TEST);
@@ -531,7 +531,7 @@ void finalPass(FinalFBO * finalFBO, Shader * finalShader, Mesh * fullScreenTrian
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	finalFBO->bindForReading(0);
+	finalFBO->BindForReading(0);
 
 	finalShader->Bind();
 	finalShader->sendInt("scene", 0);
@@ -543,7 +543,7 @@ void finalPass(FinalFBO * finalFBO, Shader * finalShader, Mesh * fullScreenTrian
 
 void sendCameraLocationToGPU(GLuint cameraLocation, Camera *camera)
 {
-	glUniform3f(cameraLocation, camera->getCameraPosition().x, camera->getCameraPosition().y, camera->getCameraPosition().z);
+	glUniform3f(cameraLocation, camera->GetCameraPosition().x, camera->GetCameraPosition().y, camera->GetCameraPosition().z);
 }
 
 void prepareTexture(GLuint textureLoc, GLuint normalMapLoc)

@@ -22,7 +22,7 @@ void Shader::unBind()
 
 void Shader::Update(const Transform & transform, const Camera& camera)
 {
-	glm::mat4 modelT = camera.getViewProjection() * transform.getWorldMatrix();
+	glm::mat4 modelT = camera.GetViewProjection() * transform.getWorldMatrix();
 	glm::mat4 modelW = transform.getWorldMatrix();
 
 

@@ -26,114 +26,113 @@ Camera::~Camera()
 }
 
 // Gets
-glm::mat4 Camera::getViewProjection() const
+glm::mat4 Camera::GetViewProjection() const
 {
 	return this->projectionMatrix * this->viewMatrix;
 }
 
-glm::vec2 Camera::getOldMousePosition()
+glm::vec2 Camera::GetOldMousePosition()
 {
 	return this->oldMousePosition;
 }
 
-glm::vec2 Camera::getMouseDelta()
+glm::vec2 Camera::GetMouseDelta()
 {
-	return mouseDelta;
+	return this->mouseDelta;
 }
 
-float Camera::getRotationalSpeed()
+float Camera::GetRotationalSpeed()
 {
 	return this->rotationalSpeed;
 }
 
-glm::vec3 Camera::getCameraPosition()
+glm::vec3 Camera::GetCameraPosition()
 {
 	return this->cameraPosition;
 }
 
-glm::vec3 Camera::getStartCameraPosition()
+glm::vec3 Camera::GetStartCameraPosition()
 {
 	return this->startCameraPosition;
 }
 
-glm::vec3 Camera::getStartForwardVector()
+glm::vec3 Camera::GetStartForwardVector()
 {
 	return this->startForwardVector;
 }
 
-glm::vec3 Camera::getUpVector()
+glm::vec3 Camera::GetUpVector()
 {
 	return this->upVector;
 }
 
-glm::vec3 Camera::getRightVector()
+glm::vec3 Camera::GetRightVector()
 {
 	return glm::cross(this->forwardVector, this->upVector);
 }
 
-glm::vec3 Camera::getRotateAround()
+glm::vec3 Camera::GetRotateAround()
 {
 	return this->rotateAround;
 }
 
-glm::vec3 Camera::getForwardVector()
+glm::vec3 Camera::GetForwardVector()
 {
 	return this->forwardVector;
 }
 
 // Sets
-void Camera::setCameraPosition(glm::vec3 camPos)
+void Camera::SetCameraPosition(glm::vec3 camPos)
 {
 	this->cameraPosition = camPos;
 }
 
-void Camera::setUpVector(glm::vec3 vector)
+void Camera::SetUpVector(glm::vec3 vector)
 {
 	this->upVector = vector;
 }
 
-void Camera::setViewMatrix(glm::mat4 matrix)
+void Camera::SetViewMatrix(glm::mat4 matrix)
 {
 	this->viewMatrix = matrix;
 }
 
-void Camera::setRotateAround(glm::vec3 rotate)
+void Camera::SetRotateAround(glm::vec3 rotate)
 {
 	this->rotateAround = rotate;
 }
 
-void Camera::setStartCameraPosition(glm::vec3 position)
+void Camera::SetStartCameraPosition(glm::vec3 position)
 {
 	this->startCameraPosition = position;
 }
 
-void Camera::setStartForwardVector(glm::vec3 vector)
+void Camera::SetStartForwardVector(glm::vec3 vector)
 {
 	this->startForwardVector = vector;
 }
 
-void Camera::setOldMousePosition(glm::vec2 oldPos)
+void Camera::SetOldMousePosition(glm::vec2 oldPos)
 {
 	this->oldMousePosition = oldPos;
 }
 
-void Camera::setMouseDelta(glm::vec2 mouseDelta)
+void Camera::SetMouseDelta(glm::vec2 mouseDelta)
 {
 	this->mouseDelta = mouseDelta;
 }
 
-void Camera::setForwardVector(glm::vec3 forwardVector)
+void Camera::SetForwardVector(glm::vec3 forwardVector)
 {
 	this->forwardVector = forwardVector;
 }
 
-void Camera::setProjectionMatrix(glm::mat4 matrix)
+void Camera::SetProjectionMatrix(glm::mat4 matrix)
 {
 	this->projectionMatrix = matrix;
 }
 
-void Camera::updateViewMatrix()
+void Camera::UpdateViewMatrix()
 {
 	this->viewMatrix = glm::lookAt(this->cameraPosition, this->cameraPosition + this->forwardVector, this->upVector);
 }
-

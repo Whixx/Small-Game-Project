@@ -12,9 +12,9 @@ public:
 	InputHandler();
 	virtual ~InputHandler();
 
-	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	void mouseControls(Display *display, Player *player, float elapsedTime);
-	void keyboardControls(Display *display, Player *player, float elapsedTime);
+	static void Key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	void MouseControls(Display *display, Player *player, float elapsedTime);
+	void KeyboardControls(Display *display, Player *player, float elapsedTime);
 private:
 	static bool mouseLock;
 };

@@ -15,31 +15,31 @@ public:
 	virtual ~Camera();
 
 	// These functions are for camera control and movement
-	void setCameraPosition(glm::vec3 camPos);
-	void setForwardVector(glm::vec3 forwardVector);
+	void SetCameraPosition(glm::vec3 camPos);
+	void SetForwardVector(glm::vec3 forwardVector);
 
-	glm::vec3 getForwardVector();
-	glm::vec3 getCameraPosition();
-	glm::vec3 getStartCameraPosition();
-	glm::vec3 getStartForwardVector();
-	glm::vec3 getUpVector();
-	glm::vec3 getRightVector();
-	glm::vec3 getRotateAround();
-	glm::mat4 getViewProjection() const;
-	glm::vec2 getOldMousePosition();
-	glm::vec2 getMouseDelta();
-	float getRotationalSpeed();
+	glm::vec3 GetForwardVector();
+	glm::vec3 GetCameraPosition();
+	glm::vec3 GetStartCameraPosition();
+	glm::vec3 GetStartForwardVector();
+	glm::vec3 GetUpVector();
+	glm::vec3 GetRightVector();
+	glm::vec3 GetRotateAround();
+	glm::mat4 GetViewProjection() const;
+	glm::vec2 GetOldMousePosition();
+	glm::vec2 GetMouseDelta();
+	float GetRotationalSpeed();
 
-	void setProjectionMatrix(glm::mat4 matrix);
-	void setUpVector(glm::vec3 vector);
-	void setViewMatrix(glm::mat4 matrix);
-	void setRotateAround(glm::vec3 rotate);
-	void setStartCameraPosition(glm::vec3 position);
-	void setStartForwardVector(glm::vec3 vector);
-	void setOldMousePosition(glm::vec2 oldPos);
-	void setMouseDelta(glm::vec2 mouseDelta);
+	void SetProjectionMatrix(glm::mat4 matrix);
+	void SetUpVector(glm::vec3 vector);
+	void SetViewMatrix(glm::mat4 matrix);
+	void SetRotateAround(glm::vec3 rotate);
+	void SetStartCameraPosition(glm::vec3 position);
+	void SetStartForwardVector(glm::vec3 vector);
+	void SetOldMousePosition(glm::vec2 oldPos);
+	void SetMouseDelta(glm::vec2 mouseDelta);
 
-	void updateViewMatrix();
+	void UpdateViewMatrix();
 private:
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewMatrix;

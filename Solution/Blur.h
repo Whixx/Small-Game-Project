@@ -16,11 +16,11 @@ public:
 	~BlurBuffer();
 
 	bool Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT);
-	void bindForWriting(bool horizontal);
-	void bindForReading(bool horizontal, int textureUnit);
-	void setReadBuffer(BLURBUFFER_TEXTURE_TYPE TextureType);
+	void BindForWriting(bool horizontal);
+	void BindForReading(bool horizontal, int textureUnit);
+	void SetReadBuffer(BLURBUFFER_TEXTURE_TYPE TextureType);
 private:
-	GLuint m_fbo[2];
-	GLuint m_colorBuffers[2];
+	GLuint fbo[2];
+	GLuint colorBuffers[2];
 };
 
