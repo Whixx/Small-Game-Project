@@ -9,7 +9,7 @@
 #include <algorithm>
 #include "Texture.h"
 
-#define maxParticles 1000
+#define maxParticles 500
 
 struct ParticleStruct
 {
