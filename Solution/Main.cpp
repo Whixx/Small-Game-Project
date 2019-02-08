@@ -120,7 +120,7 @@ int main()
 	finalShader.validateShaders();
 
 	glm::vec3 playerVector = glm::vec3(0.3f, 0, 1);
-	float playerHeight = 10.0f;
+	float playerHeight = 1.0f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, playerVector);
 	player.SetPlayerSpeed(5.0f);
 
