@@ -215,9 +215,31 @@ int main()
 	{
 		// ================== UPDATE ==================
 		player.Update(deltaTime);
+		player.GetCamera()->updateViewMatrix();
 		updateAllObjects(deltaTime, OH);
 		lights.updateShadowTransform(0);
-			
+				
+		// Update the time
+		constLastTime = currentTime;
+		currentTime = glfwGetTime();
+		deltaTime = currentTime - constLastTime;
+
+		// Measure fps
+		nrOfFrames++;
+		if (currentTime - lastTime >= 1.0)
+		{
+			// If last print was more than 1 sec ago, print and reset timer
+			display.SetTitle("FPS: " + to_string((int)((double)nrOfFrames)));
+			nrOfFrames = 0;
+			lastTime += 1.0;
+		}
+
+		counter += deltaTime * 0.5;
+
+		// Update movement
+		IH.mouseControls(&display, &player, deltaTime);
+		IH.keyboardControls(&display, &player, deltaTime);
+	
 		// Update the torch in front of the player'
 		OH.getObject(torch)->GetPos() = player.GetCamera()->getCameraPosition()
 			+ player.GetCamera()->getForwardVector() * 1.0f
@@ -225,6 +247,8 @@ int main()
 			+ player.GetCamera()->getUpVector() * -0.5f;
 		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 1.5f, OH.getObject(torch)->GetPos().z);
 		
+		// ================== MAIN FUNCTIONS ==================
+
 		// Here a cube map is calculated and stored in the shadowMap FBO
 		shadowPass(&shadowShader, &OH, &lights, &shadowMap, player.GetCamera());
 
@@ -259,30 +283,8 @@ int main()
 		// Render everything
 		finalPass(&finalFBO, &finalShader, &fullScreenTriangle);
 
-		// Check for mouse/keyboard inputs and handle the fps independent camera movement
-		constLastTime = currentTime;
-		currentTime = glfwGetTime();
-		deltaTime = currentTime - constLastTime;
-		IH.mouseControls(&display, &player, deltaTime);
-		IH.keyboardControls(&display, &player, deltaTime);
-
-		player.GetCamera()->updateViewMatrix();
-		
-		//std::cout << "x: " << camera.getCameraPosition().x << " y: " << camera.getCameraPosition().y << " z: " << camera.getCameraPosition().z << std::endl;
-
+		// ================== SWAP BUFFERS ==================
 		display.SwapBuffers(SCREENWIDTH, SCREENHEIGHT);
-
-		// Measure fps
-		nrOfFrames++;
-		if (currentTime - lastTime >= 1.0) 
-		{ 
-			// If last print was more than 1 sec ago, print and reset timer
-			display.SetTitle("FPS: " + to_string((int)(1000.0 / (double)nrOfFrames)));
-			nrOfFrames = 0;
-			lastTime += 1.0;
-		}
-	
-		counter += deltaTime * 0.5;
 	}
 	glfwTerminate();
 	return 0;
