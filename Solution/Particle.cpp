@@ -79,7 +79,7 @@ void Particle::sort()
 
 void Particle::generateParticles(float deltaTime, glm::vec3 particlePos)
 {
-	int newParticlesToCreate = 2;
+	int newParticlesToCreate = 5;
 
 	for (int i = 0; i < newParticlesToCreate; i++)
 	{
@@ -88,12 +88,13 @@ void Particle::generateParticles(float deltaTime, glm::vec3 particlePos)
 
 		// Set the start values of the new particle
 		// Life (Length in seconds which describes how long the particle should be alive)
-		this->particleArray[index].life = 1.5f;
+		this->particleArray[index].life = 1.0f;
 		
 		// Position
 		float randomPos = ((rand() % 100) - 50) / 700.0f;
+		float randomHeight = (rand() % 20) / 100.0f;
 		this->particleArray[index].pos.x = particlePos.x + randomPos;
-		this->particleArray[index].pos.y = particlePos.y + 0.45f;
+		this->particleArray[index].pos.y = particlePos.y + randomHeight + 0.45f;
 		this->particleArray[index].pos.z = particlePos.z + randomPos;
 
 		// Speed
@@ -115,7 +116,7 @@ void Particle::generateParticles(float deltaTime, glm::vec3 particlePos)
 		this->particleArray[index].a = 150;
 
 		// Size
-		this->particleArray[index].size = 0.3f;
+		this->particleArray[index].size = 0.2f;
 	}
 }
 
