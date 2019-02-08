@@ -143,6 +143,7 @@
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MainFunctions.cpp" />
     <ClCompile Include="MazeGeneratePNG.cpp" />
     <ClCompile Include="Maze.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Display.h" />
     <ClInclude Include="FinalFBO.h" />
     <ClInclude Include="GBuffer.h" />
+    <ClInclude Include="MainFunctions.h" />
     <ClInclude Include="Maze.h" />
     <ClInclude Include="InputHandler.h" />
     <ClInclude Include="MazeGeneratePNG.h" />
