@@ -80,7 +80,7 @@ void Particle::sort()
 void Particle::generateParticles(float deltaTime, glm::vec3 particlePos)
 {
 	int newParticlesToCreate = 5;
-
+	
 	for (int i = 0; i < newParticlesToCreate; i++)
 	{
 		// find an index to store the new particle in
