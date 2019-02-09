@@ -192,8 +192,8 @@ int main()
 	
 		// Update the torch in front of the player'
 		OH.getObject(torch)->GetPos() = player.GetCamera()->getCameraPosition()
-			+ player.GetCamera()->getForwardVector() * 1.0f
-			+ player.GetCamera()->getRightVector() * 0.5f
+			+ player.GetWalkingVector() * 0.8f
+			+ player.GetCamera()->getRotateAround() * 0.4f
 			+ player.GetCamera()->getUpVector() * -0.5f;
 		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 1.5f, OH.getObject(torch)->GetPos().z);
 		
