@@ -75,7 +75,7 @@ int main()
 	player.SetPlayerSpeed(5.0f);
 
 	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetKeyCallback(display.GetWindow(), InputHandler::key_callback);
+	glfwSetKeyCallback(display.GetWindow(), InputHandler::Key_callback);
 	//=========================== Creating Objects ====================================//
 	Mesh groundMesh;
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
@@ -211,7 +211,7 @@ int main()
 		DRLightPass(&gBuffer, &bloomBuffer, &fullScreenTriangle, lightPass.getProgram(), &lightPass, &shadowMap, &lights, cameraLocationLP, player.GetCamera());
 
 		// Copy the depth from the gBuffer to the bloomBuffer
-		bloomBuffer.copyDepth(SCREENWIDTH, SCREENHEIGHT, gBuffer.getFBO());
+		bloomBuffer.CopyDepth(SCREENWIDTH, SCREENHEIGHT, gBuffer.GetFBO());
 
 		// Draw lightSpheres
 		#ifdef DEBUG
@@ -225,7 +225,7 @@ int main()
 		finalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
 
 		// Copy the depth from the bloomBuffer to the finalFBO
-		finalFBO.copyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.getFBO());
+		finalFBO.CopyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.GetFBO());
 
 		// Draw particles to the FinalFBO
 		particlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, OH.getObject(torch)->GetPos());

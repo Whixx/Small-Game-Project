@@ -12,12 +12,12 @@ Display::Display()
 
 	this->window = glfwCreateWindow(SCREENWIDTH, SCREENHEIGHT, "Open GL Project", NULL, NULL);
 
-	if (!window)
+	if (!this->window)
 	{
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(this->window);
 	glfwSwapInterval(1);
 
 	// Glew init behövs för att glCreateProgram ska funka
@@ -44,12 +44,12 @@ bool Display::IsWindowClosed()
 
 void Display::SetTitle(string newTitle)
 {
-	glfwSetWindowTitle(window, newTitle.c_str());
+	glfwSetWindowTitle(this->window, newTitle.c_str());
 }
 
 GLFWwindow* Display::GetWindow()
 {
-	return window;
+	return this->window;
 }
 
 Display::~Display()

@@ -30,11 +30,12 @@ public:
 	// A FBO is a container for textures and an optional depth buffer
 	void BindForReading();
 
-	GLuint getFBO();
+	GLuint GetFBO();
+
 private:
 	
-	GLuint m_fbo;
-	GLuint m_textures[GBUFFER_NUM_TEXTURES];
-	GLuint m_depthTexture;
+	GLuint fbo;
+	GLuint textures[GBUFFER_NUM_TEXTURES];
+	GLuint depthTexture;
 };
 #endif
