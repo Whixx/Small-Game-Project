@@ -74,7 +74,7 @@ int main()
 	// height and width must be odd numbers else the resulting maze will be off
 	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
 	GenerateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
-	Maze maze = Maze("Bitmap/kollision_test.bmp");
+	Maze maze = Maze("MazePNG/mazeBlackWhite.png");
 
 	float playerHeight = 1.0f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f);
