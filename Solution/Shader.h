@@ -15,20 +15,20 @@ public:
 	Shader();
 
 	void Bind();
-	void unBind();
+	void UnBind();
 	void Update(const Transform& transform, const Camera& camera);
-	void initiateShaders(bool color);
-	void validateShaders();
+	void InitiateShaders(bool color);
+	void ValidateShaders();
 
 
 	GLuint CreateShader(const std::string& fileName, GLenum shaderType);
-	GLuint *getProgram();
+	GLuint *GetProgram();
 
-	void sendInt(const char *name, int value);
-	void sendFloat(const char *name, float value);
-	void sendVec3(const char *name, float x, float y, float z);
-	void setMat4(const std::string &name, const glm::mat4 &mat);
-	void sendMat4(const char *name, const glm::mat4 &mat);
+	void SendInt(const char *name, int value);
+	void SendFloat(const char *name, float value);
+	void SendVec3(const char *name, float x, float y, float z);
+	void SetMat4(const std::string &name, const glm::mat4 &mat);
+	void SendMat4(const char *name, const glm::mat4 &mat);
 
 	virtual ~Shader();
 private:

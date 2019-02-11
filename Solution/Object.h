@@ -17,7 +17,7 @@ public:
 	Object();
 	virtual ~Object();
 
-	glm::mat4 getWorldMatrix() const;
+	glm::mat4 GetWorldMatrix() const;
 	Transform GetTransform() const;
 	glm::vec3& GetPos();
 	glm::vec3& GetRot();
@@ -26,14 +26,14 @@ public:
 	virtual void Update(double dt);
 	virtual void Draw();
 
-	void bindTexture();
+	void BindTexture();
 
 private:
 	Mesh *mesh;
 	Transform transform;
 	Texture *texture;
 
-	unsigned int m_id;
+	unsigned int id;
 
 };
 

@@ -15,10 +15,10 @@ public:
 	void Bind(unsigned int unit);
 	virtual ~Texture();
 private:
-	void create(const std::string& fileName, bool nMap);
+	void Create(const std::string& fileName, bool nMap);
 
-	GLuint m_texture;
-	GLuint m_normalMap;
+	GLuint texture;
+	GLuint normalMap;
 };
 
 #endif

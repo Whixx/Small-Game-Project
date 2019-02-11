@@ -17,8 +17,9 @@ public:
 		this->texCoord = texCoord;
 	}
 
-	inline glm::vec3* GetPos() { return &pos; }
-	inline glm::vec2* GetTexCoord() { return &texCoord; }
+	inline glm::vec3* GetPos() { return &this->pos; }
+	inline glm::vec2* GetTexCoord() { return &this->texCoord; }
+
 private:
 	glm::vec3 pos;
 	glm::vec2 texCoord;
@@ -38,10 +39,11 @@ public:
 	void operator=(const Mesh& other) {}
 
 	virtual ~Mesh();
-	bool createMesh(const char * meshPath);
-	void createMesh(std::vector<glm::vec3> vertices, std::vector<glm::vec2> uvCoords);
-	bool createMesh(const char * meshPath, glm::vec3 color);
-	bool loadMesh(const char * objectPath, vector<glm::vec3>& vertices, vector<glm::vec2>& uvs, vector<glm::vec3>& normals);
+	bool CreateMesh(const char * meshPath);
+	void CreateMesh(std::vector<glm::vec3> vertices, std::vector<glm::vec2> uvCoords);
+	bool CreateMesh(const char * meshPath, glm::vec3 color);
+	bool LoadMesh(const char * objectPath, vector<glm::vec3>& vertices, vector<glm::vec2>& uvs, vector<glm::vec3>& normals);
+
 private:
 	enum
 	{
