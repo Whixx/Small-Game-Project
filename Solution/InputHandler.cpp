@@ -71,8 +71,8 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_SPACE);
 	if (keyboardButton == GLFW_PRESS)
 	{
-		player->SetCameraPosition(player->GetStartCameraPosition());
-		player->SetForwardVector(player->GetStartForwardVector());
+		player->GetCamera()->SetCameraPosition(player->GetCamera()->GetStartCameraPosition());
+		player->GetCamera()->SetForwardVector(player->GetCamera()->GetStartForwardVector());
 	}
 }
 

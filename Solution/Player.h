@@ -7,13 +7,15 @@
 #include "Display.h"
 #include "Maze.h"
 
+#define PI 3.1415926535
+
 using namespace std;
 
-class Player: public Camera
+class Player
 {
 public:
 	// Default constructor
-	Player(float height, float fov, float near, float far, glm::vec3 walkingVector);
+	Player(float height, float fov, float near, float far);
 	virtual ~Player();
 	
 	float GetPlayerSpeed();

@@ -40,13 +40,13 @@ public:
 	void SetMouseDelta(glm::vec2 mouseDelta);
 
 	void UpdateViewMatrix();
+	void UpdateRotation();
 private:
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewMatrix;
 	glm::vec3 cameraPosition;
 	glm::vec3 forwardVector;	// Viewvector // frontal view
 	glm::vec3 upVector;
-	glm::vec3 walkingVector;
 	
 	glm::vec3 startCameraPosition;
 	glm::vec3 startForwardVector;
@@ -55,9 +55,12 @@ private:
 	glm::vec2 oldMousePosition;
 	glm::vec2 mouseDelta;
 
+	float yaw;
+	float pitch;
+
 	// The vector which we rotate around during the vertical camera rotation.
 	glm::vec3 rotateAround;
-	const float rotationalSpeed = 0.25f;
+	const float rotationalSpeed = 0.0025f;
 	const float movementSpeed = 0.2f;
 };
 

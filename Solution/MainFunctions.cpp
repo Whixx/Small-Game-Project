@@ -47,7 +47,7 @@ void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc, int torch)
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Camera *camera, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc, int torch)
 {
 	geometryPass->Bind();
 
@@ -160,7 +160,7 @@ void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 	particleShader->unBind();
 }
 
-void lightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, double counter)
+void lightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera)
 {
 	bloomBuffer->BindForWriting();
 

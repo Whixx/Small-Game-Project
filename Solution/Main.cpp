@@ -8,10 +8,6 @@ int main()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CRT_SECURE_NO_WARNINGS;
 
-	// height and width must be odd numbers else the resulting maze will be off
-	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
-	generateMazeBitmaps(63, 63);
-
 	Display display;
 
 	Shader shadowShader;
@@ -69,25 +65,30 @@ int main()
 	finalBloomShader.validateShaders();
 	finalShader.validateShaders();
 
-	glm::vec3 playerVector = glm::vec3(0.3f, 0, 1);
-	float playerHeight = 1.0f;
-	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, playerVector);
-	player.SetPlayerSpeed(5.0f);
-
 	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetKeyCallback(display.GetWindow(), InputHandler::Key_callback);
+
+	InputHandler IH = InputHandler();
+
 	//=========================== Creating Objects ====================================//
+	// height and width must be odd numbers else the resulting maze will be off
+	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
+	generateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
+	Maze maze = Maze("Bitmap/kollision_test.bmp");
+
+	float playerHeight = 1.0f;
+	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f);
+	player.SetPlayerSpeed(5.0f);
+
+
+
 	Mesh groundMesh;
+	Mesh torchMesh;
+
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
 	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
 
-	InputHandler IH = InputHandler();
-	// The maze
-	Maze maze = Maze("Bitmap/kollision_test.bmp");
-
 	ObjectHandler OH = ObjectHandler();
-
-	Mesh torchMesh;
 
 	//TODO: Byta ground.png till floor.png
 	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
@@ -125,8 +126,6 @@ int main()
 
 	Mesh fullScreenTriangle(fullScreenVerticesTriangle, (sizeof(fullScreenVerticesTriangle) / sizeof(fullScreenVerticesTriangle[0])));
 
-	double counter = 0.0;
-
 	// Initiate timer
 	double currentTime = 0;
 	double lastTime = glfwGetTime();
@@ -163,16 +162,29 @@ int main()
 
 	while(!display.IsWindowClosed())
 	{
-		// ================== UPDATE ==================
-		player.Update(deltaTime);
-		player.GetCamera()->UpdateViewMatrix();
-		updateAllObjects(deltaTime, OH);
-		lights.updateShadowTransform(0);
-				
-		// Update the time
+		// Calculate DeltaTime
 		constLastTime = currentTime;
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - constLastTime;
+
+
+
+		// ================== EVENTS ==================
+
+		// Update movement
+		IH.MouseControls(&display, &player, deltaTime);
+		IH.KeyboardControls(&display, &player, deltaTime);
+
+
+
+		// ================== UPDATE ==================
+
+		// Update player
+		player.Update(deltaTime);
+		player.GetCamera()->UpdateViewMatrix();
+
+		updateAllObjects(deltaTime, OH);
+		lights.updateShadowTransform(0);
 
 		// Measure fps
 		nrOfFrames++;
@@ -183,12 +195,6 @@ int main()
 			nrOfFrames = 0;
 			lastTime += 1.0;
 		}
-
-		counter += deltaTime * 0.5;
-
-		// Update movement
-		IH.MouseControls(&display, &player, deltaTime);
-		IH.KeyboardControls(&display, &player, deltaTime);
 	
 		// Update the torch in front of the player'
 		OH.getObject(torch)->GetPos() = player.GetCamera()->GetCameraPosition()
@@ -197,14 +203,16 @@ int main()
 			+ player.GetCamera()->GetUpVector() * -0.5f;
 		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 1.5f, OH.getObject(torch)->GetPos().z);
 		
-		// ================== MAIN FUNCTIONS ==================
+
+
+		// ================== DRAW ==================
 
 		// Here a cube map is calculated and stored in the shadowMap FBO
 		shadowPass(&shadowShader, &OH, &lights, &shadowMap, player.GetCamera());
 
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, counter, &geometryPass, player.GetCamera(), &OH, cameraLocationGP, texLoc, normalTexLoc, torch);
+		DRGeometryPass(&gBuffer, &geometryPass, player.GetCamera(), &OH, cameraLocationGP, texLoc, normalTexLoc, torch);
 
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
@@ -215,7 +223,7 @@ int main()
 
 		// Draw lightSpheres
 		#ifdef DEBUG
-			lightSpherePass(&pointLightPass, &bloomBuffer, &lights, player.GetCamera(), counter);
+			lightSpherePass(&pointLightPass, &bloomBuffer, &lights, player.GetCamera());
 		#endif
 			
 		// Blur the bright texture
@@ -233,7 +241,9 @@ int main()
 		// Render everything
 		finalPass(&finalFBO, &finalShader, &fullScreenTriangle);
 
-		// ================== SWAP BUFFERS ==================
+
+
+		// ================== POST DRAW ==================
 		display.SwapBuffers(SCREENWIDTH, SCREENHEIGHT);
 	}
 	glfwTerminate();

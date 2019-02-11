@@ -9,7 +9,6 @@ Camera::Camera(const glm::vec3& pos, float fov, float aspect, float zNear, float
 	this->projectionMatrix = glm::perspective(fov, aspect, zNear, zFar);
 	this->cameraPosition = pos;
 	this->forwardVector = vector;
-	this->walkingVector = vector;
 	this->upVector = glm::vec3(0, 1, 0);
 	this->viewMatrix = glm::lookAt(this->cameraPosition, this->cameraPosition + this->forwardVector, this->upVector);
 
@@ -19,6 +18,9 @@ Camera::Camera(const glm::vec3& pos, float fov, float aspect, float zNear, float
 	// Used to locate the start position and view direction of the camera if the user gets lost.
 	this->startCameraPosition = pos;
 	this->startForwardVector = this->forwardVector;
+
+	this->yaw = 0.0f;
+	this->pitch = 0.0f;
 }
 
 Camera::~Camera()
@@ -89,7 +91,7 @@ void Camera::SetCameraPosition(glm::vec3 camPos)
 
 void Camera::SetUpVector(glm::vec3 vector)
 {
-	this->upVector = vector;
+	this->upVector = glm::normalize(vector);
 }
 
 void Camera::SetViewMatrix(glm::mat4 matrix)
@@ -99,7 +101,7 @@ void Camera::SetViewMatrix(glm::mat4 matrix)
 
 void Camera::SetRotateAround(glm::vec3 rotate)
 {
-	this->rotateAround = rotate;
+	this->rotateAround = glm::normalize(rotate);
 }
 
 void Camera::SetStartCameraPosition(glm::vec3 position)
@@ -109,7 +111,7 @@ void Camera::SetStartCameraPosition(glm::vec3 position)
 
 void Camera::SetStartForwardVector(glm::vec3 vector)
 {
-	this->startForwardVector = vector;
+	this->startForwardVector = glm::normalize(vector);
 }
 
 void Camera::SetOldMousePosition(glm::vec2 oldPos)
@@ -135,4 +137,28 @@ void Camera::SetProjectionMatrix(glm::mat4 matrix)
 void Camera::UpdateViewMatrix()
 {
 	this->viewMatrix = glm::lookAt(this->cameraPosition, this->cameraPosition + this->forwardVector, this->upVector);
+}
+
+void Camera::UpdateRotation()
+{
+	float xSensitivity = 0.05;
+	float ySensitivity = 0.05;
+	float xOffset = this->mouseDelta.x * xSensitivity;
+	float yOffset = this->mouseDelta.y * ySensitivity;
+
+	this->yaw += xOffset;
+	this->pitch -= yOffset;
+
+	// Clamp pitch
+	if (this->pitch > 89.0f)
+		pitch = 89.0f;
+	else if (this->pitch < -89.0f)
+		pitch = -89.0f;
+
+	glm::vec3 newForwardVector;
+	newForwardVector.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	newForwardVector.y = sin(glm::radians(pitch));
+	newForwardVector.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+
+	this->forwardVector = glm::normalize(newForwardVector);
 }
