@@ -165,7 +165,7 @@ int main()
 	{
 		// ================== UPDATE ==================
 		player.Update(deltaTime);
-		player.GetCamera()->updateViewMatrix();
+		player.GetCamera()->UpdateViewMatrix();
 		updateAllObjects(deltaTime, OH);
 		lights.updateShadowTransform(0);
 				
@@ -187,14 +187,14 @@ int main()
 		counter += deltaTime * 0.5;
 
 		// Update movement
-		IH.mouseControls(&display, &player, deltaTime);
-		IH.keyboardControls(&display, &player, deltaTime);
+		IH.MouseControls(&display, &player, deltaTime);
+		IH.KeyboardControls(&display, &player, deltaTime);
 	
 		// Update the torch in front of the player'
-		OH.getObject(torch)->GetPos() = player.GetCamera()->getCameraPosition()
+		OH.getObject(torch)->GetPos() = player.GetCamera()->GetCameraPosition()
 			+ player.GetWalkingVector() * 0.8f
-			+ player.GetCamera()->getRotateAround() * 0.4f
-			+ player.GetCamera()->getUpVector() * -0.5f;
+			+ player.GetCamera()->GetRotateAround() * 0.4f
+			+ player.GetCamera()->GetUpVector() * -0.5f;
 		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 1.5f, OH.getObject(torch)->GetPos().z);
 		
 		// ================== MAIN FUNCTIONS ==================
