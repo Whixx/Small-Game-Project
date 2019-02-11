@@ -3,17 +3,17 @@
 
 void updateAllObjects(double dt, ObjectHandler & OH)
 {
-	for (int i = 0; i < OH.getNrOfObjects(); i++)
+	for (int i = 0; i < OH.GetNrOfObjects(); i++)
 	{
-		OH.getObject(i)->Update(dt);
+		OH.GetObject(i)->Update(dt);
 	}
 }
 
-void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Camera *camera)
+void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Camera *camera)
 {
 	glEnable(GL_DEPTH_TEST);
 	shadowShader->Bind();
-	shadowFBO->bind();
+	shadowFBO->Bind();
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -21,28 +21,28 @@ void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glm::vec3 lightPos;
 
 	// For each light, we create a matrix and draws each light.
-	for (unsigned int i = 0; i < PLH->getNrOfLights(); i++)
+	for (unsigned int i = 0; i < PLH->GetNrOfLights(); i++)
 	{
-		shadowTransforms = PLH->getShadowTransform(i);
+		shadowTransforms = PLH->GetShadowTransform(i);
 
-		lightPos = PLH->getTransform(i)->GetPos();
+		lightPos = PLH->GetTransform(i)->GetPos();
 
 		for (int j = 0; j < 6; ++j)
 		{
-			shadowShader->setMat4("shadowMatrices[" + std::to_string(j) + "]", shadowTransforms[j]);
+			shadowShader->SetMat4("shadowMatrices[" + std::to_string(j) + "]", shadowTransforms[j]);
 		}
-		shadowShader->sendFloat("farPlane", (float)FAR_PLANE);
-		shadowShader->sendVec3("lightPos", lightPos.x, lightPos.y, lightPos.z);
+		shadowShader->SendFloat("farPlane", (float)FAR_PLANE);
+		shadowShader->SendVec3("lightPos", lightPos.x, lightPos.y, lightPos.z);
 
-		for (unsigned int j = 0; j < OH->getNrOfObjects(); j++)
+		for (unsigned int j = 0; j < OH->GetNrOfObjects(); j++)
 		{
-			shadowShader->Update(OH->getObject(j)->GetTransform(), *camera);
-			OH->getObject(j)->bindTexture();
-			OH->getObject(j)->Draw();
+			shadowShader->Update(OH->GetObject(j)->GetTransform(), *camera);
+			OH->GetObject(j)->BindTexture();
+			OH->GetObject(j)->Draw();
 		}
 	}
 
-	shadowShader->unBind();
+	shadowShader->UnBind();
 	glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
 	glDisable(GL_DEPTH_TEST);
 }
@@ -51,8 +51,8 @@ void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Came
 {
 	geometryPass->Bind();
 
-	sendCameraLocationToGPU(cameraLocationGP, camera);
-	prepareTexture(texLoc, normalTexLoc);
+	SendCameraLocationToGPU(cameraLocationGP, camera);
+	PrepareTexture(texLoc, normalTexLoc);
 
 	gBuffer->BindForWriting();
 
@@ -63,30 +63,30 @@ void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Came
 	glEnable(GL_DEPTH_TEST);
 
 	// Update and Draw all objects
-	for (unsigned int i = 0; i < OH->getNrOfObjects(); i++)
+	for (unsigned int i = 0; i < OH->GetNrOfObjects(); i++)
 	{
-		if (OH->getObject(i) == OH->getObject(torch))
+		if (OH->GetObject(i) == OH->GetObject(torch))
 		{
-			geometryPass->sendFloat("illuminated", 3.0f);
+			geometryPass->SendFloat("illuminated", 3.0f);
 		}
 		else
 		{
-			geometryPass->sendFloat("illuminated", 1.0f);
+			geometryPass->SendFloat("illuminated", 1.0f);
 		}
-		geometryPass->Update(OH->getObject(i)->GetTransform(), *camera);
-		OH->getObject(i)->bindTexture();
-		OH->getObject(i)->Draw();
+		geometryPass->Update(OH->GetObject(i)->GetTransform(), *camera);
+		OH->GetObject(i)->BindTexture();
+		OH->GetObject(i)->Draw();
 	}
 
-	geometryPass->unBind();
+	geometryPass->UnBind();
 }
 
 void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenTriangle, GLuint *program, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, GLuint cameraLocationLP, Camera *camera)
 {
 	lightPass->Bind();
 
-	lights->sendToShader();
-	sendCameraLocationToGPU(cameraLocationLP, camera);
+	lights->SendToShader();
+	SendCameraLocationToGPU(cameraLocationLP, camera);
 
 	// Bloom buffer, write finalColor and brightness.
 	bloomBuffer->BindForWriting();
@@ -95,42 +95,42 @@ void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenTri
 
 	gBuffer->BindForReading();
 
-	lightPass->sendInt("gPosition", GBuffer::GBUFFER_TEXTURE_TYPE_POSITION);
-	lightPass->sendInt("gDiffuse", GBuffer::GBUFFER_TEXTURE_TYPE_DIFFUSE);
-	lightPass->sendInt("gNormal", GBuffer::GBUFFER_TEXTURE_TYPE_NORMAL);
+	lightPass->SendInt("gPosition", GBuffer::GBUFFER_TEXTURE_TYPE_POSITION);
+	lightPass->SendInt("gDiffuse", GBuffer::GBUFFER_TEXTURE_TYPE_DIFFUSE);
+	lightPass->SendInt("gNormal", GBuffer::GBUFFER_TEXTURE_TYPE_NORMAL);
 
-	shadowBuffer->bindForReading(3);
-	lightPass->sendInt("shadowMap", 3);
-	lightPass->sendFloat("farPlane", (float)FAR_PLANE);
+	shadowBuffer->BindForReading(3);
+	lightPass->SendInt("shadowMap", 3);
+	lightPass->SendFloat("farPlane", (float)FAR_PLANE);
 
-	lightPass->validateShaders();
+	lightPass->ValidateShaders();
 
 	glDisable(GL_DEPTH_TEST);
 	fullScreenTriangle->Draw();
 	glEnable(GL_DEPTH_TEST);
 
-	lightPass->unBind();
+	lightPass->UnBind();
 }
 
 // This function draws particles to the screen.
-void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime, glm::vec3 position)
+void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime, glm::vec3 position)
 {
 	finalFBO->BindForWriting();
 
 	// We need the camera right/up vector and the camera location in world space to be able to make billboards out of the particles
 	// PS = ParticleShader
-	GLuint cameraRightWorldPS = glGetUniformLocation(*particleShader->getProgram(), "cameraRightWorldPS");
-	GLuint cameraUpWorldPS = glGetUniformLocation(*particleShader->getProgram(), "cameraUpWorldPS");
-	GLuint viewProjection = glGetUniformLocation(*particleShader->getProgram(), "viewProjectionMatrix");
+	GLuint cameraRightWorldPS = glGetUniformLocation(*particleShader->GetProgram(), "cameraRightWorldPS");
+	GLuint cameraUpWorldPS = glGetUniformLocation(*particleShader->GetProgram(), "cameraUpWorldPS");
+	GLuint viewProjection = glGetUniformLocation(*particleShader->GetProgram(), "viewProjectionMatrix");
 
 	// Create new particles
-	particle->generateParticles(deltaTime, position);
+	particle->GenerateParticles(deltaTime, position);
 
 	// Simulate all the particles
-	particle->simulateParticles(camera->GetCameraPosition(), deltaTime);
+	particle->SimulateParticles(camera->GetCameraPosition(), deltaTime);
 
 	// Update the buffers holding the particles
-	particle->update();
+	particle->Update();
 
 	// Bind the correct shader
 	particleShader->Bind();
@@ -145,22 +145,22 @@ void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-	particle->bindTexture();
+	particle->BindTexture();
 
 	// Bind the buffers holding the particles
-	particle->bind();
+	particle->Bind();
 
 	// Draw the particles, send a draw call to the GPU
-	particle->draw();
+	particle->Draw();
 
 	glDisable(GL_BLEND);
 	glDepthMask(true);
 
 	// Unbind the shader
-	particleShader->unBind();
+	particleShader->UnBind();
 }
 
-void lightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, double counter)
+void LightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, double counter)
 {
 	bloomBuffer->BindForWriting();
 
@@ -168,23 +168,23 @@ void lightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLigh
 	glCullFace(GL_BACK);
 
 	pointLightPass->Bind();
-	for (unsigned int i = 0; i < lights->getNrOfLights(); i++)
+	for (unsigned int i = 0; i < lights->GetNrOfLights(); i++)
 	{
-		pointLightPass->Update(*lights->getTransform(i), *camera);
+		pointLightPass->Update(*lights->GetTransform(i), *camera);
 		lights->Draw(i);
 	}
-	pointLightPass->unBind();
+	pointLightPass->UnBind();
 	glDisable(GL_CULL_FACE);
 }
 
-void blurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle)
+void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle)
 {
 	blurShader->Bind();
 	int timesToBlur = 10;
 	bool horizontal = true;
 	bool firstBlur = true;
 
-	//GLuint loc = glGetUniformLocation(*blurShader->getProgram(), "scene");
+	//GLuint loc = glGetUniformLocation(*blurShader->GetProgram(), "scene");
 
 	for (int i = 0; i < timesToBlur; i++)
 	{
@@ -195,15 +195,15 @@ void blurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuff
 		if (firstBlur == true)
 		{
 			bloomBuffer->BindForReadingBloomMap(0);
-			blurShader->sendInt("horizontal", !horizontal);
-			blurShader->sendInt("scene", 0);
+			blurShader->SendInt("horizontal", !horizontal);
+			blurShader->SendInt("scene", 0);
 		}
 		else
 		{
 			blurBuffers->BindForReading(horizontal, 0);
-			blurShader->sendInt("horizontal", !horizontal);
+			blurShader->SendInt("horizontal", !horizontal);
 
-			blurShader->sendInt("scene", 0);
+			blurShader->SendInt("scene", 0);
 		}
 
 		glDisable(GL_DEPTH_TEST);
@@ -220,7 +220,7 @@ void blurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuff
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void finalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle)
+void FinalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle)
 {
 	finalFBO->BindForWriting();
 
@@ -229,10 +229,10 @@ void finalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *
 	finalBloomShader->Bind();
 
 	bloomBuffer->BindForReadingDiffuse();
-	finalBloomShader->sendInt("scene", 0);
+	finalBloomShader->SendInt("scene", 0);
 
 	blurBuffers->BindForReading(1, 1);
-	finalBloomShader->sendInt("bright", 1);
+	finalBloomShader->SendInt("bright", 1);
 
 	glDisable(GL_DEPTH_TEST);
 	fullScreenTriangle->Draw();
@@ -240,44 +240,44 @@ void finalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *
 
 }
 
-void finalPass(FinalFBO * finalFBO, Shader * finalShader, Mesh * fullScreenTriangle)
+void FinalPass(FinalFBO * finalFBO, Shader * finalShader, Mesh * fullScreenTriangle)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	finalFBO->BindForReading(0);
 
 	finalShader->Bind();
-	finalShader->sendInt("scene", 0);
+	finalShader->SendInt("scene", 0);
 
 	glDisable(GL_DEPTH_TEST);
 	fullScreenTriangle->Draw();
 	glEnable(GL_DEPTH_TEST);
 }
 
-void sendCameraLocationToGPU(GLuint cameraLocation, Camera *camera)
+void SendCameraLocationToGPU(GLuint cameraLocation, Camera *camera)
 {
 	glUniform3f(cameraLocation, camera->GetCameraPosition().x, camera->GetCameraPosition().y, camera->GetCameraPosition().z);
 }
 
-void prepareTexture(GLuint textureLoc, GLuint normalMapLoc)
+void PrepareTexture(GLuint textureLoc, GLuint normalMapLoc)
 {
 	glUniform1i(textureLoc, 0);
 	glUniform1i(normalMapLoc, 1);
 }
 
-void setStartPositions(ObjectHandler * OH)
+void SetStartPositions(ObjectHandler * OH)
 {
 
 }
 
-void generateMazeBitmaps(int height, int width)
+void GenerateMazeBitmaps(int height, int width)
 {
 	MazeGeneratePNG mazeGen(height, width);
 
-	// set_cell can be used to set "entrance and exit" etc
-	//mazeGen.set_cell(0, 1, mazeGen.path);
-	//mazeGen.set_cell(mazeHeight - 1, mazeWidth - 2, mazeGen.path);
+	// Set_cell can be used to set "entrance and exit" etc
+	//mazeGen.Set_cell(0, 1, mazeGen.path);
+	//mazeGen.Set_cell(mazeHeight - 1, mazeWidth - 2, mazeGen.path);
 
-	mazeGen.generate();
-	mazeGen.draw_png();
+	mazeGen.Generate();
+	mazeGen.Draw_png();
 }

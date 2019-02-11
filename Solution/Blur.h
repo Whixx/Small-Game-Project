@@ -19,6 +19,7 @@ public:
 	void BindForWriting(bool horizontal);
 	void BindForReading(bool horizontal, int textureUnit);
 	void SetReadBuffer(BLURBUFFER_TEXTURE_TYPE TextureType);
+
 private:
 	GLuint fbo[2];
 	GLuint colorBuffers[2];

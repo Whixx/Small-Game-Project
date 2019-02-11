@@ -10,7 +10,7 @@ int main()
 
 	// height and width must be odd numbers else the resulting maze will be off
 	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
-	generateMazeBitmaps(63, 63);
+	GenerateMazeBitmaps(63, 63);
 
 	Display display;
 
@@ -50,24 +50,24 @@ int main()
 
 	// False = Pos and Texcoord
 	// True  = Pos and Color
-	shadowShader.initiateShaders(false);
-	geometryPass.initiateShaders(false);
-	lightPass.initiateShaders(false);
-	particleShader.initiateShaders(false);
-	pointLightPass.initiateShaders(true);
-	blurShader.initiateShaders(false);
-	finalBloomShader.initiateShaders(false);
-	finalShader.initiateShaders(false);
+	shadowShader.InitiateShaders(false);
+	geometryPass.InitiateShaders(false);
+	lightPass.InitiateShaders(false);
+	particleShader.InitiateShaders(false);
+	pointLightPass.InitiateShaders(true);
+	blurShader.InitiateShaders(false);
+	finalBloomShader.InitiateShaders(false);
+	finalShader.InitiateShaders(false);
 	
-	shadowShader.validateShaders();
-	geometryPass.validateShaders();
+	shadowShader.ValidateShaders();
+	geometryPass.ValidateShaders();
 	// LightPass is validated before its drawcall (to fix a bug), so its not validated here
-	// LightPass.validateShaders();
-	particleShader.validateShaders();
-	pointLightPass.validateShaders();
-	blurShader.validateShaders();
-	finalBloomShader.validateShaders();
-	finalShader.validateShaders();
+	// LightPass.ValidateShaders();
+	particleShader.ValidateShaders();
+	pointLightPass.ValidateShaders();
+	blurShader.ValidateShaders();
+	finalBloomShader.ValidateShaders();
+	finalShader.ValidateShaders();
 
 	glm::vec3 playerVector = glm::vec3(0.3f, 0, 1);
 	float playerHeight = 1.0f;
@@ -93,7 +93,7 @@ int main()
 	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
 	int torch = OH.CreateObject("ObjectFiles/torch.obj", &torchMesh, &torchTexture);
 
-	OH.getObject(torch)->GetScale() *= 0.1;
+	OH.GetObject(torch)->GetScale() *= 0.1;
 	
 	//=================================================================================//
 
@@ -139,27 +139,27 @@ int main()
 	PointLight torchLight;
 	float torchLightIntensity = 2.0f;
 	torchLight.GetColor() = glm::vec3(1.0f, 0.3f, 0.3f) * torchLightIntensity;
-	lights.createLight(OH.getObject(torch)->GetPos(), torchLight.GetColor());
-	/*lights.createLight(glm::vec3(-7.0f, 7.0f, -3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-	lights.createLight(glm::vec3(7.0f, 7.0f, 15.0f), glm::vec3(0.3f, 0.0f, 0.0f));*/
+	lights.CreateLight(OH.GetObject(torch)->GetPos(), torchLight.GetColor());
+	/*lights.CreateLight(glm::vec3(-7.0f, 7.0f, -3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	lights.CreateLight(glm::vec3(7.0f, 7.0f, 15.0f), glm::vec3(0.3f, 0.0f, 0.0f));*/
 
-	lights.initiateLights(lightPass.getProgram());
+	lights.InitiateLights(lightPass.GetProgram());
 
 	Particle particle;
 	Texture particleTexture("Textures/particle.png", "NormalMaps/flat_normal.jpg");
-	particle.setTexture(&particleTexture);
+	particle.SetTexture(&particleTexture);
 	
 	// Tell the shaders the name of the camera (GP = GeometeryPass, LP = LightPass)
-	GLuint cameraLocationGP = glGetUniformLocation(*geometryPass.getProgram(), "cameraPosGP");
-	GLuint cameraLocationLP = glGetUniformLocation(*lightPass.getProgram(), "cameraPosLP");
+	GLuint cameraLocationGP = glGetUniformLocation(*geometryPass.GetProgram(), "cameraPosGP");
+	GLuint cameraLocationLP = glGetUniformLocation(*lightPass.GetProgram(), "cameraPosLP");
 
 	GLint texLoc;
 	GLint normalTexLoc;
 
-	texLoc = glGetUniformLocation(*geometryPass.getProgram(), "texture");
-	normalTexLoc = glGetUniformLocation(*geometryPass.getProgram(), "normalMap");
+	texLoc = glGetUniformLocation(*geometryPass.GetProgram(), "texture");
+	normalTexLoc = glGetUniformLocation(*geometryPass.GetProgram(), "normalMap");
 
-	GLuint viewProjection = glGetUniformLocation(*pointLightPass.getProgram(), "viewProjectionMatrix");
+	GLuint viewProjection = glGetUniformLocation(*pointLightPass.GetProgram(), "viewProjectionMatrix");
 
 	while(!display.IsWindowClosed())
 	{
@@ -167,7 +167,7 @@ int main()
 		player.Update(deltaTime);
 		player.GetCamera()->UpdateViewMatrix();
 		updateAllObjects(deltaTime, OH);
-		lights.updateShadowTransform(0);
+		lights.UpdateShadowTransform(0);
 				
 		// Update the time
 		constLastTime = currentTime;
@@ -191,16 +191,16 @@ int main()
 		IH.KeyboardControls(&display, &player, deltaTime);
 	
 		// Update the torch in front of the player'
-		OH.getObject(torch)->GetPos() = player.GetCamera()->GetCameraPosition()
+		OH.GetObject(torch)->GetPos() = player.GetCamera()->GetCameraPosition()
 			+ player.GetWalkingVector() * 0.8f
 			+ player.GetCamera()->GetRotateAround() * 0.4f
 			+ player.GetCamera()->GetUpVector() * -0.5f;
-		lights.getTransform(0)->GetPos() = glm::vec3(OH.getObject(torch)->GetPos().x, OH.getObject(torch)->GetPos().y + 1.5f, OH.getObject(torch)->GetPos().z);
+		lights.GetTransform(0)->GetPos() = glm::vec3(OH.GetObject(torch)->GetPos().x, OH.GetObject(torch)->GetPos().y + 1.5f, OH.GetObject(torch)->GetPos().z);
 		
 		// ================== MAIN FUNCTIONS ==================
 
 		// Here a cube map is calculated and stored in the shadowMap FBO
-		shadowPass(&shadowShader, &OH, &lights, &shadowMap, player.GetCamera());
+		ShadowPass(&shadowShader, &OH, &lights, &shadowMap, player.GetCamera());
 
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
@@ -208,30 +208,30 @@ int main()
 
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
-		DRLightPass(&gBuffer, &bloomBuffer, &fullScreenTriangle, lightPass.getProgram(), &lightPass, &shadowMap, &lights, cameraLocationLP, player.GetCamera());
+		DRLightPass(&gBuffer, &bloomBuffer, &fullScreenTriangle, lightPass.GetProgram(), &lightPass, &shadowMap, &lights, cameraLocationLP, player.GetCamera());
 
 		// Copy the depth from the gBuffer to the bloomBuffer
 		bloomBuffer.CopyDepth(SCREENWIDTH, SCREENHEIGHT, gBuffer.GetFBO());
 
 		// Draw lightSpheres
 		#ifdef DEBUG
-			lightSpherePass(&pointLightPass, &bloomBuffer, &lights, player.GetCamera(), counter);
+			LightSpherePass(&pointLightPass, &bloomBuffer, &lights, player.GetCamera(), counter);
 		#endif
 			
 		// Blur the bright texture
-		blurPass(&blurShader, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
+		BlurPass(&blurShader, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
 
 		// Combine the bright texture and the scene and store the Result in FinalFBO.
-		finalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
+		FinalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
 
 		// Copy the depth from the bloomBuffer to the finalFBO
 		finalFBO.CopyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.GetFBO());
 
 		// Draw particles to the FinalFBO
-		particlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, OH.getObject(torch)->GetPos());
+		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, OH.GetObject(torch)->GetPos());
 
 		// Render everything
-		finalPass(&finalFBO, &finalShader, &fullScreenTriangle);
+		FinalPass(&finalFBO, &finalShader, &fullScreenTriangle);
 
 		// ================== SWAP BUFFERS ==================
 		display.SwapBuffers(SCREENWIDTH, SCREENHEIGHT);

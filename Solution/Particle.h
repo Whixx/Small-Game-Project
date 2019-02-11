@@ -33,17 +33,17 @@ public:
 	Particle();
 	~Particle();
 
-	void generateParticles(float deltaTime, glm::vec3 particlePos);
-	void simulateParticles(glm::vec3 cameraPosition, float deltaTime);
-	void update();
-	void bind();
-	void draw();
-	void bindTexture();
-	void setTexture(Texture* texture);
+	void GenerateParticles(float deltaTime, glm::vec3 particlePos);
+	void SimulateParticles(glm::vec3 cameraPosition, float deltaTime);
+	void Update();
+	void Bind();
+	void Draw();
+	void BindTexture();
+	void SetTexture(Texture* texture);
 private:
-	GLuint billboard_vertex_buffer;
-	GLuint particles_position_buffer;
-	GLuint particles_color_buffer;
+	GLuint billboardVertexBuffer;
+	GLuint particlesPositionBuffer;
+	GLuint particlesColorBuffer;
 
 	ParticleStruct particleArray[maxParticles];
 	GLfloat* particlePosSizeBuffer;

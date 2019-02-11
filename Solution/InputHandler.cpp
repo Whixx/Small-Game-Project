@@ -29,7 +29,7 @@ void InputHandler::MouseControls(Display * display, Player * player, float elaps
 	glfwGetCursorPos(display->GetWindow(), &mouseXpos, &mouseYpos);
 	if (this->mouseLock)
 	{
-		player->updateMouse(glm::vec2(mouseXpos, mouseYpos), elapsedTime);
+		player->UpdateMouse(glm::vec2(mouseXpos, mouseYpos), elapsedTime);
 	}
 }
 
@@ -41,32 +41,32 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_W);
 	if (keyboardButton == GLFW_PRESS)
 	{
-		player->moveForward(elapsedTime);
+		player->MoveForward(elapsedTime);
 	}
 	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_S);
 	if (keyboardButton == GLFW_PRESS)
 	{
-		player->moveBackward(elapsedTime);
+		player->MoveBackward(elapsedTime);
 	}
 	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_D);
 	if (keyboardButton == GLFW_PRESS)
 	{
-		player->moveRight(elapsedTime);
+		player->MoveRight(elapsedTime);
 	}
 	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_A);
 	if (keyboardButton == GLFW_PRESS)
 	{
-		player->moveLeft(elapsedTime);
+		player->MoveLeft(elapsedTime);
 	}
 	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_R);
 	if (keyboardButton == GLFW_PRESS)
 	{
-		player->moveUp(elapsedTime);
+		player->MoveUp(elapsedTime);
 	}
 	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_F);
 	if (keyboardButton == GLFW_PRESS)
 	{
-		player->moveDown(elapsedTime);
+		player->MoveDown(elapsedTime);
 	}
 	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_SPACE);
 	if (keyboardButton == GLFW_PRESS)

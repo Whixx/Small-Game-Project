@@ -17,14 +17,13 @@ public:
 	int CreateObject(Mesh *mesh, Texture *texture);
 	int CreateObject(const char* filePath, Mesh *mesh, Texture *texture);
 
-	unsigned int getNrOfObjects();
-	Object* getObject(int index);
+	unsigned int GetNrOfObjects();
+	Object* GetObject(int index);
 
 private:
 	unsigned int numberOfObjects;
 	Object allObjects[256];
 
-	
 };
 
 #endif

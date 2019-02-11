@@ -19,12 +19,6 @@ const int NEAR_PLANE = 1, FAR_PLANE = 100;
 
 class PointLight
 {
-private:
-	Mesh mesh;
-	Transform transform;
-	glm::mat4 shadowProj;
-	vector<glm::mat4> shadowTransforms;
-	glm::vec3 color;
 public:
 	PointLight();
 	Mesh& GetMesh();
@@ -33,18 +27,43 @@ public:
 	glm::vec3& GetScale();
 	glm::vec3& GetColor();
 	
-	Transform *getTransform();
+	Transform *GetTransform();
 	vector<glm::mat4> &GetShadowTransforms();
 
-	void createShadowTransforms();
-	void resetShadowTransforms();
+	void CreateShadowTransforms();
+	void ResetShadowTransforms();
 
 	void Draw();
 	virtual ~PointLight();
+
+private:
+	Mesh mesh;
+	Transform transform;
+	glm::mat4 shadowProj;
+	vector<glm::mat4> shadowTransforms;
+	glm::vec3 color;
 };
 
 class PointLightHandler
 {
+public:
+	PointLightHandler();
+
+	// location, pos, color
+	void CreateLight(glm::vec3 position, glm::vec3 color);
+
+	void SendToShader();
+	void InitiateLights(GLuint *program);
+	void UpdateShadowTransform(GLuint cameraIndex);
+	void Draw(int index);
+	
+	vector<glm::mat4> GetShadowTransform(int index);
+
+	GLuint GetNrOfLights();
+	Transform *GetTransform(int index);
+
+	virtual ~PointLightHandler();
+
 private:
 	PointLight lightArray[MAX_NUMBER_OF_LIGHTS];
 	GLuint nrOfLights;
@@ -52,23 +71,6 @@ private:
 	GLuint loc_position[MAX_NUMBER_OF_LIGHTS];
 	GLuint loc_color[MAX_NUMBER_OF_LIGHTS];
 	GLuint loc_NrOfLights;
-public:
-	PointLightHandler();
-
-	// location, pos, color
-	void createLight(glm::vec3 position, glm::vec3 color);
-
-	void sendToShader();
-	void initiateLights(GLuint *program);
-	void updateShadowTransform(GLuint cameraIndex);
-	void Draw(int index);
-	
-	vector<glm::mat4> getShadowTransform(int index);
-
-	GLuint getNrOfLights();
-	Transform *getTransform(int index);
-
-	virtual ~PointLightHandler();
 };
 
 #endif

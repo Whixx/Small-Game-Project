@@ -12,17 +12,6 @@ using namespace std;
 
 class Maze
 {
-
-private:
-	unsigned char* imageData;
-	string path;
-	int width;
-	int height;
-	int numComponents;
-	GLuint m_texture;
-
-	glm::vec3 readPixel(unsigned int x, unsigned int y);
-
 public:
 	Maze(string bitmapPath);
 	~Maze();
@@ -32,10 +21,20 @@ public:
 	Maze& operator=(const Maze& other);
 
 
-	bool loadBMP(const std::string& fileName);
+	bool LoadBMP(const std::string& fileName);
 	bool IsWallAtWorld(float x, float y);
 
-	void bind(unsigned int textureUnit);
+	void Bind(unsigned int textureUnit);
+
+private:
+	unsigned char* imageData;
+	string path;
+	int width;
+	int height;
+	int numComponents;
+	GLuint texture;
+
+	glm::vec3 readPixel(unsigned int x, unsigned int y);
 };
 #endif
 

@@ -3,22 +3,22 @@
 
 ShadowMap::ShadowMap()
 {
-	this->m_fbo = 0;
-	this->m_depthCubeMap = 0;
+	this->fbo = 0;
+	this->depthCubeMap = 0;
 }
 
 
 ShadowMap::~ShadowMap()
 {
-	if (m_fbo != 0)
+	if (this->fbo != 0)
 	{
-		glDeleteFramebuffers(1, &m_fbo);
+		glDeleteFramebuffers(1, &this->fbo);
 	}
 
 
-	if (m_depthCubeMap != 0)
+	if (this->depthCubeMap != 0)
 	{
-		glDeleteTextures(1, &m_depthCubeMap);
+		glDeleteTextures(1, &this->depthCubeMap);
 	}
 }
 
@@ -26,11 +26,11 @@ bool ShadowMap::Init()
 {
 	bool success = true;
 
-	glGenFramebuffers(1, &m_fbo);
+	glGenFramebuffers(1, &this->fbo);
 
 	// create depth cubemap texture
-	glGenTextures(1, &m_depthCubeMap);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, m_depthCubeMap);
+	glGenTextures(1, &this->depthCubeMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, this->depthCubeMap);
 
 	// Create 6 textures (a cubemap)
 	for (unsigned int i = 0; i < 6; ++i)
@@ -45,15 +45,16 @@ bool ShadowMap::Init()
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 	// attach depth texture as FBO's depth buffer
-	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_depthCubeMap, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, this->depthCubeMap, 0);
 
 	// Specify that we aren't using any colorattachments, whichs means we're not gonna save anything other then the depth.
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 
 	GLenum Status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (Status != GL_FRAMEBUFFER_COMPLETE) {
+	if (Status != GL_FRAMEBUFFER_COMPLETE)
+	{
 		printf("FB error, status: 0x%x\n", Status);
 		success = false;
 	}
@@ -63,15 +64,15 @@ bool ShadowMap::Init()
 	return success;
 }
 
-void ShadowMap::bind()
+void ShadowMap::Bind()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, this->m_fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
 }
 
-void ShadowMap::bindForReading(GLuint textureUnit)
+void ShadowMap::BindForReading(GLuint textureUnit)
 {
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_fbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, this->fbo);
 
 	glActiveTexture(GL_TEXTURE0 + textureUnit);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, m_depthCubeMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, this->depthCubeMap);
 }

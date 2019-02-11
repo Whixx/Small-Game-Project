@@ -23,13 +23,13 @@ public:
 
 	void SetPlayerHeight(float height);
 	void SetPlayerSpeed(float speed);
-	void moveForward(float elapsedTime);
-	void moveBackward(float elapsedTime);
-	void moveRight(float elapsedTime);
-	void moveLeft(float elapsedTime);
-	void moveUp(float elapsedTime);
-	void moveDown(float elapsedTime);
-	void updateMouse(const glm::vec2& newMousePosition, float elapsedTime);
+	void MoveForward(float elapsedTime);
+	void MoveBackward(float elapsedTime);
+	void MoveRight(float elapsedTime);
+	void MoveLeft(float elapsedTime);
+	void MoveUp(float elapsedTime);
+	void MoveDown(float elapsedTime);
+	void UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime);
 	void Update(double dt);
 	
 private:

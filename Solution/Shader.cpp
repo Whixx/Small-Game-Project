@@ -6,59 +6,59 @@ static std::string LoadShader(const std::string fileName);
 
 Shader::Shader()
 {
-	program = glCreateProgram();
+	this->program = glCreateProgram();
 	this->NUM_OF_SHADERS = 0;
 }
 
 void Shader::Bind()
 {
-	glUseProgram(program);
+	glUseProgram(this->program);
 }
 
-void Shader::unBind()
+void Shader::UnBind()
 {
 	glUseProgram(0);
 }
 
 void Shader::Update(const Transform & transform, const Camera& camera)
 {
-	glm::mat4 modelT = camera.GetViewProjection() * transform.getWorldMatrix();
-	glm::mat4 modelW = transform.getWorldMatrix();
+	glm::mat4 modelT = camera.GetViewProjection() * transform.GetWorldMatrix();
+	glm::mat4 modelW = transform.GetWorldMatrix();
 
 
 	// Skicka matriserna till GPU'n
-	glUniformMatrix4fv(uniforms[TRANSFORM_U], 1, GL_FALSE, &modelT[0][0]);
-	glUniformMatrix4fv(uniforms[WORLD_U], 1, GL_FALSE, &modelW[0][0]);
+	glUniformMatrix4fv(this->uniforms[TRANSFORM_U], 1, GL_FALSE, &modelT[0][0]);
+	glUniformMatrix4fv(this->uniforms[WORLD_U], 1, GL_FALSE, &modelW[0][0]);
 }
 
-void Shader::initiateShaders(bool color)
+void Shader::InitiateShaders(bool color)
 {
 	for (unsigned int i = 0; i < NUM_OF_SHADERS; i++)
-		glAttachShader(program, shaders[i]);
+		glAttachShader(this->program, this->shaders[i]);
 
-	glBindAttribLocation(program, 0, "position");
+	glBindAttribLocation(this->program, 0, "position");
 
 	if (color == true)
 	{
-		glBindAttribLocation(program, 1, "color");
+		glBindAttribLocation(this->program, 1, "color");
 	}
 	else
 	{
-		glBindAttribLocation(program, 1, "texCoord");
+		glBindAttribLocation(this->program, 1, "texCoord");
 	}	
 
-	glLinkProgram(program);
-	CheckShaderError(program, GL_LINK_STATUS, true, "Error: Program linking failed: ");
+	glLinkProgram(this->program);
+	CheckShaderError(this->program, GL_LINK_STATUS, true, "Error: Program linking failed: ");
 
 	// Berättar för GPU'n vad namnet på inkommande variabel är.
-	uniforms[TRANSFORM_U] = glGetUniformLocation(program, "transformationMatrix");
-	uniforms[WORLD_U] = glGetUniformLocation(program, "WorldMatrix");
+	this->uniforms[TRANSFORM_U] = glGetUniformLocation(this->program, "transformationMatrix");
+	this->uniforms[WORLD_U] = glGetUniformLocation(this->program, "WorldMatrix");
 }
 
-void Shader::validateShaders()
+void Shader::ValidateShaders()
 {
-	glValidateProgram(program);
-	CheckShaderError(program, GL_VALIDATE_STATUS, true, "Error: Program is invalid: ");
+	glValidateProgram(this->program);
+	CheckShaderError(this->program, GL_VALIDATE_STATUS, true, "Error: Program is invalid: ");
 }
 
 
@@ -66,33 +66,33 @@ Shader::~Shader()
 {
 	for (unsigned int i = 0; i < NUM_OF_SHADERS; i++)
 	{
-		glDetachShader(program, shaders[i]);
-		glDeleteShader(shaders[i]);
+		glDetachShader(this->program, this->shaders[i]);
+		glDeleteShader(this->shaders[i]);
 	}
 
 	glDeleteProgram(program);
 }
 
-void Shader::sendInt(const char *name, int value)
+void Shader::SendInt(const char *name, int value)
 {
-	glUniform1i(glGetUniformLocation(program, name), value);
+	glUniform1i(glGetUniformLocation(this->program, name), value);
 }
 
-void Shader::sendFloat(const char * name, float value)
+void Shader::SendFloat(const char * name, float value)
 {
 	glUniform1f(glGetUniformLocation(this->program, name), value);
 }
 
-void Shader::sendVec3(const char * name, float x, float y, float z)
+void Shader::SendVec3(const char * name, float x, float y, float z)
 {
 	glUniform3f(glGetUniformLocation(this->program, name), x, y, z);
 }
 /*
-void Shader::sendMat4(const char *name, const glm::mat4 &mat)
+void Shader::SendMat4(const char *name, const glm::mat4 &mat)
 {
 	glUniformMatrix4fv(glGetUniformLocation(this->program, name), 1, GL_FALSE, &mat[0][0]);
 }*/
-void Shader::setMat4(const std::string &name, const glm::mat4 &mat)
+void Shader::SetMat4(const std::string &name, const glm::mat4 &mat)
 {
 	glUniformMatrix4fv(glGetUniformLocation(this->program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
@@ -168,7 +168,7 @@ GLuint Shader::CreateShader(const std::string & fileName, GLenum shaderType)
 	return shader;
 }
 
-GLuint *Shader::getProgram()
+GLuint *Shader::GetProgram()
 {
 	return &this->program;
 }

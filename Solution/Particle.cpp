@@ -14,8 +14,8 @@ Particle::Particle()
 	// Fill upp the particleArray with init values
 	for (int i = 0; i < maxParticles; i++)
 	{
-		particleArray[i].life = -1.0f;
-		particleArray[i].cameradistance = -1.0f;
+		this->particleArray[i].life = -1.0f;
+		this->particleArray[i].cameradistance = -1.0f;
 	}
 
 	// The VBO containing the 4 vertices of the particles.
@@ -27,43 +27,47 @@ Particle::Particle()
 	 0.5f, 0.5f, 0.0f,
 	};
 	
-	glGenBuffers(1, &this->billboard_vertex_buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, this->billboard_vertex_buffer);
+	glGenBuffers(1, &this->billboardVertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, this->billboardVertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
 	// The VBO containing the positions and sizes of the particles
-	glGenBuffers(1, &this->particles_position_buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, this->particles_position_buffer);
+	glGenBuffers(1, &this->particlesPositionBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, this->particlesPositionBuffer);
 	// Initialize with empty (NULL) buffer : it will be updated later, each frame.
 	glBufferData(GL_ARRAY_BUFFER, maxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
 
 	// The VBO containing the colors of the particles
-	glGenBuffers(1, &this->particles_color_buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, this->particles_color_buffer);
+	glGenBuffers(1, &this->particlesColorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, this->particlesColorBuffer);
 	// Initialize with empty (NULL) buffer : it will be updated later, each frame.
 	glBufferData(GL_ARRAY_BUFFER, maxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
 }
 
 Particle::~Particle()
 {
-	delete[] particlePosSizeBuffer;
-	delete[] particleColorBuffer;
+	delete[] this->particlePosSizeBuffer;
+	delete[] this->particleColorBuffer;
 
-	glDeleteBuffers(1, &billboard_vertex_buffer);
+	glDeleteBuffers(1, &this->billboardVertexBuffer);
 }
 
 int Particle::findDeadParticle()
 {
 	// Double for loops to make this a bit more effective.
-	for (int i = this->lastUsedParticle; i < maxParticles; i++) {
-		if (particleArray[i].life < 0) {
+	for (int i = this->lastUsedParticle; i < maxParticles; i++)
+	{
+		if (this->particleArray[i].life < 0)
+		{
 			this->lastUsedParticle = i;
 			return i;
 		}
 	}
 
-	for (int i = 0; i < this->lastUsedParticle; i++) {
-		if (particleArray[i].life < 0) {
+	for (int i = 0; i < this->lastUsedParticle; i++)
+	{
+		if (this->particleArray[i].life < 0)
+		{
 			this->lastUsedParticle = i;
 			return i;
 		}
@@ -74,10 +78,10 @@ int Particle::findDeadParticle()
 
 void Particle::sort()
 {
-	std::sort(&particleArray[0], &particleArray[maxParticles]);
+	std::sort(&this->particleArray[0], &this->particleArray[maxParticles]);
 }
 
-void Particle::generateParticles(float deltaTime, glm::vec3 particlePos)
+void Particle::GenerateParticles(float deltaTime, glm::vec3 particlePos)
 {
 	int newParticlesToCreate = 5;
 	
@@ -120,7 +124,7 @@ void Particle::generateParticles(float deltaTime, glm::vec3 particlePos)
 	}
 }
 
-void Particle::simulateParticles(glm::vec3 cameraPosition, float deltaTime)
+void Particle::SimulateParticles(glm::vec3 cameraPosition, float deltaTime)
 {
 	this->nrOfActiveParticles = 0;
 
@@ -193,23 +197,23 @@ void Particle::simulateParticles(glm::vec3 cameraPosition, float deltaTime)
 }
 
 // Update the buffers that OpenGL uses for rendering. Here we send our buffers to the GPU
-void Particle::update()
+void Particle::Update()
 {
-	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, this->particlesPositionBuffer);
 	glBufferData(GL_ARRAY_BUFFER, maxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, this->nrOfActiveParticles * sizeof(GLfloat) * 4, this->particlePosSizeBuffer);
 
-	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, this->particlesColorBuffer);
 	glBufferData(GL_ARRAY_BUFFER, maxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, this->nrOfActiveParticles * sizeof(GLubyte) * 4, this->particleColorBuffer);
 }
 
 // Bind every buffer (Vertexbuffer, PositionBuffer and ColorBuffer)
-void Particle::bind()
+void Particle::Bind()
 {
 	// Vertices
 	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, this->billboard_vertex_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, this->billboardVertexBuffer);
 	glVertexAttribPointer(
 		0, // attribute. No particular reason for 0, but must match the layout in the shader.
 		3, // size
@@ -221,7 +225,7 @@ void Particle::bind()
 
 	// Positions
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, this->particles_position_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, this->particlesPositionBuffer);
 	glVertexAttribPointer(
 		1, // attribute. No particular reason for 1, but must match the layout in the shader.
 		4, // size : x + y + z + size => 4
@@ -233,7 +237,7 @@ void Particle::bind()
 
 	// Colors
 	glEnableVertexAttribArray(2);
-	glBindBuffer(GL_ARRAY_BUFFER, this->particles_color_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, this->particlesColorBuffer);
 	glVertexAttribPointer(
 		2, // attribute. No particular reason for 1, but must match the layout in the shader.
 		4, // size : r + g + b + a => 4
@@ -244,7 +248,7 @@ void Particle::bind()
 	);
 }
 
-void Particle::draw()
+void Particle::Draw()
 {
 	// Vertices, allways use the same vertices to make every particle (Hence the 0 parameter
 	glVertexAttribDivisor(0, 0);
@@ -264,12 +268,12 @@ void Particle::draw()
 	glDisableVertexAttribArray(2);
 }
 
-void Particle::bindTexture()
+void Particle::BindTexture()
 {
 	this->texture->Bind(0);
 }
 
-void Particle::setTexture(Texture* texture)
+void Particle::SetTexture(Texture* texture)
 {
 	this->texture = texture;
 }
