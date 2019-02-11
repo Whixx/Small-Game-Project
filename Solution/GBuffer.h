@@ -10,7 +10,6 @@ Detta sker i två steg: Geometry pass och lightning pass.
 class GBuffer
 {
 public:
-
 	enum GBUFFER_TEXTURE_TYPE
 	{
 		GBUFFER_TEXTURE_TYPE_POSITION,
@@ -33,7 +32,6 @@ public:
 	GLuint GetFBO();
 
 private:
-	
 	GLuint fbo;
 	GLuint textures[GBUFFER_NUM_TEXTURES];
 	GLuint depthTexture;

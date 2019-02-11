@@ -5,29 +5,29 @@
 
 Texture::Texture(const std::string& textureName, const std::string& normalMapName)
 {
-	create(textureName, 0);
-	create(normalMapName, 1);
+	Create(textureName, 0);
+	Create(normalMapName, 1);
 }
 
 Texture::Texture(const Texture & other)
 {
-	this->m_texture = other.m_texture;
-	this->m_normalMap = other.m_normalMap;
+	this->texture = other.texture;
+	this->normalMap = other.normalMap;
 }
 
 void Texture::operator=(const Texture & other)
 {
-	this->m_texture = other.m_texture;
-	this->m_normalMap = other.m_normalMap;
+	this->texture = other.texture;
+	this->normalMap = other.normalMap;
 }
 
 Texture::~Texture()
 {
-	glDeleteTextures(1, &m_texture);
-	glDeleteTextures(1, &m_normalMap);
+	glDeleteTextures(1, &this->texture);
+	glDeleteTextures(1, &this->normalMap);
 }
 
-void Texture::create(const std::string & fileName, bool nMap)
+void Texture::Create(const std::string & fileName, bool nMap)
 {
 	int width, height, numComponents;
 	unsigned char* imageData = stbi_load(fileName.c_str(), &width, &height, &numComponents, 4);
@@ -39,13 +39,13 @@ void Texture::create(const std::string & fileName, bool nMap)
 
 	if (nMap == false)
 	{
-		glGenTextures(1, &m_texture);
-		glBindTexture(GL_TEXTURE_2D, m_texture);
+		glGenTextures(1, &this->texture);
+		glBindTexture(GL_TEXTURE_2D, this->texture);
 	}
 	else
 	{
-		glGenTextures(1, &m_normalMap);
-		glBindTexture(GL_TEXTURE_2D, m_normalMap);
+		glGenTextures(1, &this->normalMap);
+		glBindTexture(GL_TEXTURE_2D, this->normalMap);
 	}
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -65,10 +65,10 @@ void Texture::Bind(unsigned int unit)
 	if (unit * 2 >= 0 && unit * 2 <= 31)
 	{
 		glActiveTexture(GL_TEXTURE0 + unit * 2);
-		glBindTexture(GL_TEXTURE_2D, m_texture);
+		glBindTexture(GL_TEXTURE_2D, this->texture);
 
 		glActiveTexture(GL_TEXTURE0 + unit * 2 + 1);
-		glBindTexture(GL_TEXTURE_2D, m_normalMap);
+		glBindTexture(GL_TEXTURE_2D, this->normalMap);
 	}
 	else
 	{

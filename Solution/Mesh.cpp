@@ -16,29 +16,29 @@ Mesh::Mesh(Vertex* vertices, unsigned int numOfVertices)
 
 	}
 
-	createMesh(positions, texCoords);
+	CreateMesh(positions, texCoords);
 }
 
 //Mesh::Mesh(std::vector<glm::vec3> vertices, std::vector<glm::vec2> uvCoords)
 //{
-//	createMesh(vertices, uvCoords);
+//	CreateMesh(vertices, uvCoords);
 //}
 
 Mesh::Mesh(const char * meshPath)
 {
-	createMesh(meshPath);
+	CreateMesh(meshPath);
 }
 
 Mesh::Mesh(const char * meshPath, glm::vec3 color)
 {
-	createMesh(meshPath, color);
+	CreateMesh(meshPath, color);
 }
 
 void Mesh::Draw()
 {
-	glBindVertexArray(vertexArrayObject);
+	glBindVertexArray(this->vertexArrayObject);
 
-	glDrawArrays(GL_TRIANGLES, 0, drawCount);
+	glDrawArrays(GL_TRIANGLES, 0, this->drawCount);
 
 	glBindVertexArray(0);
 }
@@ -50,10 +50,10 @@ unsigned int Mesh::GetDrawCount()
 
 Mesh::~Mesh()
 {
-	glDeleteVertexArrays(1, &vertexArrayObject);
-	glDeleteBuffers(1, vertexArrayBuffers);
+	glDeleteVertexArrays(1, &this->vertexArrayObject);
+	glDeleteBuffers(1, this->vertexArrayBuffers);
 }
-bool Mesh::createMesh(const char * meshPath)
+bool Mesh::CreateMesh(const char * meshPath)
 {
 	bool loaded = false;
 
@@ -61,21 +61,21 @@ bool Mesh::createMesh(const char * meshPath)
 	vector<glm::vec2> uvCoords;
 	vector<glm::vec3> normals;
 
-	loaded = loadMesh(meshPath, vertices, uvCoords, normals);
+	loaded = LoadMesh(meshPath, vertices, uvCoords, normals);
 
 	drawCount = vertices.size();
 
-	glGenVertexArrays(1, &vertexArrayObject);
-	glBindVertexArray(vertexArrayObject);
+	glGenVertexArrays(1, &this->vertexArrayObject);
+	glBindVertexArray(this->vertexArrayObject);
 
-	glGenBuffers(NUM_OF_BUFFERS, vertexArrayBuffers);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexArrayBuffers[POSITION_VB]);
+	glGenBuffers(NUM_OF_BUFFERS, this->vertexArrayBuffers);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[POSITION_VB]);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices[0]), &vertices[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vertexArrayBuffers[TEXCOORD_VB]);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[TEXCOORD_VB]);
 	glBufferData(GL_ARRAY_BUFFER, uvCoords.size() * sizeof(uvCoords[0]), &uvCoords[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(1);
@@ -86,21 +86,21 @@ bool Mesh::createMesh(const char * meshPath)
 	return loaded;
 }
 
-void Mesh::createMesh(std::vector<glm::vec3> vertices, std::vector<glm::vec2> uvCoords)
+void Mesh::CreateMesh(std::vector<glm::vec3> vertices, std::vector<glm::vec2> uvCoords)
 {
 	drawCount = vertices.size();
 
-	glGenVertexArrays(1, &vertexArrayObject);
-	glBindVertexArray(vertexArrayObject);
+	glGenVertexArrays(1, &this->vertexArrayObject);
+	glBindVertexArray(this->vertexArrayObject);
 
-	glGenBuffers(NUM_OF_BUFFERS, vertexArrayBuffers);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexArrayBuffers[POSITION_VB]);
+	glGenBuffers(NUM_OF_BUFFERS, this->vertexArrayBuffers);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[POSITION_VB]);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices[0]), &vertices[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vertexArrayBuffers[TEXCOORD_VB]);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[TEXCOORD_VB]);
 	glBufferData(GL_ARRAY_BUFFER, uvCoords.size() * sizeof(uvCoords[0]), &uvCoords[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(1);
@@ -109,7 +109,7 @@ void Mesh::createMesh(std::vector<glm::vec3> vertices, std::vector<glm::vec2> uv
 	glBindVertexArray(0);
 }
 
-bool Mesh::createMesh(const char * meshPath, glm::vec3 color)
+bool Mesh::CreateMesh(const char * meshPath, glm::vec3 color)
 {
 	bool loaded = false;
 
@@ -117,7 +117,7 @@ bool Mesh::createMesh(const char * meshPath, glm::vec3 color)
 	vector<glm::vec2> uvCoords;
 	vector<glm::vec3> normals;
 
-	loaded = loadMesh(meshPath, vertices, uvCoords, normals);
+	loaded = LoadMesh(meshPath, vertices, uvCoords, normals);
 
 	drawCount = vertices.size();
 
@@ -129,18 +129,18 @@ bool Mesh::createMesh(const char * meshPath, glm::vec3 color)
 		colors.push_back(color);
 	}
 
-	glGenVertexArrays(1, &vertexArrayObject);
-	glBindVertexArray(vertexArrayObject);
+	glGenVertexArrays(1, &this->vertexArrayObject);
+	glBindVertexArray(this->vertexArrayObject);
 
-	glGenBuffers(NUM_OF_BUFFERS, vertexArrayBuffers);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexArrayBuffers[POSITION_VB]);
+	glGenBuffers(NUM_OF_BUFFERS, this->vertexArrayBuffers);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[POSITION_VB]);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices[0]), &vertices[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 													// This is really color and not texture coordinates
-	glBindBuffer(GL_ARRAY_BUFFER, vertexArrayBuffers[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[1]);
 	glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(colors[0]), &colors[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(1);
@@ -153,7 +153,7 @@ bool Mesh::createMesh(const char * meshPath, glm::vec3 color)
 
 
 
-bool Mesh::loadMesh(const char * meshPath, vector<glm::vec3>& vertices, vector<glm::vec2>& uvs, vector<glm::vec3>& normals)
+bool Mesh::LoadMesh(const char * meshPath, vector<glm::vec3>& vertices, vector<glm::vec2>& uvs, vector<glm::vec3>& normals)
 {
 	bool meshLoaded = false;
 	bool endOfFile = false;

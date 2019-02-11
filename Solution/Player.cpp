@@ -30,7 +30,7 @@ glm::vec3 Player::GetWalkingVector()
 
 Camera * Player::GetCamera()
 {
-	return &playerCamera;
+	return &this->playerCamera;
 }
 
 void Player::SetPlayerHeight(float height)
@@ -43,59 +43,59 @@ void Player::SetPlayerSpeed(float speed)
 	this->playerSpeed = speed;
 }
 
-void Player::moveForward(float elapsedTime)
+void Player::MoveForward(float elapsedTime)
 {
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * this->walkingVector * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 }
 
-void Player::moveBackward(float elapsedTime)
+void Player::MoveBackward(float elapsedTime)
 {
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * this->walkingVector * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 }
 
-void Player::moveRight(float elapsedTime)
+void Player::MoveRight(float elapsedTime)
 {
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 }
 
-void Player::moveLeft(float elapsedTime)
+void Player::MoveLeft(float elapsedTime)
 {
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 }
 
-void Player::moveUp(float elapsedTime)
+void Player::MoveUp(float elapsedTime)
 {
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * playerCamera.GetUpVector() * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 }
 
-void Player::moveDown(float elapsedTime)
+void Player::MoveDown(float elapsedTime)
 {
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * playerCamera.GetUpVector() * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 }
 
-void Player::updateMouse(const glm::vec2& newMousePosition, float elapsedTime)
+void Player::UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime)
 {
 	// Get mouse delta vector, how much the mouse has moved
-	playerCamera.SetMouseDelta(newMousePosition - playerCamera.GetOldMousePosition());
+	this->playerCamera.SetMouseDelta(newMousePosition - this->playerCamera.GetOldMousePosition());
 
 	// if the mouseDelta is to far away, the camera will jump to unpredicted areas.
-	if (glm::length(playerCamera.GetMouseDelta()) < 50.0f)
+	if (glm::length(this->playerCamera.GetMouseDelta()) < 50.0f)
 	{
 		//Update the horizontal view
-		playerCamera.SetForwardVector(glm::mat3(glm::rotate(-playerCamera.GetMouseDelta().x * playerCamera.GetRotationalSpeed() * elapsedTime, playerCamera.GetUpVector())) * playerCamera.GetForwardVector());
-		this->walkingVector = glm::mat3(glm::rotate(-playerCamera.GetMouseDelta().x * playerCamera.GetRotationalSpeed() * elapsedTime, playerCamera.GetUpVector())) * this->walkingVector;
+		this->playerCamera.SetForwardVector(glm::mat3(glm::rotate(-this->playerCamera.GetMouseDelta().x * this->playerCamera.GetRotationalSpeed() * elapsedTime, this->playerCamera.GetUpVector())) * this->playerCamera.GetForwardVector());
+		this->walkingVector = glm::mat3(glm::rotate(-this->playerCamera.GetMouseDelta().x * this->playerCamera.GetRotationalSpeed() * elapsedTime, this->playerCamera.GetUpVector())) * this->walkingVector;
 
 		//Update the vertical view limited to 45 degrees
-		playerCamera.SetRotateAround(glm::cross(playerCamera.GetForwardVector(), playerCamera.GetUpVector()));
+		playerCamera.SetRotateAround(glm::cross(this->playerCamera.GetForwardVector(), this->playerCamera.GetUpVector()));
 		//if (glm::dot(glm::normalize(playerCamera.GetForwardVector()), glm::normalize(this->walkingVector)) > 0.45f)
 		//{
-			playerCamera.SetForwardVector(glm::mat3(glm::rotate(-playerCamera.GetMouseDelta().y * playerCamera.GetRotationalSpeed() * elapsedTime, playerCamera.GetRotateAround())) * playerCamera.GetForwardVector());
+			playerCamera.SetForwardVector(glm::mat3(glm::rotate(-this->playerCamera.GetMouseDelta().y * this->playerCamera.GetRotationalSpeed() * elapsedTime, this->playerCamera.GetRotateAround())) * this->playerCamera.GetForwardVector());
 		//}
 		//else
 		//{
@@ -109,7 +109,7 @@ void Player::updateMouse(const glm::vec2& newMousePosition, float elapsedTime)
 void Player::Update(double dt)
 {
 	// Set player position to the cameras position
-	transform.SetPos(playerCamera.GetCameraPosition());
+	transform.SetPos(this->playerCamera.GetCameraPosition());
 
 	// Test variables
 	double x = 0.0;

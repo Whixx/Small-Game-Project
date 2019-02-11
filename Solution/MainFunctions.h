@@ -35,19 +35,19 @@
 void updateAllObjects(double dt, ObjectHandler &OH);
 
 // Shader pass functions
-void shadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Camera *camera);
+void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Camera *camera);
 void DRGeometryPass(GBuffer *gBuffer, double counter, Shader *geometryPass, Camera *camera, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc, int torch);
 void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenQuad, GLuint *program, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, GLuint cameraLocationLP, Camera *camera);
-void lightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, double counter);
-void blurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle);
-void finalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle);
-void particlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime, glm::vec3 position);
-void finalPass(FinalFBO * finalFBO, Shader * finalShader, Mesh *fullScreenTriangle);
+void LightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, double counter);
+void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle);
+void FinalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle);
+void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime, glm::vec3 position);
+void FinalPass(FinalFBO * finalFBO, Shader * finalShader, Mesh *fullScreenTriangle);
 
-void sendCameraLocationToGPU(GLuint cameraLocation, Camera *camera);
-void prepareTexture(GLuint textureLoc, GLuint normalMapLoc);
+void SendCameraLocationToGPU(GLuint cameraLocation, Camera *camera);
+void PrepareTexture(GLuint textureLoc, GLuint normalMapLoc);
 
-void setStartPositions(ObjectHandler *OH);
+void SetStartPositions(ObjectHandler *OH);
 
 // height and width must be odd numbers else the resulting maze will be off
-void generateMazeBitmaps(int height, int width);
+void GenerateMazeBitmaps(int height, int width);

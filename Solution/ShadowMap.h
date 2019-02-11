@@ -12,11 +12,11 @@ public:
 	bool Init();
 
 	// Binds the texture as a target during the geometry pass
-	void bind();
+	void Bind();
 
-	void bindForReading(GLuint textureUnit);
+	void BindForReading(GLuint textureUnit);
 private:
-	GLuint m_fbo;
-	GLuint m_depthCubeMap;
+	GLuint fbo;
+	GLuint depthCubeMap;
 };
 #endif

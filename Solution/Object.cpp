@@ -4,14 +4,14 @@ Object::Object(Mesh *mesh, Texture *texture)
 {
 	this->mesh = mesh;
 	this->texture = texture;
-	this->m_id = -1;
+	this->id = -1;
 }
 
 Object::Object(Mesh * mesh, Texture * texture, unsigned int id)
 {
 	this->mesh = mesh;
 	this->texture = texture;
-	this->m_id = id;
+	this->id = id;
 }
 
 Object::Object()
@@ -20,12 +20,11 @@ Object::Object()
 
 Object::~Object()
 {
-
 }
 
-glm::mat4 Object::getWorldMatrix() const
+glm::mat4 Object::GetWorldMatrix() const
 {
-	return this->transform.getWorldMatrix();
+	return this->transform.GetWorldMatrix();
 }
 
 Transform Object::GetTransform() const
@@ -57,7 +56,7 @@ void Object::Draw()
 	this->mesh->Draw();
 }
 
-void Object::bindTexture()
+void Object::BindTexture()
 {
 	this->texture->Bind(0);
 }

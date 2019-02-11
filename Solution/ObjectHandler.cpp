@@ -20,7 +20,7 @@ int ObjectHandler::CreateObject(Mesh *mesh,  Texture *texture)
 int ObjectHandler::CreateObject(const char* filePath, Mesh *mesh, Texture *texture)
 {
 	bool loaded = false;
-	loaded = mesh->createMesh(filePath);
+	loaded = mesh->CreateMesh(filePath);
 
 	if (loaded == true)
 	{
@@ -41,12 +41,12 @@ int ObjectHandler::CreateObject(const char* filePath, Mesh *mesh, Texture *textu
 }
 
 
-unsigned int ObjectHandler::getNrOfObjects()
+unsigned int ObjectHandler::GetNrOfObjects()
 {
 	return this->numberOfObjects;
 }
 
-Object* ObjectHandler::getObject(int index)
+Object* ObjectHandler::GetObject(int index)
 {
 	return &this->allObjects[index];
 }

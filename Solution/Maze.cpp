@@ -7,9 +7,9 @@ Maze::Maze(string bitmapPath)
 	this->width = 0;
 	this->height = 0;
 	this->numComponents = 0;
-	this->m_texture = 0;
+	this->texture = 0;
 
-	loadBMP(bitmapPath);
+	LoadBMP(bitmapPath);
 }
 
 Maze::~Maze()
@@ -24,7 +24,7 @@ Maze::Maze(const Maze& other)
 	this->height = other.height;
 	this->numComponents = other.numComponents;
 
-	this->loadBMP(other.path);
+	this->LoadBMP(other.path);
 }
 
 Maze & Maze::operator=(const Maze & other)
@@ -34,13 +34,13 @@ Maze & Maze::operator=(const Maze & other)
 	this->height = other.height;
 	this->numComponents = other.numComponents;
 
-	this->loadBMP(other.path);
+	this->LoadBMP(other.path);
 
 	return *this;
 }
 
 // Loading the .bmp file and returning the width,height and pointer to the first pixel in the file.
-bool Maze::loadBMP(const std::string & fileName)
+bool Maze::LoadBMP(const std::string & fileName)
 {
 	bool readingSuccess = true;
 
@@ -52,8 +52,8 @@ bool Maze::loadBMP(const std::string & fileName)
 		readingSuccess = false;
 	}
 
-	glGenTextures(1, &m_texture);
-	glBindTexture(GL_TEXTURE_2D, m_texture);
+	glGenTextures(1, &this->texture);
+	glBindTexture(GL_TEXTURE_2D, this->texture);
 	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -99,12 +99,12 @@ glm::vec3 Maze::readPixel(unsigned int x, unsigned int y)
 	return glm::vec3(pixel[0], pixel[1], pixel[2]);
 }
 
-void Maze::bind(unsigned int textureUnit)
+void Maze::Bind(unsigned int textureUnit)
 {
 	if (textureUnit  >= 0 && textureUnit <= 31)
 	{
 		glActiveTexture(GL_TEXTURE0 + textureUnit);
-		glBindTexture(GL_TEXTURE_2D, m_texture);
+		glBindTexture(GL_TEXTURE_2D, this->texture);
 	}
 	else
 	{

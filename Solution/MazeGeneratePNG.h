@@ -16,15 +16,15 @@ public:
 
 	int wall = 1;
 	int path = 0;
-	void set_cell(int y, int x, int value); // can be used to set exit points on the maze (or other stuff)
-	int get_cell(int y, int x);
-	void generate(void);
-	void setupColorData();
-	void setupColorDataForColor();
-	void draw_png();
+	void Set_cell(int y, int x, int value); // can be used to set exit points on the maze (or other stuff)
+	int Get_cell(int y, int x);
+	void Generate(void);
+	void SetupColorData();
+	void SetupColorDataForColor();
+	void Draw_png();
 
 private:
-	std::random_device random_device;
+	std::random_device randomDevice;
 	int vertical = 0;
 	int horizontal = 1;
 	int north = 0;
@@ -36,7 +36,8 @@ private:
 	int height;
 
 	// for kruskal
-	struct element {
+	struct Element
+	{
 		int y;
 		int x;
 		int orientation;

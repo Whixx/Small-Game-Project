@@ -40,6 +40,7 @@ public:
 	void SetMouseDelta(glm::vec2 mouseDelta);
 
 	void UpdateViewMatrix();
+
 private:
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewMatrix;
