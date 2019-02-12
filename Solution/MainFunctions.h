@@ -21,6 +21,7 @@
 #include "InputHandler.h"
 #include "Player.h"
 #include "Maze.h"
+#include "Sound.h"
 
 #include <glm/gtc/type_ptr.hpp>
 

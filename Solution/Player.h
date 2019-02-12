@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "Display.h"
 #include "Maze.h"
+#include "Sound.h"
 
 #define PI 3.1415926535
 
@@ -33,6 +34,8 @@ public:
 	void MoveDown(float elapsedTime);
 	void UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime);
 	void Update(double dt);
+
+	Sound sound;
 	
 private:
 	Camera playerCamera;
@@ -42,6 +45,7 @@ private:
 	float playerSpeed;
 	float playerHeight;
 	glm::vec3 walkingVector;
+
 };
 
 #endif //DISPLAY_H

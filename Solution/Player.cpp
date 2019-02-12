@@ -47,24 +47,32 @@ void Player::MoveForward(float elapsedTime)
 {
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * this->walkingVector * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
+
+	sound.PlayPlayerFootStepSound(elapsedTime);
 }
 
 void Player::MoveBackward(float elapsedTime)
 {
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * this->walkingVector * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
+
+	sound.PlayPlayerFootStepSound(elapsedTime);
 }
 
 void Player::MoveRight(float elapsedTime)
 {
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
+
+	sound.PlayPlayerFootStepSound(elapsedTime);
 }
 
 void Player::MoveLeft(float elapsedTime)
 {
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
+
+	sound.PlayPlayerFootStepSound(elapsedTime);
 }
 
 void Player::MoveUp(float elapsedTime)

@@ -70,6 +70,9 @@
     <ClCompile Include="Maze.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloom.h">
@@ -142,6 +145,9 @@
       <Filter>Class h Files</Filter>
     </ClInclude>
     <ClInclude Include="Maze.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
   </ItemGroup>
