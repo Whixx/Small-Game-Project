@@ -20,6 +20,8 @@ public:
 	Maze(const Maze &other);
 	Maze& operator=(const Maze& other);
 
+	int GetMazeHeight();
+	int GetMazeWidth();
 
 	bool LoadBMP(const std::string& fileName);
 	bool IsWallAtWorld(float x, float y);

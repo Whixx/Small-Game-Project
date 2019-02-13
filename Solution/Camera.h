@@ -16,10 +16,12 @@ public:
 
 	// These functions are for camera control and movement
 	void SetCameraPosition(glm::vec3 camPos);
+	void SetOldCameraPosition(glm::vec3 camPos);
 	void SetForwardVector(glm::vec3 forwardVector);
 
 	glm::vec3 GetForwardVector();
 	glm::vec3 GetCameraPosition();
+	glm::vec3 GetOldCameraPosition();
 	glm::vec3 GetStartCameraPosition();
 	glm::vec3 GetStartForwardVector();
 	glm::vec3 GetUpVector();
@@ -47,6 +49,7 @@ private:
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewMatrix;
 	glm::vec3 cameraPosition;
+	glm::vec3 oldCameraPosition;
 	glm::vec3 forwardVector;	// Viewvector // frontal view
 	glm::vec3 upVector;
 	
