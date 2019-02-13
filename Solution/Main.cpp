@@ -10,6 +10,14 @@ int main()
 
 	Display display;
 
+	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetKeyCallback(display.GetWindow(), InputHandler::Key_callback);
+
+	InputHandler IH = InputHandler();
+
+
+	//=========================== Creating Shaders ====================================//
+
 	Shader shadowShader;
 	shadowShader.CreateShader(".\\shadowShader.vs", GL_VERTEX_SHADER);
 	shadowShader.CreateShader(".\\shadowShader.gs", GL_GEOMETRY_SHADER);
@@ -44,31 +52,24 @@ int main()
 	finalShader.CreateShader(".\\finalShader.vs", GL_VERTEX_SHADER);
 	finalShader.CreateShader(".\\finalShader.fs", GL_FRAGMENT_SHADER);
 
-	// False = Pos and Texcoord
-	// True  = Pos and Color
-	shadowShader.InitiateShaders(false);
-	geometryPass.InitiateShaders(false);
-	lightPass.InitiateShaders(false);
-	particleShader.InitiateShaders(false);
-	pointLightPass.InitiateShaders(true);
-	blurShader.InitiateShaders(false);
-	finalBloomShader.InitiateShaders(false);
-	finalShader.InitiateShaders(false);
-	
-	shadowShader.ValidateShaders();
-	geometryPass.ValidateShaders();
-	// LightPass is validated before its drawcall (to fix a bug), so its not validated here
-	// LightPass.ValidateShaders();
-	particleShader.ValidateShaders();
-	pointLightPass.ValidateShaders();
-	blurShader.ValidateShaders();
-	finalBloomShader.ValidateShaders();
-	finalShader.ValidateShaders();
 
-	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetKeyCallback(display.GetWindow(), InputHandler::Key_callback);
+	InitShadowShader(&shadowShader);
+	InitGeometryPass(&geometryPass);
+	InitLightPass(&lightPass);
+	InitParticleShader(&particleShader);
+	InitPointLightPass(&pointLightPass);
+	InitBlurShader(&blurShader);
+	InitFinalBloomShader(&finalBloomShader);
+	InitFinalShader(&finalShader);
 
-	InputHandler IH = InputHandler();
+	//=================================================================================//
+
+	//=========================== Buffers ====================================//
+	ShadowMap shadowMap(SHADOWMAPWIDTH, SHADOWMAPHEIGHT);
+	GBuffer gBuffer(SCREENWIDTH, SCREENHEIGHT);
+	BloomBuffer bloomBuffer(SCREENWIDTH, SCREENHEIGHT);
+	BlurBuffer blurBuffers(SCREENWIDTH, SCREENHEIGHT);
+	FinalFBO finalFBO(SCREENWIDTH, SCREENHEIGHT);
 
 	//=========================== Creating Objects ====================================//
 	// height and width must be odd numbers else the resulting maze will be off
@@ -89,26 +90,8 @@ int main()
 
 	//TODO: Byta ground.png till floor.png
 	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
-	//int torch = OH.CreateObject("ObjectFiles/torch.obj", &torchMesh, &torchTexture);
-
-	//OH.GetObject(torch)->GetScale() *= 0.1;
 	
 	//=================================================================================//
-
-	ShadowMap shadowMap;
-	shadowMap.Init();
-
-	GBuffer gBuffer;
-	gBuffer.Init(SCREENWIDTH, SCREENHEIGHT);
-
-	BloomBuffer bloomBuffer;
-	bloomBuffer.Init(SCREENWIDTH, SCREENHEIGHT);
-
-	BlurBuffer blurBuffers;
-	blurBuffers.Init(SCREENWIDTH, SCREENHEIGHT);
-
-	FinalFBO finalFBO;
-	finalFBO.Init(SCREENWIDTH, SCREENHEIGHT);
 
 	
 
@@ -135,36 +118,28 @@ int main()
 	PointLight torchLight;
 	float torchLightIntensity = 2.0f;
 	torchLight.GetColor() = glm::vec3(1.0f, 0.3f, 0.3f) * torchLightIntensity;
-	//lights.CreateLight(OH.GetObject(torch)->GetPos(), torchLight.GetColor());
 	lights.CreateLight(player.GetTorch().GetPos(), torchLight.GetColor());
-	/*lights.CreateLight(glm::vec3(-7.0f, 7.0f, -3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-	lights.CreateLight(glm::vec3(7.0f, 7.0f, 15.0f), glm::vec3(0.3f, 0.0f, 0.0f));*/
-	
 	lights.InitiateLights(lightPass.GetProgram());
 
 	Particle particle;
 	Texture particleTexture("Textures/particle.png", "NormalMaps/flat_normal.jpg");
 	particle.SetTexture(&particleTexture);
-	
-	// Tell the shaders the name of the camera (GP = GeometeryPass, LP = LightPass)
-	GLuint cameraLocationGP = glGetUniformLocation(*geometryPass.GetProgram(), "cameraPosGP");
-	GLuint cameraLocationLP = glGetUniformLocation(*lightPass.GetProgram(), "cameraPosLP");
-
-	GLint texLoc;
-	GLint normalTexLoc;
-
-	texLoc = glGetUniformLocation(*geometryPass.GetProgram(), "texture");
-	normalTexLoc = glGetUniformLocation(*geometryPass.GetProgram(), "normalMap");
-
-	GLuint viewProjection = glGetUniformLocation(*pointLightPass.GetProgram(), "viewProjectionMatrix");
 
 	while (!display.IsWindowClosed())
 	{
 		// Calculate DeltaTime
-		constLastTime = currentTime;
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - constLastTime;
 
+		// Measure fps
+		nrOfFrames++;
+		if (currentTime - lastTime >= 1.0)
+		{
+			// If last print was more than 1 sec ago, print and reset timer
+			display.SetTitle("FPS: " + to_string((int)((double)nrOfFrames)));
+			nrOfFrames = 0;
+			lastTime += 1.0;
+		}
 
 
 		// ================== EVENTS ==================
@@ -182,19 +157,11 @@ int main()
 		player.GetCamera()->UpdateViewMatrix();
 		player.GetTorch().Update(deltaTime);
 
-		updateAllObjects(deltaTime, OH);
+		OH.UpdateAllObjects(deltaTime);
+
 		lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch().GetPos().x, player.GetTorch().GetPos().y + 1.5f, player.GetTorch().GetPos().z);
 		lights.UpdateShadowTransform(0);
 
-		// Measure fps
-		nrOfFrames++;
-		if (currentTime - lastTime >= 1.0)
-		{
-			// If last print was more than 1 sec ago, print and reset timer
-			display.SetTitle("FPS: " + to_string((int)((double)nrOfFrames)));
-			nrOfFrames = 0;
-			lastTime += 1.0;
-		}
 
 		// ================== DRAW ==================
 
@@ -203,11 +170,11 @@ int main()
 
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, &geometryPass, &player, &OH, cameraLocationGP, texLoc, normalTexLoc);
+		DRGeometryPass(&gBuffer, &geometryPass, &player, &OH);
 
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
-		DRLightPass(&gBuffer, &bloomBuffer, &fullScreenTriangle, lightPass.GetProgram(), &lightPass, &shadowMap, &lights, cameraLocationLP, player.GetCamera());
+		DRLightPass(&gBuffer, &bloomBuffer, &fullScreenTriangle, lightPass.GetProgram(), &lightPass, &shadowMap, &lights, player.GetCamera());
 
 		// Copy the depth from the gBuffer to the bloomBuffer
 		bloomBuffer.CopyDepth(SCREENWIDTH, SCREENHEIGHT, gBuffer.GetFBO());
@@ -236,6 +203,8 @@ int main()
 
 		// ================== POST DRAW ==================
 		display.SwapBuffers(SCREENWIDTH, SCREENHEIGHT);
+
+		constLastTime = currentTime;
 	}
 	glfwTerminate();
 	return 0;

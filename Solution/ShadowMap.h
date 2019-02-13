@@ -3,10 +3,14 @@
 
 #include <glew\glew.h>
 #include <iostream>
+
+const unsigned int SHADOWMAPWIDTH = 1024;
+const unsigned int SHADOWMAPHEIGHT = 1024;
+
 class ShadowMap
 {
 public:
-	ShadowMap();
+	ShadowMap(unsigned int mapWidth, unsigned int mapHeight);
 	~ShadowMap();
 
 	bool Init();
@@ -18,5 +22,8 @@ public:
 private:
 	GLuint fbo;
 	GLuint depthCubeMap;
+
+	unsigned int width;
+	unsigned int height;
 };
 #endif

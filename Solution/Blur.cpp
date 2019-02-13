@@ -1,9 +1,14 @@
 #include "Blur.h"
 
-BlurBuffer::BlurBuffer()
+BlurBuffer::BlurBuffer(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
 {
 	this->fbo[0] = 0;
 	this->fbo[1] = 0;
+
+	this->width = SCREENWIDTH;
+	this->height = SCREENHEIGHT;
+
+	this->Init();
 }
 
 BlurBuffer::~BlurBuffer()
@@ -19,7 +24,7 @@ BlurBuffer::~BlurBuffer()
 	}
 }
 
-bool BlurBuffer::Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
+bool BlurBuffer::Init()
 {
 	bool finish = true;
 
@@ -33,7 +38,7 @@ bool BlurBuffer::Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
 		glBindTexture(GL_TEXTURE_2D, this->colorBuffers[i]);
 
 		// Allocate Storage for the gBuffer Textures
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCREENWIDTH, SCREENHEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, this->width, this->height, 0, GL_RGB, GL_FLOAT, NULL);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

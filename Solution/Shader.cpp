@@ -20,17 +20,6 @@ void Shader::UnBind()
 	glUseProgram(0);
 }
 
-void Shader::Update(const Transform & transform, const Camera& camera)
-{
-	glm::mat4 modelT = camera.GetViewProjection() * transform.GetWorldMatrix();
-	glm::mat4 modelW = transform.GetWorldMatrix();
-
-
-	// Skicka matriserna till GPU'n
-	glUniformMatrix4fv(this->uniforms[TRANSFORM_U], 1, GL_FALSE, &modelT[0][0]);
-	glUniformMatrix4fv(this->uniforms[WORLD_U], 1, GL_FALSE, &modelW[0][0]);
-}
-
 void Shader::InitiateShaders(bool color)
 {
 	for (unsigned int i = 0; i < NUM_OF_SHADERS; i++)
@@ -49,10 +38,6 @@ void Shader::InitiateShaders(bool color)
 
 	glLinkProgram(this->program);
 	CheckShaderError(this->program, GL_LINK_STATUS, true, "Error: Program linking failed: ");
-
-	// Berättar för GPU'n vad namnet på inkommande variabel är.
-	this->uniforms[TRANSFORM_U] = glGetUniformLocation(this->program, "transformationMatrix");
-	this->uniforms[WORLD_U] = glGetUniformLocation(this->program, "WorldMatrix");
 }
 
 void Shader::ValidateShaders()
@@ -73,28 +58,42 @@ Shader::~Shader()
 	glDeleteProgram(program);
 }
 
+int Shader::GetUniformLocation(const std::string & name)
+{
+	if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
+		return m_UniformLocationCache[name];
+	int location = glGetUniformLocation(this->program, name.c_str());
+	if (location == -1)
+	{
+		std::cout << "Uniform " << name << " was not found" << std::endl;
+	}
+	m_UniformLocationCache[name] = location;
+	return location;
+}
+
 void Shader::SendInt(const char *name, int value)
 {
-	glUniform1i(glGetUniformLocation(this->program, name), value);
+	glUniform1i(this->GetUniformLocation(name), value);
 }
 
 void Shader::SendFloat(const char * name, float value)
 {
-	glUniform1f(glGetUniformLocation(this->program, name), value);
+	glUniform1f(this->GetUniformLocation(name), value);
 }
 
 void Shader::SendVec3(const char * name, float x, float y, float z)
 {
-	glUniform3f(glGetUniformLocation(this->program, name), x, y, z);
+	glUniform3f(this->GetUniformLocation(name), x, y, z);
 }
-/*
-void Shader::SendMat4(const char *name, const glm::mat4 &mat)
+
+void Shader::SendMat4(const char * name, const glm::mat4 & mat)
 {
-	glUniformMatrix4fv(glGetUniformLocation(this->program, name), 1, GL_FALSE, &mat[0][0]);
-}*/
-void Shader::SetMat4(const std::string &name, const glm::mat4 &mat)
+	glUniformMatrix4fv(this->GetUniformLocation(name), 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::SendCameraLocation(Camera * camera)
 {
-	glUniformMatrix4fv(glGetUniformLocation(this->program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+	glUniform3f(this->GetUniformLocation("cameraPos"), camera->GetCameraPosition().x, camera->GetCameraPosition().y, camera->GetCameraPosition().z);
 }
 
 void CheckShaderError(GLuint shader, GLuint flag, bool isProgram, const std::string & errorMessage)

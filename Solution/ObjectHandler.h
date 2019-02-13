@@ -17,6 +17,8 @@ public:
 	int CreateObject(Mesh *mesh, Texture *texture);
 	int CreateObject(const char* filePath, Mesh *mesh, Texture *texture);
 
+	void UpdateAllObjects(double dt);
+
 	unsigned int GetNrOfObjects();
 	Object* GetObject(int index);
 

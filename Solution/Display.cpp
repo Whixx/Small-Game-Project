@@ -18,7 +18,7 @@ Display::Display()
 		exit(EXIT_FAILURE);
 	}
 	glfwMakeContextCurrent(this->window);
-	glfwSwapInterval(1);
+	glfwSwapInterval(0); // V-Sync
 
 	// Glew init behövs för att glCreateProgram ska funka
 	GLenum status = glewInit();

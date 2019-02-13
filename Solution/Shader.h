@@ -8,6 +8,7 @@
 #include <glew\glew.h>
 #include "Transform.h"
 #include "Camera.h"
+#include <unordered_map>
 
 class Shader
 {
@@ -16,10 +17,8 @@ public:
 
 	void Bind();
 	void UnBind();
-	void Update(const Transform& transform, const Camera& camera);
 	void InitiateShaders(bool color);
 	void ValidateShaders();
-
 
 	GLuint CreateShader(const std::string& fileName, GLenum shaderType);
 	GLuint *GetProgram();
@@ -27,24 +26,21 @@ public:
 	void SendInt(const char *name, int value);
 	void SendFloat(const char *name, float value);
 	void SendVec3(const char *name, float x, float y, float z);
-	void SetMat4(const std::string &name, const glm::mat4 &mat);
 	void SendMat4(const char *name, const glm::mat4 &mat);
+	void SendCameraLocation(Camera *camera);
 
 	virtual ~Shader();
 private:
 	unsigned int NUM_OF_SHADERS;
 
-	enum
-	{
-		TRANSFORM_U,
-		WORLD_U,
-
-		NUM_OF_UNIFORMS
-	};
+	// holds all the uniform locations
+	std::unordered_map<std::string, int> m_UniformLocationCache;
 
 	GLuint program;
 	GLuint shaders[32];
-	GLuint uniforms[32];
+
+	// Fetches location from map, if not in it, get location from program
+	int GetUniformLocation(const std::string& name);
 };
 
 #endif //SHADER_H

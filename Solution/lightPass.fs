@@ -13,7 +13,7 @@ struct PointLight
 
 uniform int NR_OF_POINT_LIGHTS;   
 
-uniform vec3 cameraPosLP;
+uniform vec3 cameraPos;
 uniform PointLight PointLights[256];
 
 // Gbuffer variables
@@ -75,7 +75,7 @@ void main()
 		diffuse += vec4(materialColor.rgb,1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * max(alpha, 0);
 
 		// Specular
-		vecToCam = normalize(vec3(cameraPosLP.xyz - pixelPos.xyz));	
+		vecToCam = normalize(vec3(cameraPos.xyz - pixelPos.xyz));	
 		// Source: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/reflect.xhtml
 		reflection = reflect(vec4(-lightDir.xyz, 0.0f), vec4(normal.xyz,1.0f));
 		specular += vec4(materialColor.rgb,1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * pow(max(dot(reflection.xyz, vecToCam.xyz),0), shininess);

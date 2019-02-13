@@ -18,10 +18,10 @@ public:
 		GBUFFER_NUM_TEXTURES
 	};
 
-	GBuffer();
+	GBuffer(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT);
 	~GBuffer();
 
-	bool Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT);
+	bool Init();
 
 	// Binds the texture as a target during the geometry pass
 	void BindForWriting();
@@ -35,5 +35,8 @@ private:
 	GLuint fbo;
 	GLuint textures[GBUFFER_NUM_TEXTURES];
 	GLuint depthTexture;
+
+	unsigned int width;
+	unsigned int height;
 };
 #endif
