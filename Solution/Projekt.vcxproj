@@ -160,6 +160,7 @@
     </ClCompile>
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="timer.c" />
+    <ClCompile Include="Torch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloom.h" />
@@ -185,6 +186,7 @@
     <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="timer.h" />
+    <ClInclude Include="Torch.h" />
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
