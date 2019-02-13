@@ -75,26 +75,23 @@ int main()
 	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
 	GenerateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
 	Maze maze = Maze("Bitmap/kollision_test.bmp");
-
-	float playerHeight = 1.0f;
-	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f);
-	player.SetPlayerSpeed(5.0f);
-
-
-
 	Mesh groundMesh;
 	Mesh torchMesh;
+	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
+
+	float playerHeight = 1.0f;
+	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture);
+	player.SetPlayerSpeed(5.0f);
 
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
-	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
 
 	ObjectHandler OH = ObjectHandler();
 
 	//TODO: Byta ground.png till floor.png
 	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
-	int torch = OH.CreateObject("ObjectFiles/torch.obj", &torchMesh, &torchTexture);
+	//int torch = OH.CreateObject("ObjectFiles/torch.obj", &torchMesh, &torchTexture);
 
-	OH.GetObject(torch)->GetScale() *= 0.1;
+	//OH.GetObject(torch)->GetScale() *= 0.1;
 	
 	//=================================================================================//
 
@@ -138,10 +135,11 @@ int main()
 	PointLight torchLight;
 	float torchLightIntensity = 2.0f;
 	torchLight.GetColor() = glm::vec3(1.0f, 0.3f, 0.3f) * torchLightIntensity;
-	lights.CreateLight(OH.GetObject(torch)->GetPos(), torchLight.GetColor());
+	//lights.CreateLight(OH.GetObject(torch)->GetPos(), torchLight.GetColor());
+	lights.CreateLight(player.GetTorch().GetPos(), torchLight.GetColor());
 	/*lights.CreateLight(glm::vec3(-7.0f, 7.0f, -3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	lights.CreateLight(glm::vec3(7.0f, 7.0f, 15.0f), glm::vec3(0.3f, 0.0f, 0.0f));*/
-
+	
 	lights.InitiateLights(lightPass.GetProgram());
 
 	Particle particle;
@@ -160,7 +158,7 @@ int main()
 
 	GLuint viewProjection = glGetUniformLocation(*pointLightPass.GetProgram(), "viewProjectionMatrix");
 
-	while(!display.IsWindowClosed())
+	while (!display.IsWindowClosed())
 	{
 		// Calculate DeltaTime
 		constLastTime = currentTime;
@@ -182,8 +180,10 @@ int main()
 		// Update player
 		player.Update(deltaTime);
 		player.GetCamera()->UpdateViewMatrix();
+		player.GetTorch().Update(deltaTime);
 
 		updateAllObjects(deltaTime, OH);
+		lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch().GetPos().x, player.GetTorch().GetPos().y + 1.5f, player.GetTorch().GetPos().z);
 		lights.UpdateShadowTransform(0);
 
 		// Measure fps
@@ -195,24 +195,15 @@ int main()
 			nrOfFrames = 0;
 			lastTime += 1.0;
 		}
-	
-		// Update the torch in front of the player'
-		OH.GetObject(torch)->GetPos() = player.GetCamera()->GetCameraPosition()
-			+ player.GetWalkingVector() * 0.8f
-			+ player.GetCamera()->GetRotateAround() * 0.4f
-			+ player.GetCamera()->GetUpVector() * -0.5f;
-		lights.GetTransform(0)->GetPos() = glm::vec3(OH.GetObject(torch)->GetPos().x, OH.GetObject(torch)->GetPos().y + 1.5f, OH.GetObject(torch)->GetPos().z);
-		
-
 
 		// ================== DRAW ==================
 
 		// Here a cube map is calculated and stored in the shadowMap FBO
-		ShadowPass(&shadowShader, &OH, &lights, &shadowMap, player.GetCamera());
+		ShadowPass(&shadowShader, &OH, &lights, &shadowMap, &player);
 
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, &geometryPass, player.GetCamera(), &OH, cameraLocationGP, texLoc, normalTexLoc, torch);
+		DRGeometryPass(&gBuffer, &geometryPass, &player, &OH, cameraLocationGP, texLoc, normalTexLoc);
 
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
@@ -236,7 +227,7 @@ int main()
 		finalFBO.CopyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.GetFBO());
 
 		// Draw particles to the FinalFBO
-		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, OH.GetObject(torch)->GetPos());
+		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, player.GetTorch().GetPos());
 
 		// Render everything
 		FinalPass(&finalFBO, &finalShader, &fullScreenTriangle);

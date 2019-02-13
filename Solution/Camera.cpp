@@ -43,6 +43,16 @@ glm::vec2 Camera::GetMouseDelta()
 	return this->mouseDelta;
 }
 
+float Camera::GetPitch()
+{
+	return this->pitch;
+}
+
+float Camera::GetYaw()
+{
+	return this->yaw;
+}
+
 float Camera::GetRotationalSpeed()
 {
 	return this->rotationalSpeed;

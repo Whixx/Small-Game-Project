@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "Display.h"
 #include "Maze.h"
+#include "Torch.h"
 
 #define PI 3.1415926535
 
@@ -15,13 +16,14 @@ class Player
 {
 public:
 	// Default constructor
-	Player(float height, float fov, float near, float far);
+	Player(float height, float fov, float near, float far, Mesh *mesh, Texture *texture);
 	virtual ~Player();
 	
 	float GetPlayerSpeed();
 	float GetPlayerHeight();
 	glm::vec3 GetWalkingVector();
 	Camera* GetCamera();
+	Torch GetTorch();
 
 	void SetPlayerHeight(float height);
 	void SetPlayerSpeed(float speed);
@@ -37,7 +39,8 @@ public:
 private:
 	Camera playerCamera;
 	Transform transform;
-
+	Torch playerTorch;
+	
 	Maze* maze;
 	float playerSpeed;
 	float playerHeight;

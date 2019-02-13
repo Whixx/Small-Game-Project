@@ -9,7 +9,7 @@ void updateAllObjects(double dt, ObjectHandler & OH)
 	}
 }
 
-void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Camera *camera)
+void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player)
 {
 	glEnable(GL_DEPTH_TEST);
 	shadowShader->Bind();
@@ -36,10 +36,14 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 
 		for (unsigned int j = 0; j < OH->GetNrOfObjects(); j++)
 		{
-			shadowShader->Update(OH->GetObject(j)->GetTransform(), *camera);
+			shadowShader->Update(OH->GetObject(j)->GetTransform(), *player->GetCamera());
 			OH->GetObject(j)->BindTexture();
 			OH->GetObject(j)->Draw();
 		}
+
+		shadowShader->Update(player->GetTorch().GetTransform(), *player->GetCamera());
+		player->GetTorch().BindTexture();
+		player->GetTorch().Draw();
 	}
 
 	shadowShader->UnBind();
@@ -47,11 +51,11 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Camera *camera, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc, int torch)
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc)
 {
 	geometryPass->Bind();
 
-	SendCameraLocationToGPU(cameraLocationGP, camera);
+	SendCameraLocationToGPU(cameraLocationGP, player->GetCamera());
 	PrepareTexture(texLoc, normalTexLoc);
 
 	gBuffer->BindForWriting();
@@ -65,19 +69,17 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Camera *camera, Obje
 	// Update and Draw all objects
 	for (unsigned int i = 0; i < OH->GetNrOfObjects(); i++)
 	{
-		if (OH->GetObject(i) == OH->GetObject(torch))
-		{
-			geometryPass->SendFloat("illuminated", 3.0f);
-		}
-		else
-		{
-			geometryPass->SendFloat("illuminated", 1.0f);
-		}
-		geometryPass->Update(OH->GetObject(i)->GetTransform(), *camera);
+		geometryPass->SendFloat("illuminated", 1.0f);
+		geometryPass->Update(OH->GetObject(i)->GetTransform(), *player->GetCamera());
 		OH->GetObject(i)->BindTexture();
 		OH->GetObject(i)->Draw();
 	}
 
+	geometryPass->SendFloat("illuminated", 3.0f);
+	geometryPass->Update(player->GetTorch().GetTransform(), *player->GetCamera());
+	player->GetTorch().BindTexture();
+	player->GetTorch().Draw();
+	
 	geometryPass->UnBind();
 }
 

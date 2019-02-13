@@ -28,6 +28,8 @@ public:
 	glm::mat4 GetViewProjection() const;
 	glm::vec2 GetOldMousePosition();
 	glm::vec2 GetMouseDelta();
+	float GetPitch();
+	float GetYaw();
 	float GetRotationalSpeed();
 
 	void SetProjectionMatrix(glm::mat4 matrix);
