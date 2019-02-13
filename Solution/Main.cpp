@@ -80,8 +80,9 @@ int main()
 	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
 
 	float playerHeight = 1.0f;
-	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture);
+	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, &maze);
 	player.SetPlayerSpeed(5.0f);
+	player.CenterPlayer();
 
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
 

@@ -39,6 +39,16 @@ Maze & Maze::operator=(const Maze & other)
 	return *this;
 }
 
+int Maze::GetMazeHeight()
+{
+	return this->height;
+}
+
+int Maze::GetMazeWidth()
+{
+	return this->width;
+}
+
 // Loading the .bmp file and returning the width,height and pointer to the first pixel in the file.
 bool Maze::LoadBMP(const std::string & fileName)
 {
