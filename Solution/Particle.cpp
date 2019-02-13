@@ -95,14 +95,15 @@ void Particle::GenerateParticles(float deltaTime, glm::vec3 particlePos)
 		this->particleArray[index].life = 1.0f;
 		
 		// Position
-		float randomPos = ((rand() % 100) - 50) / 700.0f;
+		float randomPosX = ((rand() % 100) - 50) / 1000.0f;
+		float randomPosZ = ((rand() % 100) - 50) / 1000.0f;
 		float randomHeight = (rand() % 20) / 100.0f;
-		this->particleArray[index].pos.x = particlePos.x + randomPos;
+		this->particleArray[index].pos.x = particlePos.x + randomPosX;
 		this->particleArray[index].pos.y = particlePos.y + randomHeight + 0.45f;
-		this->particleArray[index].pos.z = particlePos.z + randomPos;
+		this->particleArray[index].pos.z = particlePos.z + randomPosZ;
 
 		// Speed
-		float speed = 0.80f;
+		float speed = 0.60f;
 		glm::vec3 mainDir = glm::vec3(0.0f, 1.0f, 0.0f);
 
 		glm::vec3 randomDir = glm::vec3(
@@ -120,7 +121,7 @@ void Particle::GenerateParticles(float deltaTime, glm::vec3 particlePos)
 		this->particleArray[index].a = 150;
 
 		// Size
-		this->particleArray[index].size = 0.2f;
+		this->particleArray[index].size = 0.15f;
 	}
 }
 
