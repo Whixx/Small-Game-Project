@@ -178,6 +178,8 @@
   <ItemGroup>
     <None Include="blurShader.fs" />
     <None Include="blurShader.vs" />
+    <None Include="drawTestShader.fs" />
+    <None Include="drawTestShader.vs" />
     <None Include="finalBloomShader.fs" />
     <None Include="finalBloomShader.vs" />
     <None Include="finalShader.fs" />

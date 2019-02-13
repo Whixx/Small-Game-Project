@@ -9,13 +9,6 @@
 class Maze
 {
 
-private:
-	unsigned char* imageData;
-	int width;
-	int height;
-	int numComponents;
-	GLuint m_texture;
-
 public:
 	Maze();
 	~Maze();
@@ -24,10 +17,25 @@ public:
 	int GetWidth();
 
 
+	void initiateBuffers(GLuint programID);
 	void LoadMaze(const std::string& fileName);
 	unsigned char readPixel(unsigned int x, unsigned int y);
 	void Draw();
+	void DrawMaze();
 	void BindTexture(unsigned int textureUnit);
+
+
+private:
+	unsigned char* imageData;
+	int width;
+	int height;
+	int numComponents;
+	GLuint m_texture;
+
+	GLuint tbo;
+
+	GLuint nrOfPrimitives;
+	
 };
 #endif
 

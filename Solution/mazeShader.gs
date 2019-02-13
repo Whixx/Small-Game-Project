@@ -3,13 +3,14 @@
 layout (points) in;
 layout (triangle_strip, max_vertices=18) out;
 
-out vec3 color;
+
+out vec3 testOut;
 
 uniform sampler2D texture;
 
-uniform vec3 cameraPos;
+//uniform vec3 cameraPos;
 
-uniform mat4 viewProjection; 
+//uniform mat4 viewProjection; 
 
 // Single wall functions
 void drawSW_n(float i, float j, vec3 colors);
@@ -147,20 +148,22 @@ void main()
 // Single wall functions
 void drawSW_n(float i, float j, vec3 colors)
 {
+	vec4 tempVec;
+
 	// First Triangle
 	// Left Bottom vertex
-	gl_Position = viewProjection * vec4(i - 0.5f, 0, j - 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i - 0.5f, 0, j - 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();												  
 																  
 	// Left Top Vertex											  
-	gl_Position = viewProjection * vec4(i - 0.5f, 1, j - 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i - 0.5f, 1, j - 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();												  
 																  
 	//Right Top Vertex											  
-	gl_Position = viewProjection * vec4(i + 0.5f, 1, j - 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i + 0.5f, 1, j - 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 				
 	EndPrimitive();
@@ -169,18 +172,18 @@ void drawSW_n(float i, float j, vec3 colors)
 
 	// Second Triangle
 	// Left Bottom vertex
-	gl_Position = viewProjection * vec4(i - 0.5f, 0, j - 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i - 0.5f, 0, j - 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 				
 	// Right Top vertex
-	gl_Position = viewProjection * vec4(i + 0.5f, 1, j - 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i + 0.5f, 1, j - 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 				
 	// Right Bottom vertex
-	gl_Position = viewProjection * vec4(i + 0.5f, 0, j - 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i + 0.5f, 0, j - 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 				
 	EndPrimitive();
@@ -188,20 +191,22 @@ void drawSW_n(float i, float j, vec3 colors)
 
 void drawSW_s(float i, float j, vec3 colors)
 {
+	vec4 tempVec;
+
 	// First Triangle
 	// Left Bottom vertex
-	gl_Position = viewProjection * vec4(i - 0.5, 0, j + 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i - 0.5, 0, j + 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 	
 	//Right Top Vertex
-	gl_Position = viewProjection * vec4(i + 0.5, 1, j + 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i + 0.5, 1, j + 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 
 	// Left Top Vertex
-	gl_Position = viewProjection * vec4(i - 0.5, 1, j + 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i - 0.5, 1, j + 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 							
 	EndPrimitive();
@@ -210,18 +215,18 @@ void drawSW_s(float i, float j, vec3 colors)
 				
 	// Second Triangle
 	// Left Bottom vertex
-	gl_Position = viewProjection * vec4(i - 0.5, 0, j + 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i - 0.5, 0, j + 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 	
 	// Right Bottom vertex
-	gl_Position = viewProjection * vec4(i + 0.5, 0, j + 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i + 0.5, 0, j + 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 
 	// Right Top vertex
-	gl_Position = viewProjection * vec4(i + 0.5, 1, j + 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i + 0.5, 1, j + 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 				
 	EndPrimitive();
@@ -229,20 +234,22 @@ void drawSW_s(float i, float j, vec3 colors)
 
 void drawSW_e(float i, float j, vec3 colors)
 {
+	vec4 tempVec;
+
 	// First Triangle
 	// Left Bottom vertex
-	gl_Position = viewProjection * vec4(i + 0.5, 0, j - 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i + 0.5, 0, j - 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 	
 	// Left Top Vertex
-	gl_Position = viewProjection * vec4(i + 0.5, 1, j - 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i + 0.5, 1, j - 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 
 	//Right Top Vertex
-	gl_Position = viewProjection * vec4(i + 0.5, 1, j + 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i + 0.5, 1, j + 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 						
 	EndPrimitive();
@@ -251,18 +258,18 @@ void drawSW_e(float i, float j, vec3 colors)
 				
 	// Second Triangle
 	// Left Bottom vertex
-	gl_Position = viewProjection * vec4(i + 0.5, 0, j - 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i + 0.5, 0, j - 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 	
 	// Right Top vertex
-	gl_Position = viewProjection * vec4(i + 0.5, 1, j + 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i + 0.5, 1, j + 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 
 	// Right Bottom vertex
-	gl_Position = viewProjection * vec4(i + 0.5, 0, j + 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i + 0.5, 0, j + 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 		
 	EndPrimitive();
@@ -270,20 +277,22 @@ void drawSW_e(float i, float j, vec3 colors)
 
 void drawSW_w(float i, float j, vec3 colors)
 {
+	vec4 tempVec;
+
 	// First Triangle
 	// Left Bottom vertex
-	gl_Position = viewProjection * vec4(i - 0.5, 0, j + 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i - 0.5, 0, j + 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 	
 	// Left Top Vertex
-	gl_Position = viewProjection * vec4(i - 0.5, 1, j + 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i - 0.5, 1, j + 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 
 	//Right Top Vertex
-	gl_Position = viewProjection * vec4(i - 0.5, 1, j - 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i - 0.5, 1, j - 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 						
 	EndPrimitive();
@@ -292,18 +301,18 @@ void drawSW_w(float i, float j, vec3 colors)
 				
 	// Second Triangle
 	// Left Bottom vertex
-	gl_Position = viewProjection * vec4(i - 0.5, 0, j + 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i - 0.5, 0, j + 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 	
 	// Right Top vertex
-	gl_Position = viewProjection * vec4(i - 0.5, 1, j - 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i - 0.5, 1, j - 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 
 	// Right Bottom vertex
-	gl_Position = viewProjection * vec4(i - 0.5, 0, j - 0.5, 1.0f);
-	color = colors;
+	tempVec = vec4(i - 0.5, 0, j - 0.5, 1.0f);
+	testOut = vec3(tempVec.xyz);
 	EmitVertex();
 				
 	EndPrimitive();

@@ -66,7 +66,10 @@ int main()
 
 	Maze maze;
 	maze.LoadMaze("Bitmap/maze.png");
-	
+
+	Shader drawTestShader;
+	drawTestShader.CreateShader(".\\drawTestShader.vs", GL_VERTEX_SHADER);
+	drawTestShader.CreateShader(".\\drawTestShader.fs", GL_FRAGMENT_SHADER);
 
 	Shader mazeShader;
 	mazeShader.CreateShader(".\\mazeShader.vs", GL_VERTEX_SHADER);
@@ -109,7 +112,8 @@ int main()
 
 	// False = Pos and Texcoord
 	// True  = Pos and Color
-	mazeShader.initiateShaders(false);
+	drawTestShader.initiateTestShader();
+	mazeShader.initiateMazeShader();
 	shadowShader.initiateShaders(false);
 	geometryPass.initiateShaders(false);
 	lightPass.initiateShaders(false);
@@ -119,7 +123,7 @@ int main()
 	finalBloomShader.initiateShaders(false);
 	finalShader.initiateShaders(false);
 	
-
+	drawTestShader.validateShaders();
 	mazeShader.validateShaders();
 	shadowShader.validateShaders();
 	geometryPass.validateShaders();
@@ -219,29 +223,32 @@ int main()
 
 	GLuint viewProjection = glGetUniformLocation(*pointLightPass.getProgram(), "viewProjectionMatrix");
 
-	mazeShader.Bind();
+	//mazeShader.Bind();
 
-	texLoc = glGetUniformLocation(*mazeShader.getProgram(), "texture");
+	//texLoc = glGetUniformLocation(*mazeShader.getProgram(), "texture");
 	//GLuint viewProjectionLoc = glGetUniformLocation(*mazeShader.getProgram(), "viewProjection");
 
 	GLuint cameraLocationTest = glGetUniformLocation(*mazeShader.getProgram(), "cameraPos");
+	
+	maze.initiateBuffers(*drawTestShader.getProgram());
+	
 
 
 	while(!display.IsWindowClosed())
 	{
 		deltaTime = currentTime - lastTime;
 		lastTime = glfwGetTime();
-
+	
 		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	
 		
-
+	
 		//glEnable(GL_CULL_FACE);
 		//glCullFace(GL_BACK);
-
 		
+		mazeShader.Bind();
 		glm::mat4 a = camera.getViewProjection();
 		
 		maze.BindTexture(0);
@@ -249,76 +256,92 @@ int main()
 		 
 		mazeShader.sendInt("width", maze.GetWidth());
 		mazeShader.sendInt("height", maze.GetHeight());
-		mazeShader.setMat4("viewProjection", a);
-
-		sendCameraLocationToGPU(cameraLocationTest, &camera);
 		
-		glEnable(GL_DEPTH_TEST);
+		
+		//glEnable(GL_DEPTH_TEST);
 		maze.Draw();
+		//glDisable(GL_DEPTH_TEST);
+		
+		mazeShader.unBind();
+
+		drawTestShader.Bind();
+		drawTestShader.setMat4("viewProjection", a);
+		maze.DrawMaze();
+		//drawTestShader.Bind();
+		
+		//fullScreenTriangle.Draw();
+
+
+
+
+
+
+
+
 
 		//glDisable(GL_CULL_FACE);
 		//UPDATE
-
+	
 		/*
 		// DEN SOM GÖR OBJECT KLASSER GÖR DETTA TILL EN FUNKTION
 		for (int i = 0; i < OH.getNrOfObjects(); i++)
 		{
 			//OH.getObject(i).Update();
 		}
-
-
+	
+	
 		// här ska object uppdateras om de ska röras eller nått
 		OH.getObject(cubes[0])->GetRot().x = sinf(counter);
-
+	
 	
 		// Here a cube map is calculated and stored in the shadowMap FBO
 		shadowPass(&shadowShader, &OH, &lights, &shadowMap, &camera);
-
-
-
+	
+	
+	
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
 		DRGeometryPass(&gBuffer, counter, &geometryPass, &camera, &OH, &snowTexture, &swordTexture, cameraLocationGP, texLoc, normalTexLoc);
-
+	
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
 		DRLightPass(&gBuffer, &bloomBuffer, &fullScreenTriangle, lightPass.getProgram(), &lightPass, &shadowMap, &lights, cameraLocationLP, &camera);
-
+	
 		// Copy the depth from the gBuffer to the bloomBuffer
 		bloomBuffer.copyDepth(SCREENWIDTH, SCREENHEIGHT, gBuffer.getFBO());
-
+	
 		// Draw lightSpheres
 		lightSpherePass(&pointLightPass, &bloomBuffer, &lights, &camera, counter);
 			
 		// Blur the bright texture
 		blurPass(&blurShader, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
-
+	
 		// Combine the bright texture and the scene and store the Result in FinalFBO.
 		finalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
-
+	
 		// Copy the depth from the bloomBuffer to the finalFBO
 		finalFBO.copyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.getFBO());
-
+	
 		// Draw particles to the FinalFBO
 		particlePass(&finalFBO, &particle, &camera, &particleShader, deltaTime);
-
+	
 		// Render everything
 		finalPass(&finalFBO, &finalShader, &fullScreenTriangle);
-
+	
 		*/
-
+	
 		// Check for mouse/keyboard inputs and handle the camera movement
 		mouseControls(&display, &camera);
 		keyboardControls(&display, &camera);
-
+	
 		camera.updateViewMatrix();
-
+	
 		//std::cout << "x: " << camera.getCameraPosition().x << " y: " << camera.getCameraPosition().y << " z: " << camera.getCameraPosition().z << std::endl;
-
+	
 		display.SwapBuffers(SCREENWIDTH, SCREENHEIGHT);
-
+	
 		display.SetTitle("FPS: " + to_string(1/deltaTime));
-
+	
 		counter += deltaTime * 0.5;
 		currentTime = glfwGetTime();
 	}

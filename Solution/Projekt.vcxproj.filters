@@ -196,6 +196,12 @@
     <None Include="mazeShader.gs">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="drawTestShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="drawTestShader.fs">
+      <Filter>Shader Files</Filter>
+    </None>
     <None Include="mazeShader.fs">
       <Filter>Shader Files</Filter>
     </None>

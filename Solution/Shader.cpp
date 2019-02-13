@@ -55,6 +55,28 @@ void Shader::initiateShaders(bool color)
 	uniforms[WORLD_U] = glGetUniformLocation(program, "WorldMatrix");
 }
 
+void Shader::initiateMazeShader()
+{
+	for (unsigned int i = 0; i < NUM_OF_SHADERS; i++)
+		glAttachShader(program, shaders[i]);
+
+	const GLchar * feedbackVarying[] = { "testOut" };
+	glTransformFeedbackVaryings(this->program, 1, feedbackVarying, GL_INTERLEAVED_ATTRIBS);
+
+	glLinkProgram(program);
+	CheckShaderError(program, GL_LINK_STATUS, true, "Error: Program linking failed: ");
+	glUseProgram(this->program);
+}
+
+void Shader::initiateTestShader()
+{
+	for (unsigned int i = 0; i < NUM_OF_SHADERS; i++)
+		glAttachShader(program, shaders[i]);
+
+	glLinkProgram(program);
+	CheckShaderError(program, GL_LINK_STATUS, true, "Error: Program linking failed: ");
+}
+
 void Shader::validateShaders()
 {
 	glValidateProgram(program);
