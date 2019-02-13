@@ -18,24 +18,44 @@ public:
 	// set position of the sound sources
 	void SetMusicPosition(irrklang::vec3df position);
 	void SetPlayerFootStepPosition(irrklang::vec3df position);
-	void PlayPlayerFootStepSound(float time);
-	void SetTorchPosition(irrklang::vec3df position);
-	void SetMinotaurFootPosition(irrklang::vec3df position);
-	void SetMinotaurGrowlPosition(irrklang::vec3df position);
-	void SetCoinPosition(irrklang::vec3df position);
+	void PlayPlayerFootStep(float time);
 
+	void SetTorchPosition(irrklang::vec3df position);
+	void PlayTorchSound();
+
+	void SetMinotaurFootPosition(irrklang::vec3df position);
+	void PlayMinotaurFootStep();
+	void SetMinotaurGrowlPosition(irrklang::vec3df position);
+	void PlayMinotaurGrowl();
+
+	void SetCoinPosition(irrklang::vec3df position);
+	void PlayCoinSound();
+
+	void Update();
 
 private:
 	irrklang::ISoundEngine* engine;
+	irrklang::ISoundEffectControl* fx;
+
 	// sounds
 	irrklang::ISound* music;
+
+	// player sounds
 	irrklang::ISound* playerFootStep;
+
+	// torch sounds
 	irrklang::ISound* torch;
+
+	// minotaur sounds
 	irrklang::ISound* minotaurFootStep;
 	irrklang::ISound* minotaurGrowl;
+
+	// coin sounds
 	irrklang::ISound* coin;
 
 	float playerStepTime;
+	irrklang::vec3df newPosition;
+	float counter = 0;
 
 };
 

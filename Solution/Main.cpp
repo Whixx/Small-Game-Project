@@ -126,10 +126,6 @@ int main()
 
 	//fx->enableEchoSoundEffect();
 
-
-	Mesh groundMesh;
-	Mesh torchMesh;
-
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
 
 	ObjectHandler OH = ObjectHandler();

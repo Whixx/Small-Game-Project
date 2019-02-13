@@ -54,7 +54,7 @@ void Player::MoveForward(float elapsedTime)
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * this->walkingVector * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 
-	sound.PlayPlayerFootStepSound(elapsedTime);
+	sound.PlayPlayerFootStep(elapsedTime);
 }
 
 void Player::MoveBackward(float elapsedTime)
@@ -62,7 +62,7 @@ void Player::MoveBackward(float elapsedTime)
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * this->walkingVector * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 
-	sound.PlayPlayerFootStepSound(elapsedTime);
+	sound.PlayPlayerFootStep(elapsedTime);
 }
 
 void Player::MoveRight(float elapsedTime)
@@ -70,7 +70,7 @@ void Player::MoveRight(float elapsedTime)
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 
-	sound.PlayPlayerFootStepSound(elapsedTime);
+	sound.PlayPlayerFootStep(elapsedTime);
 }
 
 void Player::MoveLeft(float elapsedTime)
@@ -78,7 +78,7 @@ void Player::MoveLeft(float elapsedTime)
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 
-	sound.PlayPlayerFootStepSound(elapsedTime);
+	sound.PlayPlayerFootStep(elapsedTime);
 }
 
 void Player::MoveUp(float elapsedTime)
@@ -158,4 +158,14 @@ void Player::Update(double dt)
 	}
 	*/
 
+	// update player position in sound engine
+	sound.SetPlayerPosition(
+		irrklang::vec3df(
+			this->GetCamera()->GetCameraPosition().x,
+			this->GetCamera()->GetCameraPosition().y,
+			-this->GetCamera()->GetCameraPosition().z),
+		irrklang::vec3df(
+			this->GetCamera()->GetForwardVector().x,
+			this->GetCamera()->GetForwardVector().y,
+			-this->GetCamera()->GetForwardVector().z));
 }
