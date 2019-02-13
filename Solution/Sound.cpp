@@ -43,9 +43,6 @@ Sound::~Sound()
 void Sound::SetPlayerPosition(irrklang::vec3df position, irrklang::vec3df direction)
 {
 	this->engine->setListenerPosition(position, direction);
-	this->SetPlayerFootStepPosition(position);
-	this->SetTorchPosition(position);
-	this->SetMinotaurFootPosition(position);
 }
 
 void Sound::SetMusicPosition(irrklang::vec3df position)
@@ -58,11 +55,13 @@ void Sound::SetPlayerFootStepPosition(irrklang::vec3df position)
 	this->playerFootStep->setPosition(position);
 }
 
-void Sound::PlayPlayerFootStep(float time)
+void Sound::PlayPlayerFootStep(irrklang::vec3df position, float time)
 {
 	// apply effects if needed
 	//this->fx = playerFootStep->getSoundEffectControl();
 	//fx->enableWavesReverbSoundEffect();
+
+	//this->playerFootStep->setPosition(position);
 
 	this->playerStepTime += time;
 	if (playerStepTime > 0.5)
@@ -84,10 +83,21 @@ void Sound::PlayTorchSound()
 
 void Sound::SetMinotaurFootPosition(irrklang::vec3df position)
 {
+	// temporär minotaurfotsteg som går runt i cirkel
 	newPosition.Y = 0.0;
 	newPosition.X = sinf(counter * 0.005f * 3.15) * 5.0f;
 	newPosition.Z = cosf(counter * 0.005f * 3.15) * 5.0f;
 	counter++;
 
 	this->minotaurFootStep->setPosition(newPosition);
+}
+
+void Sound::Update(irrklang::vec3df position, irrklang::vec3df viewDirection)
+{
+	this->SetPlayerPosition(position, viewDirection);
+
+	// set position of footsteps and torch 
+	this->SetPlayerFootStepPosition(position);
+	this->SetTorchPosition(position);
+	this->SetMinotaurFootPosition(position);
 }
