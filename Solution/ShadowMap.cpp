@@ -1,10 +1,15 @@
 #include "ShadowMap.h"
 
 
-ShadowMap::ShadowMap()
+ShadowMap::ShadowMap(unsigned int width, unsigned int height)
 {
 	this->fbo = 0;
 	this->depthCubeMap = 0;
+
+	this->width = width;
+	this->height = height;
+
+	this->Init();
 }
 
 
@@ -35,9 +40,9 @@ bool ShadowMap::Init()
 	// Create 6 textures (a cubemap)
 	for (unsigned int i = 0; i < 6; ++i)
 	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, this->width, this->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	}
-		
+
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

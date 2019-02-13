@@ -1,9 +1,14 @@
 #include "GBuffer.h"
 
-GBuffer::GBuffer()
+GBuffer::GBuffer(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
 {
 	this->fbo = 0;
 	this->depthTexture = 0;
+
+	this->width = SCREENWIDTH;
+	this->height = SCREENHEIGHT;
+
+	this->Init();
 }
 
 GBuffer::~GBuffer()
@@ -24,7 +29,7 @@ GBuffer::~GBuffer()
 	}
 }
 
-bool GBuffer::Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
+bool GBuffer::Init()
 {
 	bool finish = true;
 
@@ -42,7 +47,7 @@ bool GBuffer::Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
 		glBindTexture(GL_TEXTURE_2D, this->textures[i]);
 
 		// Allocate Storage for the gBuffer Textures
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, SCREENWIDTH, SCREENHEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, this->width, this->height, 0, GL_RGB, GL_FLOAT, NULL);
 
 		// Cutting or adding the texture if the texture is larger than the object.
 		// Example cutting: texture is 512:512, quad is 500:500, then these parameters does it so that the texture should be cut to 500:500
@@ -63,7 +68,7 @@ bool GBuffer::Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
 	// Make the depthTexture active
 	glBindTexture(GL_TEXTURE_2D, this->depthTexture);
 	// Allocate Storage for the depthTexture
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, SCREENWIDTH, SCREENHEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, this->width, this->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	// Attach the depth texture to the framebuffer (GL_DEPTH_ATTATCHMENT)
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->depthTexture, 0);
 
@@ -92,9 +97,9 @@ void GBuffer::BindForWriting()
 void GBuffer::BindForReading()
 {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, this->fbo);
-	
+
 	for (unsigned int i = 0; i < GBUFFER_NUM_TEXTURES; i++)
-	{	
+	{
 		// if we have different textures to bind, we need to change the current texture openGL is working with.
 		glActiveTexture(GL_TEXTURE0 + i);
 		// Now when we bind, the bind will affect the current texture that got called by :glActivateTexture

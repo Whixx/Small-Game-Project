@@ -31,23 +31,26 @@
 
 #define PI 3.1415926535
 
-// Update functions
-void updateAllObjects(double dt, ObjectHandler &OH);
+
+// Shader initiation functions
+void InitShadowShader(Shader *shader);
+void InitGeometryPass(Shader *shader);
+void InitLightPass(Shader *shader);
+void InitParticleShader(Shader *shader);
+void InitPointLightPass(Shader *shader);
+void InitBlurShader(Shader *shader);
+void InitFinalBloomShader(Shader *shader);
+void InitFinalShader(Shader *shader);
 
 // Shader pass functions
 void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player);
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc);
-void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenQuad, GLuint *program, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, GLuint cameraLocationLP, Camera *camera);
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH);
+void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenQuad, GLuint *program, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera);
 void LightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera);
 void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle);
 void FinalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle);
 void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime, glm::vec3 position);
 void FinalPass(FinalFBO * finalFBO, Shader * finalShader, Mesh *fullScreenTriangle);
-
-void SendCameraLocationToGPU(GLuint cameraLocation, Camera *camera);
-void PrepareTexture(GLuint textureLoc, GLuint normalMapLoc);
-
-void SetStartPositions(ObjectHandler *OH);
 
 // height and width must be odd numbers else the resulting maze will be off
 void GenerateMazeBitmaps(int height, int width);

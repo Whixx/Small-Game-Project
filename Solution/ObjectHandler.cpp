@@ -40,6 +40,14 @@ int ObjectHandler::CreateObject(const char* filePath, Mesh *mesh, Texture *textu
 	return this->numberOfObjects++;
 }
 
+void ObjectHandler::UpdateAllObjects(double dt)
+{
+	for (int i = 0; i < numberOfObjects; i++)
+	{
+		allObjects[i].Update(dt);
+	}
+}
+
 
 unsigned int ObjectHandler::GetNrOfObjects()
 {

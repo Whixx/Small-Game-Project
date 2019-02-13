@@ -13,10 +13,10 @@ public:
 		FINALFBO_NUM_TEXTURES
 	};
 
-	FinalFBO();
+	FinalFBO(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT);
 	~FinalFBO();
 
-	bool Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT);
+	bool Init();
 	void BindForWriting();
 	void BindForReading(GLuint textureUnit);
 
@@ -27,6 +27,9 @@ private:
 	GLuint fbo;
 	GLuint colorBuffers[FINALFBO_NUM_TEXTURES];
 	GLuint depthTexture;
+
+	unsigned int width;
+	unsigned int height;
 };
 
 #endif

@@ -12,10 +12,10 @@ public:
 		BLURBUFFER_NUM_TEXTURES
 	};
 
-	BlurBuffer();
+	BlurBuffer(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT);
 	~BlurBuffer();
 
-	bool Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT);
+	bool Init();
 	void BindForWriting(bool horizontal);
 	void BindForReading(bool horizontal, int textureUnit);
 	void SetReadBuffer(BLURBUFFER_TEXTURE_TYPE TextureType);
@@ -23,5 +23,8 @@ public:
 private:
 	GLuint fbo[2];
 	GLuint colorBuffers[2];
+
+	unsigned int width;
+	unsigned int height;
 };
 

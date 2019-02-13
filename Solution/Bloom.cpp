@@ -1,9 +1,14 @@
 #include "Bloom.h"
 
-BloomBuffer::BloomBuffer()
+BloomBuffer::BloomBuffer(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
 {
 	this->fbo = 0;
 	this->depthTexture = 0;
+
+	this->width = SCREENWIDTH;
+	this->height = SCREENHEIGHT;
+
+	this->Init();
 }
 
 BloomBuffer::~BloomBuffer()
@@ -24,7 +29,7 @@ BloomBuffer::~BloomBuffer()
 	}
 }
 
-bool BloomBuffer::Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
+bool BloomBuffer::Init()
 {
 	bool finish = true;
 
@@ -35,7 +40,7 @@ bool BloomBuffer::Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
 	for (unsigned int i = 0; i < BLOOMBUFFER_NUM_TEXTURES; i++)
 	{
 		glBindTexture(GL_TEXTURE_2D, this->colorBuffers[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCREENWIDTH, SCREENHEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, this->width, this->height, 0, GL_RGB, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -58,14 +63,14 @@ bool BloomBuffer::Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
 	// Make the depthTexture active
 	glBindTexture(GL_TEXTURE_2D, this->depthTexture);
 	// Allocate Storage for the depthTexture
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, SCREENWIDTH, SCREENHEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, this->width, this->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	// Attach the depth texture to the framebuffer (GL_DEPTH_ATTATCHMENT)
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->depthTexture, 0);
 
 	// Felcheckar
 	GLenum Status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
-	if (Status != GL_FRAMEBUFFER_COMPLETE) 
+	if (Status != GL_FRAMEBUFFER_COMPLETE)
 	{
 		printf("FB error, status: 0x%x\n", Status);
 		finish = false;

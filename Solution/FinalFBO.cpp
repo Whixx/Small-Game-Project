@@ -2,10 +2,15 @@
 
 
 
-FinalFBO::FinalFBO()
+FinalFBO::FinalFBO(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
 {
 	this->fbo = 0;
 	this->depthTexture = 0;
+
+	this->width = SCREENWIDTH;
+	this->height = SCREENHEIGHT;
+
+	this->Init();
 }
 
 
@@ -27,7 +32,7 @@ FinalFBO::~FinalFBO()
 	}
 }
 
-bool FinalFBO::Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
+bool FinalFBO::Init()
 {
 	bool finish = true;
 
@@ -38,7 +43,7 @@ bool FinalFBO::Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
 	for (unsigned int i = 0; i < FINALFBO_NUM_TEXTURES; i++)
 	{
 		glBindTexture(GL_TEXTURE_2D, this->colorBuffers[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCREENWIDTH, SCREENHEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, this->width, this->height, 0, GL_RGB, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -48,14 +53,14 @@ bool FinalFBO::Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
 	}
 
 	// Tells openGL that we want two rendertargets
-	unsigned int attachments[FINALFBO_NUM_TEXTURES] = {GL_COLOR_ATTACHMENT0};
+	unsigned int attachments[FINALFBO_NUM_TEXTURES] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers(FINALFBO_NUM_TEXTURES, attachments);
 
 	glGenTextures(1, &this->depthTexture);
 	// Make the depthTexture active
 	glBindTexture(GL_TEXTURE_2D, this->depthTexture);
 	// Allocate Storage for the depthTexture
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, SCREENWIDTH, SCREENHEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, this->width, this->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	// Attach the depth texture to the framebuffer (GL_DEPTH_ATTATCHMENT)
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->depthTexture, 0);
 

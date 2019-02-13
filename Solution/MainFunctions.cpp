@@ -1,18 +1,99 @@
 #include "MainFunctions.h"
 
-
-void updateAllObjects(double dt, ObjectHandler & OH)
+void InitShadowShader(Shader * shader)
 {
-	for (int i = 0; i < OH.GetNrOfObjects(); i++)
-	{
-		OH.GetObject(i)->Update(dt);
-	}
+	shader->InitiateShaders(false);
+
+	// Set constant uniforms
+
+	shader->ValidateShaders();
+}
+
+void InitGeometryPass(Shader * shader)
+{
+	shader->InitiateShaders(false);
+
+	// Set constant uniforms
+	shader->Bind();
+	shader->SendInt("texture", 0);
+	shader->SendInt("normalMap", 1);
+
+	shader->ValidateShaders();
+}
+
+void InitLightPass(Shader * shader)
+{
+	shader->InitiateShaders(false);
+
+	// Set constant uniforms
+	shader->Bind();
+	shader->SendInt("gPosition", 0);
+	shader->SendInt("gDiffuse", 1);
+	shader->SendInt("gNormal", 2);
+	shader->SendInt("shadowMap", 3);
+
+	shader->ValidateShaders();
+}
+
+void InitParticleShader(Shader * shader)
+{
+	shader->InitiateShaders(false);
+
+	// Set constant uniforms
+	shader->Bind();
+	shader->SendInt("particleTexture", 0);
+
+	shader->ValidateShaders();
+}
+
+void InitPointLightPass(Shader * shader)
+{
+	shader->InitiateShaders(true);
+
+	// Set constant uniforms
+	shader->Bind();
+
+	shader->ValidateShaders();
+}
+
+void InitBlurShader(Shader * shader)
+{
+	shader->InitiateShaders(false);
+
+	// Set constant uniforms
+	shader->Bind();
+	shader->SendInt("scene", 0);
+
+	shader->ValidateShaders();
+}
+
+void InitFinalBloomShader(Shader * shader)
+{
+	shader->InitiateShaders(false);
+
+	// Set constant uniforms
+	shader->Bind();
+	shader->SendInt("scene", 0);
+	shader->SendInt("bright", 1);
+
+	shader->ValidateShaders();
+}
+
+void InitFinalShader(Shader * shader)
+{
+	shader->InitiateShaders(false);
+
+	// Set constant uniforms
+	shader->Bind();
+	shader->SendInt("scene", 0);
+
+	shader->ValidateShaders();
 }
 
 void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player)
 {
-	glEnable(GL_DEPTH_TEST);
 	shadowShader->Bind();
+	glEnable(GL_DEPTH_TEST);
 	shadowFBO->Bind();
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -29,19 +110,22 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 
 		for (int j = 0; j < 6; ++j)
 		{
-			shadowShader->SetMat4("shadowMatrices[" + std::to_string(j) + "]", shadowTransforms[j]);
+			shadowShader->SendMat4(("shadowMatrices[" + std::to_string(j) + "]").c_str(), shadowTransforms[j]);
 		}
 		shadowShader->SendFloat("farPlane", (float)FAR_PLANE);
 		shadowShader->SendVec3("lightPos", lightPos.x, lightPos.y, lightPos.z);
 
 		for (unsigned int j = 0; j < OH->GetNrOfObjects(); j++)
 		{
-			shadowShader->Update(OH->GetObject(j)->GetTransform(), *player->GetCamera());
+			glm::mat4 worldMatrix = OH->GetObject(j)->GetTransform().GetWorldMatrix();
+			shadowShader->SendMat4("WorldMatrix", worldMatrix);
 			OH->GetObject(j)->BindTexture();
 			OH->GetObject(j)->Draw();
 		}
 
-		shadowShader->Update(player->GetTorch().GetTransform(), *player->GetCamera());
+		// Draw player torch
+		glm::mat4 worldMatrix = player->GetTorch().GetTransform().GetWorldMatrix();
+		shadowShader->SendMat4("WorldMatrix", worldMatrix);
 		player->GetTorch().BindTexture();
 		player->GetTorch().Draw();
 	}
@@ -51,12 +135,11 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH, GLuint cameraLocationGP, GLint texLoc, GLint normalTexLoc)
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH)
 {
 	geometryPass->Bind();
 
-	SendCameraLocationToGPU(cameraLocationGP, player->GetCamera());
-	PrepareTexture(texLoc, normalTexLoc);
+	geometryPass->SendCameraLocation(player->GetCamera());
 
 	gBuffer->BindForWriting();
 
@@ -70,42 +153,39 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	for (unsigned int i = 0; i < OH->GetNrOfObjects(); i++)
 	{
 		geometryPass->SendFloat("illuminated", 1.0f);
-		geometryPass->Update(OH->GetObject(i)->GetTransform(), *player->GetCamera());
+		glm::mat4 worldMatrix = OH->GetObject(i)->GetTransform().GetWorldMatrix();
+		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+		geometryPass->SendMat4("WorldMatrix", worldMatrix);
 		OH->GetObject(i)->BindTexture();
 		OH->GetObject(i)->Draw();
 	}
 
+	// Draw player torch
 	geometryPass->SendFloat("illuminated", 3.0f);
-	geometryPass->Update(player->GetTorch().GetTransform(), *player->GetCamera());
+	glm::mat4 worldMatrix = player->GetTorch().GetTransform().GetWorldMatrix();
+	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+	geometryPass->SendMat4("WorldMatrix", worldMatrix);
 	player->GetTorch().BindTexture();
 	player->GetTorch().Draw();
 	
 	geometryPass->UnBind();
 }
 
-void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenTriangle, GLuint *program, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, GLuint cameraLocationLP, Camera *camera)
+void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenTriangle, GLuint *program, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera)
 {
 	lightPass->Bind();
 
 	lights->SendToShader();
-	SendCameraLocationToGPU(cameraLocationLP, camera);
+	lightPass->SendCameraLocation(camera);
+	lightPass->SendFloat("farPlane", (float)FAR_PLANE);
 
 	// Bloom buffer, write finalColor and brightness.
 	bloomBuffer->BindForWriting();
 	bloomBuffer->BindForReading();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	gBuffer->BindForReading();
-
-	lightPass->SendInt("gPosition", GBuffer::GBUFFER_TEXTURE_TYPE_POSITION);
-	lightPass->SendInt("gDiffuse", GBuffer::GBUFFER_TEXTURE_TYPE_DIFFUSE);
-	lightPass->SendInt("gNormal", GBuffer::GBUFFER_TEXTURE_TYPE_NORMAL);
-
-	shadowBuffer->BindForReading(3);
-	lightPass->SendInt("shadowMap", 3);
-	lightPass->SendFloat("farPlane", (float)FAR_PLANE);
-
-	lightPass->ValidateShaders();
+	gBuffer->BindForReading(); // Binds texture slot 0,1,2
+	shadowBuffer->BindForReading(3); // Binds texture slot 3
 
 	glDisable(GL_DEPTH_TEST);
 	fullScreenTriangle->Draw();
@@ -117,13 +197,17 @@ void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenTri
 // This function draws particles to the screen.
 void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime, glm::vec3 position)
 {
+	// Bind the correct shader
+	particleShader->Bind();
+
 	finalFBO->BindForWriting();
 
+	// Send Uniforms
 	// We need the camera right/up vector and the camera location in world space to be able to make billboards out of the particles
-	// PS = ParticleShader
-	GLuint cameraRightWorldPS = glGetUniformLocation(*particleShader->GetProgram(), "cameraRightWorldPS");
-	GLuint cameraUpWorldPS = glGetUniformLocation(*particleShader->GetProgram(), "cameraUpWorldPS");
-	GLuint viewProjection = glGetUniformLocation(*particleShader->GetProgram(), "viewProjectionMatrix");
+	particleShader->SendVec3("cameraRightWorld", camera->GetViewProjection()[0][0], camera->GetViewProjection()[1][0], camera->GetViewProjection()[2][0]);
+	particleShader->SendVec3("cameraUpWorld", camera->GetViewProjection()[0][1], camera->GetViewProjection()[1][1], camera->GetViewProjection()[2][1]);
+	particleShader->SendMat4("viewProjectionMatrix", camera->GetViewProjection());
+
 
 	// Create new particles
 	particle->GenerateParticles(deltaTime, position);
@@ -134,13 +218,7 @@ void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 	// Update the buffers holding the particles
 	particle->Update();
 
-	// Bind the correct shader
-	particleShader->Bind();
 
-	// Send Uniforms
-	glUniform3f(cameraRightWorldPS, camera->GetViewProjection()[0][0], camera->GetViewProjection()[1][0], camera->GetViewProjection()[2][0]);
-	glUniform3f(cameraUpWorldPS, camera->GetViewProjection()[0][1], camera->GetViewProjection()[1][1], camera->GetViewProjection()[2][1]);
-	glUniformMatrix4fv(viewProjection, 1, GL_FALSE, &camera->GetViewProjection()[0][0]);
 
 	// Disable depthbuffer and enable blend
 	glDepthMask(false);
@@ -172,7 +250,9 @@ void LightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLigh
 	pointLightPass->Bind();
 	for (unsigned int i = 0; i < lights->GetNrOfLights(); i++)
 	{
-		pointLightPass->Update(*lights->GetTransform(i), *camera);
+		glm::mat4 worldMatrix = lights->GetTransform(i)->GetWorldMatrix();
+		pointLightPass->SendMat4("transformationMatrix", camera->GetViewProjection() * worldMatrix);
+
 		lights->Draw(i);
 	}
 	pointLightPass->UnBind();
@@ -198,14 +278,11 @@ void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuff
 		{
 			bloomBuffer->BindForReadingBloomMap(0);
 			blurShader->SendInt("horizontal", !horizontal);
-			blurShader->SendInt("scene", 0);
 		}
 		else
 		{
 			blurBuffers->BindForReading(horizontal, 0);
 			blurShader->SendInt("horizontal", !horizontal);
-
-			blurShader->SendInt("scene", 0);
 		}
 
 		glDisable(GL_DEPTH_TEST);
@@ -231,10 +308,7 @@ void FinalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *
 	finalBloomShader->Bind();
 
 	bloomBuffer->BindForReadingDiffuse();
-	finalBloomShader->SendInt("scene", 0);
-
 	blurBuffers->BindForReading(1, 1);
-	finalBloomShader->SendInt("bright", 1);
 
 	glDisable(GL_DEPTH_TEST);
 	fullScreenTriangle->Draw();
@@ -249,27 +323,10 @@ void FinalPass(FinalFBO * finalFBO, Shader * finalShader, Mesh * fullScreenTrian
 	finalFBO->BindForReading(0);
 
 	finalShader->Bind();
-	finalShader->SendInt("scene", 0);
 
 	glDisable(GL_DEPTH_TEST);
 	fullScreenTriangle->Draw();
 	glEnable(GL_DEPTH_TEST);
-}
-
-void SendCameraLocationToGPU(GLuint cameraLocation, Camera *camera)
-{
-	glUniform3f(cameraLocation, camera->GetCameraPosition().x, camera->GetCameraPosition().y, camera->GetCameraPosition().z);
-}
-
-void PrepareTexture(GLuint textureLoc, GLuint normalMapLoc)
-{
-	glUniform1i(textureLoc, 0);
-	glUniform1i(normalMapLoc, 1);
-}
-
-void SetStartPositions(ObjectHandler * OH)
-{
-
 }
 
 void GenerateMazeBitmaps(int height, int width)
