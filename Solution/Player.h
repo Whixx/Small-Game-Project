@@ -16,7 +16,7 @@ class Player
 {
 public:
 	// Default constructor
-	Player(float height, float fov, float near, float far, Mesh *mesh, Texture *texture);
+	Player(float height, float fov, float near, float far, Mesh *mesh, Texture *texture, Maze * maze);
 	virtual ~Player();
 	
 	float GetPlayerSpeed();
@@ -33,6 +33,7 @@ public:
 	void MoveLeft(float elapsedTime);
 	void MoveUp(float elapsedTime);
 	void MoveDown(float elapsedTime);
+	void CenterPlayer();
 	void UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime);
 	void Update(double dt);
 	
@@ -44,6 +45,7 @@ private:
 	Maze* maze;
 	float playerSpeed;
 	float playerHeight;
+	float boundingBoxHalfSize;
 	glm::vec3 walkingVector;
 };
 

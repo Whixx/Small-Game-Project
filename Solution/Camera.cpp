@@ -8,6 +8,7 @@ Camera::Camera(const glm::vec3& pos, float fov, float aspect, float zNear, float
 {
 	this->projectionMatrix = glm::perspective(fov, aspect, zNear, zFar);
 	this->cameraPosition = pos;
+	this->oldCameraPosition = pos;
 	this->forwardVector = vector;
 	this->upVector = glm::vec3(0, 1, 0);
 	this->viewMatrix = glm::lookAt(this->cameraPosition, this->cameraPosition + this->forwardVector, this->upVector);
@@ -63,6 +64,11 @@ glm::vec3 Camera::GetCameraPosition()
 	return this->cameraPosition;
 }
 
+glm::vec3 Camera::GetOldCameraPosition()
+{
+	return this->oldCameraPosition;
+}
+
 glm::vec3 Camera::GetStartCameraPosition()
 {
 	return this->startCameraPosition;
@@ -97,6 +103,11 @@ glm::vec3 Camera::GetForwardVector()
 void Camera::SetCameraPosition(glm::vec3 camPos)
 {
 	this->cameraPosition = camPos;
+}
+
+void Camera::SetOldCameraPosition(glm::vec3 camPos)
+{
+	this->oldCameraPosition = camPos;
 }
 
 void Camera::SetUpVector(glm::vec3 vector)
