@@ -230,23 +230,8 @@ int main()
 		lights.UpdateShadowTransform(0);
 
 		// sound
-		//engine->setListenerPosition(irrklang::vec3df(listenerPosX, listenerPosY, -listenerPosZ), irrklang::vec3df(listenerDirectionX, listenerDirectionY, -listenerDirectionZ));
-		//sound.SetPlayerPosition(irrklang::vec3df(listenerPosX, listenerPosY, -listenerPosZ), irrklang::vec3df(listenerDirectionX, listenerDirectionY, -listenerDirectionZ));
-		//sound.SetPlayerPosition(
-		//	irrklang::vec3df(
-		//		player.GetCamera()->GetCameraPosition().x, 
-		//		player.GetCamera()->GetCameraPosition().y, 
-		//		-player.GetCamera()->GetCameraPosition().z), 
-		//	irrklang::vec3df(
-		//		player.GetCamera()->GetForwardVector().x, 
-		//		player.GetCamera()->GetForwardVector().y, 
-		//		-player.GetCamera()->GetForwardVector().z));
 
-		//sound.SetPlayerFootStepPosition(
-		//	irrklang::vec3df(
-		//	player.GetCamera()->GetCameraPosition().x,
-		//	player.GetCamera()->GetCameraPosition().y,
-		//	-player.GetCamera()->GetCameraPosition().z));
+
 
 		// Measure fps
 		nrOfFrames++;

@@ -17,21 +17,25 @@ public:
 
 	// set position of the sound sources
 	void SetMusicPosition(irrklang::vec3df position);
+
 	void SetPlayerFootStepPosition(irrklang::vec3df position);
-	void PlayPlayerFootStep(irrklang::vec3df position, float time);
+	void PlayPlayerFootStep();
 
 	void SetTorchPosition(irrklang::vec3df position);
 	void PlayTorchSound();
 
 	void SetMinotaurFootPosition(irrklang::vec3df position);
-	void PlayMinotaurFootStep(irrklang::vec3df position);
+	void PlayMinotaurFootStep();
+	void StopMinotaurFootstep(); // används om fotstegen är en lång loop istället för ett steg som upprepas
 	void SetMinotaurGrowlPosition(irrklang::vec3df position);
-	void PlayMinotaurGrowl(irrklang::vec3df position);
+	void PlayMinotaurGrowl();
 
-	void SetCoinPosition(irrklang::vec3df position);
 	void PlayCoinSound(irrklang::vec3df position);
 
 	void Update(irrklang::vec3df position, irrklang::vec3df viewDirection);
+	void UpdatePlayer(irrklang::vec3df position, irrklang::vec3df viewDirection);
+	void UpdateMinotaur(irrklang::vec3df position);
+	void StopAllSounds();
 
 private:
 	irrklang::ISoundEngine* engine;
@@ -42,18 +46,27 @@ private:
 
 	// player sounds
 	irrklang::ISound* playerFootStep;
+	irrklang::ISoundSource* playerFootStepSource;
 
 	// torch sounds
 	irrklang::ISound* torch;
 
 	// minotaur sounds
 	irrklang::ISound* minotaurFootStep;
+	irrklang::ISoundSource* minotaurFootStepSource;
 	irrklang::ISound* minotaurGrowl;
+	irrklang::ISoundSource* minotaurGrowlSource;
 
 	// coin sounds
 	irrklang::ISound* coin;
+	irrklang::ISoundSource* coinSource;
 
-	float playerStepTime;
+	// variables for setting player (listener) position
+	irrklang::vec3df velPerSecond, upVector; // velPerSecond is used for doppler effects
+
+	irrklang::vec3df playerPosition;
+	irrklang::vec3df minotaurPosition;
+
 	irrklang::vec3df newPosition;
 	float counter = 0;
 
