@@ -1,6 +1,5 @@
 #ifndef SOUND_H
 #define SOUND_H
-
 #include <iostream>
 #include <irrKlang/irrKlang.h>
 #include <vector>
@@ -13,62 +12,19 @@ public:
 	~Sound();
 
 	// set player (camera) position and view direction
-	void SetPlayerPosition(irrklang::vec3df position, irrklang::vec3df direction);
+	virtual void SetPosition(irrklang::vec3df position) = 0;
 
-	// set position of the sound sources
-	void SetMusicPosition(irrklang::vec3df position);
+	// two update functions, first one is for player (listener) who also needs a view direction
+	virtual void Update(irrklang::vec3df position, irrklang::vec3df viewDirection);
+	virtual void Update(irrklang::vec3df position);
 
-	void SetPlayerFootStepPosition(irrklang::vec3df position);
-	void PlayPlayerFootStep();
+	virtual void StopAllSounds() = 0;
 
-	void SetTorchPosition(irrklang::vec3df position);
-	void PlayTorchSound();
-
-	void SetMinotaurFootPosition(irrklang::vec3df position);
-	void PlayMinotaurFootStep();
-	void StopMinotaurFootstep(); // används om fotstegen är en lång loop istället för ett steg som upprepas
-	void SetMinotaurGrowlPosition(irrklang::vec3df position);
-	void PlayMinotaurGrowl();
-
-	void PlayCoinSound(irrklang::vec3df position);
-
-	void Update(irrklang::vec3df position, irrklang::vec3df viewDirection);
-	void UpdatePlayer(irrklang::vec3df position, irrklang::vec3df viewDirection);
-	void UpdateMinotaur(irrklang::vec3df position);
-	void StopAllSounds();
+	irrklang::ISoundEngine* GetEngine();
 
 private:
 	irrklang::ISoundEngine* engine;
-	irrklang::ISoundEffectControl* fx;
-
-	// sounds
-	irrklang::ISound* music;
-
-	// player sounds
-	irrklang::ISound* playerFootStep;
-	irrklang::ISoundSource* playerFootStepSource;
-
-	// torch sounds
-	irrklang::ISound* torch;
-
-	// minotaur sounds
-	irrklang::ISound* minotaurFootStep;
-	irrklang::ISoundSource* minotaurFootStepSource;
-	irrklang::ISound* minotaurGrowl;
-	irrklang::ISoundSource* minotaurGrowlSource;
-
-	// coin sounds
-	irrklang::ISound* coin;
-	irrklang::ISoundSource* coinSource;
-
-	// variables for setting player (listener) position
-	irrklang::vec3df velPerSecond, upVector; // velPerSecond is used for doppler effects
-
-	irrklang::vec3df playerPosition;
-	irrklang::vec3df minotaurPosition;
-
-	irrklang::vec3df newPosition;
-	float counter = 0;
+	//irrklang::ISoundEffectControl* fx;
 
 };
 

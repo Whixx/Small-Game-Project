@@ -42,11 +42,14 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	if (keyboardButton == GLFW_PRESS)
 	{
 		player->MoveForward(elapsedTime);
+		player->minotaurSound.PlayGrowl();
 	}
 	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_S);
 	if (keyboardButton == GLFW_PRESS)
 	{
 		player->MoveBackward(elapsedTime);
+		player->minotaurSound.StopAllSounds();
+		player->sound.StopAllSounds();
 	}
 	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_D);
 	if (keyboardButton == GLFW_PRESS)
@@ -73,6 +76,13 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	{
 		player->GetCamera()->SetCameraPosition(player->GetCamera()->GetStartCameraPosition());
 		player->GetCamera()->SetForwardVector(player->GetCamera()->GetStartForwardVector());
+	}
+	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_C);
+	if (keyboardButton == GLFW_PRESS)
+	{
+		player->sound.PlayCoinSound(
+			irrklang::vec3df(player->GetCamera()->GetCameraPosition().x, player->GetCamera()->GetCameraPosition().y, -player->GetCamera()->GetCameraPosition().z) + 
+			irrklang::vec3df(player->GetCamera()->GetForwardVector().x, player->GetCamera()->GetForwardVector().y, -player->GetCamera()->GetForwardVector().z)*30);
 	}
 }
 

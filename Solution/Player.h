@@ -7,7 +7,8 @@
 #include "Display.h"
 #include "Maze.h"
 #include "Torch.h"
-#include "Sound.h"
+#include "PlayerSound.h"
+#include "MinotaurSound.h"
 
 #define PI 3.1415926535
 
@@ -37,7 +38,8 @@ public:
 	void UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime);
 	void Update(double dt);
 
-	Sound sound;
+	PlayerSound sound;
+	MinotaurSound minotaurSound;
 	
 private:
 	Camera playerCamera;

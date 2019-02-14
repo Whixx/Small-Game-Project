@@ -76,6 +76,12 @@
     <ClCompile Include="Sound.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerSound.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MinotaurSound.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloom.h">
@@ -154,6 +160,12 @@
       <Filter>Class h Files</Filter>
     </ClInclude>
     <ClInclude Include="Torch.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerSound.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MinotaurSound.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
   </ItemGroup>

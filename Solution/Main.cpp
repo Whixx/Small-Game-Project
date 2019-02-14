@@ -3,32 +3,10 @@
 
 #include "MainFunctions.h"
 
-//// sound
-//#include <irrKlang/irrKlang.h>
-//#pragma comment(lib, "irrKlang.lib")
-
 int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CRT_SECURE_NO_WARNINGS;
-
-	//irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
-	//if (!engine)
-	//{
-	//	cout << "some shet went wrong" << endl;
-	//}
-	//else
-	//{
-	//	cout << "soundengine created fine" << endl;
-	//}
-
-	//engine->play2D("Sounds/bell.wav", true);
-	//irrklang::ISound* music = engine->play3D("Sounds/bell.wav", irrklang::vec3df(0, 0, 0), true, false, true);
-	//music->setMinDistance(5.0f);
-
-	//engine->setListenerPosition(p);
-
-	//Sound sound;
 
 	Display display;
 
@@ -104,27 +82,6 @@ int main()
 	float playerHeight = 1.0f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture);
 	player.SetPlayerSpeed(5.0f);
-
-
-	// sound
-	//irrklang::ISound* music = engine->play3D("Sounds/ophelia.mp3", irrklang::vec3df(0, 0, 0), true, false, true, irrklang::ESM_AUTO_DETECT, true);
-	//music->setMinDistance(1.0f);
-
-	//engine->setListenerPosition(irrklang::vec3df(listenerPosX, listenerPosY, listenerPosZ), irrklang::vec3df(listenerDirectionX, listenerDirectionY, listenerDirectionZ));
-	//music->setPosition(irrklang::vec3df(0.0, 0.0, 0.0));
-
-	//sound.SetPlayerPosition(irrklang::vec3df(0.0, 0.0, 0.0), irrklang::vec3df(0.0, 0.0, 1.0));
-	//sound.SetMusicPosition(irrklang::vec3df(0.0, 0.0, 0.0));
-
-
-	//irrklang::ISoundEffectControl* fx = 0;
-	//fx = music->getSoundEffectControl();
-	//if (!fx)
-	//{
-	//	cout << "effects done fucked up" << endl;
-	//}
-
-	//fx->enableEchoSoundEffect();
 
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
 
@@ -228,10 +185,6 @@ int main()
 		updateAllObjects(deltaTime, OH);
 		lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch().GetPos().x, player.GetTorch().GetPos().y + 1.5f, player.GetTorch().GetPos().z);
 		lights.UpdateShadowTransform(0);
-
-		// sound
-
-
 
 		// Measure fps
 		nrOfFrames++;

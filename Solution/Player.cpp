@@ -54,7 +54,7 @@ void Player::MoveForward(float elapsedTime)
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * this->walkingVector * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 
-	sound.PlayPlayerFootStep();
+	sound.PlayFootStep();
 }
 
 void Player::MoveBackward(float elapsedTime)
@@ -62,7 +62,7 @@ void Player::MoveBackward(float elapsedTime)
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * this->walkingVector * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 
-	sound.PlayPlayerFootStep();
+	sound.PlayFootStep();
 }
 
 void Player::MoveRight(float elapsedTime)
@@ -70,7 +70,7 @@ void Player::MoveRight(float elapsedTime)
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 
-	sound.PlayPlayerFootStep();
+	sound.PlayFootStep();
 }
 
 void Player::MoveLeft(float elapsedTime)
@@ -78,7 +78,7 @@ void Player::MoveLeft(float elapsedTime)
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 
-	sound.PlayPlayerFootStep();
+	sound.PlayFootStep();
 }
 
 void Player::MoveUp(float elapsedTime)
@@ -168,4 +168,6 @@ void Player::Update(double dt)
 			this->GetCamera()->GetForwardVector().x,
 			this->GetCamera()->GetForwardVector().y,
 			-this->GetCamera()->GetForwardVector().z));
+	minotaurSound.Update(irrklang::vec3df(0, 0, 0));
+	minotaurSound.PlayFootStep();
 }
