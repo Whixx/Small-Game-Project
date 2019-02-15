@@ -5,11 +5,12 @@
 #include "Mesh.h"
 #include "Texture.h"
 #include "Transform.h"
+#include "PointLight.h"
 
 class Torch
 {
 public:
-	Torch(Transform transform, Mesh * mesh, Texture * texture);
+	Torch(Transform transform, Mesh * mesh, Texture * texture, PointLightHandler* PLH, glm::vec3 lightColor);
 	Torch();
 	~Torch();
 
@@ -31,6 +32,7 @@ private:
 	Mesh *mesh;
 	Texture *texture;
 	Transform transform;
+	PointLight* torchLight;
 };
 
 #endif

@@ -126,8 +126,8 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		// Draw player torch
 		glm::mat4 worldMatrix = player->GetTorch().GetTransform().GetWorldMatrix();
 		shadowShader->SendMat4("WorldMatrix", worldMatrix);
-		player->GetTorch().BindTexture();
-		player->GetTorch().Draw();
+		//player->GetTorch().BindTexture();
+		//player->GetTorch().Draw();
 	}
 
 	shadowShader->UnBind();
@@ -175,7 +175,7 @@ void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenTri
 {
 	lightPass->Bind();
 
-	lights->SendToShader();
+	lights->SendLightsToShader(lightPass);
 	lightPass->SendCameraLocation(camera);
 	lightPass->SendFloat("farPlane", (float)FAR_PLANE);
 

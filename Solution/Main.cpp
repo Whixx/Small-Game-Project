@@ -72,6 +72,10 @@ int main()
 	FinalFBO finalFBO(SCREENWIDTH, SCREENHEIGHT);
 
 	//=========================== Creating Objects ====================================//
+
+	// Create Lights
+	PointLightHandler lights;	// use .CreateLight()
+
 	// height and width must be odd numbers else the resulting maze will be off
 	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
 	GenerateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
@@ -81,9 +85,9 @@ int main()
 	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
 
 	float playerHeight = 1.0f;
-	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, &maze);
+	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, &maze, &lights);
 	player.SetPlayerSpeed(5.0f);
-	player.CenterPlayer();
+	//player.CenterPlayer();
 
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
 
@@ -113,14 +117,6 @@ int main()
 	double deltaTime = 0;
 	double constLastTime = 0;
 	int nrOfFrames = 0;
-
-	// Create Lights
-	PointLightHandler lights;
-	PointLight torchLight;
-	float torchLightIntensity = 2.0f;
-	torchLight.GetColor() = glm::vec3(1.0f, 0.3f, 0.3f) * torchLightIntensity;
-	lights.CreateLight(player.GetTorch().GetPos(), torchLight.GetColor());
-	lights.InitiateLights(lightPass.GetProgram());
 
 	Particle particle;
 	Texture particleTexture("Textures/particle.png", "NormalMaps/flat_normal.jpg");
