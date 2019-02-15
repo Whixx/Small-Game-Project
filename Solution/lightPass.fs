@@ -64,6 +64,7 @@ void main()
 	// Specular
 	vec3 vecToCam;
 	vec4 reflection;
+    vec3 halfwayDir;
 	vec4 specular;
 	float shininess = 30;
 
@@ -74,11 +75,11 @@ void main()
 		alpha = dot(normal.xyz,lightDir);
 		diffuse += vec4(materialColor.rgb,1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * max(alpha, 0);
 
-		// Specular
+		// Specular (Blinn-Phong) 
 		vecToCam = normalize(vec3(cameraPos.xyz - pixelPos.xyz));	
-		// Source: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/reflect.xhtml
-		reflection = reflect(vec4(-lightDir.xyz, 0.0f), vec4(normal.xyz,1.0f));
-		specular += vec4(materialColor.rgb,1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * pow(max(dot(reflection.xyz, vecToCam.xyz),0), shininess);
+        halfwayDir = normalize(lightDir + vecToCam);
+		float spec = pow(max(dot(normal, halfwayDir), 0.0), shininess);
+        specular += vec4(materialColor.rgb, 1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * pow(max(dot(normal, halfwayDir), 0.0), shininess);
 
 		// attenuation
 		distancePixelToLight = length(PointLights[i].position - pixelPos);
