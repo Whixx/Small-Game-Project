@@ -4,14 +4,6 @@ Object::Object(Mesh *mesh, Texture *texture)
 {
 	this->mesh = mesh;
 	this->texture = texture;
-	this->id = -1;
-}
-
-Object::Object(Mesh * mesh, Texture * texture, unsigned int id)
-{
-	this->mesh = mesh;
-	this->texture = texture;
-	this->id = id;
 }
 
 Object::Object()

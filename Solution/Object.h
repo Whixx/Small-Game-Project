@@ -12,7 +12,6 @@ class Object
 {
 public:
 	Object(Mesh *mesh, Texture *texture);
-	Object(Mesh *mesh, Texture *texture, unsigned int id);
 	// Default constructor
 	Object();
 	virtual ~Object();
@@ -34,7 +33,6 @@ private:
 	Texture *texture;
 
 	unsigned int id;
-
 };
 
 #endif //DISPLAY_H
