@@ -78,19 +78,22 @@ int main()
 	Maze maze = Maze("MazePNG/mazeBlackWhite.png");
 	Mesh groundMesh;
 	Mesh torchMesh;
+	Mesh box;
 	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
 
 	float playerHeight = 1.0f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, &maze);
 	player.SetPlayerSpeed(5.0f);
-	player.CenterPlayer();
+	//player.CenterPlayer();
 
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
+	Texture boxTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
 
 	ObjectHandler OH = ObjectHandler();
 
 	//TODO: Byta ground.png till floor.png
 	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
+	int box2 = OH.CreateObject("ObjectFiles/cube.obj", &box, &boxTexture);
 	
 	//=================================================================================//
 
