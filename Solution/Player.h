@@ -9,6 +9,7 @@
 #include "Torch.h"
 #include "PlayerSound.h"
 #include "MinotaurSound.h"
+#include "SoundHandler.h"
 
 #define PI 3.1415926535
 
@@ -18,7 +19,7 @@ class Player
 {
 public:
 	// Default constructor
-	Player(float height, float fov, float near, float far, Mesh *mesh, Texture *texture);
+	Player(float height, float fov, float near, float far, Mesh *mesh, Texture *texture, irrklang::ISoundEngine* engine);
 	virtual ~Player();
 	
 	float GetPlayerSpeed();
@@ -38,8 +39,8 @@ public:
 	void UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime);
 	void Update(double dt);
 
-	PlayerSound sound;
-	MinotaurSound minotaurSound;
+	//PlayerSound sound;
+	//MinotaurSound minotaurSound;
 	
 private:
 	Camera playerCamera;
@@ -50,6 +51,8 @@ private:
 	float playerSpeed;
 	float playerHeight;
 	glm::vec3 walkingVector;
+
+	SoundHandler footstep;
 
 };
 

@@ -1,13 +1,15 @@
 #include "Player.h"
 #include <iostream> // TODO: Remove after testing
 
-Player::Player(float height, float fov, float near, float far, Mesh * mesh, Texture * texture)
-	:playerCamera(glm::vec3(0, height, 0), fov, (float)SCREENWIDTH / (float)SCREENHEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f))
+Player::Player(float height, float fov, float near, float far, Mesh * mesh, Texture * texture, irrklang::ISoundEngine* engine)
+	:playerCamera(glm::vec3(0, height, 0), fov, (float)SCREENWIDTH / (float)SCREENHEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)),
+	footstep("Sounds/playerfootstep.ogg", false, false, engine)
 {
 	this->playerTorch = Torch(this->transform, mesh, texture);
 	this->playerSpeed = 0;
 	this->walkingVector = glm::vec3(0.0f, 0.0f, 1.0f);
 	//this->maze = maze;
+
 }
 
 Player::~Player()
@@ -54,7 +56,8 @@ void Player::MoveForward(float elapsedTime)
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * this->walkingVector * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 
-	sound.PlayFootStep();
+	//sound.PlayFootStep();
+	footstep.Play();
 }
 
 void Player::MoveBackward(float elapsedTime)
@@ -62,7 +65,7 @@ void Player::MoveBackward(float elapsedTime)
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * this->walkingVector * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 
-	sound.PlayFootStep();
+	//sound.PlayFootStep();
 }
 
 void Player::MoveRight(float elapsedTime)
@@ -70,7 +73,7 @@ void Player::MoveRight(float elapsedTime)
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 
-	sound.PlayFootStep();
+	//sound.PlayFootStep();
 }
 
 void Player::MoveLeft(float elapsedTime)
@@ -78,7 +81,7 @@ void Player::MoveLeft(float elapsedTime)
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 
-	sound.PlayFootStep();
+	//sound.PlayFootStep();
 }
 
 void Player::MoveUp(float elapsedTime)
@@ -158,16 +161,21 @@ void Player::Update(double dt)
 	}
 	*/
 
-	// update player position in sound engine
-	sound.Update(
+	//// update player position in sound engine
+	//sound.Update(
+	//	irrklang::vec3df(
+	//		this->GetCamera()->GetCameraPosition().x,
+	//		this->GetCamera()->GetCameraPosition().y,
+	//		-this->GetCamera()->GetCameraPosition().z),
+	//	irrklang::vec3df(
+	//		this->GetCamera()->GetForwardVector().x,
+	//		this->GetCamera()->GetForwardVector().y,
+	//		-this->GetCamera()->GetForwardVector().z));
+	//minotaurSound.Update(irrklang::vec3df(0, 0, 0));
+	//minotaurSound.PlayFootStep();
+	footstep.SetPosition(
 		irrklang::vec3df(
 			this->GetCamera()->GetCameraPosition().x,
 			this->GetCamera()->GetCameraPosition().y,
-			-this->GetCamera()->GetCameraPosition().z),
-		irrklang::vec3df(
-			this->GetCamera()->GetForwardVector().x,
-			this->GetCamera()->GetForwardVector().y,
-			-this->GetCamera()->GetForwardVector().z));
-	minotaurSound.Update(irrklang::vec3df(0, 0, 0));
-	minotaurSound.PlayFootStep();
+			-this->GetCamera()->GetCameraPosition().z));
 }

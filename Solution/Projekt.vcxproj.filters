@@ -82,6 +82,12 @@
     <ClCompile Include="MinotaurSound.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
+    <ClCompile Include="SoundEngine.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundHandler.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloom.h">
@@ -166,6 +172,12 @@
       <Filter>Class h Files</Filter>
     </ClInclude>
     <ClInclude Include="MinotaurSound.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundEngine.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundHandler.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
   </ItemGroup>
