@@ -33,6 +33,8 @@ private:
 	GLuint m_texture;
 
 	GLuint tbo;
+	GLuint vbo;
+	GLuint vao;
 
 	GLuint nrOfPrimitives;
 	

@@ -10,6 +10,8 @@ Maze::Maze()
 	GLuint m_texture = 0;
 
 	this->tbo = 0;
+	this->vbo = 0;
+	this->vao = 0;
 }
 
 Maze::~Maze()
@@ -30,13 +32,32 @@ int Maze::GetWidth()
 
 void Maze::initiateBuffers(GLuint programID)
 {
-	glGenTransformFeedbacks(1, &this->tbo);
-	glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, this->tbo);
-	glBufferData(GL_TRANSFORM_FEEDBACK_BUFFER, sizeof(glm::vec3) * 18 * 64 * 64, NULL, GL_DYNAMIC_COPY);
+	// create a buffer to hold the results of the transform feedback process.
+	glGenBuffers(1, &this->vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+	// allocate space (no data)
+	glBufferData(
+		GL_ARRAY_BUFFER,
+		sizeof(glm::vec3) * 18 * 64 * 64 + sizeof(glm::vec2) * 12 * 64 * 64,		// 884,736 bytes <1Mb
+		NULL,							// no data passed
+		GL_DYNAMIC_COPY);
 
-	GLint inputAttrib = glGetAttribLocation(programID, "inValue");
-	glEnableVertexAttribArray(inputAttrib);
-	glVertexAttribPointer(inputAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	// VAO to draw points
+	glGenVertexArrays(1, &this->vao);
+	glBindVertexArray(this->vao);
+
+	GLint positionAttrib = glGetAttribLocation(programID, "inPosition");
+	glEnableVertexAttribArray(positionAttrib);
+	glVertexAttribPointer(positionAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	GLint texcoordAttrib = glGetAttribLocation(programID, "inTexCoords");
+	glEnableVertexAttribArray(texcoordAttrib);
+	glVertexAttribPointer(texcoordAttrib, 2, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)12);
+
+	// create and bind transform feedback object and buffer to write to.
+	glGenTransformFeedbacks(1, &this->tbo);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->tbo);
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->vbo);
 }
 
 // Loading the .bmp file and returning the width,height and pointer to the first pixel in the file.
@@ -72,7 +93,9 @@ void Maze::Draw()
 	// Perform feedback transform
 	glEnable(GL_RASTERIZER_DISCARD);
 
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->tbo);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->tbo);
+
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->vbo);
 
 	glBeginTransformFeedback(GL_TRIANGLES);
 	glDrawArrays(GL_POINTS, 0, this->width * this->height);
@@ -85,19 +108,17 @@ void Maze::Draw()
 
 void Maze::DrawMaze()
 {
+	//glm::vec3 feedback[64 * 64 * 3];
+	//glGetBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, 0, sizeof(feedback), feedback);
+	//
+	//for (int i = 0; i < (64 * 64 * 3); i++)
+	//{
+	//	std::cout << "x: " << feedback[i].x;
+	//	std::cout << "     y: " << feedback[i].y;
+	//	std::cout << "     z: " << feedback[i].z << std::endl;
+	//}
+
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK_BUFFER, this->tbo);
-
-	glm::vec3 feedback[64 * 64 * 3];
-	glGetBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, 0, sizeof(feedback), feedback);
-	
-	for (int i = 0; i < (64 * 64 * 3); i++)
-	{
-		std::cout << "x: " << feedback[i].x;
-		std::cout << "     y: " << feedback[i].y;
-		std::cout << "     z: " << feedback[i].z << std::endl;
-	}
-
-	
 	glDrawTransformFeedback(GL_TRIANGLES, this->tbo);
 }
 

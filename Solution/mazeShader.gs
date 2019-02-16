@@ -4,7 +4,8 @@ layout (points) in;
 layout (triangle_strip, max_vertices=18) out;
 
 
-out vec3 testOut;
+out vec3 outPosition;
+out vec2 outTexCoords;
 
 uniform sampler2D texture;
 
@@ -153,17 +154,20 @@ void drawSW_n(float i, float j, vec3 colors)
 	// First Triangle
 	// Left Bottom vertex
 	tempVec = vec4(i - 0.5f, 0, j - 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(0, 0);
 	EmitVertex();												  
 																  
 	// Left Top Vertex											  
 	tempVec = vec4(i - 0.5f, 1, j - 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(0, 1);
 	EmitVertex();												  
 																  
 	//Right Top Vertex											  
 	tempVec = vec4(i + 0.5f, 1, j - 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(1, 1);
 	EmitVertex();
 				
 	EndPrimitive();
@@ -173,17 +177,20 @@ void drawSW_n(float i, float j, vec3 colors)
 	// Second Triangle
 	// Left Bottom vertex
 	tempVec = vec4(i - 0.5f, 0, j - 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(0, 0);
 	EmitVertex();
 				
 	// Right Top vertex
 	tempVec = vec4(i + 0.5f, 1, j - 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(1, 1);
 	EmitVertex();
 				
 	// Right Bottom vertex
 	tempVec = vec4(i + 0.5f, 0, j - 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(1, 0);
 	EmitVertex();
 				
 	EndPrimitive();
@@ -196,17 +203,20 @@ void drawSW_s(float i, float j, vec3 colors)
 	// First Triangle
 	// Left Bottom vertex
 	tempVec = vec4(i - 0.5, 0, j + 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(0, 0);
 	EmitVertex();
 	
 	//Right Top Vertex
 	tempVec = vec4(i + 0.5, 1, j + 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(1, 1);
 	EmitVertex();
 
 	// Left Top Vertex
 	tempVec = vec4(i - 0.5, 1, j + 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(0, 1);
 	EmitVertex();
 							
 	EndPrimitive();
@@ -216,17 +226,20 @@ void drawSW_s(float i, float j, vec3 colors)
 	// Second Triangle
 	// Left Bottom vertex
 	tempVec = vec4(i - 0.5, 0, j + 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(0, 0);
 	EmitVertex();
 	
 	// Right Bottom vertex
 	tempVec = vec4(i + 0.5, 0, j + 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(1, 0);
 	EmitVertex();
 
 	// Right Top vertex
 	tempVec = vec4(i + 0.5, 1, j + 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(1, 1);
 	EmitVertex();
 				
 	EndPrimitive();
@@ -239,17 +252,20 @@ void drawSW_e(float i, float j, vec3 colors)
 	// First Triangle
 	// Left Bottom vertex
 	tempVec = vec4(i + 0.5, 0, j - 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(0, 0);
 	EmitVertex();
 	
 	// Left Top Vertex
 	tempVec = vec4(i + 0.5, 1, j - 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(0, 1);
 	EmitVertex();
 
 	//Right Top Vertex
 	tempVec = vec4(i + 0.5, 1, j + 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(1, 1);
 	EmitVertex();
 						
 	EndPrimitive();
@@ -259,17 +275,20 @@ void drawSW_e(float i, float j, vec3 colors)
 	// Second Triangle
 	// Left Bottom vertex
 	tempVec = vec4(i + 0.5, 0, j - 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(0, 0);
 	EmitVertex();
 	
 	// Right Top vertex
 	tempVec = vec4(i + 0.5, 1, j + 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(1, 1);
 	EmitVertex();
 
 	// Right Bottom vertex
 	tempVec = vec4(i + 0.5, 0, j + 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(1, 0);
 	EmitVertex();
 		
 	EndPrimitive();
@@ -282,17 +301,20 @@ void drawSW_w(float i, float j, vec3 colors)
 	// First Triangle
 	// Left Bottom vertex
 	tempVec = vec4(i - 0.5, 0, j + 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(0, 0);
 	EmitVertex();
 	
 	// Left Top Vertex
 	tempVec = vec4(i - 0.5, 1, j + 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(0, 1);
 	EmitVertex();
 
 	//Right Top Vertex
 	tempVec = vec4(i - 0.5, 1, j - 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(1, 1);
 	EmitVertex();
 						
 	EndPrimitive();
@@ -302,17 +324,20 @@ void drawSW_w(float i, float j, vec3 colors)
 	// Second Triangle
 	// Left Bottom vertex
 	tempVec = vec4(i - 0.5, 0, j + 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(0, 0);
 	EmitVertex();
 	
 	// Right Top vertex
 	tempVec = vec4(i - 0.5, 1, j - 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(1, 1);
 	EmitVertex();
 
 	// Right Bottom vertex
 	tempVec = vec4(i - 0.5, 0, j - 0.5, 1.0f);
-	testOut = vec3(tempVec.xyz);
+	outPosition = vec3(tempVec.xyz);
+	outTexCoords = vec2(1, 0);
 	EmitVertex();
 				
 	EndPrimitive();

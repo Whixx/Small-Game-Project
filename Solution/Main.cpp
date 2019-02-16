@@ -144,7 +144,7 @@ int main()
 	// Transform includes all three matrices, each object has its own transform
 	Transform transform;
 	//Texture swordTexture("Textures/swordTexture.jpg", "NormalMaps/sword_normal.png");
-	//Texture brickTexture("Textures/brickwall.jpg", "NormalMaps/brickwall_normal.jpg");
+	Texture brickTexture("Textures/brickwall.jpg", "NormalMaps/brickwall_normal.jpg");
 	//Texture snowTexture("Textures/basicSnow.jpg", "NormalMaps/flat_normal.jpg");
 	//Texture moonTexture("Textures/moon.png", "NormalMaps/flat_normal.jpg");
 
@@ -215,9 +215,11 @@ int main()
 	GLuint cameraLocationLP = glGetUniformLocation(*lightPass.getProgram(), "cameraPosLP");
 
 	GLint texLoc;
+	GLint texLoc1;
 	GLint normalTexLoc;
 
 	texLoc = glGetUniformLocation(*geometryPass.getProgram(), "texture");
+	texLoc1 = glGetUniformLocation(*drawTestShader.getProgram(), "texture");
 	
 	normalTexLoc = glGetUniformLocation(*geometryPass.getProgram(), "normalMap");
 
@@ -265,6 +267,8 @@ int main()
 		mazeShader.unBind();
 
 		drawTestShader.Bind();
+		brickTexture.Bind(0);
+		glUniform1i(texLoc1, 0);
 		drawTestShader.setMat4("viewProjection", a);
 		maze.DrawMaze();
 		//drawTestShader.Bind();
