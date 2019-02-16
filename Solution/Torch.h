@@ -5,12 +5,13 @@
 #include "Mesh.h"
 #include "Texture.h"
 #include "Transform.h"
+#include "SoundHandler.h"
 
 class Torch
 {
 public:
-	Torch(Transform transform, Mesh * mesh, Texture * texture);
-	Torch();
+	Torch(Transform transform, Mesh * mesh, Texture * texture, irrklang::ISoundEngine* engine);
+	//Torch();
 	~Torch();
 
 	void SetScale(glm::vec3 scale);
@@ -31,6 +32,7 @@ private:
 	Mesh *mesh;
 	Texture *texture;
 	Transform transform;
+	SoundHandler torchSound;
 };
 
 #endif

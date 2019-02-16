@@ -3,9 +3,10 @@
 
 Player::Player(float height, float fov, float near, float far, Mesh * mesh, Texture * texture, irrklang::ISoundEngine* engine)
 	:playerCamera(glm::vec3(0, height, 0), fov, (float)SCREENWIDTH / (float)SCREENHEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)),
-	footstep("Sounds/playerfootstep.ogg", false, false, engine)
+	playerTorch(this->transform, mesh, texture, engine),
+	footStep("Sounds/playerfootstep.ogg", false, false, engine)
 {
-	this->playerTorch = Torch(this->transform, mesh, texture);
+	/*this->playerTorch = Torch(this->transform, mesh, texture, engine);*/
 	this->playerSpeed = 0;
 	this->walkingVector = glm::vec3(0.0f, 0.0f, 1.0f);
 	//this->maze = maze;
@@ -57,7 +58,7 @@ void Player::MoveForward(float elapsedTime)
 	playerCamera.SetCameraPosition(newPos);
 
 	//sound.PlayFootStep();
-	footstep.Play();
+	footStep.Play();
 }
 
 void Player::MoveBackward(float elapsedTime)
@@ -66,6 +67,7 @@ void Player::MoveBackward(float elapsedTime)
 	playerCamera.SetCameraPosition(newPos);
 
 	//sound.PlayFootStep();
+	footStep.Play();
 }
 
 void Player::MoveRight(float elapsedTime)
@@ -74,6 +76,7 @@ void Player::MoveRight(float elapsedTime)
 	playerCamera.SetCameraPosition(newPos);
 
 	//sound.PlayFootStep();
+	footStep.Play();
 }
 
 void Player::MoveLeft(float elapsedTime)
@@ -82,6 +85,7 @@ void Player::MoveLeft(float elapsedTime)
 	playerCamera.SetCameraPosition(newPos);
 
 	//sound.PlayFootStep();
+	footStep.Play();
 }
 
 void Player::MoveUp(float elapsedTime)
@@ -161,19 +165,8 @@ void Player::Update(double dt)
 	}
 	*/
 
-	//// update player position in sound engine
-	//sound.Update(
-	//	irrklang::vec3df(
-	//		this->GetCamera()->GetCameraPosition().x,
-	//		this->GetCamera()->GetCameraPosition().y,
-	//		-this->GetCamera()->GetCameraPosition().z),
-	//	irrklang::vec3df(
-	//		this->GetCamera()->GetForwardVector().x,
-	//		this->GetCamera()->GetForwardVector().y,
-	//		-this->GetCamera()->GetForwardVector().z));
-	//minotaurSound.Update(irrklang::vec3df(0, 0, 0));
-	//minotaurSound.PlayFootStep();
-	footstep.SetPosition(
+	// update sound positions
+	footStep.SetPosition(
 		irrklang::vec3df(
 			this->GetCamera()->GetCameraPosition().x,
 			this->GetCamera()->GetCameraPosition().y,

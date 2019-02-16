@@ -3,8 +3,6 @@
 #include <iostream>
 #include "irrKlang/irrKlang.h"
 #pragma comment(lib, "irrKlang.lib")
-//#include "irrKlang/ik_ISoundSource.h"
-//#include "irrKlang/ik_ISound.h"
 
 class SoundEngine
 {
@@ -12,9 +10,8 @@ public:
 	SoundEngine();
 	~SoundEngine();
 
-	//void SetListenerPosition(irrklang::vec3df position, irrklang::vec3df viewDirection);
-	void Update(irrklang::vec3df position, irrklang::vec3df viewDirection);
-	irrklang::ISoundEngine* GetEngine();
+	void Update(irrklang::vec3df position, irrklang::vec3df viewDirection);	// updates the listeners position and view direction
+	irrklang::ISoundEngine* GetEngine();	// pass engine to objects that will play sounds
 
 private:
 	irrklang::ISoundEngine* engine;

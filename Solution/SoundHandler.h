@@ -6,15 +6,16 @@ class SoundHandler
 {
 public:
 	SoundHandler(const char* filePath, bool loopSound, bool startPaused, irrklang::ISoundEngine* engine);
+	//SoundHandler();
 	~SoundHandler();
 
 	void SetPosition(irrklang::vec3df position);
 	void Play();
 	void Stop();
-	void SetLoop(bool value);
+	void SetLooped(bool value);
 	void SetStartPaused(bool value);
-	irrklang::ISoundEngine* GetEngine();
 
+	// TODO: set mindistance and some other values? test fx
 
 private:
 	irrklang::ISoundEngine* engine;

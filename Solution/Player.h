@@ -52,7 +52,7 @@ private:
 	float playerHeight;
 	glm::vec3 walkingVector;
 
-	SoundHandler footstep;
+	SoundHandler footStep;
 
 };
 

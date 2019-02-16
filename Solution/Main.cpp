@@ -80,15 +80,17 @@ int main()
 	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
 
 
-	// SOUND SHET
+	// Sound engine that plays all the sounds, pass reference to classes that will use sound with enginePtr
 	SoundEngine soundEngine;
+	irrklang::ISoundEngine* enginePtr = soundEngine.GetEngine();
+
+	// test variables newPosition
+	irrklang::vec3df newPosition;
+	newPosition.Y = 0.0;
 
 	float playerHeight = 1.0f;
-	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, soundEngine.GetEngine());
+	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, enginePtr);
 	player.SetPlayerSpeed(5.0f);
-	int counter = 0;
-	irrklang::vec3df newPosition;
-
 
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
 
@@ -166,10 +168,9 @@ int main()
 	GLuint viewProjection = glGetUniformLocation(*pointLightPass.GetProgram(), "viewProjectionMatrix");
 
 	
-	// sound test
-	SoundHandler minotaurGrowl("Sounds/minotaurgrowl.wav", false, false, soundEngine.GetEngine());
-	//minotaurGrowl.Play();
-	//SoundHandler playerFootstep("Sounds/playerfootstep.ogg", false, false, soundEngine.GetEngine());
+	// sound test, initiate sound sources. 
+	SoundHandler minotaurGrowl("Sounds/minotaurgrowl.wav", false, false, enginePtr);
+	SoundHandler minotaurFootStep("Sounds/minotaurstep.ogg", false, false, enginePtr);
 
 	while (!display.IsWindowClosed())
 	{
@@ -177,39 +178,6 @@ int main()
 		constLastTime = currentTime;
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - constLastTime;
-
-
-		// sound shet
-		//minotaurGrowl.GetEngine()->setListenerPosition(
-		//	irrklang::vec3df(
-		//		player.GetCamera()->GetCameraPosition().x,
-		//		player.GetCamera()->GetCameraPosition().y,
-		//		-player.GetCamera()->GetCameraPosition().z),
-		//	irrklang::vec3df(
-		//		player.GetCamera()->GetForwardVector().x,
-		//		player.GetCamera()->GetForwardVector().y,
-		//		-player.GetCamera()->GetForwardVector().z));
-
-		//playerFootstep.SetPosition(irrklang::vec3df(
-		//	player.GetCamera()->GetCameraPosition().x,
-		//	player.GetCamera()->GetCameraPosition().y,
-		//	-player.GetCamera()->GetCameraPosition().z));
-
-
-		//playerFootstep.SetListenerPosition(
-		//	irrklang::vec3df(
-		//		player.GetCamera()->GetCameraPosition().x,
-		//		player.GetCamera()->GetCameraPosition().y,
-		//		-player.GetCamera()->GetCameraPosition().z),
-		//	irrklang::vec3df(
-		//		player.GetCamera()->GetForwardVector().x,
-		//		player.GetCamera()->GetForwardVector().y,
-		//		-player.GetCamera()->GetForwardVector().z));
-
-		//playerFootstep.Play();
-
-
-
 
 		// ================== EVENTS ==================
 
@@ -231,7 +199,7 @@ int main()
 		lights.UpdateShadowTransform(0);
 
 
-		// update sound engine
+		// update sound engine with position and view direction
 		soundEngine.Update(
 			irrklang::vec3df(
 				player.GetCamera()->GetCameraPosition().x,
@@ -242,13 +210,13 @@ int main()
 				player.GetCamera()->GetForwardVector().y,
 				-player.GetCamera()->GetForwardVector().z));
 
-		// minotaur moving sound test
-		newPosition.Y = 0.0;
-		newPosition.X = sinf(counter * 0.5 * 3.15) * 5.0f;
-		newPosition.Z = cosf(counter * 0.5 * 3.15) * 5.0f;
+		// moving minotaur sound test
+		newPosition.X = sinf(glfwGetTime() * 0.5 * 3.15) * 5.0f;
+		newPosition.Z = cosf(glfwGetTime() * 0.5 * 3.15) * 5.0f;
 		minotaurGrowl.SetPosition(newPosition);
 		minotaurGrowl.Play();
-		counter++;
+		minotaurFootStep.SetPosition(newPosition);
+		minotaurFootStep.Play();
 
 
 

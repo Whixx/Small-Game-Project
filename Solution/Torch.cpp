@@ -1,6 +1,7 @@
 #include "Torch.h"
 
-Torch::Torch(Transform transform, Mesh * mesh, Texture * texture)
+Torch::Torch(Transform transform, Mesh * mesh, Texture * texture, irrklang::ISoundEngine* engine)
+	:torchSound("Sounds/torch.wav", true, false, engine)
 {
 	this->texture = texture;
 	this->mesh = mesh;
@@ -9,9 +10,9 @@ Torch::Torch(Transform transform, Mesh * mesh, Texture * texture)
 	this->transform.SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
 }
 
-Torch::Torch()
-{
-}
+//Torch::Torch()
+//{
+//}
 
 Torch::~Torch()
 {
@@ -70,5 +71,13 @@ void Torch::Draw()
 void Torch::Update(double dt)
 {
 	transform.SetPos(this->GetPos());
+
+	this->torchSound.SetPosition(
+		irrklang::vec3df(
+			this->GetPos().x,
+			this->GetPos().y,
+			this->GetPos().z)
+	);
+	torchSound.Play();
 }
 
