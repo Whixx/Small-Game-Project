@@ -38,21 +38,13 @@ void Maze::initiateBuffers(GLuint programID)
 	// allocate space (no data)
 	glBufferData(
 		GL_ARRAY_BUFFER,
-		sizeof(glm::vec3) * 18 * 64 * 64 + sizeof(glm::vec2) * 12 * 64 * 64,		// 884,736 bytes <1Mb
+		sizeof(glm::vec3) * 18 * 64 * 64 + sizeof(glm::vec2) * 18 * 64 * 64,		// 884,736 bytes <1Mb
 		NULL,							// no data passed
 		GL_DYNAMIC_COPY);
 
 	// VAO to draw points
 	glGenVertexArrays(1, &this->vao);
 	glBindVertexArray(this->vao);
-
-	GLint positionAttrib = glGetAttribLocation(programID, "inPosition");
-	glEnableVertexAttribArray(positionAttrib);
-	glVertexAttribPointer(positionAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-	GLint texcoordAttrib = glGetAttribLocation(programID, "inTexCoords");
-	glEnableVertexAttribArray(texcoordAttrib);
-	glVertexAttribPointer(texcoordAttrib, 2, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)12);
 
 	// create and bind transform feedback object and buffer to write to.
 	glGenTransformFeedbacks(1, &this->tbo);
@@ -97,13 +89,21 @@ void Maze::Draw()
 
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->vbo);
 
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) * 18 + sizeof(glm::vec2) * 18, 0);
+	
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) * 18 + sizeof(glm::vec2) * 18, (const GLvoid*)(3 * sizeof(glm::vec3)));
+
 	glBeginTransformFeedback(GL_TRIANGLES);
 	glDrawArrays(GL_POINTS, 0, this->width * this->height);
 	glEndTransformFeedback();
 
 	glDisable(GL_RASTERIZER_DISCARD);
 
-	//glFlush();
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
+
+	glFlush();
 }
 
 void Maze::DrawMaze()
@@ -117,8 +117,14 @@ void Maze::DrawMaze()
 	//	std::cout << "     y: " << feedback[i].y;
 	//	std::cout << "     z: " << feedback[i].z << std::endl;
 	//}
-
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK_BUFFER, this->tbo);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) * 18 + sizeof(glm::vec2) * 18, 0);
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) * 18 + sizeof(glm::vec2) * 18, (const GLvoid*)(3 * sizeof(glm::vec3)));
+
 	glDrawTransformFeedback(GL_TRIANGLES, this->tbo);
 }
 

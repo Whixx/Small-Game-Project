@@ -112,7 +112,7 @@ int main()
 
 	// False = Pos and Texcoord
 	// True  = Pos and Color
-	drawTestShader.initiateTestShader();
+	drawTestShader.initiateShaders(false);
 	mazeShader.initiateMazeShader();
 	shadowShader.initiateShaders(false);
 	geometryPass.initiateShaders(false);

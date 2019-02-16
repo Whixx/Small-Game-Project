@@ -221,7 +221,6 @@ void drawSW_s(float i, float j, vec3 colors)
 							
 	EndPrimitive();
 
-
 				
 	// Second Triangle
 	// Left Bottom vertex

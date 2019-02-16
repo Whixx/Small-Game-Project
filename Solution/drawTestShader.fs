@@ -8,4 +8,5 @@ void main()
 {
 	vec3 materialColor = texture2D(texture, outTexCoords).rgb;
 	fragColor = vec4(1.0f,1.0f,1.0f,1.0f);
+	//fragColor = vec4(materialColor.rgb, 1.0f);
 }

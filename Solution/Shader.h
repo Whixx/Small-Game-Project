@@ -19,7 +19,6 @@ public:
 	void Update(const Transform& transform, const Camera& camera);
 	void initiateShaders(bool color);
 	void initiateMazeShader();
-	void initiateTestShader();
 	void validateShaders();
 
 

@@ -68,15 +68,6 @@ void Shader::initiateMazeShader()
 	glUseProgram(this->program);
 }
 
-void Shader::initiateTestShader()
-{
-	for (unsigned int i = 0; i < NUM_OF_SHADERS; i++)
-		glAttachShader(program, shaders[i]);
-
-	glLinkProgram(program);
-	CheckShaderError(program, GL_LINK_STATUS, true, "Error: Program linking failed: ");
-}
-
 void Shader::validateShaders()
 {
 	glValidateProgram(program);
