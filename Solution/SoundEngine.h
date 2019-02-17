@@ -1,6 +1,7 @@
 #ifndef SOUNDENGINE_H
 #define SOUNDENGINE
 #include <iostream>
+#include <glm/glm.hpp>
 #include "irrKlang/irrKlang.h"
 #pragma comment(lib, "irrKlang.lib")
 
@@ -10,7 +11,7 @@ public:
 	SoundEngine();
 	~SoundEngine();
 
-	void Update(irrklang::vec3df position, irrklang::vec3df viewDirection);	// updates the listeners position and view direction
+	void Update(glm::vec3 position, glm::vec3 viewDirection);	// updates the listeners position and view direction
 	irrklang::ISoundEngine* GetEngine();	// pass engine to objects that will play sounds
 
 private:

@@ -165,10 +165,9 @@ void Player::Update(double dt)
 	}
 	*/
 
+	// torch position doesnt get updated unless this line is in, even though it is updated in main?
+	this->playerTorch.Update(dt);
+
 	// update sound positions
-	footStep.SetPosition(
-		irrklang::vec3df(
-			this->GetCamera()->GetCameraPosition().x,
-			this->GetCamera()->GetCameraPosition().y,
-			-this->GetCamera()->GetCameraPosition().z));
+	footStep.SetPosition(this->GetCamera()->GetCameraPosition());
 }

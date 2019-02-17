@@ -11,7 +11,6 @@ class Torch
 {
 public:
 	Torch(Transform transform, Mesh * mesh, Texture * texture, irrklang::ISoundEngine* engine);
-	//Torch();
 	~Torch();
 
 	void SetScale(glm::vec3 scale);

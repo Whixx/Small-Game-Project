@@ -6,19 +6,19 @@ class SoundHandler
 {
 public:
 	SoundHandler(const char* filePath, bool loopSound, bool startPaused, irrklang::ISoundEngine* engine);
-	//SoundHandler();
 	~SoundHandler();
 
-	void SetPosition(irrklang::vec3df position);
+	void SetPosition(glm::vec3 position);
 	void Play();
 	void Stop();
 	void SetLooped(bool value);
 	void SetStartPaused(bool value);
-
-	// TODO: set mindistance and some other values? test fx
+	void SetMinDistance(float value);
+	void SetVolume(float value);
 
 private:
 	irrklang::ISoundEngine* engine;
+	irrklang::ISoundEffectControl* fx;
 	const char* filePath;
 	irrklang::vec3df position;
 	bool loopSound;

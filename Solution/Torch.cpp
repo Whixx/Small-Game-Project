@@ -10,10 +10,6 @@ Torch::Torch(Transform transform, Mesh * mesh, Texture * texture, irrklang::ISou
 	this->transform.SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
 }
 
-//Torch::Torch()
-//{
-//}
-
 Torch::~Torch()
 {
 }
@@ -72,12 +68,7 @@ void Torch::Update(double dt)
 {
 	transform.SetPos(this->GetPos());
 
-	this->torchSound.SetPosition(
-		irrklang::vec3df(
-			this->GetPos().x,
-			this->GetPos().y,
-			this->GetPos().z)
-	);
+	this->torchSound.SetPosition(this->GetPos());
 	torchSound.Play();
 }
 

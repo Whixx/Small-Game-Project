@@ -3,28 +3,25 @@
 SoundHandler::SoundHandler(const char* filePath, bool loopSound, bool startPaused, irrklang::ISoundEngine* engine)
 {
 	this->engine = engine;
-
+	this->fx = 0;
 	this->source = this->engine->addSoundSourceFromFile(filePath);
 	this->filePath = filePath;
 	this->loopSound = loopSound;
 	this->startPaused = startPaused;
-
 }
-
-//SoundHandler::SoundHandler()
-//{
-//}
 
 SoundHandler::~SoundHandler()
 {
 }
 
-void SoundHandler::SetPosition(irrklang::vec3df position)
+void SoundHandler::SetPosition(glm::vec3 position)
 {
 	if (this->sound)
 	{
-		this->position = position;
-		this->sound->setPosition(position);
+		this->position.X = position.x;
+		this->position.Y = position.y;
+		this->position.Z = -position.z;
+		this->sound->setPosition(this->position);
 	}
 }
 
@@ -51,3 +48,16 @@ void SoundHandler::SetStartPaused(bool value)
 {
 	this->startPaused = value;
 }
+
+void SoundHandler::SetMinDistance(float value)
+{
+	if(this->sound)
+	this->sound->setMinDistance(value);
+}
+
+void SoundHandler::SetVolume(float value)
+{
+	if(this->sound)
+	this->sound->setVolume(value);
+}
+

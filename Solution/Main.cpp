@@ -85,8 +85,8 @@ int main()
 	irrklang::ISoundEngine* enginePtr = soundEngine.GetEngine();
 
 	// test variables newPosition
-	irrklang::vec3df newPosition;
-	newPosition.Y = 0.0;
+	glm::vec3 newPosition;
+	newPosition.y = 0.0;
 
 	float playerHeight = 1.0f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, enginePtr);
@@ -200,19 +200,11 @@ int main()
 
 
 		// update sound engine with position and view direction
-		soundEngine.Update(
-			irrklang::vec3df(
-				player.GetCamera()->GetCameraPosition().x,
-				player.GetCamera()->GetCameraPosition().y,
-				-player.GetCamera()->GetCameraPosition().z),
-			irrklang::vec3df(
-				player.GetCamera()->GetForwardVector().x,
-				player.GetCamera()->GetForwardVector().y,
-				-player.GetCamera()->GetForwardVector().z));
+		soundEngine.Update(player.GetCamera()->GetCameraPosition(), player.GetCamera()->GetForwardVector());
 
 		// moving minotaur sound test
-		newPosition.X = sinf(glfwGetTime() * 0.5 * 3.15) * 5.0f;
-		newPosition.Z = cosf(glfwGetTime() * 0.5 * 3.15) * 5.0f;
+		newPosition.x = sinf(glfwGetTime() * 0.5 * 3.15) * 5.0f;
+		newPosition.z = cosf(glfwGetTime() * 0.5 * 3.15) * 5.0f;
 		minotaurGrowl.SetPosition(newPosition);
 		minotaurGrowl.Play();
 		minotaurFootStep.SetPosition(newPosition);
