@@ -1,7 +1,7 @@
 #version 440
 
 layout (points) in;
-layout (triangle_strip, max_vertices=18) out;
+layout (triangle_strip, max_vertices = 18) out;
 
 
 out vec3 outPosition;

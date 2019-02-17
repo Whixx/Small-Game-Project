@@ -215,26 +215,16 @@ int main()
 	GLuint cameraLocationLP = glGetUniformLocation(*lightPass.getProgram(), "cameraPosLP");
 
 	GLint texLoc;
-	GLint texLoc1;
 	GLint normalTexLoc;
 
 	texLoc = glGetUniformLocation(*geometryPass.getProgram(), "texture");
-	texLoc1 = glGetUniformLocation(*drawTestShader.getProgram(), "texture");
-	
 	normalTexLoc = glGetUniformLocation(*geometryPass.getProgram(), "normalMap");
 
 	GLuint viewProjection = glGetUniformLocation(*pointLightPass.getProgram(), "viewProjectionMatrix");
 
-	//mazeShader.Bind();
-
-	//texLoc = glGetUniformLocation(*mazeShader.getProgram(), "texture");
-	//GLuint viewProjectionLoc = glGetUniformLocation(*mazeShader.getProgram(), "viewProjection");
-
 	GLuint cameraLocationTest = glGetUniformLocation(*mazeShader.getProgram(), "cameraPos");
 	
-	maze.initiateBuffers(*drawTestShader.getProgram());
-	
-
+	maze.initiateBuffers();
 
 	while(!display.IsWindowClosed())
 	{
@@ -244,36 +234,25 @@ int main()
 		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-		
-	
-		//glEnable(GL_CULL_FACE);
-		//glCullFace(GL_BACK);
 		
 		mazeShader.Bind();
-		glm::mat4 a = camera.getViewProjection();
 		
 		maze.BindTexture(0);
-		glUniform1i(texLoc, 0);
-		 
 		mazeShader.sendInt("width", maze.GetWidth());
 		mazeShader.sendInt("height", maze.GetHeight());
 		
-		
-		//glEnable(GL_DEPTH_TEST);
-		maze.Draw();
-		//glDisable(GL_DEPTH_TEST);
-		
+		maze.DrawToBuffer();
 		mazeShader.unBind();
+
 
 		drawTestShader.Bind();
 		brickTexture.Bind(0);
-		glUniform1i(texLoc1, 0);
+		glm::mat4 a = camera.getViewProjection();
 		drawTestShader.setMat4("viewProjection", a);
+
+		glEnable(GL_DEPTH_TEST);
 		maze.DrawMaze();
-		//drawTestShader.Bind();
-		
-		//fullScreenTriangle.Draw();
+		glDisable(GL_DEPTH_TEST);
 
 
 

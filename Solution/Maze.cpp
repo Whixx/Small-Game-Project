@@ -17,7 +17,9 @@ Maze::Maze()
 Maze::~Maze()
 {
 	stbi_image_free(imageData);
-	//glDeleteBuffers(1, &this->tbo);
+	glDeleteBuffers(1, &this->tbo);
+	glDeleteBuffers(1, &this->vbo);
+	glDeleteVertexArrays(1, &this->vao);
 }
 
 int Maze::GetHeight()
@@ -30,7 +32,7 @@ int Maze::GetWidth()
 	return this->width;
 }
 
-void Maze::initiateBuffers(GLuint programID)
+void Maze::initiateBuffers()
 {
 	// create a buffer to hold the results of the transform feedback process.
 	glGenBuffers(1, &this->vbo);
@@ -52,7 +54,7 @@ void Maze::initiateBuffers(GLuint programID)
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->vbo);
 }
 
-// Loading the .bmp file and returning the width,height and pointer to the first pixel in the file.
+// Loading the .png file and returning the width,height and pointer to the first pixel in the file.
 void Maze::LoadMaze(const std::string & fileName)
 {
 	this->imageData = stbi_load(fileName.c_str(), &this->width, &this->height, &this->numComponents, 3);
@@ -80,52 +82,49 @@ unsigned char Maze::readPixel(unsigned int x, unsigned int y)
 	return this->imageData[x*y*this->numComponents];
 }
 
-void Maze::Draw()
+void Maze::DrawToBuffer()
 {
-	// Perform feedback transform
+	// Skip the fragment shader
 	glEnable(GL_RASTERIZER_DISCARD);
 
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->tbo);
-
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->vbo);
 
+	// Set the output Layout
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) * 18 + sizeof(glm::vec2) * 18, 0);
-	
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) * 18 + sizeof(glm::vec2) * 18, (const GLvoid*)(3 * sizeof(glm::vec3)));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3)));
 
+	// Perform transform feedback
 	glBeginTransformFeedback(GL_TRIANGLES);
 	glDrawArrays(GL_POINTS, 0, this->width * this->height);
 	glEndTransformFeedback();
 
+	// Enable the fragment shader again
 	glDisable(GL_RASTERIZER_DISCARD);
 
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
-
+	// Something ...
 	glFlush();
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 }
 
 void Maze::DrawMaze()
 {
-	//glm::vec3 feedback[64 * 64 * 3];
-	//glGetBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, 0, sizeof(feedback), feedback);
-	//
-	//for (int i = 0; i < (64 * 64 * 3); i++)
-	//{
-	//	std::cout << "x: " << feedback[i].x;
-	//	std::cout << "     y: " << feedback[i].y;
-	//	std::cout << "     z: " << feedback[i].z << std::endl;
-	//}
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK_BUFFER, this->tbo);
 
+	// Set the input Layout
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) * 18 + sizeof(glm::vec2) * 18, 0);
-
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) * 18 + sizeof(glm::vec2) * 18, (const GLvoid*)(3 * sizeof(glm::vec3)));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3)));
 
 	glDrawTransformFeedback(GL_TRIANGLES, this->tbo);
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 }
 
 void Maze::BindTexture(unsigned int textureUnit)

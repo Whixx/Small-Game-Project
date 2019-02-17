@@ -17,10 +17,10 @@ public:
 	int GetWidth();
 
 
-	void initiateBuffers(GLuint programID);
+	void initiateBuffers();
 	void LoadMaze(const std::string& fileName);
 	unsigned char readPixel(unsigned int x, unsigned int y);
-	void Draw();
+	void DrawToBuffer();
 	void DrawMaze();
 	void BindTexture(unsigned int textureUnit);
 
