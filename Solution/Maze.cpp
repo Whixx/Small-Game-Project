@@ -37,6 +37,7 @@ void Maze::initiateBuffers()
 	// create a buffer to hold the results of the transform feedback process.
 	glGenBuffers(1, &this->vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+
 	// allocate space (no data)
 	glBufferData(
 		GL_ARRAY_BUFFER,
@@ -114,6 +115,7 @@ void Maze::DrawToBuffer()
 void Maze::DrawMaze()
 {
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK_BUFFER, this->tbo);
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->vbo);
 
 	// Set the input Layout
 	glEnableVertexAttribArray(0);

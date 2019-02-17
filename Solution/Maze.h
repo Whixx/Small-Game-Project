@@ -16,7 +16,6 @@ public:
 	int GetHeight();
 	int GetWidth();
 
-
 	void initiateBuffers();
 	void LoadMaze(const std::string& fileName);
 	unsigned char readPixel(unsigned int x, unsigned int y);
@@ -35,9 +34,6 @@ private:
 	GLuint tbo;
 	GLuint vbo;
 	GLuint vao;
-
-	GLuint nrOfPrimitives;
-	
 };
 #endif
 

@@ -6,19 +6,19 @@
 Texture::Texture(const std::string& textureName, const std::string& normalMapName)
 {
 	create(textureName, 0);
-	//create(normalMapName, 1);
+	create(normalMapName, 1);
 }
 
 Texture::Texture(const Texture & other)
 {
 	this->m_texture = other.m_texture;
-	//this->m_normalMap = other.m_normalMap;
+	this->m_normalMap = other.m_normalMap;
 }
 
 void Texture::operator=(const Texture & other)
 {
 	this->m_texture = other.m_texture;
-	//this->m_normalMap = other.m_normalMap;
+	this->m_normalMap = other.m_normalMap;
 }
 
 Texture::~Texture()
@@ -67,8 +67,8 @@ void Texture::Bind(unsigned int unit)
 		glActiveTexture(GL_TEXTURE0 + unit * 2);
 		glBindTexture(GL_TEXTURE_2D, m_texture);
 
-		//glActiveTexture(GL_TEXTURE0 + unit * 2 + 1);
-		//glBindTexture(GL_TEXTURE_2D, m_normalMap);
+		glActiveTexture(GL_TEXTURE0 + unit * 2 + 1);
+		glBindTexture(GL_TEXTURE_2D, m_normalMap);
 	}
 	else
 	{
