@@ -152,11 +152,11 @@ int main()
 		// Update player
 		player.Update(deltaTime);
 		player.GetCamera()->UpdateViewMatrix();
-		player.GetTorch().Update(deltaTime);
+		player.GetTorch()->Update(deltaTime);
 
 		OH.UpdateAllObjects(deltaTime);
 
-		lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch().GetPos().x, player.GetTorch().GetPos().y + 1.5f, player.GetTorch().GetPos().z);
+		lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch()->GetPos().x, player.GetTorch()->GetPos().y + 1.5f, player.GetTorch()->GetPos().z);
 		lights.UpdateShadowTransform(0);
 
 
@@ -191,7 +191,7 @@ int main()
 		finalFBO.CopyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.GetFBO());
 
 		// Draw particles to the FinalFBO
-		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, player.GetTorch().GetPos());
+		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, player.GetTorch()->GetPos());
 
 		// Render everything
 		FinalPass(&finalFBO, &finalShader, &fullScreenTriangle);

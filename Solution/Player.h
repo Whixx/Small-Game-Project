@@ -23,7 +23,7 @@ public:
 	float GetPlayerHeight();
 	glm::vec3 GetWalkingVector();
 	Camera* GetCamera();
-	Torch GetTorch();
+	Torch* GetTorch();
 
 	void SetPlayerHeight(float height);
 	void SetPlayerSpeed(float speed);

@@ -35,9 +35,9 @@ Camera * Player::GetCamera()
 	return &this->playerCamera;
 }
 
-Torch Player::GetTorch()
+Torch* Player::GetTorch()
 {
-	return this->playerTorch;
+	return &this->playerTorch;
 }
 
 void Player::SetPlayerHeight(float height)

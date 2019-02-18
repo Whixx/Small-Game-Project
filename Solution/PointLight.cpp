@@ -9,9 +9,9 @@ PointLight* PointLightHandler::CreateLight(glm::vec3 position, glm::vec3 color, 
 {
 	this->lightArray[this->nrOfLights].GetMesh().CreateMesh("ObjectFiles/moon.obj", color);
 	this->lightArray[this->nrOfLights].GetPos() = position;
-	this->lightArray[this->nrOfLights].GetColor() = color;
+	this->lightArray[this->nrOfLights].GetColor() = color * intensity;
 	this->lightArray[this->nrOfLights].GetIntensity() = intensity;
-	this->lightArray[this->nrOfLights].GetScale() = glm::vec3(0.2f,0.2f,0.2f);
+	this->lightArray[this->nrOfLights].GetScale() = glm::vec3(0.1f,0.1f,0.1f);
 
 	this->lightArray[this->nrOfLights].CreateShadowTransforms();
 

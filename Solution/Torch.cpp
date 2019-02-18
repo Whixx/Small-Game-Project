@@ -7,9 +7,14 @@ Torch::Torch(Transform transform, Mesh * mesh, Texture * texture, PointLightHand
 	this->mesh->CreateMesh("ObjectFiles/torch.obj");
 	this->transform = transform;
 	this->transform.SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
+	this->transform.GetRot() = glm::vec3(0.0f, 1.0f, 1.0f);
 
-	glm::vec3 lightPos = glm::vec3(transform.GetPos().x, transform.GetPos().y + 1.0f * transform.GetScale().y, transform.GetPos().z);
+	glm::vec3 lightPos = glm::vec3(transform.GetPos().x, transform.GetPos().y + 0.0f * transform.GetScale().y, transform.GetPos().z);
 	lightPos *= transform.GetRot().x*transform.GetRot().y*transform.GetRot().z;
+
+	lightPos = glm::vec3(1.0f, 0.1f, 0.0f);
+	//lightPos *= transform.GetScale().y;
+	//lightPos *= transform.GetRot();
 	this->torchLight = PLH->CreateLight(lightPos, lightColor, 1.0f);
 }
 
