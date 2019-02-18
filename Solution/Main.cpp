@@ -94,7 +94,7 @@ int main()
 
 
 	float playerHeight = 1.0f;
-	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, enginePtr);
+	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, &maze, enginePtr);
 	player.SetPlayerSpeed(5.0f);
 	//player.CenterPlayer();
 

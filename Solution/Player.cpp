@@ -1,8 +1,7 @@
 #include "Player.h"
 #include <iostream> // TODO: Remove after testing
 
-Player::Player(float height, float fov, float near, float far, Mesh * mesh, Texture * texture, Maze * maze)
-Player::Player(float height, float fov, float near, float far, Mesh * mesh, Texture * texture, irrklang::ISoundEngine* engine)
+Player::Player(float height, float fov, float near, float far, Mesh * mesh, Texture * texture, Maze * maze, irrklang::ISoundEngine* engine)
 	:playerCamera(glm::vec3(0, height, 0), fov, (float)SCREENWIDTH / (float)SCREENHEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)),
 	playerTorch(this->transform, mesh, texture, engine),
 	footStep("Sounds/playerfootstep.ogg", false, engine)
