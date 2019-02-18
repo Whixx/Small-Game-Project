@@ -7,8 +7,6 @@
 #include "Display.h"
 #include "Maze.h"
 #include "Torch.h"
-#include "PlayerSound.h"
-#include "MinotaurSound.h"
 #include "SoundHandler.h"
 
 #define PI 3.1415926535
