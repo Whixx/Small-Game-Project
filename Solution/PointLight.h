@@ -7,8 +7,8 @@
 #include <stdio.h>
 #include "Mesh.h"
 #include "Transform.h"
+#include "Shader.h"
 
-#include <glm\glm.hpp>
 #include <string>
 
 using namespace std;
@@ -21,27 +21,26 @@ class PointLight
 {
 public:
 	PointLight();
-	Mesh& GetMesh();
 
 	glm::vec3& GetPos();
 	glm::vec3& GetScale();
 	glm::vec3& GetColor();
-	
+	float& GetIntensity();
+
 	Transform *GetTransform();
 	vector<glm::mat4> &GetShadowTransforms();
 
 	void CreateShadowTransforms();
 	void ResetShadowTransforms();
 
-	void Draw();
 	virtual ~PointLight();
 
 private:
-	Mesh mesh;
 	Transform transform;
 	glm::mat4 shadowProj;
 	vector<glm::mat4> shadowTransforms;
 	glm::vec3 color;
+	float intensity;
 };
 
 class PointLightHandler
@@ -50,13 +49,11 @@ public:
 	PointLightHandler();
 
 	// location, pos, color
-	void CreateLight(glm::vec3 position, glm::vec3 color);
+	PointLight* CreateLight(glm::vec3 position, glm::vec3 color, float intensity);
 
-	void SendToShader();
-	void InitiateLights(GLuint *program);
+	void SendLightsToShader(Shader* shader);
 	void UpdateShadowTransform(GLuint cameraIndex);
-	void Draw(int index);
-	
+
 	vector<glm::mat4> GetShadowTransform(int index);
 
 	GLuint GetNrOfLights();
@@ -67,10 +64,6 @@ public:
 private:
 	PointLight lightArray[MAX_NUMBER_OF_LIGHTS];
 	GLuint nrOfLights;
-
-	GLuint loc_position[MAX_NUMBER_OF_LIGHTS];
-	GLuint loc_color[MAX_NUMBER_OF_LIGHTS];
-	GLuint loc_NrOfLights;
 };
 
 #endif

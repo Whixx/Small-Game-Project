@@ -15,8 +15,7 @@ public:
 	~ObjectHandler();
 
 	// Currently the create object doesn't fill empty spots, only appends to the back of the vector
-	int CreateObject(Mesh *mesh, Texture *texture);
-	int CreateObject(const char* filePath, Mesh *mesh, Texture *texture);
+	int CreateObject(const char* filePath);
 
 	void UpdateAllObjects(double dt);
 
@@ -24,7 +23,6 @@ public:
 	Object* GetObject(int index);
 
 private:
-	unsigned int numberOfObjects;
 	std::vector<Object*> allObjects;
 
 };

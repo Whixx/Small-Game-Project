@@ -7,13 +7,26 @@ Model::Model(std::string path, bool gammaCorrection) : gammaCorrection(gammaCorr
 
 Model::~Model()
 {
-	// TODO: Load all textures as a function
-	// TODO: Remove all textures as a function
-
 	// Delete loaded textures
-	for (Texture* t : loadedTextures)
+	for (Texture* t : this->loadedTextures)
 	{
 		delete t;
+	}
+
+	// Delete all the meshes
+	for (Mesh* m : this->meshes)
+	{
+		delete m;
+	}
+}
+
+void Model::Draw(Shader* shader)
+{
+	for (Mesh* m : this->meshes)
+	{
+		m->BindTextures(shader);
+		m->Bind();
+		m->Draw();
 	}
 }
 
@@ -23,7 +36,7 @@ void Model::LoadModel(std::string path)
 	// aiProcess_Triangulate makes sure that all verticies are connected as triangles
 	// aiProcess_GenNormals generate normals if they are missing
 	// aiProcess_CalcTangentSpace calculates normals in tangent space
-	const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace);
+	const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenUVCoords | aiProcess_GenNormals | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -82,45 +95,22 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 			vertex.UVCoords = glm::vec2(0.0f, 0.0f);
 
 		// Normal
-		if (mesh->mNormals) // assimp fixes this with aiProcess_GenNormals
-		{
-			vector.x = mesh->mNormals[i].x;
-			vector.y = mesh->mNormals[i].y;
-			vector.z = mesh->mNormals[i].z;
-			vertex.Normal = vector;
-		}
-		else
-			vertex.Normal = glm::vec3(0.0f, 0.0f, 0.0f);
+		vector.x = mesh->mNormals[i].x;
+		vector.y = mesh->mNormals[i].y;
+		vector.z = mesh->mNormals[i].z;
+		vertex.Normal = vector;
 
-		if (mesh->mTangents)
-		{
-			// Tangent
-			vector.x = mesh->mTangents[i].x;
-			vector.y = mesh->mTangents[i].y;
-			vector.z = mesh->mTangents[i].z;
-			vertex.Tangent = vector;
+		// Tangent IF crash here, probably dont got uv coords on model
+		vector.x = mesh->mTangents[i].x;
+		vector.y = mesh->mTangents[i].y;
+		vector.z = mesh->mTangents[i].z;
+		vertex.Tangent = vector;
 
-			// Bitangent
-			vector.x = mesh->mBitangents[i].x;
-			vector.y = mesh->mBitangents[i].y;
-			vector.z = mesh->mBitangents[i].z;
-			vertex.Bitangent = vector;
-		}
-		else
-		{
-			//TODO: FIX
-			// Tangent
-			vector.x = 1;
-			vector.y = 0;
-			vector.z = 0;
-			vertex.Tangent = vector;
-
-			// Bitangent
-			vector.x = 0;
-			vector.y = 0;
-			vector.z = 1;
-			vertex.Bitangent = vector;
-		}
+		// Bitangent
+		vector.x = mesh->mBitangents[i].x;
+		vector.y = mesh->mBitangents[i].y;
+		vector.z = mesh->mBitangents[i].z;
+		vertex.Bitangent = vector;
 
 		vertices.push_back(vertex);
 	}
@@ -137,27 +127,43 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 	if (mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+		// Load all texture types
 		std::vector<Texture*> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "TextureDiffuse");
-		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-
+		std::vector<Texture*> ambientMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "TextureAmbient");
 		std::vector<Texture*> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "TextureSpecular");
+		std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_NORMALS, "TextureNormal");
+		std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "TextureHeight");
+
+		// If they dont have a specific texture, add default
+		if (diffuseMaps.size() == 0)
+			textures.push_back(new Texture("Textures/default_diffuse.png", "TextureDiffuse"));
+		if (ambientMaps.size() == 0)
+			textures.push_back(new Texture("Textures/default_ambient.png", "TextureAmbient"));
+		if (specularMaps.size() == 0)
+			textures.push_back(new Texture("Textures/default_specular.png", "TextureSpecular"));
+		if (normalMaps.size() == 0)
+			textures.push_back(new Texture("Textures/default_normal.png", "TextureNormal"));
+		if (heightMaps.size() == 0)
+			textures.push_back(new Texture("Textures/default_height.png", "TextureHeight"));
+
+		// Combine them
+		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-
-		std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "TextureNormal");
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-
-		std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "TextureHeight");
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 	}
+	else
+	{
+		// Add default textures to it
+		textures.push_back(new Texture("Textures/default_diffuse.png", "TextureDiffuse"));
+		textures.push_back(new Texture("Textures/default_normal.png", "TextureNormal"));
+		textures.push_back(new Texture("Textures/default_specular.png", "TextureSpecular"));
+		textures.push_back(new Texture("Textures/default_ambient.png", "TextureAmbient"));
+		textures.push_back(new Texture("Textures/default_height.png", "TextureHeight"));
+	}
 
-	VertexBufferLayout layout = VertexBufferLayout();
-	layout.Push<float>(3); // Position
-	layout.Push<float>(2); // UV
-	layout.Push<float>(3); // Normal
-	layout.Push<float>(3); // Tangent
-	layout.Push<float>(3); // Bitangent
-
-	Mesh* temp = new Mesh(vertices, indices, textures, layout);
+	Mesh* temp = new Mesh(vertices, indices, textures);
 	return temp;
 }
 
@@ -168,7 +174,7 @@ std::vector<Texture*> Model::LoadMaterialTextures(aiMaterial * mat, aiTextureTyp
 	{
 		aiString str;
 		mat->GetTexture(type, i, &str);
-		bool skip = false;
+		bool skipLoad = false;
 		for (unsigned int j = 0; j < this->loadedTextures.size(); j++)
 		{
 			// Remove the directory path of the texture
@@ -178,11 +184,11 @@ std::vector<Texture*> Model::LoadMaterialTextures(aiMaterial * mat, aiTextureTyp
 			{
 				// Push the loaded texture in to the meshs texture
 				textures.push_back(this->loadedTextures[j]);
-				skip = true;
+				skipLoad = true;
 				break;
 			}
 		}
-		if (!skip)
+		if (!skipLoad)
 		{
 			// If texture hasn't been loaded already, load it
 			Texture* texture = new Texture(this->directoryPath + '/' + str.C_Str(), typeName, this->gammaCorrection);

@@ -4,12 +4,10 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+
 #include <string>
 #include <vector>
 #include "Mesh.h"
-
-
-
 #include "Texture.h"
 
 using namespace std;
@@ -17,11 +15,13 @@ using namespace std;
 class Model
 {
 public:
-	Model(std::string path = "../Models/cube3.obj", bool gammaCorrection = false);
+	Model(std::string path = "Models/Cube/cube.obj", bool gammaCorrection = false);
 	virtual ~Model();
 
-	inline std::vector<Mesh*> GetMeshes() const { return meshes; };
-	inline std::string GetDirectory() const { return directoryPath; };
+	inline std::vector<Mesh*> GetMeshes() const { return this->meshes; };
+	inline std::string GetDirectory() const { return this->directoryPath; };
+
+	void Draw(Shader* shader);
 
 private:
 	std::vector<Texture*> loadedTextures; // TODO: Make static somehow?

@@ -2,15 +2,13 @@
 #define TORCH_H
 
 #include <glew\glew.h>
-#include "Mesh.h"
-#include "Texture.h"
 #include "Transform.h"
+#include "Model.h"
 
 class Torch
 {
 public:
-	Torch(Transform transform, Mesh * mesh, Texture * texture);
-	Torch();
+	Torch(const string& path = "Models/Torch/torch.obj");
 	~Torch();
 
 	void SetScale(glm::vec3 scale);
@@ -23,13 +21,11 @@ public:
 	glm::vec3 &GetRot();
 	Transform GetTransform();
 
-	void BindTexture();
-	void Draw();
+	void Draw(Shader* shader);
 	virtual void Update(double dt);
 	
 private:
-	Mesh *mesh;
-	Texture *texture;
+	Model* model;
 	Transform transform;
 };
 

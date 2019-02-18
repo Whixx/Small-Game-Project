@@ -13,33 +13,9 @@ ObjectHandler::~ObjectHandler()
 	}
 }
 
-int ObjectHandler::CreateObject(Mesh *mesh,  Texture *texture)
+int ObjectHandler::CreateObject(const char* filePath)
 {
-	Object* temp = new Object(mesh, texture);
-	this->allObjects.push_back(temp);
-	
-	return this->allObjects.size()-1;
-}
-
-int ObjectHandler::CreateObject(const char* filePath, Mesh *mesh, Texture *texture)
-{
-	bool loaded = false;
-	loaded = mesh->CreateMesh(filePath);
-
-	if (loaded == true)
-	{
-#if DEBUG
-		std::cout << "The object has been loaded correctly!" << std::endl;
-#endif // DEBUG
-	}
-	else
-	{
-#if DEBUG
-		std::cout << "Bad things happened during the attempt to load the object!" << std::endl;
-#endif // DEBUG
-	}
-
-	Object* temp = new Object(mesh, texture);
+	Object* temp = new Object(filePath);
 	this->allObjects.push_back(temp);
 
 	return this->allObjects.size() - 1;
@@ -47,7 +23,7 @@ int ObjectHandler::CreateObject(const char* filePath, Mesh *mesh, Texture *textu
 
 void ObjectHandler::UpdateAllObjects(double dt)
 {
-	for (int i = 0; i < numberOfObjects; i++)
+	for (int i = 0; i < this->allObjects.size(); i++)
 	{
 		allObjects[i]->Update(dt);
 	}

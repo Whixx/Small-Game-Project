@@ -5,6 +5,8 @@
 #include <glew\glew.h>
 #include <iostream>
 #include <vector>
+#include "Texture.h"
+#include "Shader.h"
 
 using namespace std;
 
@@ -20,35 +22,25 @@ struct Vertex {
 class Mesh
 {
 private:
-	enum
-	{
-		POSITION_VB,
-		TEXCOORD_VB,
-		NORMAL_VB,
-		TANGENT_VB,
-		BITANGENT_VB,
-
-		NUM_OF_BUFFERS
-	};
-
-	std::vector<Vertex> m_Vertices;
-	std::vector<unsigned int> m_Indices;
-	std::vector<Texture*> m_Textures;
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+	std::vector<Texture*> textures;
 
 	GLuint vertexArrayObject;
-	GLuint vertexArrayBuffers[NUM_OF_BUFFERS];
-	unsigned int drawCount;
+	GLuint vertexArrayBuffer;
+	GLuint vertexIndexBuffer;
 
 	void SetupMesh();
 
 public:
-	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture*> textures, VertexBufferLayout layout);
+	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture*> textures);
 	virtual ~Mesh();
 
 	void Bind();
+	void BindTextures(Shader* shader, unsigned int slot = 0);
+	void Draw();
 
-	inline std::vector<Texture*> GetTextures() const { return m_Textures; };
-	inline unsigned int GetCount() const { return IB->GetCount(); };
+	inline std::vector<Texture*> GetTextures() const { return this->textures; };
 };
 
 /*

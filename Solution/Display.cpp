@@ -10,7 +10,7 @@ Display::Display()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-	this->window = glfwCreateWindow(SCREENWIDTH, SCREENHEIGHT, "Open GL Project", NULL, NULL);
+	this->window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Open GL Project", NULL, NULL);
 
 	if (!this->window)
 	{
@@ -55,7 +55,7 @@ GLFWwindow* Display::GetWindow()
 Display::~Display()
 {
 	glfwDestroyWindow(this->window);
-	glfwTerminate;
+	glfwTerminate();
 	exit(EXIT_SUCCESS);
 }
 

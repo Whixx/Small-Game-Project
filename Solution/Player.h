@@ -16,14 +16,14 @@ class Player
 {
 public:
 	// Default constructor
-	Player(float height, float fov, float near, float far, Mesh *mesh, Texture *texture, Maze * maze);
+	Player(float height, float fov, float near, float far, Maze * maze);
 	virtual ~Player();
 	
 	float GetPlayerSpeed();
 	float GetPlayerHeight();
 	glm::vec3 GetWalkingVector();
 	Camera* GetCamera();
-	Torch GetTorch();
+	Torch* GetTorch();
 
 	void SetPlayerHeight(float height);
 	void SetPlayerSpeed(float speed);
@@ -40,7 +40,7 @@ public:
 private:
 	Camera playerCamera;
 	Transform transform;
-	Torch playerTorch;
+	Torch* playerTorch;
 	
 	Maze* maze;
 	float playerSpeed;

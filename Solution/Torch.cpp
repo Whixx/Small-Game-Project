@@ -1,20 +1,15 @@
 #include "Torch.h"
 
-Torch::Torch(Transform transform, Mesh * mesh, Texture * texture)
+Torch::Torch(const string& path)
 {
-	this->texture = texture;
-	this->mesh = mesh;
-	this->mesh->CreateMesh("ObjectFiles/torch.obj");
+	this->model = new Model(path);
 	this->transform = transform;
 	this->transform.SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
 }
 
-Torch::Torch()
-{
-}
-
 Torch::~Torch()
 {
+	delete this->model;
 }
 
 void Torch::SetScale(glm::vec3 scale)
@@ -57,14 +52,9 @@ Transform Torch::GetTransform()
 	return this->transform;
 }
 
-void Torch::BindTexture()
+void Torch::Draw(Shader* shader)
 {
-	this->texture->Bind(0);
-}
-
-void Torch::Draw()
-{
-	this->mesh->Draw();
+	this->model->Draw(shader);
 }
 
 void Torch::Update(double dt)

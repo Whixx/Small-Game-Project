@@ -1,17 +1,13 @@
 #include "Object.h"
 
-Object::Object(Mesh *mesh, Texture *texture)
+Object::Object(string path)
 {
-	this->mesh = mesh;
-	this->texture = texture;
-}
-
-Object::Object()
-{
+	this->model = new Model(path, false);
 }
 
 Object::~Object()
 {
+	delete this->model;
 }
 
 glm::mat4 Object::GetWorldMatrix() const
@@ -43,12 +39,7 @@ void Object::Update(double dt)
 {
 }
 
-void Object::Draw()
+void Object::Draw(Shader* shader)
 {
-	this->mesh->Draw();
-}
-
-void Object::BindTexture()
-{
-	this->texture->Bind(0);
+	this->model->Draw(shader);
 }

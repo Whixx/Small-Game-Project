@@ -1,10 +1,10 @@
 #include "Player.h"
 #include <iostream> // TODO: Remove after testing
 
-Player::Player(float height, float fov, float near, float far, Mesh * mesh, Texture * texture, Maze * maze)
-	:playerCamera(glm::vec3(0, height, 0), fov, (float)SCREENWIDTH / (float)SCREENHEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f))
+Player::Player(float height, float fov, float near, float far, Maze * maze)
+	:playerCamera(glm::vec3(0, height, 0), fov, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f))
 {
-	this->playerTorch = Torch(this->transform, mesh, texture);
+	this->playerTorch = new Torch("Models/Torch/Torch.obj");
 	this->playerSpeed = 0;
 	this->boundingBoxHalfSize = 0.8f;
 	this->walkingVector = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -13,6 +13,7 @@ Player::Player(float height, float fov, float near, float far, Mesh * mesh, Text
 
 Player::~Player()
 {
+	delete this->playerTorch;
 }
 
 float Player::GetPlayerSpeed()
@@ -35,7 +36,7 @@ Camera * Player::GetCamera()
 	return &this->playerCamera;
 }
 
-Torch Player::GetTorch()
+Torch* Player::GetTorch()
 {
 	return this->playerTorch;
 }
@@ -167,22 +168,22 @@ void Player::Update(double dt)
 	this->transform.SetPos(this->playerCamera.GetCameraPosition());
 	
 	// Update the torch in front of the player'
-	this->playerTorch.SetPos(this->playerCamera.GetCameraPosition()
+	this->playerTorch->SetPos(this->playerCamera.GetCameraPosition()
 		+ this->GetWalkingVector() * this->boundingBoxHalfSize
 		+ this->playerCamera.GetRightVector() * 0.4f
 		+ this->playerCamera.GetUpVector() * -0.5f);
 
-	glm::vec3 forward = glm::vec3(playerTorch.GetTransform().GetWorldMatrix()[2][0], playerTorch.GetTransform().GetWorldMatrix()[2][1], playerTorch.GetTransform().GetWorldMatrix()[2][2]);
-	glm::vec3 camToTorch = glm::vec3(playerTorch.GetPos() - playerCamera.GetCameraPosition());
+	glm::vec3 forward = glm::vec3(playerTorch->GetTransform().GetWorldMatrix()[2][0], playerTorch->GetTransform().GetWorldMatrix()[2][1], playerTorch->GetTransform().GetWorldMatrix()[2][2]);
+	glm::vec3 camToTorch = glm::vec3(playerTorch->GetPos() - playerCamera.GetCameraPosition());
 	glm::vec3 crossVect = normalize(glm::cross(camToTorch, forward));
 
 	if (crossVect.y > 0.3f)
 	{
-		this->playerTorch.GetRot().y -= dt * 10;
+		this->playerTorch->GetRot().y -= dt * 10;
 	}
 	else if (crossVect.y < -0.3f)
 	{
-		this->playerTorch.GetRot().y += dt * 10;
+		this->playerTorch->GetRot().y += dt * 10;
 	}
 	else 
 	{

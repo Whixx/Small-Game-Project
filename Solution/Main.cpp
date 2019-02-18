@@ -3,10 +3,6 @@
 
 #include "MainFunctions.h"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
 int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -69,47 +65,38 @@ int main()
 	//=================================================================================//
 
 	//=========================== Buffers ====================================//
-	ShadowMap shadowMap(SHADOWMAPWIDTH, SHADOWMAPHEIGHT);
-	GBuffer gBuffer(SCREENWIDTH, SCREENHEIGHT);
-	BloomBuffer bloomBuffer(SCREENWIDTH, SCREENHEIGHT);
-	BlurBuffer blurBuffers(SCREENWIDTH, SCREENHEIGHT);
-	FinalFBO finalFBO(SCREENWIDTH, SCREENHEIGHT);
+	ShadowMap shadowMap(SHADOW_WIDTH, SHADOW_HEIGHT);
+	GBuffer gBuffer(SCREEN_WIDTH, SCREEN_HEIGHT);
+	BloomBuffer bloomBuffer(SCREEN_WIDTH, SCREEN_HEIGHT);
+	BlurBuffer blurBuffers(SCREEN_WIDTH, SCREEN_HEIGHT);
+	FinalFBO finalFBO(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	//=========================== Creating Objects ====================================//
 	// height and width must be odd numbers else the resulting maze will be off
 	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
 	GenerateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
 	Maze maze = Maze("MazePNG/mazeBlackWhite.png");
-	Mesh groundMesh;
-	Mesh torchMesh;
-	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
 
 	float playerHeight = 1.0f;
-	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, &maze);
+	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze);
 	player.SetPlayerSpeed(5.0f);
 	//player.CenterPlayer();
-
-	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
 
 	ObjectHandler OH = ObjectHandler();
 
 	//TODO: Byta ground.png till floor.png
-	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
+	int floor = OH.CreateObject("Models/Floor/floor.obj");
+
+	
+	Model lightSphereModel("Models/Cube/cube.obj");
+	GLuint screenQuad = CreateScreenQuad();
 	
 	//=================================================================================//
 
 	
 
 
-	// https://rauwendaal.net/2014/06/14/rendering-a-screen-covering-triangle-in-opengl/
-	Vertex fullScreenVerticesTriangle[] =
-	{ 
-		Vertex(glm::vec3(-1, 3, 0), glm::vec2(0.0,2.0)),
-		Vertex(glm::vec3(-1, -1, 0), glm::vec2(0.0,0.0)),
-		Vertex(glm::vec3(3, -1, 0), glm::vec2(2.0,0.0)),
-	};
-
-	Mesh fullScreenTriangle(fullScreenVerticesTriangle, (sizeof(fullScreenVerticesTriangle) / sizeof(fullScreenVerticesTriangle[0])));
+	
 
 	// Initiate timer
 	double currentTime = 0;
@@ -119,15 +106,33 @@ int main()
 	int nrOfFrames = 0;
 
 	// Create Lights
+
+	/*
+	GLuint lightSphereVA;
+	glGenVertexArrays(1, &lightSphereVA);
+	glBindVertexArray(lightSphereVA);
+
+	GLuint lightSphereVB;
+	glGenBuffers(1, &lightSphereVB);
+	glBindBuffer(GL_ARRAY_BUFFER, lightSphereVB);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(fullScreenTriangleData), fullScreenTriangleData, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0);
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(2 * sizeof(float)));
+
+	glBindVertexArray(0);
+	*/
+
 	PointLightHandler lights;
 	PointLight torchLight;
-	float torchLightIntensity = 2.0f;
-	torchLight.GetColor() = glm::vec3(1.0f, 0.3f, 0.3f) * torchLightIntensity;
-	lights.CreateLight(player.GetTorch().GetPos(), torchLight.GetColor());
-	lights.InitiateLights(lightPass.GetProgram());
+	torchLight.GetColor() = glm::vec3(1.0f, 0.3f, 0.3f);
+	lights.CreateLight(player.GetTorch()->GetPos(), torchLight.GetColor(), 2.0f);
 
 	Particle particle;
-	Texture particleTexture("Textures/particle.png", "NormalMaps/flat_normal.jpg");
+	Texture particleTexture("Textures/particle.png");
 	particle.SetTexture(&particleTexture);
 
 	while (!display.IsWindowClosed())
@@ -160,11 +165,11 @@ int main()
 		// Update player
 		player.Update(deltaTime);
 		player.GetCamera()->UpdateViewMatrix();
-		player.GetTorch().Update(deltaTime);
+		player.GetTorch()->Update(deltaTime);
 
 		OH.UpdateAllObjects(deltaTime);
 
-		lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch().GetPos().x, player.GetTorch().GetPos().y + 1.5f, player.GetTorch().GetPos().z);
+		lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch()->GetPos().x, player.GetTorch()->GetPos().y + 1.5f, player.GetTorch()->GetPos().z);
 		lights.UpdateShadowTransform(0);
 
 
@@ -179,35 +184,35 @@ int main()
 
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
-		DRLightPass(&gBuffer, &bloomBuffer, &fullScreenTriangle, lightPass.GetProgram(), &lightPass, &shadowMap, &lights, player.GetCamera());
+		DRLightPass(&gBuffer, &bloomBuffer, &screenQuad, lightPass.GetProgram(), &lightPass, &shadowMap, &lights, player.GetCamera());
 
 		// Copy the depth from the gBuffer to the bloomBuffer
-		bloomBuffer.CopyDepth(SCREENWIDTH, SCREENHEIGHT, gBuffer.GetFBO());
+		bloomBuffer.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, gBuffer.GetFBO());
 
 		// Draw lightSpheres
 		#ifdef DEBUG
-			LightSpherePass(&pointLightPass, &bloomBuffer, &lights, player.GetCamera());
+			LightSpherePass(&pointLightPass, &bloomBuffer, &lights, player.GetCamera(), &lightSphereModel);
 		#endif
 			
 		// Blur the bright texture
-		BlurPass(&blurShader, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
+		BlurPass(&blurShader, &bloomBuffer, &blurBuffers, &screenQuad);
 
 		// Combine the bright texture and the scene and store the Result in FinalFBO.
-		FinalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
+		FinalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &screenQuad);
 
 		// Copy the depth from the bloomBuffer to the finalFBO
-		finalFBO.CopyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.GetFBO());
+		finalFBO.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, bloomBuffer.GetFBO());
 
 		// Draw particles to the FinalFBO
-		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, player.GetTorch().GetPos());
+		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, player.GetTorch()->GetPos());
 
 		// Render everything
-		FinalPass(&finalFBO, &finalShader, &fullScreenTriangle);
+		FinalPass(&finalFBO, &finalShader, &screenQuad);
 
 
 
 		// ================== POST DRAW ==================
-		display.SwapBuffers(SCREENWIDTH, SCREENHEIGHT);
+		display.SwapBuffers(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 		constLastTime = currentTime;
 	}
