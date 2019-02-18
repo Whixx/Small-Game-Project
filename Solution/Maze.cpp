@@ -9,12 +9,20 @@ Maze::Maze(string bitmapPath)
 	this->numComponents = 0;
 	this->texture = 0;
 
-	LoadBMP(bitmapPath);
+	this->tbo = 0;
+	this->vbo = 0;
+	this->vao = 0;
+
+	LoadMaze(bitmapPath);
 }
 
 Maze::~Maze()
 {
 	stbi_image_free(imageData);
+
+	glDeleteBuffers(1, &this->tbo);
+	glDeleteBuffers(1, &this->vbo);
+	glDeleteVertexArrays(1, &this->vao);
 }
 
 Maze::Maze(const Maze& other)
@@ -24,7 +32,7 @@ Maze::Maze(const Maze& other)
 	this->height = other.height;
 	this->numComponents = other.numComponents;
 
-	this->LoadBMP(other.path);
+	this->LoadMaze(other.path);
 }
 
 Maze & Maze::operator=(const Maze & other)
@@ -34,7 +42,7 @@ Maze & Maze::operator=(const Maze & other)
 	this->height = other.height;
 	this->numComponents = other.numComponents;
 
-	this->LoadBMP(other.path);
+	this->LoadMaze(other.path);
 
 	return *this;
 }
@@ -47,34 +55,6 @@ int Maze::GetMazeHeight()
 int Maze::GetMazeWidth()
 {
 	return this->width;
-}
-
-// Loading the .bmp file and returning the width,height and pointer to the first pixel in the file.
-bool Maze::LoadBMP(const std::string & fileName)
-{
-	bool readingSuccess = true;
-
-	this->imageData = stbi_load(fileName.c_str(), &this->width, &this->height, &this->numComponents, 4);
-
-	if (this->imageData == NULL)
-	{
-		std::cerr << "Loading failed for bmp: " << fileName << std::endl;
-		readingSuccess = false;
-	}
-
-	glGenTextures(1, &this->texture);
-	glBindTexture(GL_TEXTURE_2D, this->texture);
-	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	// Skickar texturen till GPU'n
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->imageData);
-
-	return readingSuccess;
 }
 
 bool Maze::IsWallAtWorld(float x, float y)
@@ -122,8 +102,9 @@ void Maze::Bind(unsigned int textureUnit)
 	}
 }
 
-void Maze::initiateBuffers()
+void Maze::InitiateBuffers()
 {
+	GLint maxNrOfVertices = 18;
 	// create a buffer to hold the results of the transform feedback process.
 	glGenBuffers(1, &this->vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
@@ -131,7 +112,8 @@ void Maze::initiateBuffers()
 	// allocate space (no data)
 	glBufferData(
 		GL_ARRAY_BUFFER,
-		sizeof(glm::vec3) * 18 * 64 * 64 + sizeof(glm::vec2) * 18 * 64 * 64,		// 884,736 bytes <1Mb
+		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height + 
+		sizeof(glm::vec2) * maxNrOfVertices * this->width * this->height,
 		NULL,							// no data passed
 		GL_DYNAMIC_COPY);
 
@@ -150,17 +132,15 @@ void Maze::LoadMaze(const std::string & fileName)
 
 	if (this->imageData == NULL)
 		std::cerr << "Loading failed for texture: " << fileName << std::endl;
-	{
-	}
 
-	glGenTextures(1, &this->m_texture);
-	glBindTexture(GL_TEXTURE_2D, this->m_texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_NEAREST);
+	glGenTextures(1, &this->texture);
+	glBindTexture(GL_TEXTURE_2D, this->texture);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	// Skickar texturen till GPU'n
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, this->imageData);
@@ -209,9 +189,3 @@ void Maze::DrawMaze()
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 }
-	this->tbo = 0;
-	this->vbo = 0;
-	this->vao = 0;
-	glDeleteBuffers(1, &this->tbo);
-	glDeleteBuffers(1, &this->vbo);
-	glDeleteVertexArrays(1, &this->vao);

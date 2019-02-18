@@ -33,6 +33,7 @@
 
 
 // Shader initiation functions
+void InitMazeShader(Shader *shader);
 void InitShadowShader(Shader *shader);
 void InitGeometryPass(Shader *shader);
 void InitLightPass(Shader *shader);

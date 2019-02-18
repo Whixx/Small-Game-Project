@@ -23,7 +23,11 @@ public:
 	int GetMazeHeight();
 	int GetMazeWidth();
 
-	bool LoadBMP(const std::string& fileName);
+	void InitiateBuffers();
+	void DrawToBuffer();
+	void DrawMaze();
+	void LoadMaze(const std::string& fileName);
+
 	bool IsWallAtWorld(float x, float y);
 
 	void Bind(unsigned int textureUnit);
@@ -36,15 +40,10 @@ private:
 	int numComponents;
 	GLuint texture;
 
-	glm::vec3 readPixel(unsigned int x, unsigned int y);
-};
-#endif
-
-
-	void initiateBuffers();
-	void DrawToBuffer();
-	void DrawMaze();
-	void LoadMaze(const std::string& fileName);
 	GLuint tbo;
 	GLuint vbo;
 	GLuint vao;
+
+	glm::vec3 readPixel(unsigned int x, unsigned int y);
+};
+#endif

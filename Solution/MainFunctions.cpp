@@ -1,5 +1,14 @@
 #include "MainFunctions.h"
 
+void InitMazeShader(Shader * shader)
+{
+	shader->initiateMazeShader();
+
+	// Set constant uniforms
+
+	shader->ValidateShaders();
+}
+
 void InitShadowShader(Shader * shader)
 {
 	shader->InitiateShaders(false);

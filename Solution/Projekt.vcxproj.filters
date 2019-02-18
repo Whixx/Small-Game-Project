@@ -76,6 +76,7 @@
     <ClCompile Include="Maze.cpp">
       <Filter>Class cpp.Files</Filter>
     </ClCompile>
+    <ClCompile Include="Maze.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloom.h">
@@ -156,6 +157,7 @@
     <ClInclude Include="Maze.h">
       <Filter>Class h.Files</Filter>
     </ClInclude>
+    <ClInclude Include="Maze.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="blurShader.fs">

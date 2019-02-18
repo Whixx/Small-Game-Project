@@ -18,10 +18,11 @@ int main()
 
 	//=========================== Creating Shaders ====================================//
 
-	mazeShader.CreateShader(".\\mazeShader.fs", GL_FRAGMENT_SHADER);
-	mazeShader.CreateShader(".\\mazeShader.gs", GL_GEOMETRY_SHADER);
-	mazeShader.CreateShader(".\\mazeShader.vs", GL_VERTEX_SHADER);
 	Shader mazeShader;
+	mazeShader.CreateShader(".\\mazeShader.vs", GL_VERTEX_SHADER);
+	mazeShader.CreateShader(".\\mazeShader.gs", GL_GEOMETRY_SHADER);
+	mazeShader.CreateShader(".\\mazeShader.fs", GL_FRAGMENT_SHADER);
+	
 	Shader shadowShader;
 	shadowShader.CreateShader(".\\shadowShader.vs", GL_VERTEX_SHADER);
 	shadowShader.CreateShader(".\\shadowShader.gs", GL_GEOMETRY_SHADER);
@@ -56,8 +57,8 @@ int main()
 	finalShader.CreateShader(".\\finalShader.vs", GL_VERTEX_SHADER);
 	finalShader.CreateShader(".\\finalShader.fs", GL_FRAGMENT_SHADER);
 
-	mazeShader.initiateMazeShader();
-
+	
+	InitMazeShader(&mazeShader);
 	InitShadowShader(&shadowShader);
 	InitGeometryPass(&geometryPass);
 	InitLightPass(&lightPass);
@@ -80,7 +81,8 @@ int main()
 	// height and width must be odd numbers else the resulting maze will be off
 	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
 	GenerateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
-	Maze maze = Maze("MazePNG/mazeBlackWhite.png");
+	Maze maze = Maze("MazePNG/testMazeColored.png");
+	maze.InitiateBuffers();
 	Mesh groundMesh;
 	Mesh torchMesh;
 	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
@@ -151,12 +153,6 @@ int main()
 		// Update movement
 		IH.MouseControls(&display, &player, deltaTime);
 		IH.KeyboardControls(&display, &player, deltaTime);
-
-		drawTestShader.Bind();
-		brickTexture.Bind(0);
-		glm::mat4 a = camera.getViewProjection();
-		drawTestShader.setMat4("viewProjection", a);
-
 
 		// ================== UPDATE ==================
 
