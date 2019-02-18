@@ -26,7 +26,7 @@ public:
 	float GetPlayerHeight();
 	glm::vec3 GetWalkingVector();
 	Camera* GetCamera();
-	Torch GetTorch();
+	Torch* GetTorch();
 
 	void SetPlayerHeight(float height);
 	void SetPlayerSpeed(float speed);
@@ -38,9 +38,6 @@ public:
 	void MoveDown(float elapsedTime);
 	void UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime);
 	void Update(double dt);
-
-	//PlayerSound sound;
-	//MinotaurSound minotaurSound;
 	
 private:
 	Camera playerCamera;

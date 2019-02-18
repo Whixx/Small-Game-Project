@@ -27,8 +27,6 @@ private:
 	irrklang::ISound* sound;
 	irrklang::ISoundSource* source;
 
-
 };
-
 
 #endif // !SOUNDHANDLER_H

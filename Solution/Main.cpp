@@ -145,7 +145,7 @@ int main()
 	float torchLightIntensity = 2.0f;
 	torchLight.GetColor() = glm::vec3(1.0f, 0.3f, 0.3f) * torchLightIntensity;
 	//lights.CreateLight(OH.GetObject(torch)->GetPos(), torchLight.GetColor());
-	lights.CreateLight(player.GetTorch().GetPos(), torchLight.GetColor());
+	lights.CreateLight(player.GetTorch()->GetPos(), torchLight.GetColor());
 	/*lights.CreateLight(glm::vec3(-7.0f, 7.0f, -3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	lights.CreateLight(glm::vec3(7.0f, 7.0f, 15.0f), glm::vec3(0.3f, 0.0f, 0.0f));*/
 	
@@ -172,6 +172,7 @@ int main()
 	SoundHandler minotaurGrowl("Sounds/minotaurgrowl.wav", false, false, enginePtr);
 	SoundHandler minotaurFootStep("Sounds/minotaurstep.ogg", false, false, enginePtr);
 
+
 	while (!display.IsWindowClosed())
 	{
 		// Calculate DeltaTime
@@ -192,15 +193,15 @@ int main()
 		// Update player
 		player.Update(deltaTime);
 		player.GetCamera()->UpdateViewMatrix();
-		player.GetTorch().Update(deltaTime);
+		player.GetTorch()->Update(deltaTime);
 
 		updateAllObjects(deltaTime, OH);
-		lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch().GetPos().x, player.GetTorch().GetPos().y + 1.5f, player.GetTorch().GetPos().z);
+		lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch()->GetPos().x, player.GetTorch()->GetPos().y + 1.5f, player.GetTorch()->GetPos().z);
 		lights.UpdateShadowTransform(0);
-
 
 		// update sound engine with position and view direction
 		soundEngine.Update(player.GetCamera()->GetCameraPosition(), player.GetCamera()->GetForwardVector());
+
 
 		// moving minotaur sound test
 		newPosition.x = sinf(glfwGetTime() * 0.5 * 3.15) * 5.0f;
@@ -209,8 +210,6 @@ int main()
 		minotaurGrowl.Play();
 		minotaurFootStep.SetPosition(newPosition);
 		minotaurFootStep.Play();
-
-
 
 
 		// Measure fps
@@ -254,7 +253,7 @@ int main()
 		finalFBO.CopyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.GetFBO());
 
 		// Draw particles to the FinalFBO
-		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, player.GetTorch().GetPos());
+		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, player.GetTorch()->GetPos());
 
 		// Render everything
 		FinalPass(&finalFBO, &finalShader, &fullScreenTriangle);

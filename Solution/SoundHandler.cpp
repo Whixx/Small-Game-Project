@@ -60,4 +60,3 @@ void SoundHandler::SetVolume(float value)
 	if(this->sound)
 	this->sound->setVolume(value);
 }
-

@@ -71,4 +71,3 @@ void Torch::Update(double dt)
 	this->torchSound.SetPosition(this->GetPos());
 	torchSound.Play();
 }
-

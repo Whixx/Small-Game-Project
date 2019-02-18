@@ -6,10 +6,8 @@ Player::Player(float height, float fov, float near, float far, Mesh * mesh, Text
 	playerTorch(this->transform, mesh, texture, engine),
 	footStep("Sounds/playerfootstep.ogg", false, false, engine)
 {
-	/*this->playerTorch = Torch(this->transform, mesh, texture, engine);*/
 	this->playerSpeed = 0;
 	this->walkingVector = glm::vec3(0.0f, 0.0f, 1.0f);
-	//this->maze = maze;
 
 }
 
@@ -37,9 +35,9 @@ Camera * Player::GetCamera()
 	return &this->playerCamera;
 }
 
-Torch Player::GetTorch()
+Torch* Player::GetTorch()
 {
-	return this->playerTorch;
+	return &this->playerTorch;
 }
 
 void Player::SetPlayerHeight(float height)
@@ -57,7 +55,6 @@ void Player::MoveForward(float elapsedTime)
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * this->walkingVector * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 
-	//sound.PlayFootStep();
 	footStep.Play();
 }
 
@@ -66,7 +63,6 @@ void Player::MoveBackward(float elapsedTime)
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * this->walkingVector * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 
-	//sound.PlayFootStep();
 	footStep.Play();
 }
 
@@ -75,7 +71,6 @@ void Player::MoveRight(float elapsedTime)
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 
-	//sound.PlayFootStep();
 	footStep.Play();
 }
 
@@ -84,7 +79,6 @@ void Player::MoveLeft(float elapsedTime)
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
 	playerCamera.SetCameraPosition(newPos);
 
-	//sound.PlayFootStep();
 	footStep.Play();
 }
 
@@ -147,26 +141,6 @@ void Player::Update(double dt)
 	{
 		// No rotation
 	}
-
-	// Test variables
-	double x = 0.0;
-	double y = 0.0;
-
-	// Move player
-	x = 3.0;
-	y = 0.0;
-
-	/*
-	// Check collision
-	if (maze->IsWallAtWorld(x, y))
-	{
-		// Don't move
-		cout << "V�GGGGG" << endl; // TODO: Remove after testing
-	}
-	*/
-
-	// torch position doesnt get updated unless this line is in, even though it is updated in main?
-	this->playerTorch.Update(dt);
 
 	// update sound positions
 	footStep.SetPosition(this->GetCamera()->GetCameraPosition());

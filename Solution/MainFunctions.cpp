@@ -41,9 +41,9 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 			OH->GetObject(j)->Draw();
 		}
 
-		shadowShader->Update(player->GetTorch().GetTransform(), *player->GetCamera());
-		player->GetTorch().BindTexture();
-		player->GetTorch().Draw();
+		shadowShader->Update(player->GetTorch()->GetTransform(), *player->GetCamera());
+		player->GetTorch()->BindTexture();
+		player->GetTorch()->Draw();
 	}
 
 	shadowShader->UnBind();
@@ -76,9 +76,9 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	}
 
 	geometryPass->SendFloat("illuminated", 3.0f);
-	geometryPass->Update(player->GetTorch().GetTransform(), *player->GetCamera());
-	player->GetTorch().BindTexture();
-	player->GetTorch().Draw();
+	geometryPass->Update(player->GetTorch()->GetTransform(), *player->GetCamera());
+	player->GetTorch()->BindTexture();
+	player->GetTorch()->Draw();
 	
 	geometryPass->UnBind();
 }
