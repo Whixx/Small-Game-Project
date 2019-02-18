@@ -1,10 +1,14 @@
 #include "MainFunctions.h"
 
-void InitMazeShader(Shader * shader)
+void InitMazeShader(Shader * shader, Maze * maze)
 {
 	shader->initiateMazeShader();
 
 	// Set constant uniforms
+	shader->Bind();
+	shader->SendInt("texture", 0);
+	shader->SendInt("width", maze->GetMazeWidth());
+	shader->SendInt("height", maze->GetMazeHeight());
 
 	shader->ValidateShaders();
 }
@@ -99,7 +103,22 @@ void InitFinalShader(Shader * shader)
 	shader->ValidateShaders();
 }
 
-void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player)
+void MazePass(Shader * mazeShader, Maze * maze)
+{
+	mazeShader->Bind();
+
+	// Bind the mazeTexture (the colorcoded png)
+	maze->BindTexture(0);
+
+	// Send uniforms that needs to be updated each frame
+
+	// Draw the maze and store data with transform feedback
+	maze->DrawToBuffer();
+
+	mazeShader->UnBind();
+}
+
+void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Maze * maze)
 {
 	shadowShader->Bind();
 	glEnable(GL_DEPTH_TEST);
@@ -137,6 +156,11 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		shadowShader->SendMat4("WorldMatrix", worldMatrix);
 		player->GetTorch().BindTexture();
 		player->GetTorch().Draw();
+
+		// Draw Maze
+		glm::mat4 mazeWorldMatrix = glm::mat4();
+		shadowShader->SendMat4("WorldMatrix", mazeWorldMatrix);
+		maze->DrawMaze(GL_FALSE);
 	}
 
 	shadowShader->UnBind();
@@ -144,7 +168,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH)
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH, Maze * maze, Texture * tempBrickTexture)
 {
 	geometryPass->Bind();
 
@@ -157,7 +181,7 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_DEPTH_TEST);
-
+	
 	// Update and Draw all objects
 	for (unsigned int i = 0; i < OH->GetNrOfObjects(); i++)
 	{
@@ -176,7 +200,15 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	geometryPass->SendMat4("WorldMatrix", worldMatrix);
 	player->GetTorch().BindTexture();
 	player->GetTorch().Draw();
-	
+
+	// Draw Maze
+	geometryPass->SendFloat("illuminated", 1.0f);
+	glm::mat4 mazeWorldMatrix = glm::mat4();
+	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * mazeWorldMatrix);
+	geometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
+	tempBrickTexture->Bind(0);
+	maze->DrawMaze(GL_TRUE);
+
 	geometryPass->UnBind();
 }
 
@@ -348,4 +380,30 @@ void GenerateMazeBitmaps(int height, int width)
 
 	mazeGen.Generate();
 	mazeGen.Draw_png();
+}
+
+void MazeTestPass(Shader * shader, Texture * brickTexture, Player * player, Maze * maze)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	shader->Bind();
+	brickTexture->Bind(0);
+	glm::mat4 a = player->GetCamera()->GetViewProjection();
+	shader->SendMat4("viewProjection", a);
+	
+	glEnable(GL_DEPTH_TEST);
+	maze->DrawMaze(GL_TRUE);
+	glDisable(GL_DEPTH_TEST);
+
+	//glm::mat4 mazeWorldMatrix = glm::mat4();
+	//shader->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection());
+	//shader->SendMat4("WorldMatrix", mazeWorldMatrix);
+	//brickTexture->Bind(0);
+	//
+	//glEnable(GL_DEPTH_TEST);
+	//maze->DrawMaze(GL_TRUE);
+	//glDisable(GL_DEPTH_TEST);
+
+	shader->UnBind();
 }

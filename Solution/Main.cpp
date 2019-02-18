@@ -15,8 +15,15 @@ int main()
 
 	InputHandler IH = InputHandler();
 
+	Maze maze;
+	maze.LoadMaze("Bitmap/maze.png");
+
 
 	//=========================== Creating Shaders ====================================//
+	// TEEEEST
+	Shader drawTestShader;
+	drawTestShader.CreateShader(".\\drawTestShader.vs", GL_VERTEX_SHADER);
+	drawTestShader.CreateShader(".\\drawTestShader.fs", GL_FRAGMENT_SHADER);
 
 	Shader mazeShader;
 	mazeShader.CreateShader(".\\mazeShader.vs", GL_VERTEX_SHADER);
@@ -57,8 +64,11 @@ int main()
 	finalShader.CreateShader(".\\finalShader.vs", GL_VERTEX_SHADER);
 	finalShader.CreateShader(".\\finalShader.fs", GL_FRAGMENT_SHADER);
 
-	
-	InitMazeShader(&mazeShader);
+	// TEEEEEEEEEST
+	drawTestShader.InitiateShaders(false);
+
+
+	InitMazeShader(&mazeShader, &maze);
 	InitShadowShader(&shadowShader);
 	InitGeometryPass(&geometryPass);
 	InitLightPass(&lightPass);
@@ -67,6 +77,9 @@ int main()
 	InitBlurShader(&blurShader);
 	InitFinalBloomShader(&finalBloomShader);
 	InitFinalShader(&finalShader);
+
+	// TEEEEEEEEEST
+	drawTestShader.ValidateShaders();
 
 	//=================================================================================//
 
@@ -81,8 +94,10 @@ int main()
 	// height and width must be odd numbers else the resulting maze will be off
 	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
 	GenerateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
-	Maze maze = Maze("MazePNG/testMazeColored.png");
-	maze.InitiateBuffers();
+
+	// Temp texture for the mazeWalls
+	Texture brickTexture("Textures/brickwall.jpg", "NormalMaps/brickwall_normal.jpg");
+
 	Mesh groundMesh;
 	Mesh torchMesh;
 	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
@@ -131,6 +146,8 @@ int main()
 	Texture particleTexture("Textures/particle.png", "NormalMaps/flat_normal.jpg");
 	particle.SetTexture(&particleTexture);
 
+	maze.InitiateBuffers();
+
 	while (!display.IsWindowClosed())
 	{
 		// Calculate DeltaTime
@@ -169,39 +186,46 @@ int main()
 
 		// ================== DRAW ==================
 
+		// Here the maze is created and stored in a buffer with transform feedback
+		MazePass(&mazeShader, &maze);
+
+		MazeTestPass(&drawTestShader, &brickTexture, &player, &maze);
+
+
+
 		// Here a cube map is calculated and stored in the shadowMap FBO
-		ShadowPass(&shadowShader, &OH, &lights, &shadowMap, &player);
-
-		// ================== Geometry Pass - Deffered Rendering ==================
-		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, &geometryPass, &player, &OH);
-
-		// ================== Light Pass - Deffered Rendering ==================
-		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
-		DRLightPass(&gBuffer, &bloomBuffer, &fullScreenTriangle, lightPass.GetProgram(), &lightPass, &shadowMap, &lights, player.GetCamera());
-
-		// Copy the depth from the gBuffer to the bloomBuffer
-		bloomBuffer.CopyDepth(SCREENWIDTH, SCREENHEIGHT, gBuffer.GetFBO());
-
-		// Draw lightSpheres
-		#ifdef DEBUG
-			LightSpherePass(&pointLightPass, &bloomBuffer, &lights, player.GetCamera());
-		#endif
-			
-		// Blur the bright texture
-		BlurPass(&blurShader, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
-
-		// Combine the bright texture and the scene and store the Result in FinalFBO.
-		FinalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
-
-		// Copy the depth from the bloomBuffer to the finalFBO
-		finalFBO.CopyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.GetFBO());
-
-		// Draw particles to the FinalFBO
-		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, player.GetTorch().GetPos());
-
-		// Render everything
-		FinalPass(&finalFBO, &finalShader, &fullScreenTriangle);
+		//ShadowPass(&shadowShader, &OH, &lights, &shadowMap, &player, &maze);
+		//
+		//// ================== Geometry Pass - Deffered Rendering ==================
+		//// Here all the objets gets transformed, and then sent to the GPU with a draw call
+		//DRGeometryPass(&gBuffer, &geometryPass, &player, &OH, &maze, &brickTexture);
+		//
+		//// ================== Light Pass - Deffered Rendering ==================
+		//// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
+		//DRLightPass(&gBuffer, &bloomBuffer, &fullScreenTriangle, lightPass.GetProgram(), &lightPass, &shadowMap, &lights, player.GetCamera());
+		//
+		//// Copy the depth from the gBuffer to the bloomBuffer
+		//bloomBuffer.CopyDepth(SCREENWIDTH, SCREENHEIGHT, gBuffer.GetFBO());
+		//
+		//// Draw lightSpheres
+		//#ifdef DEBUG
+		//	LightSpherePass(&pointLightPass, &bloomBuffer, &lights, player.GetCamera());
+		//#endif
+		//	
+		//// Blur the bright texture
+		//BlurPass(&blurShader, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
+		//
+		//// Combine the bright texture and the scene and store the Result in FinalFBO.
+		//FinalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
+		//
+		//// Copy the depth from the bloomBuffer to the finalFBO
+		//finalFBO.CopyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.GetFBO());
+		//
+		//// Draw particles to the FinalFBO
+		//ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, player.GetTorch().GetPos());
+		//
+		//// Render everything
+		//FinalPass(&finalFBO, &finalShader, &fullScreenTriangle);
 
 
 
