@@ -1,4 +1,6 @@
-#define STB_IMAGE_WRITE_IMPLEMENTATION
+﻿
+//#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
 #define STBI_MSC_SECURE_CRT
 
 #include "MainFunctions.h"
@@ -86,46 +88,16 @@ int main()
 
 	//TODO: Byta ground.png till floor.png
 	int floor = OH.CreateObject("Models/Floor/floor.obj");
+	//int floor = OH.CreateObject("Models/Deer/12961_White-Tailed_Deer_v1_l2.obj");
 
 	
-	Model lightSphereModel("Models/Cube/cube.obj");
+	Model lightSphereModel("Models/Ball/ball.obj");
 	GLuint screenQuad = CreateScreenQuad();
 	
 	//=================================================================================//
 
 	
-
-
-	
-
-	// Initiate timer
-	double currentTime = 0;
-	double lastTime = glfwGetTime();
-	double deltaTime = 0;
-	double constLastTime = 0;
-	int nrOfFrames = 0;
-
 	// Create Lights
-
-	/*
-	GLuint lightSphereVA;
-	glGenVertexArrays(1, &lightSphereVA);
-	glBindVertexArray(lightSphereVA);
-
-	GLuint lightSphereVB;
-	glGenBuffers(1, &lightSphereVB);
-	glBindBuffer(GL_ARRAY_BUFFER, lightSphereVB);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(fullScreenTriangleData), fullScreenTriangleData, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0);
-
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(2 * sizeof(float)));
-
-	glBindVertexArray(0);
-	*/
-
 	PointLightHandler lights;
 	PointLight torchLight;
 	torchLight.GetColor() = glm::vec3(1.0f, 0.3f, 0.3f);
@@ -134,6 +106,14 @@ int main()
 	Particle particle;
 	Texture particleTexture("Textures/particle.png");
 	particle.SetTexture(&particleTexture);
+
+
+	// Initiate timer
+	double currentTime = 0;
+	double lastTime = glfwGetTime();
+	double deltaTime = 0;
+	double constLastTime = 0;
+	int nrOfFrames = 0;
 
 	while (!display.IsWindowClosed())
 	{
@@ -184,7 +164,7 @@ int main()
 
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
-		DRLightPass(&gBuffer, &bloomBuffer, &screenQuad, lightPass.GetProgram(), &lightPass, &shadowMap, &lights, player.GetCamera());
+		DRLightPass(&gBuffer, &bloomBuffer, &screenQuad, &lightPass, &shadowMap, &lights, player.GetCamera());
 
 		// Copy the depth from the gBuffer to the bloomBuffer
 		bloomBuffer.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, gBuffer.GetFBO());

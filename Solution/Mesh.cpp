@@ -26,32 +26,32 @@ void Mesh::SetupMesh()
 	glGenBuffers(1, &this->vertexArrayBuffer);
 	// Fill vertex buffer with (ppp, uv, nnn, ttt, bbb)
 	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffer);
-	glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(this->vertices[0]), this->vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex), &this->vertices[0], GL_STATIC_DRAW);
 
 	// POSITION
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 
 	// TEXCOORD
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(sizeof(glm::vec3)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, UVCoords));
 
 	// NORMAL
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (const void*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
 
 	// TANGNET
 	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (const void*)(sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(glm::vec3)));
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
 
 	// BITANGNET
 	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (const void*)(sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(glm::vec3) + sizeof(glm::vec3)));
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
 
 	// Create vertexIndexBuffer
 	glGenBuffers(1, &this->vertexIndexBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->vertexIndexBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size(), this->indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(unsigned int), &this->indices[0], GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
 }

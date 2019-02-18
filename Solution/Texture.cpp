@@ -27,7 +27,7 @@ void Texture::Bind(unsigned int slot) const
 
 void Texture::LoadTexture()
 {
-	//stbi_set_flip_vertically_on_load(1); // Flips the image upsidedown
+	stbi_set_flip_vertically_on_load(1); // Flips the image upsidedown
 
 	unsigned char* data = stbi_load(path.c_str(), &width, &height, &BPP, 0);
 

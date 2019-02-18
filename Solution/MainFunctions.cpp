@@ -166,7 +166,7 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	geometryPass->UnBind();
 }
 
-void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenTriangle, GLuint *program, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera)
+void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenTriangle, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera)
 {
 	lightPass->Bind();
 
