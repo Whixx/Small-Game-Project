@@ -7,6 +7,7 @@
 #include "Display.h"
 #include "Maze.h"
 #include "Torch.h"
+#include "SoundHandler.h"
 
 #define PI 3.1415926535
 
@@ -17,13 +18,14 @@ class Player
 public:
 	// Default constructor
 	Player(float height, float fov, float near, float far, Mesh *mesh, Texture *texture, Maze * maze);
+	Player(float height, float fov, float near, float far, Mesh *mesh, Texture *texture, irrklang::ISoundEngine* engine);
 	virtual ~Player();
 	
 	float GetPlayerSpeed();
 	float GetPlayerHeight();
 	glm::vec3 GetWalkingVector();
 	Camera* GetCamera();
-	Torch GetTorch();
+	Torch* GetTorch();
 
 	void SetPlayerHeight(float height);
 	void SetPlayerSpeed(float speed);
@@ -47,6 +49,9 @@ private:
 	float playerHeight;
 	float boundingBoxHalfSize;
 	glm::vec3 walkingVector;
+
+	SoundHandler footStep;
+
 };
 
 #endif //DISPLAY_H
