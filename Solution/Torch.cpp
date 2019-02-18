@@ -1,13 +1,15 @@
 #include "Torch.h"
 
 Torch::Torch(Transform transform, Mesh * mesh, Texture * texture, irrklang::ISoundEngine* engine)
-	:torchSound("Sounds/torch.wav", true, false, engine)
+	:torchSound("Sounds/torch.wav", true, engine)
 {
 	this->texture = texture;
 	this->mesh = mesh;
 	this->mesh->CreateMesh("ObjectFiles/torch.obj");
 	this->transform = transform;
 	this->transform.SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
+
+	this->torchSound.SetVolume(0.4);
 }
 
 Torch::~Torch()

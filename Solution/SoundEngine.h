@@ -12,7 +12,7 @@ public:
 	~SoundEngine();
 
 	void Update(glm::vec3 position, glm::vec3 viewDirection);	// updates the listeners position and view direction
-	irrklang::ISoundEngine* GetEngine();	// pass engine to objects that will play sounds
+	irrklang::ISoundEngine* GetEngine();						// pass engine to objects that will play sounds
 
 private:
 	irrklang::ISoundEngine* engine;

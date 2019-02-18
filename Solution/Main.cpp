@@ -84,9 +84,13 @@ int main()
 	SoundEngine soundEngine;
 	irrklang::ISoundEngine* enginePtr = soundEngine.GetEngine();
 
-	// test variables newPosition
+	// minotaur sound test stuff
 	glm::vec3 newPosition;
 	newPosition.y = 0.0;
+	SoundHandler minotaurGrowl("Sounds/minotaurgrowl.wav", false, enginePtr);
+	SoundHandler minotaurFootStep("Sounds/minotaurstep.ogg", false, enginePtr);
+	minotaurGrowl.SetMinDistance(0.5);
+
 
 	float playerHeight = 1.0f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, enginePtr);
@@ -167,12 +171,6 @@ int main()
 
 	GLuint viewProjection = glGetUniformLocation(*pointLightPass.GetProgram(), "viewProjectionMatrix");
 
-	
-	// sound test, initiate sound sources. 
-	SoundHandler minotaurGrowl("Sounds/minotaurgrowl.wav", false, false, enginePtr);
-	SoundHandler minotaurFootStep("Sounds/minotaurstep.ogg", false, false, enginePtr);
-
-
 	while (!display.IsWindowClosed())
 	{
 		// Calculate DeltaTime
@@ -199,17 +197,17 @@ int main()
 		lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch()->GetPos().x, player.GetTorch()->GetPos().y + 1.5f, player.GetTorch()->GetPos().z);
 		lights.UpdateShadowTransform(0);
 
+
 		// update sound engine with position and view direction
 		soundEngine.Update(player.GetCamera()->GetCameraPosition(), player.GetCamera()->GetForwardVector());
 
-
-		// moving minotaur sound test
-		newPosition.x = sinf(glfwGetTime() * 0.5 * 3.15) * 5.0f;
-		newPosition.z = cosf(glfwGetTime() * 0.5 * 3.15) * 5.0f;
-		minotaurGrowl.SetPosition(newPosition);
-		minotaurGrowl.Play();
-		minotaurFootStep.SetPosition(newPosition);
-		minotaurFootStep.Play();
+		//// moving minotaur sound test
+		//newPosition.x = sinf(glfwGetTime() * 0.2 * 3.15) * 5.0f;
+		//newPosition.z = cosf(glfwGetTime() * 0.2 * 3.15) * 5.0f;
+		//minotaurGrowl.SetPosition(newPosition);
+		//minotaurGrowl.Play();
+		//minotaurFootStep.SetPosition(newPosition);
+		//minotaurFootStep.Play();
 
 
 		// Measure fps
