@@ -73,6 +73,9 @@
     <ClCompile Include="Torch.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
+    <ClCompile Include="Maze.cpp">
+      <Filter>Class cpp.Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloom.h">
@@ -150,6 +153,9 @@
     <ClInclude Include="Torch.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
+    <ClInclude Include="Maze.h">
+      <Filter>Class h.Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="blurShader.fs">
@@ -204,6 +210,21 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="shadowShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeShader.gs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="drawTestShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="drawTestShader.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeShader.fs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

@@ -18,6 +18,10 @@ int main()
 
 	//=========================== Creating Shaders ====================================//
 
+	mazeShader.CreateShader(".\\mazeShader.fs", GL_FRAGMENT_SHADER);
+	mazeShader.CreateShader(".\\mazeShader.gs", GL_GEOMETRY_SHADER);
+	mazeShader.CreateShader(".\\mazeShader.vs", GL_VERTEX_SHADER);
+	Shader mazeShader;
 	Shader shadowShader;
 	shadowShader.CreateShader(".\\shadowShader.vs", GL_VERTEX_SHADER);
 	shadowShader.CreateShader(".\\shadowShader.gs", GL_GEOMETRY_SHADER);
@@ -52,6 +56,7 @@ int main()
 	finalShader.CreateShader(".\\finalShader.vs", GL_VERTEX_SHADER);
 	finalShader.CreateShader(".\\finalShader.fs", GL_FRAGMENT_SHADER);
 
+	mazeShader.initiateMazeShader();
 
 	InitShadowShader(&shadowShader);
 	InitGeometryPass(&geometryPass);
@@ -95,8 +100,6 @@ int main()
 	//=================================================================================//
 
 	
-
-
 	// https://rauwendaal.net/2014/06/14/rendering-a-screen-covering-triangle-in-opengl/
 	Vertex fullScreenVerticesTriangle[] =
 	{ 
@@ -149,6 +152,10 @@ int main()
 		IH.MouseControls(&display, &player, deltaTime);
 		IH.KeyboardControls(&display, &player, deltaTime);
 
+		drawTestShader.Bind();
+		brickTexture.Bind(0);
+		glm::mat4 a = camera.getViewProjection();
+		drawTestShader.setMat4("viewProjection", a);
 
 
 		// ================== UPDATE ==================

@@ -40,3 +40,11 @@ private:
 };
 #endif
 
+
+	void initiateBuffers();
+	void DrawToBuffer();
+	void DrawMaze();
+	void LoadMaze(const std::string& fileName);
+	GLuint tbo;
+	GLuint vbo;
+	GLuint vao;
