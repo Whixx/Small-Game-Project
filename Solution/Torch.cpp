@@ -7,9 +7,7 @@ Torch::Torch(Transform transform, Mesh * mesh, Texture * texture, PointLightHand
 	this->mesh->CreateMesh("ObjectFiles/torch.obj");
 	this->transform = transform;
 	this->transform.SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
-	this->transform.GetRot() = glm::vec3(0.0f, 1.0f, 1.0f);
-
-	glm::vec4 lightPos(0, 1, 0, 0);
+	this->transform.GetRot() = glm::vec3(0.1f, 0.0f, 0.0f);
 
 	glm::mat4 scaleMatrix = glm::scale(glm::vec3(0, this->transform.GetScale().y, 0));
 
@@ -20,9 +18,8 @@ Torch::Torch(Transform transform, Mesh * mesh, Texture * texture, PointLightHand
 
 	glm::mat4 scaleRotMatrix = rotationMatrix * scaleMatrix;
 
-	lightPos = scaleRotMatrix * lightPos;
-	
-	this->torchLight = PLH->CreateLight(lightPos, lightColor, 1.0f);
+	this->lightPos = this->transform.GetPos() + glm::vec3(scaleRotMatrix * this->lightStartingPos);
+	this->torchLight = PLH->CreateLight(this->lightPos, lightColor, 1.0f);
 }
 
 Torch::Torch()
@@ -113,8 +110,6 @@ void Torch::Update(double dt, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 
 
 
 	// Update the lights position (Should be in the correct spot on the torch)
-	glm::vec4 lightPos = glm::vec4(0, 1, 0, 0);
-
 	glm::mat4 scaleMatrix = glm::scale(glm::vec3(0, this->transform.GetScale().y, 0));
 
 	glm::mat4 rotationXMatrix = glm::rotate(this->transform.GetRot().x, glm::vec3(1, 0, 0));
@@ -124,7 +119,7 @@ void Torch::Update(double dt, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 
 
 	glm::mat4 scaleRotMatrix = rotationMatrix * scaleMatrix;
 
-	lightPos = scaleRotMatrix * lightPos;
+	this->lightPos = this->transform.GetPos() + glm::vec3(scaleRotMatrix * this->lightStartingPos);
 	
-	this->torchLight->GetPos() = glm::vec3(lightPos.x, lightPos.y, lightPos.z);
+	this->torchLight->GetPos() = this->lightPos;
 }

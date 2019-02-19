@@ -2,9 +2,9 @@
 #include <iostream> // TODO: Remove after testing
 
 Player::Player(float height, float fov, float near, float far, Mesh * mesh, Texture * texture, Maze * maze, PointLightHandler* PLH)
-	:playerCamera(glm::vec3(0, height, 0), fov, (float)SCREENWIDTH / (float)SCREENHEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f))
+	:playerCamera(glm::vec3(0, height, 0), fov, (float)SCREENWIDTH / (float)SCREENHEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)),
+	playerTorch(this->transform, mesh, texture, PLH, glm::vec3(1.0f, 0.3f, 0.3f))
 {
-	this->playerTorch = Torch(this->transform, mesh, texture, PLH, glm::vec3(1.0f, 0.3f, 0.3f));
 	this->playerSpeed = 0;
 	this->boundingBoxHalfSize = 0.8f;
 	this->walkingVector = glm::vec3(0.0f, 0.0f, 1.0f);
