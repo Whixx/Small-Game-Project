@@ -160,7 +160,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		// Draw Maze
 		glm::mat4 mazeWorldMatrix = glm::mat4();
 		shadowShader->SendMat4("WorldMatrix", mazeWorldMatrix);
-		maze->DrawMaze(GL_FALSE);
+		maze->DrawMaze(false);
 	}
 
 	shadowShader->UnBind();
@@ -172,6 +172,7 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 {
 	geometryPass->Bind();
 
+	
 	geometryPass->SendCameraLocation(player->GetCamera());
 
 	gBuffer->BindForWriting();
@@ -181,7 +182,8 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_DEPTH_TEST);
-	
+	//glEnable(GL_CULL_FACE);
+
 	// Update and Draw all objects
 	for (unsigned int i = 0; i < OH->GetNrOfObjects(); i++)
 	{
@@ -207,8 +209,9 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * mazeWorldMatrix);
 	geometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
 	tempBrickTexture->Bind(0);
-	maze->DrawMaze(GL_TRUE);
+	maze->DrawMaze(true);
 
+	//glDisable(GL_CULL_FACE);
 	geometryPass->UnBind();
 }
 
@@ -380,30 +383,4 @@ void GenerateMazeBitmaps(int height, int width)
 
 	mazeGen.Generate();
 	mazeGen.Draw_png();
-}
-
-void MazeTestPass(Shader * shader, Texture * brickTexture, Player * player, Maze * maze)
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	shader->Bind();
-	brickTexture->Bind(0);
-	glm::mat4 a = player->GetCamera()->GetViewProjection();
-	shader->SendMat4("viewProjection", a);
-	
-	glEnable(GL_DEPTH_TEST);
-	maze->DrawMaze(GL_TRUE);
-	glDisable(GL_DEPTH_TEST);
-
-	//glm::mat4 mazeWorldMatrix = glm::mat4();
-	//shader->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection());
-	//shader->SendMat4("WorldMatrix", mazeWorldMatrix);
-	//brickTexture->Bind(0);
-	//
-	//glEnable(GL_DEPTH_TEST);
-	//maze->DrawMaze(GL_TRUE);
-	//glDisable(GL_DEPTH_TEST);
-
-	shader->UnBind();
 }

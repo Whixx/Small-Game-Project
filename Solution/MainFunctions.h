@@ -56,7 +56,3 @@ void FinalPass(FinalFBO * finalFBO, Shader * finalShader, Mesh *fullScreenTriang
 
 // height and width must be odd numbers else the resulting maze will be off
 void GenerateMazeBitmaps(int height, int width);
-
-
-// Test
-void MazeTestPass(Shader * shader, Texture * brickTexture, Player * player, Maze * maze);

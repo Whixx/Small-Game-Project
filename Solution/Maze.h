@@ -27,7 +27,7 @@ public:
 
 	void InitiateBuffers();
 	void DrawToBuffer();
-	void DrawMaze(GLboolean texCoords);
+	void DrawMaze(bool texCoords);
 	void LoadMaze(const std::string& fileName);
 
 	bool IsWallAtWorld(float x, float y);

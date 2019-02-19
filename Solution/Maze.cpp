@@ -30,9 +30,15 @@ Maze::Maze(const Maze& other)
 	this->height = other.height;
 	this->numComponents = other.numComponents;
 
+	this->texture = 0;
+
+	this->tbo = 0;
+	this->vbo = 0;
+	this->vao = 0;
+
 	this->LoadMaze(other.path);
-}*/
-/*
+}
+
 Maze & Maze::operator=(const Maze & other)
 {
 	this->path = other.path;
@@ -40,11 +46,17 @@ Maze & Maze::operator=(const Maze & other)
 	this->height = other.height;
 	this->numComponents = other.numComponents;
 
+	this->texture = 0;
+
+	this->tbo = 0;
+	this->vbo = 0;
+	this->vao = 0;
+
 	this->LoadMaze(other.path);
 
 	return *this;
-}
-*/
+}*/
+
 int Maze::GetMazeHeight()
 {
 	return this->height;
@@ -82,7 +94,7 @@ glm::vec3 Maze::readPixel(unsigned int x, unsigned int y)
 	unsigned int channelCount = 4;
 
 	unsigned char* pixelOffset = this->imageData + (x + this->height * y) * channelCount;
-	
+
 	vector<unsigned char> pixel;
 	for (int i = 0; i < 3; i++)
 	{
@@ -94,7 +106,7 @@ glm::vec3 Maze::readPixel(unsigned int x, unsigned int y)
 
 void Maze::BindTexture(unsigned int textureUnit)
 {
-	if (textureUnit  >= 0 && textureUnit <= 31)
+	if (textureUnit >= 0 && textureUnit <= 31)
 	{
 		glActiveTexture(GL_TEXTURE0 + textureUnit);
 		glBindTexture(GL_TEXTURE_2D, this->texture);
@@ -115,7 +127,7 @@ void Maze::InitiateBuffers()
 	// allocate space (no data)
 	glBufferData(
 		GL_ARRAY_BUFFER,
-		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height + 
+		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height +
 		sizeof(glm::vec2) * maxNrOfVertices * this->width * this->height,
 		NULL,							// no data passed
 		GL_DYNAMIC_COPY);
@@ -155,6 +167,7 @@ void Maze::DrawToBuffer()
 	// Skip the fragment shader
 	glEnable(GL_RASTERIZER_DISCARD);
 
+	glBindVertexArray(this->vao);
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->tbo);
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->vbo);
 
@@ -174,29 +187,30 @@ void Maze::DrawToBuffer()
 
 	// Something ...
 	glFlush();
-	
+
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 }
-void Maze::DrawMaze(GLboolean texCoords)
+void Maze::DrawMaze(bool texCoords)
 {
+	glBindVertexArray(this->vao);
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->tbo);
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->vbo);
 
 	// Set the input Layout
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), 0);
-	
+
 	// Shadow pass doesn't have texture coordinates as attributes
 	if (texCoords == GL_TRUE)
 	{
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3)));
 	}
-	
+
 	glDrawTransformFeedback(GL_TRIANGLES, this->tbo);
 
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
