@@ -162,9 +162,8 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 
 	// Draw player torch
 	geometryPass->SendFloat("illuminated", 3.0f);
-	glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
-	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
-	geometryPass->SendMat4("WorldMatrix", worldMatrix);
+	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * player->GetTorch()->GetTransform().GetWorldMatrix()); // viewProjection * world
+	geometryPass->SendMat4("WorldMatrix", player->GetTorch()->GetTransform().GetWorldMatrix());
 	player->GetTorch()->BindTexture();
 	player->GetTorch()->Draw();
 	

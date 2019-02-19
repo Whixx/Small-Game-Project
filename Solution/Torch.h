@@ -26,7 +26,7 @@ public:
 
 	void BindTexture();
 	void Draw();
-	virtual void Update(double dt);
+	virtual void Update(double dt, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camRight, glm::vec3 camUp, float distFromPlayer);
 	
 private:
 	Mesh *mesh;

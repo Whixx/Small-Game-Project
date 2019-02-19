@@ -53,66 +53,67 @@ void Player::SetPlayerSpeed(float speed)
 void Player::MoveForward(float elapsedTime)
 {
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
-	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * this->walkingVector * elapsedTime;
-
+	glm::vec3 newPos = this->playerCamera.GetCameraPosition() + this->playerSpeed * this->walkingVector * elapsedTime;
+	
 	// Check collision
 	if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == true) {
-		playerCamera.SetCameraPosition(newPos);
+		this->playerCamera.SetCameraPosition(newPos);
 	}
 }
 
 void Player::MoveBackward(float elapsedTime)
 {
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
-	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * this->walkingVector * elapsedTime;
+	glm::vec3 newPos = this->playerCamera.GetCameraPosition() - this->playerSpeed * this->walkingVector * elapsedTime;
 
 	// Check collision
 	if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == true) {
-		playerCamera.SetCameraPosition(newPos);
+		this->playerCamera.SetCameraPosition(newPos);
 	}
 }
 
 void Player::MoveRight(float elapsedTime)
 {
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
-	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
+	glm::vec3 newPos = this->playerCamera.GetCameraPosition() + this->playerSpeed * this->playerCamera.GetRotateAround() * elapsedTime;
 
 	// Check collision
 	if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == true) {
-		playerCamera.SetCameraPosition(newPos);
+		this->playerCamera.SetCameraPosition(newPos);
+
 	}
 }
 
 void Player::MoveLeft(float elapsedTime)
 {
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
-	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
+	glm::vec3 newPos = this->playerCamera.GetCameraPosition() - this->playerSpeed * this->playerCamera.GetRotateAround() * elapsedTime;
 
 	// Check collision
 	if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == true) {
-		playerCamera.SetCameraPosition(newPos);
+		this->playerCamera.SetCameraPosition(newPos);
 	}
 }
 
 void Player::MoveUp(float elapsedTime)
 {
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
-	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * playerCamera.GetUpVector() * elapsedTime;
-
+	glm::vec3 newPos = this->playerCamera.GetCameraPosition() + this->playerSpeed * this->playerCamera.GetUpVector() * elapsedTime;
+	
 	// Check collision
 	if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == true) {
-		playerCamera.SetCameraPosition(newPos);
+		this->playerCamera.SetCameraPosition(newPos);
 	}
 }
 
 void Player::MoveDown(float elapsedTime)
 {
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
-	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * playerCamera.GetUpVector() * elapsedTime;
+	glm::vec3 newPos = this->playerCamera.GetCameraPosition() - this->playerSpeed * this->playerCamera.GetUpVector() * elapsedTime;
 
 	// Check collision
 	if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == true) {
-		playerCamera.SetCameraPosition(newPos);
+		this->playerCamera.SetCameraPosition(newPos);
 	}
 }
 
@@ -137,20 +138,20 @@ void Player::CenterPlayer()
 		}
 	}
 
-	playerCamera.SetCameraPosition(glm::vec3(halfMazeWidth, playerHeight, halfMazeHeight));
-	playerCamera.SetOldCameraPosition(glm::vec3(halfMazeWidth, playerHeight, halfMazeHeight));
+	this->playerCamera.SetCameraPosition(glm::vec3(halfMazeWidth, playerHeight, halfMazeHeight));
+	this->playerCamera.SetOldCameraPosition(glm::vec3(halfMazeWidth, playerHeight, halfMazeHeight));
 }
 
 void Player::UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime)
 {
 	// Get mouse delta vector, how much the mouse has moved, update rotatearound vector
-	playerCamera.SetMouseDelta(newMousePosition - playerCamera.GetOldMousePosition());
-	playerCamera.SetRotateAround(glm::cross(playerCamera.GetForwardVector(), playerCamera.GetUpVector()));
+	this->playerCamera.SetMouseDelta(newMousePosition - this->playerCamera.GetOldMousePosition());
+	this->playerCamera.SetRotateAround(glm::cross(this->playerCamera.GetForwardVector(), this->playerCamera.GetUpVector()));
 
 	// Rotate forwardVector
-	playerCamera.UpdateRotation();
+	this->playerCamera.UpdateRotation();
 
-	glm::vec3 forwardVector = playerCamera.GetForwardVector();
+	glm::vec3 forwardVector = this->playerCamera.GetForwardVector();
 	float walkingX = forwardVector.x;
 	float walkingY = 0.0f;
 	float walkingZ = forwardVector.z;
@@ -158,41 +159,32 @@ void Player::UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime)
 	this->walkingVector = glm::vec3(walkingX, walkingY, walkingZ);
 	this->walkingVector = glm::normalize(this->walkingVector);
 
-	playerCamera.SetOldMousePosition(newMousePosition);
+	this->playerCamera.SetOldMousePosition(newMousePosition);
 }
 
 void Player::Update(double dt)
 {
+	this->playerCamera.UpdateViewMatrix();
+
 	// Set player position to the cameras position
-	this->transform.SetPos(this->playerCamera.GetCameraPosition());
+	this->transform.GetPos() = this->playerCamera.GetCameraPosition();
 	
-	// Update the torch in front of the player'
-	this->playerTorch.SetPos(this->playerCamera.GetCameraPosition()
-		+ this->GetWalkingVector() * this->boundingBoxHalfSize
-		+ this->playerCamera.GetRightVector() * 0.4f
-		+ this->playerCamera.GetUpVector() * -0.5f);
-
-	glm::vec3 forward = glm::vec3(playerTorch.GetTransform().GetWorldMatrix()[2][0], playerTorch.GetTransform().GetWorldMatrix()[2][1], playerTorch.GetTransform().GetWorldMatrix()[2][2]);
-	glm::vec3 camToTorch = glm::vec3(playerTorch.GetPos() - playerCamera.GetCameraPosition());
-	glm::vec3 crossVect = normalize(glm::cross(camToTorch, forward));
-
-	if (crossVect.y > 0.3f)
-	{
-		this->playerTorch.GetRot().y -= dt * 10;
-	}
-	else if (crossVect.y < -0.3f)
-	{
-		this->playerTorch.GetRot().y += dt * 10;
-	}
-	else 
-	{
-		// No rotation
-	}
+	// Update the torch
+	this->playerTorch.Update(dt, 
+		this->playerCamera.GetCameraPosition(),
+		this->walkingVector, 
+		this->playerCamera.GetRightVector(), 
+		this->playerCamera.GetUpVector(), 
+		this->boundingBoxHalfSize);
 	
+
+
+
+
 #ifdef DEBUG
 	if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
 	{
-		printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+		printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", this->playerCamera.GetCameraPosition().x, this->playerCamera.GetCameraPosition().z, this->playerCamera.GetCameraPosition().y);
 	}
 #endif
 

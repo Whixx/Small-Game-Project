@@ -26,6 +26,7 @@ public:
 
 	glm::vec3& GetPos();
 	glm::vec3& GetScale();
+	glm::vec3& GetRot();
 	glm::vec3& GetColor();
 	float& GetIntensity();
 	

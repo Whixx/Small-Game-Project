@@ -87,6 +87,11 @@ glm::vec3 & PointLight::GetScale()
 	return this->transform.GetScale();
 }
 
+glm::vec3 & PointLight::GetRot()
+{
+	return this->transform.GetRot();
+}
+
 glm::vec3 & PointLight::GetColor()
 {
 	return this->color;

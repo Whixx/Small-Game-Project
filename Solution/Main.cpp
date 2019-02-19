@@ -13,7 +13,7 @@ int main()
 	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetKeyCallback(display.GetWindow(), InputHandler::Key_callback);
 
-	InputHandler IH = InputHandler();
+	InputHandler IH;
 
 
 	//=========================== Creating Shaders ====================================//
@@ -79,19 +79,19 @@ int main()
 	// height and width must be odd numbers else the resulting maze will be off
 	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
 	GenerateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
-	Maze maze = Maze("MazePNG/mazeBlackWhite.png");
+	Maze maze("MazePNG/mazeBlackWhite.png");
 	Mesh groundMesh;
 	Mesh torchMesh;
 	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
 
 	float playerHeight = 1.0f;
-	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, &maze, &lights);
+	Player player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, &maze, &lights);
 	player.SetPlayerSpeed(5.0f);
 	//player.CenterPlayer();
 
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
 
-	ObjectHandler OH = ObjectHandler();
+	ObjectHandler OH;
 
 	//TODO: Byta ground.png till floor.png
 	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
@@ -151,12 +151,10 @@ int main()
 
 		// Update player
 		player.Update(deltaTime);
-		player.GetCamera()->UpdateViewMatrix();
-		player.GetTorch()->Update(deltaTime);
 
 		OH.UpdateAllObjects(deltaTime);
 
-		lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch()->GetPos().x, player.GetTorch()->GetPos().y + 1.5f, player.GetTorch()->GetPos().z);
+		//lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch()->GetPos().x, player.GetTorch()->GetPos().y + 1.5f, player.GetTorch()->GetPos().z);
 		lights.UpdateShadowTransform(0);
 
 
