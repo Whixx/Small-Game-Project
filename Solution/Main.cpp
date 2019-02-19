@@ -17,7 +17,7 @@ int main()
 
 	// height and width must be odd numbers else the resulting maze will be off
 	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
-	GenerateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
+	GenerateMazeBitmaps(15, 15); // Creates maze.png + maze_d.png
 
 	Maze maze;
 	maze.LoadMaze("MazePNG/mazeColorCoded.png");
@@ -114,6 +114,7 @@ int main()
 
 	//TODO: Byta ground.png till floor.png
 	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
+	OH.GetObject(ground)->GetScale() = glm::vec3(5, 5, 5);
 	
 	//=================================================================================//
 

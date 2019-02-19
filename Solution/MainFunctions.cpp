@@ -377,8 +377,8 @@ void GenerateMazeBitmaps(int height, int width)
 	MazeGeneratePNG mazeGen(height, width);
 
 	// Set_cell can be used to set "entrance and exit" etc
-	//mazeGen.Set_cell(0, 1, mazeGen.path);
-	//mazeGen.Set_cell(mazeHeight - 1, mazeWidth - 2, mazeGen.path);
+	mazeGen.Set_cell(0, 1, mazeGen.path);
+	mazeGen.Set_cell(height - 1, width - 2, mazeGen.path);
 
 	mazeGen.Generate();
 	mazeGen.Draw_png();

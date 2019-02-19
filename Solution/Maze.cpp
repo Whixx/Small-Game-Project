@@ -78,7 +78,7 @@ bool Maze::IsWallAtWorld(float x, float y)
 
 	// NOT NEEDED Transform world coords to texture coords. ( 1 pixel on texture corresponds to 1.0, origo is (0, 0) for both spaces
 
-	glm::vec3 pixel = readPixel(x, y);
+	glm::vec3 pixel = readPixel(x + 0.5f, y + 0.5f);
 
 	if (pixel == glm::vec3(0.0f, 0.0f, 0.0f))
 	{
@@ -91,9 +91,7 @@ bool Maze::IsWallAtWorld(float x, float y)
 // Returns a vector with the rgb value of a pixel
 glm::vec3 Maze::readPixel(unsigned int x, unsigned int y)
 {
-	unsigned int channelCount = 4;
-
-	unsigned char* pixelOffset = this->imageData + (x + this->height * y) * channelCount;
+	unsigned char* pixelOffset = this->imageData + (x + this->width * y) * this->numComponents;
 
 	vector<unsigned char> pixel;
 	for (int i = 0; i < 3; i++)
@@ -141,6 +139,7 @@ void Maze::InitiateBuffers()
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->tbo);
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->vbo);
 }
+
 void Maze::LoadMaze(const std::string & fileName)
 {
 	this->path = fileName;
@@ -162,6 +161,7 @@ void Maze::LoadMaze(const std::string & fileName)
 	// Skickar texturen till GPU'n
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, this->imageData);
 }
+
 void Maze::DrawToBuffer()
 {
 	// Skip the fragment shader
@@ -194,6 +194,7 @@ void Maze::DrawToBuffer()
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 }
+
 void Maze::DrawMaze(bool texCoords)
 {
 	glBindVertexArray(this->vao);

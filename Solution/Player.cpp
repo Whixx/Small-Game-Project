@@ -11,7 +11,7 @@ Player::Player(float height, float fov, float near, float far, Mesh * mesh, Text
 	this->walkingVector = glm::vec3(0.0f, 0.0f, 1.0f);
 	this->maze = maze;
 
-	this->footStep.SetVolume(0.3);
+	this->footStep.SetVolume(0.8);
 }
 
 Player::~Player()
@@ -69,6 +69,7 @@ void Player::MoveForward(float elapsedTime)
 	{
 		playerCamera.SetCameraPosition(newPos);
 	}
+	
 	footStep.Play();
 }
 
@@ -167,8 +168,8 @@ void Player::MoveDown(float elapsedTime)
 
 void Player::CenterPlayer()
 {
-	int halfMazeWidth = this->maze->GetMazeWidth() / 2;
-	int halfMazeHeight = this->maze->GetMazeHeight() / 2;
+	int halfMazeWidth = round(this->maze->GetMazeWidth() / 2);
+	int halfMazeHeight = round(this->maze->GetMazeHeight() / 2);
 
 	bool pingpong = false;
 	while (this->maze->IsWallAtWorld(halfMazeWidth, halfMazeHeight) == true) 
@@ -187,7 +188,6 @@ void Player::CenterPlayer()
 	}
 
 	playerCamera.SetCameraPosition(glm::vec3(halfMazeWidth, playerHeight, halfMazeHeight));
-	playerCamera.SetOldCameraPosition(glm::vec3(halfMazeWidth, playerHeight, halfMazeHeight));
 }
 
 void Player::UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime)
@@ -241,7 +241,8 @@ void Player::Update(double dt)
 #ifdef DEBUG
 	if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
 	{
-		printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+		printf("Player position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+		printf("Pixel positions: X:%.2f, Y:%.2f Playerheight:%.2f\n", floor(playerCamera.GetCameraPosition().x), floor(playerCamera.GetCameraPosition().z), playerCamera.GetCameraPosition().y);
 	}
 #endif
 
