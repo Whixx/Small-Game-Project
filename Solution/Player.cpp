@@ -1,14 +1,17 @@
 #include "Player.h"
 #include <iostream> // TODO: Remove after testing
 
-Player::Player(float height, float fov, float near, float far, Mesh * mesh, Texture * texture, Maze * maze)
-	:playerCamera(glm::vec3(0, height, 0), fov, (float)SCREENWIDTH / (float)SCREENHEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f))
+Player::Player(float height, float fov, float near, float far, Mesh * mesh, Texture * texture, Maze * maze, irrklang::ISoundEngine* engine)
+	:playerCamera(glm::vec3(0, height, 0), fov, (float)SCREENWIDTH / (float)SCREENHEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)),
+	playerTorch(this->transform, mesh, texture, engine),
+	footStep("Sounds/playerfootstep.ogg", false, engine)
 {
-	this->playerTorch = Torch(this->transform, mesh, texture);
 	this->playerSpeed = 0;
 	this->boundingBoxHalfSize = 0.8f;
 	this->walkingVector = glm::vec3(0.0f, 0.0f, 1.0f);
 	this->maze = maze;
+
+	this->footStep.SetVolume(0.3);
 }
 
 Player::~Player()
@@ -35,9 +38,9 @@ Camera * Player::GetCamera()
 	return &this->playerCamera;
 }
 
-Torch Player::GetTorch()
+Torch* Player::GetTorch()
 {
-	return this->playerTorch;
+	return &this->playerTorch;
 }
 
 void Player::SetPlayerHeight(float height)
@@ -55,10 +58,18 @@ void Player::MoveForward(float elapsedTime)
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * this->walkingVector * elapsedTime;
 
-	// Check collision
-	if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == true) {
+	if (newPos.x > 0 && newPos.z > 0 && newPos.z < maze->GetMazeHeight() && newPos.x < maze->GetMazeWidth())
+	{
+		// Check collision
+		if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == false) {
+			playerCamera.SetCameraPosition(newPos);
+		}
+	}
+	else
+	{
 		playerCamera.SetCameraPosition(newPos);
 	}
+	footStep.Play();
 }
 
 void Player::MoveBackward(float elapsedTime)
@@ -66,10 +77,18 @@ void Player::MoveBackward(float elapsedTime)
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * this->walkingVector * elapsedTime;
 
-	// Check collision
-	if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == true) {
+	if (newPos.x > 0 && newPos.z > 0 && newPos.z < maze->GetMazeHeight() && newPos.x < maze->GetMazeWidth())
+	{
+		// Check collision
+		if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == false) {
+			playerCamera.SetCameraPosition(newPos);
+		}
+	}
+	else
+	{
 		playerCamera.SetCameraPosition(newPos);
 	}
+	footStep.Play();
 }
 
 void Player::MoveRight(float elapsedTime)
@@ -77,10 +96,18 @@ void Player::MoveRight(float elapsedTime)
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
 
-	// Check collision
-	if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == true) {
+	if (newPos.x > 0 && newPos.z > 0 && newPos.z < maze->GetMazeHeight() && newPos.x < maze->GetMazeWidth())
+	{
+		// Check collision
+		if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == false) {
+			playerCamera.SetCameraPosition(newPos);
+		}
+	}
+	else
+	{
 		playerCamera.SetCameraPosition(newPos);
 	}
+	footStep.Play();
 }
 
 void Player::MoveLeft(float elapsedTime)
@@ -88,10 +115,18 @@ void Player::MoveLeft(float elapsedTime)
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
 
-	// Check collision
-	if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == true) {
+	if (newPos.x > 0 && newPos.z > 0 && newPos.z < maze->GetMazeHeight() && newPos.x < maze->GetMazeWidth())
+	{
+		// Check collision
+		if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == false) {
+			playerCamera.SetCameraPosition(newPos);
+		}
+	}
+	else
+	{
 		playerCamera.SetCameraPosition(newPos);
 	}
+	footStep.Play();
 }
 
 void Player::MoveUp(float elapsedTime)
@@ -99,8 +134,15 @@ void Player::MoveUp(float elapsedTime)
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * playerCamera.GetUpVector() * elapsedTime;
 
-	// Check collision
-	if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == true) {
+	if (newPos.x > 0 && newPos.z > 0 && newPos.z < maze->GetMazeHeight() && newPos.x < maze->GetMazeWidth())
+	{
+		// Check collision
+		if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == false) {
+			playerCamera.SetCameraPosition(newPos);
+		}
+	}
+	else
+	{
 		playerCamera.SetCameraPosition(newPos);
 	}
 }
@@ -110,8 +152,15 @@ void Player::MoveDown(float elapsedTime)
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * playerCamera.GetUpVector() * elapsedTime;
 
-	// Check collision
-	if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == true) {
+	if (newPos.x > 0 && newPos.z > 0 && newPos.z < maze->GetMazeHeight() && newPos.x < maze->GetMazeWidth())
+	{
+		// Check collision
+		if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == false) {
+			playerCamera.SetCameraPosition(newPos);
+		}
+	}
+	else
+	{
 		playerCamera.SetCameraPosition(newPos);
 	}
 }
@@ -196,21 +245,6 @@ void Player::Update(double dt)
 	}
 #endif
 
-	// Test variables
-	double x = 0.0;
-	double y = 0.0;
-
-	// Move player
-	x = 3.0;
-	y = 0.0;
-
-	// Check collision
-	/*
-	if (maze->IsWallAtWorld(x, y))
-	{
-		// Don't move
-		cout << "V�GGGGG" << endl; // TODO: Remove after testing
-	}
-	*/
-
+	// update sound positions
+	footStep.SetPosition(this->GetCamera()->GetCameraPosition());
 }

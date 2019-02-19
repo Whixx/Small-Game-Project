@@ -25,19 +25,43 @@ uniform sampler2D gNormal;
 uniform samplerCube shadowMap;
 uniform float farPlane;
 
-float calculateShadows(vec3 objPos)
+float calculateShadows(vec3 objPos, vec3 camPos, vec3 normal)
 {
 	vec3 lightToObj = objPos - PointLights[0].position.xyz;
-	float depthValue = texture(shadowMap, lightToObj).x;
-	depthValue *= farPlane;
+    float viewDist = length(camPos - objPos);
 	float currDepth = length(lightToObj);
-	float bias = 0.15f; // Avoids "Shadow Acne"
 
-	float shadow;
-	if(currDepth - bias > depthValue)
-		shadow = 1.0f;
-	else
-		shadow = 0.0f;
+    // Avoids "Shadow Acne"
+    normal = normalize(normal);
+	float bias = max(0.005 * (1 - dot(normal, lightToObj)), 0.005);
+    
+    // PCF (Percentage-closer filtering)
+    // Change these two to optimize the look of the shadow
+    int smoothness = 100; // Higher value will make the overall shadow "more compact"
+    int samples = 30; // Higher value will lower the performance but make the smoothness' stages translate better
+
+    float diskRadius = (1.0 + (viewDist / farPlane)) / smoothness; // Sharper the closer the camera is
+    vec3 sampleOffsetDirections[20] = vec3[]
+    (
+        vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
+        vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
+        vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
+        vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
+        vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+    ); 
+
+    // Calculate shadow
+	float shadow = 0.0f;
+    for (int i = 0; i < samples; i++)
+    {
+        float closestDepth = texture(shadowMap, lightToObj + sampleOffsetDirections[i] * diskRadius).r;
+        closestDepth *= farPlane;
+        if(currDepth - bias > closestDepth) 
+        {
+            shadow += 1.0f;
+        }
+    }
+    shadow /= float(samples);
 
 	return shadow;
 }
@@ -85,7 +109,7 @@ void main()
 		attenuation = 1.0f / (1.0f + (0.1 * distancePixelToLight)+ (0.01 * pow(distancePixelToLight, 2)));
 	}
 
-	float shadow = calculateShadows(pixelPos);
+	float shadow = calculateShadows(pixelPos, cameraPos, normal);
 
 	vec4 finalColor = ambient + ((1 - shadow) * attenuation*(diffuse + specular));
 	finalColor = min(vec4(1.0f,1.0f,1.0f,1.0f), finalColor);

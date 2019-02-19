@@ -132,11 +132,10 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 			OH->GetObject(j)->Draw();
 		}
 
-		// Draw player torch
-		glm::mat4 worldMatrix = player->GetTorch().GetTransform().GetWorldMatrix();
+		glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 		shadowShader->SendMat4("WorldMatrix", worldMatrix);
-		player->GetTorch().BindTexture();
-		player->GetTorch().Draw();
+		player->GetTorch()->BindTexture();
+		player->GetTorch()->Draw();
 	}
 
 	shadowShader->UnBind();
@@ -170,12 +169,12 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	}
 
 	// Draw player torch
-	geometryPass->SendFloat("illuminated", 3.0f);
-	glm::mat4 worldMatrix = player->GetTorch().GetTransform().GetWorldMatrix();
+	geometryPass->SendFloat("illuminated", 4.0f);
+	glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 	geometryPass->SendMat4("WorldMatrix", worldMatrix);
-	player->GetTorch().BindTexture();
-	player->GetTorch().Draw();
+	player->GetTorch()->BindTexture();
+	player->GetTorch()->Draw();
 	
 	geometryPass->UnBind();
 }

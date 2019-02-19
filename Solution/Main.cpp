@@ -87,10 +87,23 @@ int main()
 	Mesh torchMesh;
 	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
 
+
+	// Sound engine that plays all the sounds, pass reference to classes that will use sound with enginePtr
+	SoundEngine soundEngine;
+	irrklang::ISoundEngine* enginePtr = soundEngine.GetEngine();
+
+	// minotaur sound test stuff
+	glm::vec3 newPosition;
+	newPosition.y = 0.0;
+	SoundHandler minotaurGrowl("Sounds/minotaurgrowl.wav", false, enginePtr);
+	SoundHandler minotaurFootStep("Sounds/minotaurstep.ogg", false, enginePtr);
+	minotaurGrowl.SetMinDistance(0.5);
+
+
 	float playerHeight = 1.0f;
-	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, &maze);
+	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, &maze, enginePtr);
 	player.SetPlayerSpeed(5.0f);
-	player.CenterPlayer();
+	//player.CenterPlayer();
 
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
 
@@ -124,7 +137,7 @@ int main()
 	PointLight torchLight;
 	float torchLightIntensity = 2.0f;
 	torchLight.GetColor() = glm::vec3(1.0f, 0.3f, 0.3f) * torchLightIntensity;
-	lights.CreateLight(player.GetTorch().GetPos(), torchLight.GetColor());
+	lights.CreateLight(player.GetTorch()->GetPos(), torchLight.GetColor());
 	lights.InitiateLights(lightPass.GetProgram());
 
 	Particle particle;
@@ -159,12 +172,24 @@ int main()
 		// Update player
 		player.Update(deltaTime);
 		player.GetCamera()->UpdateViewMatrix();
-		player.GetTorch().Update(deltaTime);
+		player.GetTorch()->Update(deltaTime);
 
 		OH.UpdateAllObjects(deltaTime);
 
-		lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch().GetPos().x, player.GetTorch().GetPos().y + 1.5f, player.GetTorch().GetPos().z);
+		lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch()->GetPos().x, player.GetTorch()->GetPos().y + 1.5f, player.GetTorch()->GetPos().z);
 		lights.UpdateShadowTransform(0);
+
+
+		// update sound engine with position and view direction
+		soundEngine.Update(player.GetCamera()->GetCameraPosition(), player.GetCamera()->GetForwardVector());
+
+		//// moving minotaur sound test
+		//newPosition.x = sinf(glfwGetTime() * 0.2 * 3.15) * 5.0f;
+		//newPosition.z = cosf(glfwGetTime() * 0.2 * 3.15) * 5.0f;
+		//minotaurGrowl.SetPosition(newPosition);
+		//minotaurGrowl.Play();
+		//minotaurFootStep.SetPosition(newPosition);
+		//minotaurFootStep.Play();
 
 
 		// ================== DRAW ==================
@@ -198,7 +223,7 @@ int main()
 		finalFBO.CopyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.GetFBO());
 
 		// Draw particles to the FinalFBO
-		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, player.GetTorch().GetPos());
+		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, player.GetTorch()->GetPos());
 
 		// Render everything
 		FinalPass(&finalFBO, &finalShader, &fullScreenTriangle);
