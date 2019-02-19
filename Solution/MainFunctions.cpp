@@ -153,8 +153,8 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 
 		glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 		shadowShader->SendMat4("WorldMatrix", worldMatrix);
-		player->GetTorch().BindTexture();
-		player->GetTorch().Draw();
+		player->GetTorch()->BindTexture();
+		player->GetTorch()->Draw();
 
 		// Draw Maze
 		glm::mat4 mazeWorldMatrix = glm::mat4();
@@ -199,8 +199,8 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 	geometryPass->SendMat4("WorldMatrix", worldMatrix);
-	player->GetTorch().BindTexture();
-	player->GetTorch().Draw();
+	player->GetTorch()->BindTexture();
+	player->GetTorch()->Draw();
 
 	// Draw Maze
 	geometryPass->SendFloat("illuminated", 1.0f);
