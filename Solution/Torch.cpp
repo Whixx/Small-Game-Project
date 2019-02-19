@@ -1,15 +1,14 @@
 #include "Torch.h"
 
 Torch::Torch(const string& path)
+	: model(path)
 {
-	this->model = new Model(path);
 	this->transform = transform;
 	this->transform.SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
 }
 
 Torch::~Torch()
 {
-	delete this->model;
 }
 
 void Torch::SetScale(glm::vec3 scale)
@@ -54,7 +53,7 @@ Transform Torch::GetTransform()
 
 void Torch::Draw(Shader* shader)
 {
-	this->model->Draw(shader);
+	this->model.Draw(shader);
 }
 
 void Torch::Update(double dt)

@@ -40,7 +40,7 @@ public:
 private:
 	Camera playerCamera;
 	Transform transform;
-	Torch* playerTorch;
+	Torch playerTorch;
 	
 	Maze* maze;
 	float playerSpeed;

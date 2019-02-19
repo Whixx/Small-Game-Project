@@ -36,7 +36,7 @@ void Model::LoadModel(std::string path)
 	// aiProcess_Triangulate makes sure that all verticies are connected as triangles
 	// aiProcess_GenNormals generate normals if they are missing
 	// aiProcess_CalcTangentSpace calculates normals in tangent space
-	const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenUVCoords | aiProcess_GenNormals | aiProcess_CalcTangentSpace);
+	const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenUVCoords | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -131,8 +131,8 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 		std::vector<Texture*> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "TextureDiffuse");
 		std::vector<Texture*> ambientMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "TextureAmbient");
 		std::vector<Texture*> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "TextureSpecular");
-		std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_NORMALS, "TextureNormal");
-		std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "TextureHeight");
+		std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "TextureNormal");
+		//std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "TextureHeight");
 
 		// If they dont have a specific texture, add default
 		if (diffuseMaps.size() == 0)
@@ -143,15 +143,17 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 			textures.push_back(new Texture("Textures/default_specular.png", "TextureSpecular"));
 		if (normalMaps.size() == 0)
 			textures.push_back(new Texture("Textures/default_normal.png", "TextureNormal"));
-		if (heightMaps.size() == 0)
-			textures.push_back(new Texture("Textures/default_height.png", "TextureHeight"));
+
+		// TODO: Fix heightmap?
+		//if (heightMaps.size() == 0)
+		//	textures.push_back(new Texture("Textures/default_height.png", "TextureHeight"));
 
 		// Combine them
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+		//textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 	}
 	else
 	{
@@ -197,4 +199,8 @@ std::vector<Texture*> Model::LoadMaterialTextures(aiMaterial * mat, aiTextureTyp
 		}
 	}
 	return textures;
+}
+
+void Model::LoadTexture(std::string path)
+{
 }

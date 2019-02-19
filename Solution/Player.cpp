@@ -2,9 +2,8 @@
 #include <iostream> // TODO: Remove after testing
 
 Player::Player(float height, float fov, float near, float far, Maze * maze)
-	:playerCamera(glm::vec3(0, height, 0), fov, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f))
+	:playerCamera(glm::vec3(0, height, 0), fov, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)), playerTorch("Models/Torch/Torch.obj")
 {
-	this->playerTorch = new Torch("Models/Torch/Torch.obj");
 	this->playerSpeed = 0;
 	this->boundingBoxHalfSize = 0.8f;
 	this->walkingVector = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -13,7 +12,7 @@ Player::Player(float height, float fov, float near, float far, Maze * maze)
 
 Player::~Player()
 {
-	delete this->playerTorch;
+
 }
 
 float Player::GetPlayerSpeed()
@@ -38,7 +37,7 @@ Camera * Player::GetCamera()
 
 Torch* Player::GetTorch()
 {
-	return this->playerTorch;
+	return &this->playerTorch;
 }
 
 void Player::SetPlayerHeight(float height)
@@ -168,22 +167,22 @@ void Player::Update(double dt)
 	this->transform.SetPos(this->playerCamera.GetCameraPosition());
 	
 	// Update the torch in front of the player'
-	this->playerTorch->SetPos(this->playerCamera.GetCameraPosition()
+	this->playerTorch.SetPos(this->playerCamera.GetCameraPosition()
 		+ this->GetWalkingVector() * this->boundingBoxHalfSize
 		+ this->playerCamera.GetRightVector() * 0.4f
 		+ this->playerCamera.GetUpVector() * -0.5f);
 
-	glm::vec3 forward = glm::vec3(playerTorch->GetTransform().GetWorldMatrix()[2][0], playerTorch->GetTransform().GetWorldMatrix()[2][1], playerTorch->GetTransform().GetWorldMatrix()[2][2]);
-	glm::vec3 camToTorch = glm::vec3(playerTorch->GetPos() - playerCamera.GetCameraPosition());
+	glm::vec3 forward = glm::vec3(this->playerTorch.GetTransform().GetWorldMatrix()[2][0], this->playerTorch.GetTransform().GetWorldMatrix()[2][1], this->playerTorch.GetTransform().GetWorldMatrix()[2][2]);
+	glm::vec3 camToTorch = glm::vec3(this->playerTorch.GetPos() - playerCamera.GetCameraPosition());
 	glm::vec3 crossVect = normalize(glm::cross(camToTorch, forward));
 
 	if (crossVect.y > 0.3f)
 	{
-		this->playerTorch->GetRot().y -= dt * 10;
+		this->playerTorch.GetRot().y -= dt * 10;
 	}
 	else if (crossVect.y < -0.3f)
 	{
-		this->playerTorch->GetRot().y += dt * 10;
+		this->playerTorch.GetRot().y += dt * 10;
 	}
 	else 
 	{
@@ -196,22 +195,5 @@ void Player::Update(double dt)
 		printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
 	}
 #endif
-
-	// Test variables
-	double x = 0.0;
-	double y = 0.0;
-
-	// Move player
-	x = 3.0;
-	y = 0.0;
-
-	// Check collision
-	/*
-	if (maze->IsWallAtWorld(x, y))
-	{
-		// Don't move
-		cout << "V�GGGGG" << endl; // TODO: Remove after testing
-	}
-	*/
 
 }

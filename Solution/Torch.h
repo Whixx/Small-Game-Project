@@ -25,7 +25,7 @@ public:
 	virtual void Update(double dt);
 	
 private:
-	Model* model;
+	Model model;
 	Transform transform;
 };
 

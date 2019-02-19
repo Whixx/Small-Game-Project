@@ -24,7 +24,7 @@ public:
 	void Draw(Shader* shader);
 
 private:
-	std::vector<Texture*> loadedTextures; // TODO: Make static somehow?
+	std::vector<Texture*> loadedTextures;
 	bool gammaCorrection;
 	std::vector<Mesh*> meshes;
 	std::string directoryPath;
@@ -33,6 +33,8 @@ private:
 	void ProcessNode(aiNode *node, const aiScene *scene);
 	Mesh* ProcessMesh(aiMesh *mesh, const aiScene *scene);
 	std::vector<Texture*> LoadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
+
+	void LoadTexture(std::string path);
 };
 
 #endif //MODEL_H

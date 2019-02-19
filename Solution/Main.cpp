@@ -107,9 +107,7 @@ int main()
 
 	ObjectHandler OH = ObjectHandler();
 
-	//TODO: Byta ground.png till floor.png
 	int floor = OH.CreateObject("Models/Floor/floor.obj");
-	//int floor = OH.CreateObject("Models/Deer/12961_White-Tailed_Deer_v1_l2.obj");
 
 	
 	Model lightSphereModel("Models/Ball/ball.obj");
@@ -117,7 +115,6 @@ int main()
 	
 	//=================================================================================//
 
-	
 	// Create Lights
 	PointLightHandler lights;
 	PointLight torchLight;
@@ -127,7 +124,6 @@ int main()
 	Particle particle;
 	Texture particleTexture("Textures/particle.png");
 	particle.SetTexture(&particleTexture);
-
 
 	// Initiate timer
 	double currentTime = 0;
@@ -173,6 +169,9 @@ int main()
 		lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch()->GetPos().x, player.GetTorch()->GetPos().y + 1.5f, player.GetTorch()->GetPos().z);
 		lights.UpdateShadowTransform(0);
 
+		// Update particles
+		particle.Update(deltaTime, player.GetCamera(), player.GetTorch()->GetPos());
+
 
 		// ================== DRAW ==================
 
@@ -205,7 +204,7 @@ int main()
 		finalFBO.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, bloomBuffer.GetFBO());
 
 		// Draw particles to the FinalFBO
-		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, player.GetTorch()->GetPos());
+		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader);
 
 		// Render everything
 		FinalPass(&finalFBO, &finalShader, &screenQuad);

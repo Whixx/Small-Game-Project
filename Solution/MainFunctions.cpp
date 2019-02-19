@@ -190,7 +190,7 @@ void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenT
 }
 
 // This function draws particles to the screen.
-void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime, glm::vec3 position)
+void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader)
 {
 	// Bind the correct shader
 	particleShader->Bind();
@@ -203,24 +203,13 @@ void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 	particleShader->SendVec3("cameraUpWorld", camera->GetViewProjection()[0][1], camera->GetViewProjection()[1][1], camera->GetViewProjection()[2][1]);
 	particleShader->SendMat4("viewProjectionMatrix", camera->GetViewProjection());
 
-
-	// Create new particles
-	particle->GenerateParticles(deltaTime, position);
-
-	// Simulate all the particles
-	particle->SimulateParticles(camera->GetCameraPosition(), deltaTime);
-
-	// Update the buffers holding the particles
-	particle->Update();
-
-
-
 	// Disable depthbuffer and enable blend
 	glDepthMask(false);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-	particle->BindTexture();
+	particle->GetTexture()->Bind(0);
+	particleShader->SendInt("particleTexture", 0);
 
 	// Bind the buffers holding the particles
 	particle->Bind();
@@ -342,12 +331,14 @@ void GenerateMazeBitmaps(int height, int width)
 GLuint CreateScreenQuad()
 {
 	// https://rauwendaal.net/2014/06/14/rendering-a-screen-covering-triangle-in-opengl/
+	 
 
 	float fullScreenTriangleData[] = {
+		-1.0, 3.0, 0.0, 0.0, 2.0,
 		-1.0, -1.0, 0.0, 0.0, 0.0,
 		3.0, -1.0, 0.0, 2.0, 0.0
-		-1.0, 3.0, 0.0, 0.0, 2.0,
 	};
+	
 	GLuint screenQuad;
 
 	glGenVertexArrays(1, &screenQuad);
@@ -359,10 +350,11 @@ GLuint CreateScreenQuad()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5 * 3, &fullScreenTriangleData[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(float) * 5, 0);
 
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, false, sizeof(float) * 5, (void*) (sizeof(float) * 3));
+
 
 	glBindVertexArray(0);
 
