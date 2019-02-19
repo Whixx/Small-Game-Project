@@ -1,7 +1,29 @@
-﻿
-//#define STB_IMAGE_WRITE_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
-#define STBI_MSC_SECURE_CRT
+﻿#define STB_IMAGE_IMPLEMENTATION
+//#define STBI_MSC_SECURE_CRT
+
+// Finns en main funktion i GLEW, d�rmed m�ste vi undefinera den innan vi kan anv�nda v�ran main
+#include <glew\glew.h>
+#undef main
+
+// Uses stb_image
+
+
+//
+#include "MazeGeneratePNG.h"
+#include "Texture.h"
+
+
+#include "Shader.h"
+#include "ObjectHandler.h"
+#include "PointLight.h"
+#include "ShadowMap.h"
+#include "Bloom.h"
+#include "Blur.h"
+#include "GBuffer.h"
+#include "FinalFBO.h"
+#include "Player.h"
+#include "Particle.h"
+#include "InputHandler.h"
 
 #include "MainFunctions.h"
 
@@ -77,10 +99,9 @@ int main()
 	// height and width must be odd numbers else the resulting maze will be off
 	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
 	GenerateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
-	Maze maze = Maze("MazePNG/mazeBlackWhite.png");
 
 	float playerHeight = 1.0f;
-	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze);
+	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, nullptr);
 	player.SetPlayerSpeed(5.0f);
 	//player.CenterPlayer();
 

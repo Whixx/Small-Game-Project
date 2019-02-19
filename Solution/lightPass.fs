@@ -90,7 +90,8 @@ void main()
 	vec4 finalColor = ambient + ((1 - shadow) * attenuation*(diffuse + specular));
 	finalColor = min(vec4(1.0f,1.0f,1.0f,1.0f), finalColor);
 
-	fragment_color = vec4(finalColor.xyz, 1.0f);
+	//fragment_color = vec4(finalColor.xyz, 1.0f);
+	fragment_color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Calculate brightness (used for bloom)
 	vec3 lumaVec = vec3(0.2126, 0.7152, 0.0722);
@@ -104,4 +105,5 @@ void main()
 	{
 		bright_color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	}
+	bright_color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 }

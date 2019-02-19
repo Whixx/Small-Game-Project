@@ -5,8 +5,8 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "Display.h"
-#include "Maze.h"
 #include "Torch.h"
+#include "Maze.h"
 
 #define PI 3.1415926535
 

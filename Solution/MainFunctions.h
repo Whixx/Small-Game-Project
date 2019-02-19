@@ -5,7 +5,6 @@
 
 // Finns en main funktion i GLEW, d�rmed m�ste vi undefinera den innan vi kan anv�nda v�ran main
 #include <glew\glew.h>
-#undef main
 
 #include "MazeGeneratePNG.h"
 

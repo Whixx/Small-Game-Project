@@ -176,14 +176,12 @@ void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenT
 
 	// Bloom buffer, write finalColor and brightness.
 	bloomBuffer->BindForWriting();
-	bloomBuffer->BindForReading();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	gBuffer->BindForReading(); // Binds texture slot 0,1,2
 	shadowBuffer->BindForReading(3); // Binds texture slot 3
 
 	glDisable(GL_DEPTH_TEST);
-
 	glBindVertexArray(*fullScreenTriangle);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glEnable(GL_DEPTH_TEST);
@@ -346,9 +344,9 @@ GLuint CreateScreenQuad()
 	// https://rauwendaal.net/2014/06/14/rendering-a-screen-covering-triangle-in-opengl/
 
 	float fullScreenTriangleData[] = {
-		-1.0, 3.0, 0.0, 0.0, 2.0,
 		-1.0, -1.0, 0.0, 0.0, 0.0,
 		3.0, -1.0, 0.0, 2.0, 0.0
+		-1.0, 3.0, 0.0, 0.0, 2.0,
 	};
 	GLuint screenQuad;
 
@@ -358,13 +356,13 @@ GLuint CreateScreenQuad()
 	GLuint quadBuffer;
 	glGenBuffers(1, &quadBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, quadBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(fullScreenTriangleData), fullScreenTriangleData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5 * 3, &fullScreenTriangleData[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0);
 
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(2 * sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(3 * sizeof(float)));
 
 	glBindVertexArray(0);
 

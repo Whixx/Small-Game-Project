@@ -1,3 +1,6 @@
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 #include "MazeGeneratePNG.h"
 
 MazeGeneratePNG::MazeGeneratePNG(int height, int width)

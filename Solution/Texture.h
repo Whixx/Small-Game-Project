@@ -3,8 +3,8 @@
 
 #include <string>
 #include <glew\glew.h>
-#include "stb_image.h"
 #include <iostream>
+#include "stb_image.h"
 
 using namespace std;
 
