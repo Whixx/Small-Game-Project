@@ -3,6 +3,8 @@
 in vec3 position;
 in vec2 texCoord;
 
+//uniform mat4 transformationMatrix;
+//uniform mat4 WorldMatrix;
 uniform mat4 viewProjection; 
 
 out vec2 outTexCoords;

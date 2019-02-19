@@ -67,9 +67,6 @@
     <ClCompile Include="CollisionHandler.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
-    <ClCompile Include="Maze.cpp">
-      <Filter>Class cpp Files</Filter>
-    </ClCompile>
     <ClCompile Include="Torch.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
@@ -77,6 +74,9 @@
       <Filter>Class cpp Files</Filter>
     </ClCompile>
     <ClCompile Include="SoundHandler.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Maze.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -150,13 +150,13 @@
     <ClInclude Include="CollisionHandler.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
-    <ClInclude Include="Maze.h">
-      <Filter>Class h Files</Filter>
-    </ClInclude>
     <ClInclude Include="Torch.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
     <ClInclude Include="SoundEngine.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Maze.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
     <ClInclude Include="SoundHandler.h">

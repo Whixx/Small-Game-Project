@@ -7,30 +7,32 @@
 #include <iostream>
 #include <glew\glew.h>
 #include <vector>
+#include "Transform.h"
 
 using namespace std;
 
 class Maze
 {
 public:
-	Maze(string bitmapPath);
+	Maze();
 	~Maze();
 
 	// Not tested or used
-	Maze(const Maze &other);
-	Maze& operator=(const Maze& other);
+	//Maze(const Maze &other);
+	//Maze& operator=(const Maze& other);
 
 	int GetMazeHeight();
 	int GetMazeWidth();
+	Transform GetTransform();
 
 	void InitiateBuffers();
 	void DrawToBuffer();
-	void DrawMaze();
+	void DrawMaze(bool texCoords);
 	void LoadMaze(const std::string& fileName);
 
 	bool IsWallAtWorld(float x, float y);
 
-	void Bind(unsigned int textureUnit);
+	void BindTexture(unsigned int textureUnit);
 
 private:
 	unsigned char* imageData;
@@ -43,6 +45,8 @@ private:
 	GLuint tbo;
 	GLuint vbo;
 	GLuint vao;
+
+	Transform transform;
 
 	glm::vec3 readPixel(unsigned int x, unsigned int y);
 };

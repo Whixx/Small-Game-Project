@@ -34,7 +34,7 @@
 
 
 // Shader initiation functions
-void InitMazeShader(Shader *shader);
+void InitMazeShader(Shader *shader, Maze * maze);
 void InitShadowShader(Shader *shader);
 void InitGeometryPass(Shader *shader);
 void InitLightPass(Shader *shader);
@@ -45,8 +45,9 @@ void InitFinalBloomShader(Shader *shader);
 void InitFinalShader(Shader *shader);
 
 // Shader pass functions
-void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player);
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH);
+void MazePass(Shader *mazeShader, Maze * maze);
+void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Maze * maze);
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH, Maze * maze, Texture * tempBrickTexture);
 void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenQuad, GLuint *program, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera);
 void LightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera);
 void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle);

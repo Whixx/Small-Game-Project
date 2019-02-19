@@ -1,10 +1,14 @@
 #include "MainFunctions.h"
 
-void InitMazeShader(Shader * shader)
+void InitMazeShader(Shader * shader, Maze * maze)
 {
 	shader->initiateMazeShader();
 
 	// Set constant uniforms
+	shader->Bind();
+	shader->SendInt("texture", 0);
+	shader->SendInt("width", maze->GetMazeWidth());
+	shader->SendInt("height", maze->GetMazeHeight());
 
 	shader->ValidateShaders();
 }
@@ -99,7 +103,22 @@ void InitFinalShader(Shader * shader)
 	shader->ValidateShaders();
 }
 
-void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player)
+void MazePass(Shader * mazeShader, Maze * maze)
+{
+	mazeShader->Bind();
+
+	// Bind the mazeTexture (the colorcoded png)
+	maze->BindTexture(0);
+
+	// Send uniforms that needs to be updated each frame
+
+	// Draw the maze and store data with transform feedback
+	maze->DrawToBuffer();
+
+	mazeShader->UnBind();
+}
+
+void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Maze * maze)
 {
 	shadowShader->Bind();
 	glEnable(GL_DEPTH_TEST);
@@ -134,8 +153,13 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 
 		glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 		shadowShader->SendMat4("WorldMatrix", worldMatrix);
-		player->GetTorch()->BindTexture();
-		player->GetTorch()->Draw();
+		player->GetTorch().BindTexture();
+		player->GetTorch().Draw();
+
+		// Draw Maze
+		glm::mat4 mazeWorldMatrix = glm::mat4();
+		shadowShader->SendMat4("WorldMatrix", mazeWorldMatrix);
+		maze->DrawMaze(false);
 	}
 
 	shadowShader->UnBind();
@@ -143,10 +167,11 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH)
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH, Maze * maze, Texture * tempBrickTexture)
 {
 	geometryPass->Bind();
 
+	
 	geometryPass->SendCameraLocation(player->GetCamera());
 
 	gBuffer->BindForWriting();
@@ -156,6 +181,7 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_CULL_FACE);
 
 	// Update and Draw all objects
 	for (unsigned int i = 0; i < OH->GetNrOfObjects(); i++)
@@ -173,9 +199,18 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 	geometryPass->SendMat4("WorldMatrix", worldMatrix);
-	player->GetTorch()->BindTexture();
-	player->GetTorch()->Draw();
-	
+	player->GetTorch().BindTexture();
+	player->GetTorch().Draw();
+
+	// Draw Maze
+	geometryPass->SendFloat("illuminated", 1.0f);
+	glm::mat4 mazeWorldMatrix = glm::mat4();
+	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * mazeWorldMatrix);
+	geometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
+	tempBrickTexture->Bind(0);
+	maze->DrawMaze(true);
+
+	//glDisable(GL_CULL_FACE);
 	geometryPass->UnBind();
 }
 
