@@ -2,7 +2,7 @@
 #include <iostream> // TODO: Remove after testing
 
 Player::Player(float height, float fov, float near, float far, Maze * maze)
-	:playerCamera(glm::vec3(0, height, 0), fov, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)), playerTorch("Models/Torch/Torch.obj")
+	:playerCamera(glm::vec3(0, height, 0), fov, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)), playerTorch("Models/Torch/torch.obj")
 {
 	this->playerSpeed = 0;
 	this->boundingBoxHalfSize = 0.8f;

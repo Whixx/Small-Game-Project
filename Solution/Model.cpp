@@ -2,6 +2,9 @@
 
 Model::Model(std::string path, bool gammaCorrection) : gammaCorrection(gammaCorrection)
 {
+	this->directoryPath = path.substr(0, path.find_last_of('/'));
+	std::string objPath = path.substr(path.find_last_of('/') + 1, string::npos); // Remove directory
+	this->name = objPath.erase(objPath.find_last_of('.'), string::npos);
 	this->LoadModel(path);
 }
 
@@ -43,7 +46,6 @@ void Model::LoadModel(std::string path)
 		std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
 		return;
 	}
-	this->directoryPath = path.substr(0, path.find_last_of('/'));
 
 	ProcessNode(scene->mRootNode, scene);
 }
@@ -106,12 +108,6 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 		vector.z = mesh->mTangents[i].z;
 		vertex.Tangent = vector;
 
-		// Bitangent
-		vector.x = mesh->mBitangents[i].x;
-		vector.y = mesh->mBitangents[i].y;
-		vector.z = mesh->mBitangents[i].z;
-		vertex.Bitangent = vector;
-
 		vertices.push_back(vertex);
 	}
 
@@ -131,8 +127,8 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 		std::vector<Texture*> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "TextureDiffuse");
 		std::vector<Texture*> ambientMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "TextureAmbient");
 		std::vector<Texture*> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "TextureSpecular");
-		std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "TextureNormal");
-		//std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "TextureHeight");
+		std::vector<Texture*> normalMaps = LoadNormalMap(this->directoryPath + '/' + this->name + "_normal.png", "TextureNormal");
+		std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "TextureHeight");
 
 		// If they dont have a specific texture, add default // TODO: Don't load default textures to all models
 		if (diffuseMaps.size() == 0)
@@ -143,17 +139,15 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 			textures.push_back(this->LoadTexture("Textures/default_specular.png", "TextureSpecular"));
 		if (normalMaps.size() == 0)
 			textures.push_back(this->LoadTexture("Textures/default_normal.png", "TextureNormal"));
-
-		// TODO: Fix heightmap
-		//if (heightMaps.size() == 0)
-		//	textures.push_back(new Texture("Textures/default_height.png", "TextureHeight"));
+		if (heightMaps.size() == 0)
+			textures.push_back(this->LoadTexture("Textures/default_height.png", "TextureHeight"));
 
 		// Combine them
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+		textures.insert(textures.end(), ambientMaps.begin(), ambientMaps.end());
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-		//textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 	}
 	else
 	{
@@ -181,9 +175,17 @@ std::vector<Texture*> Model::LoadMaterialTextures(aiMaterial * mat, aiTextureTyp
 	return textures;
 }
 
+std::vector<Texture*> Model::LoadNormalMap(std::string path, std::string type)
+{
+	std::vector<Texture*> normalMaps;
+	normalMaps.push_back(this->LoadTexture(path.c_str(), type));
+
+	return normalMaps;
+}
+
 Texture* Model::LoadTexture(const char* path, std::string type)
 {
-	bool skipLoad = false;
+	// Check if loaded already
 	for (unsigned int j = 0; j < this->loadedTextures.size(); j++)
 	{
 		// Remove the directory path of the texture
@@ -193,15 +195,10 @@ Texture* Model::LoadTexture(const char* path, std::string type)
 		{
 			// Push the loaded texture in to the meshs texture
 			return this->loadedTextures[j];
-			skipLoad = true;
-			break;
 		}
 	}
-	if (!skipLoad)
-	{
-		// If texture hasn't been loaded already, load it
-		Texture* texture = new Texture(path, type, this->gammaCorrection);
-		this->loadedTextures.push_back(texture); // Add to loaded textures
-		return texture;
-	}
+	// If texture hasn't been loaded already, load it
+	Texture* texture = new Texture(path, type, this->gammaCorrection);
+	this->loadedTextures.push_back(texture); // Add to loaded textures
+	return texture;
 }

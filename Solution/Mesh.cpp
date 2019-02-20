@@ -24,7 +24,7 @@ void Mesh::SetupMesh()
 
 	// Create vertexBuffers
 	glGenBuffers(1, &this->vertexArrayBuffer);
-	// Fill vertex buffer with (ppp, uv, nnn, ttt, bbb)
+	// Fill vertex buffer with (ppp, uv, nnn, ttt)
 	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffer);
 	glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex), &this->vertices[0], GL_STATIC_DRAW);
 
@@ -43,10 +43,6 @@ void Mesh::SetupMesh()
 	// TANGNET
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
-
-	// BITANGNET
-	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
 
 	// Create vertexIndexBuffer
 	glGenBuffers(1, &this->vertexIndexBuffer);

@@ -28,11 +28,13 @@ private:
 	bool gammaCorrection;
 	std::vector<Mesh*> meshes;
 	std::string directoryPath;
+	std::string name;
 
 	void LoadModel(std::string path);
 	void ProcessNode(aiNode *node, const aiScene *scene);
 	Mesh* ProcessMesh(aiMesh *mesh, const aiScene *scene);
 	std::vector<Texture*> LoadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
+	std::vector<Texture*> LoadNormalMap(std::string path, std::string type);
 
 	Texture* LoadTexture(const char* path, std::string type);
 };

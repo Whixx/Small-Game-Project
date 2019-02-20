@@ -10,6 +10,5 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Bump torch_normal.png
 map_Kd torch.png
 map_Ks SpecularSmoothness_torch.png
