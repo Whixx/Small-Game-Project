@@ -218,19 +218,22 @@
     <None Include="shadowShader.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="mazeShader.vs">
+    <None Include="wallShader.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="mazeShader.gs">
+    <None Include="wallShader.gs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="drawTestShader.vs">
+    <None Include="wallShader.fs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="drawTestShader.fs">
+    <None Include="floorShader.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="mazeShader.fs">
+    <None Include="floorShader.gs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="floorShader.fs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

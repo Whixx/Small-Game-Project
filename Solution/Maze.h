@@ -23,17 +23,22 @@ public:
 
 	int GetMazeHeight();
 	int GetMazeWidth();
-	Transform GetTransform();
 
 	void InitiateBuffers();
-	void DrawToBuffer();
-	void DrawMaze(bool texCoords);
+
+	// Draw to transform feedback buffer
+	void DrawWallsToBuffer();
+	void DrawFloorToBuffer();
+
+	// Draw from transform feedback buffer
+	void DrawWalls();
+	void DrawFloor();
+
 	void LoadMaze(const std::string& fileName);
 
 	bool IsWallAtWorld(float x, float y);
 
 	void BindTexture(unsigned int textureUnit);
-
 private:
 	unsigned char* imageData;
 	string path;
@@ -42,12 +47,19 @@ private:
 	int numComponents;
 	GLuint texture;
 
-	GLuint tbo;
-	GLuint vbo;
-	GLuint vao;
+	GLuint wallTbo;
+	GLuint wallVbo;
+	GLuint wallVao;
 
-	Transform transform;
+	GLuint floorTbo;
+	GLuint floorVbo;
+	GLuint floorVao;
 
+	void initiateWallBuffers();
+	void initiateFloorBuffers();
 	glm::vec3 readPixel(unsigned int x, unsigned int y);
+
+
+	void printBufferId();
 };
 #endif

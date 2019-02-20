@@ -147,20 +147,21 @@
   <ItemGroup>
     <None Include="blurShader.fs" />
     <None Include="blurShader.vs" />
-    <None Include="drawTestShader.fs" />
-    <None Include="drawTestShader.vs" />
     <None Include="finalBloomShader.fs" />
     <None Include="finalBloomShader.vs" />
     <None Include="finalShader.fs" />
     <None Include="finalShader.vs" />
+    <None Include="floorShader.fs" />
+    <None Include="floorShader.gs" />
+    <None Include="floorShader.vs" />
     <None Include="lightPass.fs" />
     <None Include="lightPass.vs" />
     <None Include="geometryPass.fs" />
     <None Include="geometryPass.gs" />
     <None Include="geometryPass.vs" />
-    <None Include="mazeShader.fs" />
-    <None Include="mazeShader.gs" />
-    <None Include="mazeShader.vs" />
+    <None Include="wallShader.fs" />
+    <None Include="wallShader.gs" />
+    <None Include="wallShader.vs" />
     <None Include="particleShader.fs" />
     <None Include="particleShader.vs" />
     <None Include="pointLightShader.fs" />

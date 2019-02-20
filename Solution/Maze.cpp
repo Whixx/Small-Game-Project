@@ -9,18 +9,22 @@ Maze::Maze()
 	this->numComponents = 0;
 	this->texture = 0;
 
-	this->tbo = 0;
-	this->vbo = 0;
-	this->vao = 0;
+	this->wallTbo = 0;
+	this->wallVbo = 0;
+	this->wallVao = 0;
+
+	this->floorTbo = 0;
+	this->floorVbo = 0;
+	this->floorVao = 0;
 }
 
 Maze::~Maze()
 {
 	stbi_image_free(imageData);
 
-	glDeleteBuffers(1, &this->tbo);
-	glDeleteBuffers(1, &this->vbo);
-	glDeleteVertexArrays(1, &this->vao);
+	glDeleteBuffers(1, &this->wallTbo);
+	glDeleteBuffers(1, &this->wallVbo);
+	glDeleteVertexArrays(1, &this->wallVao);
 }
 /*
 Maze::Maze(const Maze& other)
@@ -32,9 +36,9 @@ Maze::Maze(const Maze& other)
 
 	this->texture = 0;
 
-	this->tbo = 0;
-	this->vbo = 0;
-	this->vao = 0;
+	this->wallTbo = 0;
+	this->wallVbo = 0;
+	this->wallVao = 0;
 
 	this->LoadMaze(other.path);
 }
@@ -48,9 +52,9 @@ Maze & Maze::operator=(const Maze & other)
 
 	this->texture = 0;
 
-	this->tbo = 0;
-	this->vbo = 0;
-	this->vao = 0;
+	this->wallTbo = 0;
+	this->wallVbo = 0;
+	this->wallVao = 0;
 
 	this->LoadMaze(other.path);
 
@@ -65,11 +69,6 @@ int Maze::GetMazeHeight()
 int Maze::GetMazeWidth()
 {
 	return this->width;
-}
-
-Transform Maze::GetTransform()
-{
-	return this->transform;
 }
 
 bool Maze::IsWallAtWorld(float x, float y)
@@ -88,22 +87,6 @@ bool Maze::IsWallAtWorld(float x, float y)
 	return isAWall;
 }
 
-// Returns a vector with the rgb value of a pixel
-glm::vec3 Maze::readPixel(unsigned int x, unsigned int y)
-{
-	unsigned int channelCount = 4;
-
-	unsigned char* pixelOffset = this->imageData + (x + this->height * y) * channelCount;
-
-	vector<unsigned char> pixel;
-	for (int i = 0; i < 3; i++)
-	{
-		pixel.push_back(pixelOffset[i]);
-	}
-
-	return glm::vec3(pixel[0], pixel[1], pixel[2]);
-}
-
 void Maze::BindTexture(unsigned int textureUnit)
 {
 	if (textureUnit >= 0 && textureUnit <= 31)
@@ -119,27 +102,11 @@ void Maze::BindTexture(unsigned int textureUnit)
 
 void Maze::InitiateBuffers()
 {
-	GLint maxNrOfVertices = 18;
-	// create a buffer to hold the results of the transform feedback process.
-	glGenBuffers(1, &this->vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+	// Wall Buffers
+	initiateWallBuffers();
 
-	// allocate space (no data)
-	glBufferData(
-		GL_ARRAY_BUFFER,
-		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height +
-		sizeof(glm::vec2) * maxNrOfVertices * this->width * this->height,
-		NULL,							// no data passed
-		GL_DYNAMIC_COPY);
-
-	// VAO to draw points
-	glGenVertexArrays(1, &this->vao);
-	glBindVertexArray(this->vao);
-
-	// create and bind transform feedback object and buffer to write to.
-	glGenTransformFeedbacks(1, &this->tbo);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->tbo);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->vbo);
+	// Floor Buffers
+	initiateFloorBuffers();
 }
 void Maze::LoadMaze(const std::string & fileName)
 {
@@ -162,20 +129,14 @@ void Maze::LoadMaze(const std::string & fileName)
 	// Skickar texturen till GPU'n
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, this->imageData);
 }
-void Maze::DrawToBuffer()
+void Maze::DrawWallsToBuffer()
 {
 	// Skip the fragment shader
 	glEnable(GL_RASTERIZER_DISCARD);
 
-	glBindVertexArray(this->vao);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->tbo);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->vbo);
-
-	// Set the output Layout
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), 0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3)));
+	glBindVertexArray(this->wallVao);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->wallTbo);
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->wallVbo);
 
 	// Perform transform feedback
 	glBeginTransformFeedback(GL_TRIANGLES);
@@ -188,36 +149,155 @@ void Maze::DrawToBuffer()
 	// Something ...
 	glFlush();
 
+	// Memory barrier
+	glBindVertexArray(0);
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
-
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
 }
-void Maze::DrawMaze(bool texCoords)
+
+void Maze::DrawFloorToBuffer()
 {
-	glBindVertexArray(this->vao);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->tbo);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->vbo);
+	// Skip the fragment shader
+	glEnable(GL_RASTERIZER_DISCARD);
 
-	// Set the input Layout
+	glBindVertexArray(this->floorVao);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->floorTbo);
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->floorVbo);
+
+
+	// Perform transform feedback
+	glBeginTransformFeedback(GL_TRIANGLES);
+	glDrawArrays(GL_POINTS, 0, this->width * this->height);
+	glEndTransformFeedback();
+
+	// Enable the fragment shader again
+	glDisable(GL_RASTERIZER_DISCARD);
+
+	// Something ...
+	glFlush();
+
+	// Memory barrier
+	glBindVertexArray(0);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
+}
+
+void Maze::DrawWalls()
+{
+	glBindVertexArray(this->wallVao);
+	
+	glDrawTransformFeedback(GL_TRIANGLES, this->wallTbo);
+
+	// Memory barrier
+	glBindVertexArray(0);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
+}
+
+void Maze::DrawFloor()
+{
+	glBindVertexArray(this->floorVao);
+
+	glDrawTransformFeedback(GL_TRIANGLES, this->floorTbo);
+
+	// Memory barrier
+	glBindVertexArray(0);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
+}
+
+void Maze::initiateWallBuffers()
+{
+	// Three walls can be drawn with the same point
+	GLint maxNrOfVertices = 18;
+
+	// wallVao to draw points
+	glGenVertexArrays(1, &this->wallVao);
+	glBindVertexArray(this->wallVao);
+
+	// create a buffer to hold the results of the transform feedback process.
+	glGenBuffers(1, &this->wallVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, this->wallVbo);
+
+	// allocate space (no data)
+	glBufferData(
+		GL_ARRAY_BUFFER,
+		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height +
+		sizeof(glm::vec2) * maxNrOfVertices * this->width * this->height,
+		NULL,							// no data passed
+		GL_DYNAMIC_COPY);
+
+	// Set the output Layout
 	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3)));
 
-	// Shadow pass doesn't have texture coordinates as attributes
-	if (texCoords == GL_TRUE)
+	// create and bind transform feedback object and buffer to write to.
+	glGenTransformFeedbacks(1, &this->wallTbo);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->wallTbo);
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->wallVbo);
+
+	glBindVertexArray(0);
+}
+
+void Maze::initiateFloorBuffers()
+{
+	// Only one floor for each point
+	GLint maxNrOfVertices = 6;
+
+	// wallVao to draw points
+	glGenVertexArrays(1, &this->floorVao);
+	glBindVertexArray(this->floorVao);
+
+	// create a buffer to hold the results of the transform feedback process.
+	glGenBuffers(1, &this->floorVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, this->floorVbo);
+
+	// allocate space (no data)
+	glBufferData(
+		GL_ARRAY_BUFFER,
+		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height +
+		sizeof(glm::vec2) * maxNrOfVertices * this->width * this->height,
+		NULL,							// no data passed
+		GL_DYNAMIC_COPY);
+
+	// Set the output Layout
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3)));
+
+	// create and bind transform feedback object and buffer to write to.
+	glGenTransformFeedbacks(1, &this->floorTbo);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->floorTbo);
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->floorVbo);
+
+	glBindVertexArray(0);
+}
+
+// Returns a vector with the rgb value of a pixel
+glm::vec3 Maze::readPixel(unsigned int x, unsigned int y)
+{
+	unsigned int channelCount = this->numComponents;
+
+	unsigned char* pixelOffset = this->imageData + (x + this->height * y) * channelCount;
+
+	vector<unsigned char> pixel;
+	for (int i = 0; i < 3; i++)
 	{
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3)));
+		pixel.push_back(pixelOffset[i]);
 	}
 
-	glDrawTransformFeedback(GL_TRIANGLES, this->tbo);
+	return glm::vec3(pixel[0], pixel[1], pixel[2]);
+}
 
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
-
-	glDisableVertexAttribArray(0);
-
-	if (texCoords == GL_TRUE)
-		glDisableVertexAttribArray(1);
+void Maze::printBufferId()
+{
+	std::cout << "wallTbo " << wallTbo << std::endl;
+	std::cout << "wallVbo " << wallVbo << std::endl;
+	std::cout << "wallVao " << wallVao << std::endl;
+	std::cout << "floorTbo " << floorTbo << std::endl;
+	std::cout << "floorVbo " << floorVbo << std::endl;
+	std::cout << "floorVao " << floorVao << std::endl;
 }
