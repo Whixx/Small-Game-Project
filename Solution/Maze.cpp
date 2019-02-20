@@ -78,9 +78,15 @@ bool Maze::IsWallAtWorld(float x, float y)
 
 	// NOT NEEDED Transform world coords to texture coords. ( 1 pixel on texture corresponds to 1.0, origo is (0, 0) for both spaces
 
-	// The walls have a offset
-	float offset = 0.5f;
-	glm::vec3 pixel = readPixel(x + offset, y + offset);
+	// The walls have a offset and the maze may be translated and centralized in origin
+	float wallOffset = 0.5f;
+	float offsetWidth = wallOffset - (this->GetMazeWidth() / 2.0f) + this->GetTransform().GetPos().x;
+	float offsetHeight = wallOffset - (this->GetMazeHeight() / 2.0f) + this->GetTransform().GetPos().z;
+	
+	// The labyrinth can be scaled
+	float pixelScaledWidth = (x + offsetWidth) * this->GetTransform().GetScale().x;
+	float pixelScaledHeight = (y + offsetHeight) * this->GetTransform().GetScale().y;
+	glm::vec3 pixel = readPixel(pixelScaledWidth, pixelScaledHeight);
 
 	if (pixel == glm::vec3(0.0f, 0.0f, 0.0f))
 	{

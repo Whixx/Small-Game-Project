@@ -114,6 +114,7 @@ void Player::MoveUp(float elapsedTime)
 
 	// Looking for collision
 	this->DetectCollision(newPos, oldPos);
+	this->playerHeight = newPos.y;
 }
 
 void Player::MoveDown(float elapsedTime)
@@ -125,6 +126,7 @@ void Player::MoveDown(float elapsedTime)
 
 	// Looking for collision
 	this->DetectCollision(newPos, oldPos);
+	this->playerHeight = newPos.y;
 }
 
 void Player::DetectCollision(glm::vec3 newPos, glm::vec3 oldPos)
@@ -136,7 +138,7 @@ void Player::DetectCollision(glm::vec3 newPos, glm::vec3 oldPos)
 	float offset = this->boundingBoxHalfSize + playerOffset;
 
 	// Check collision if player is inside the labyrinth
-	if (newPos.x > 0 && newPos.z > 0 && newPos.z < maze->GetMazeHeight() && newPos.x < maze->GetMazeWidth())
+	if (newPos.x > 0 && newPos.z > 0 && newPos.z < maze->GetMazeHeight() && newPos.x < maze->GetMazeWidth() && this->playerHeight < 2.0f)
 	{
 		// Check right
 		if (this->maze->IsWallAtWorld(newPos.x + offset, newPos.z) == true && (newPos.x > oldPos.x)) {
