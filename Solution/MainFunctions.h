@@ -32,7 +32,6 @@
 
 #define PI 3.1415926535
 
-
 // Shader initiation functions
 void InitWallShader(Shader *shader, Maze * maze);
 void InitFloorShader(Shader * shader, Maze * maze);
