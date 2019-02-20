@@ -9,6 +9,7 @@ GBuffer::GBuffer(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
 	this->height = SCREENHEIGHT;
 
 	this->Init();
+	GLenum a = glCheckFramebufferStatus(this->fbo);
 }
 
 GBuffer::~GBuffer()
@@ -60,7 +61,7 @@ bool GBuffer::Init()
 
 	// Tell OpenGl which color attachments we'll use (of this FBO) for rendering
 	// Enables writing to all our textures
-	GLenum attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	GLenum attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
 	glDrawBuffers(GBUFFER_NUM_TEXTURES, attachments);
 
 	// Create the depthTexture
