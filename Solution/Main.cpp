@@ -23,9 +23,9 @@ int main()
 	maze.LoadMaze("MazePNG/mazeColorCoded.png");
 
 	// Set maze position, rotation and scale
-	maze.GetTransform()->SetPos(glm::vec3(0, 0, 0));
+	maze.GetTransform()->SetPos(glm::vec3(2, 0, 3));
 	maze.GetTransform()->SetRot(glm::vec3(0, 0, 0));
-	maze.GetTransform()->SetScale(glm::vec3(1, 1, 1));
+	maze.GetTransform()->SetScale(glm::vec3(3, 5, 3));
 
 	//=========================== Creating Shaders ====================================//
 	Shader wallShader;
