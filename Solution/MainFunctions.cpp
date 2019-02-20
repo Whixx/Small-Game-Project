@@ -1,6 +1,19 @@
 #include "MainFunctions.h"
 
-void InitMazeShader(Shader * shader, Maze * maze)
+void InitWallShader(Shader * shader, Maze * maze)
+{
+	shader->initiateMazeShader();
+
+	// Set constant uniforms
+	shader->Bind();
+	shader->SendInt("texture", 0);
+	shader->SendInt("width", maze->GetMazeWidth());
+	shader->SendInt("height", maze->GetMazeHeight());
+
+	shader->ValidateShaders();
+}
+
+void InitFloorShader(Shader * shader, Maze * maze)
 {
 	shader->initiateMazeShader();
 
@@ -103,19 +116,34 @@ void InitFinalShader(Shader * shader)
 	shader->ValidateShaders();
 }
 
-void MazePass(Shader * mazeShader, Maze * maze)
+void WallPass(Shader * wallShader, Maze * maze)
 {
-	mazeShader->Bind();
+	wallShader->Bind();
 
 	// Bind the mazeTexture (the colorcoded png)
 	maze->BindTexture(0);
 
 	// Send uniforms that needs to be updated each frame
 
-	// Draw the maze and store data with transform feedback
-	maze->DrawToBuffer();
+	// Draw the walls and store data with transform feedback
+	maze->DrawWallsToBuffer();
 
-	mazeShader->UnBind();
+	wallShader->UnBind();
+}
+
+void FloorPass(Shader * floorShader, Maze * maze)
+{
+	floorShader->Bind();
+
+	// Bind the mazeTexture (the colorcoded png)
+	maze->BindTexture(0);
+
+	// Send uniforms that needs to be updated each frame
+
+	// Draw the floor and store data with transform feedback
+	maze->DrawFloorToBuffer();
+
+	floorShader->UnBind();
 }
 
 void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Maze * maze)
@@ -156,10 +184,15 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		player->GetTorch()->BindTexture();
 		player->GetTorch()->Draw();
 
-		// Draw Maze
-		glm::mat4 mazeWorldMatrix = glm::mat4();
-		shadowShader->SendMat4("WorldMatrix", mazeWorldMatrix);
-		maze->DrawMaze(false);
+		// Draw mazeWalls
+		glm::mat4 wallWorldMatrix = glm::mat4();
+		shadowShader->SendMat4("WorldMatrix", wallWorldMatrix);
+		maze->DrawWalls();
+
+		// Draw mazeFloor
+		glm::mat4 floorWorldMatrix = glm::mat4();
+		shadowShader->SendMat4("WorldMatrix", floorWorldMatrix);
+		maze->DrawFloor();
 	}
 
 	shadowShader->UnBind();
@@ -167,7 +200,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH, Maze * maze, Texture * tempBrickTexture)
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH, Maze * maze, Texture * tempBrickTexture, Texture * realFloorTexture)
 {
 	geometryPass->Bind();
 
@@ -202,13 +235,21 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	player->GetTorch()->BindTexture();
 	player->GetTorch()->Draw();
 
-	// Draw Maze
+	// Draw MazeWalls
 	geometryPass->SendFloat("illuminated", 1.0f);
-	glm::mat4 mazeWorldMatrix = glm::mat4();
-	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * mazeWorldMatrix);
-	geometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
+	glm::mat4 wallWorldMatrix = glm::mat4();
+	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * wallWorldMatrix);
+	geometryPass->SendMat4("WorldMatrix", wallWorldMatrix);
 	tempBrickTexture->Bind(0);
-	maze->DrawMaze(true);
+	maze->DrawWalls();
+
+	// Draw MazeFloor
+	geometryPass->SendFloat("illuminated", 1.0f);
+	glm::mat4 floorWorldMatrix = glm::mat4();
+	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * floorWorldMatrix);
+	geometryPass->SendMat4("WorldMatrix", floorWorldMatrix);
+	realFloorTexture->Bind(0);
+	maze->DrawFloor();
 
 	//glDisable(GL_CULL_FACE);
 	geometryPass->UnBind();
