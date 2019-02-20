@@ -8,6 +8,9 @@ out vec2 outTexCoords;
 
 uniform sampler2D texture;
 
+uniform int width;
+uniform int height;
+
 void drawFloor(float i, float j);
 
 void main()
@@ -18,8 +21,8 @@ void main()
 
 	// Find i and j depending on the vertex ID (outputs from the vertex shader and stored in gl_Position)
 	vec4 pointPosition = gl_in[0].gl_Position;
-	int i = int(pointPosition.x);
-	int j = int(pointPosition.y);
+	float i = int(pointPosition.x);
+	float j = int(pointPosition.y);
 
 	// Find the pixelColor
 	pixelValue = texelFetch(texture, ivec2(i,j), 0).rgb;
@@ -32,6 +35,10 @@ void main()
 	// Draw floor depending on if the color of the pixel is black
 	if(pixelValue == black)
 	{
+		// Draw floor in local space. (Move i and j so that origo is in the middle of the maze)
+		i -= (width / 2);
+		j -= (height / 2);
+
 		drawFloor(i, j);
 	}
 }
