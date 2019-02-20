@@ -71,6 +71,11 @@ int Maze::GetMazeWidth()
 	return this->width;
 }
 
+Transform * Maze::GetTransform()
+{
+	return &this->transform;
+}
+
 bool Maze::IsWallAtWorld(float x, float y)
 {
 	bool isAWall = true;
@@ -290,14 +295,4 @@ glm::vec3 Maze::readPixel(unsigned int x, unsigned int y)
 	}
 
 	return glm::vec3(pixel[0], pixel[1], pixel[2]);
-}
-
-void Maze::printBufferId()
-{
-	std::cout << "wallTbo " << wallTbo << std::endl;
-	std::cout << "wallVbo " << wallVbo << std::endl;
-	std::cout << "wallVao " << wallVao << std::endl;
-	std::cout << "floorTbo " << floorTbo << std::endl;
-	std::cout << "floorVbo " << floorVbo << std::endl;
-	std::cout << "floorVao " << floorVao << std::endl;
 }

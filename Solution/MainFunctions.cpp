@@ -178,20 +178,22 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 			OH->GetObject(j)->BindTexture();
 			OH->GetObject(j)->Draw();
 		}
-
+		
+		// Draw Torch
 		glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 		shadowShader->SendMat4("WorldMatrix", worldMatrix);
 		player->GetTorch()->BindTexture();
 		player->GetTorch()->Draw();
 
+
+		// Same world matrix for walls and floor
+		glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
 		// Draw mazeWalls
-		glm::mat4 wallWorldMatrix = glm::mat4();
-		shadowShader->SendMat4("WorldMatrix", wallWorldMatrix);
+		shadowShader->SendMat4("WorldMatrix", mazeWorldMatrix);
 		maze->DrawWalls();
 
 		// Draw mazeFloor
-		glm::mat4 floorWorldMatrix = glm::mat4();
-		shadowShader->SendMat4("WorldMatrix", floorWorldMatrix);
+		shadowShader->SendMat4("WorldMatrix", mazeWorldMatrix);
 		maze->DrawFloor();
 	}
 
@@ -234,19 +236,20 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	player->GetTorch()->BindTexture();
 	player->GetTorch()->Draw();
 
+
+	// Same world matrix for walls and floor
+	glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
 	// Draw MazeWalls
 	geometryPass->SendFloat("illuminated", 1.0f);
-	glm::mat4 wallWorldMatrix = glm::mat4();
-	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * wallWorldMatrix);
-	geometryPass->SendMat4("WorldMatrix", wallWorldMatrix);
+	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * mazeWorldMatrix);
+	geometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
 	tempBrickTexture->Bind(0);
 	maze->DrawWalls();
 
 	// Draw MazeFloor
 	geometryPass->SendFloat("illuminated", 1.0f);
-	glm::mat4 floorWorldMatrix = glm::mat4();
-	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * floorWorldMatrix);
-	geometryPass->SendMat4("WorldMatrix", floorWorldMatrix);
+	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * mazeWorldMatrix);
+	geometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
 	realFloorTexture->Bind(0);
 	maze->DrawFloor();
 
