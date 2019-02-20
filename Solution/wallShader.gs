@@ -8,7 +8,8 @@ out vec2 outTexCoords;
 
 uniform sampler2D texture;
 
-//uniform vec3 cameraPos;
+uniform int width;
+uniform int height;
 
 // Single wall functions
 void drawSW_n(float i, float j);
@@ -78,8 +79,8 @@ void main()
 
 	// Find i and j depending on the vertex ID (outputs from the vertex shader and stored in gl_Position)
 	vec4 pointPosition = gl_in[0].gl_Position;
-	int i = int(pointPosition.x);
-	int j = int(pointPosition.y);
+	float i = int(pointPosition.x);
+	float j = int(pointPosition.y);
 
 	// Find the pixelColor
 	pixelValue = texelFetch(texture, ivec2(i,j), 0).rgb;
@@ -88,6 +89,10 @@ void main()
 	pixelValue.r = floor(pixelValue.r);
 	pixelValue.g = floor(pixelValue.g);
 	pixelValue.b = floor(pixelValue.b);
+
+	// Draw floor in local space. (Move i and j so that origo is in the middle of the maze)
+	i -= (width / 2);
+	j -= (height / 2);
 
 	// Draw walls depending on the color of each pixel
 	if(pixelValue == SW_n)

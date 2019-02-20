@@ -241,7 +241,7 @@ void Player::Update(double dt)
 #ifdef DEBUG
 	if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
 	{
-		//printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+		printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
 	}
 #endif
 

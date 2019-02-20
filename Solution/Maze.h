@@ -23,6 +23,7 @@ public:
 
 	int GetMazeHeight();
 	int GetMazeWidth();
+	Transform *GetTransform();
 
 	void InitiateBuffers();
 
@@ -47,6 +48,8 @@ private:
 	int numComponents;
 	GLuint texture;
 
+	Transform transform;
+
 	GLuint wallTbo;
 	GLuint wallVbo;
 	GLuint wallVao;
@@ -58,8 +61,5 @@ private:
 	void initiateWallBuffers();
 	void initiateFloorBuffers();
 	glm::vec3 readPixel(unsigned int x, unsigned int y);
-
-
-	void printBufferId();
 };
 #endif
