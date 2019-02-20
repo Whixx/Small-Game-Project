@@ -203,15 +203,15 @@ void MazeGeneratePNG::SetupColorDataForColor()
 
 	for (int i = 0; i < newWidth; i++)
 	{
-		image[this->height][i][0] = 0;
-		image[this->height][i][1] = 0;
-		image[this->height][i][2] = 0;
+		image[this->height][i][0] = 75;
+		image[this->height][i][1] = 75;
+		image[this->height][i][2] = 75;
 	}
 	for (int i = 0; i < newHeight; i++)
 	{
-		image[this->width][i][0] = 0;
-		image[this->width][i][1] = 0;
-		image[this->width][i][2] = 0;
+		image[i][this->width][0] = 75;
+		image[i][this->width][1] = 75;
+		image[i][this->width][2] = 75;
 	}
 
 	// sets colors, white for walls, black for path
@@ -259,9 +259,9 @@ void MazeGeneratePNG::SetupColorDataForColor()
 				// Check which wall type it is based on closeby
 				if (closeby[0] && closeby[1] && closeby[2] && closeby[3]) // 0. Empty
 				{
-					image[y][x][0] = 0;
-					image[y][x][1] = 0;
-					image[y][x][2] = 0;
+					image[y][x][0] = 75;
+					image[y][x][1] = 75;
+					image[y][x][2] = 75;
 				}
 				else if (!closeby[0] && closeby[1] && closeby[2] && closeby[3]) // 1. Single wall closeby
 				{
@@ -347,6 +347,12 @@ void MazeGeneratePNG::SetupColorDataForColor()
 					image[y][x][1] = 255;
 					image[y][x][2] = 255;
 				}
+				else if (!closeby[0] && !closeby[1] && !closeby[2] && !closeby[3]) // 14. Nothing should never occur
+				{
+					image[y][x][0] = 177;
+					image[y][x][1] = 177;
+					image[y][x][2] = 177;
+				}
 			}
 			else if (Get_cell(y, x) == path)
 			{
@@ -384,9 +390,9 @@ void MazeGeneratePNG::SetupColorData()
 	}
 	for (int i = 0; i < newHeight; i++)
 	{
-		image[this->width][i][0] = 0;
-		image[this->width][i][1] = 0;
-		image[this->width][i][2] = 0;
+		image[i][this->width][0] = 0;
+		image[i][this->width][1] = 0;
+		image[i][this->width][2] = 0;
 	}
 
 	// sets colors, white for walls, black for path
