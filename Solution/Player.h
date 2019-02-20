@@ -34,6 +34,7 @@ public:
 	void MoveLeft(float elapsedTime);
 	void MoveUp(float elapsedTime);
 	void MoveDown(float elapsedTime);
+	void DetectCollision(glm::vec3 newPos, glm::vec3 oldPos);
 	void CenterPlayer();
 	void UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime);
 	void Update(double dt);
@@ -46,7 +47,7 @@ private:
 	Maze* maze;
 	float playerSpeed;
 	float playerHeight;
-	float boundingBoxHalfSize;
+	const float boundingBoxHalfSize = 0.15f;
 	glm::vec3 walkingVector;
 
 	SoundHandler footStep;

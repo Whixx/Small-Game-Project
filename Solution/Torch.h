@@ -32,6 +32,7 @@ private:
 	Texture *texture;
 	Transform transform;
 	SoundHandler torchSound;
+	const float size = 0.02f;
 };
 
 #endif

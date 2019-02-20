@@ -78,7 +78,9 @@ bool Maze::IsWallAtWorld(float x, float y)
 
 	// NOT NEEDED Transform world coords to texture coords. ( 1 pixel on texture corresponds to 1.0, origo is (0, 0) for both spaces
 
-	glm::vec3 pixel = readPixel(x + 0.5f, y + 0.5f);
+	// The walls have a offset
+	float offset = 0.5f;
+	glm::vec3 pixel = readPixel(x + offset, y + offset);
 
 	if (pixel == glm::vec3(0.0f, 0.0f, 0.0f))
 	{
