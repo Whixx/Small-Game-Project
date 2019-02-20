@@ -114,9 +114,9 @@ int main()
 	minotaurGrowl.SetMinDistance(0.5);
 
 
-	float playerHeight = 1.0f;
+	float playerHeight = 1.8f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, &maze, enginePtr);
-	player.SetPlayerSpeed(5.0f);
+	player.SetPlayerSpeed(2.0f);
 	player.CenterPlayer(); //Space to return to origin
 
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");

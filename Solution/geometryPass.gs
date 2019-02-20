@@ -32,8 +32,8 @@ void main()
 
 	// Backface culling using geometry shader
 	float alpha = dot(normalWorld.xyz,cameraPos.xyz - posWorld[1].xyz);
-	if(alpha > 0)
-	{
+	//if(alpha > 0)
+	//{
 		for(int i = 0; i < 3; i++)
 		{
 			// Create the matrix that will transform the normalMap to tangent space.
@@ -49,7 +49,7 @@ void main()
 			EmitVertex();
 		}
 		EndPrimitive();
-	}	
+	//}	
 }
 
 vec4 createNormalWorld()

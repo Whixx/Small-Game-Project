@@ -7,7 +7,7 @@ Torch::Torch(Transform transform, Mesh * mesh, Texture * texture, irrklang::ISou
 	this->mesh = mesh;
 	this->mesh->CreateMesh("ObjectFiles/torch.obj");
 	this->transform = transform;
-	this->transform.SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
+	this->transform.SetScale(glm::vec3(this->size, this->size, this->size));
 
 	this->torchSound.SetVolume(0.4);
 }
