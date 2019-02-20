@@ -134,17 +134,17 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 		std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "TextureNormal");
 		//std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "TextureHeight");
 
-		// If they dont have a specific texture, add default
+		// If they dont have a specific texture, add default // TODO: Don't load default textures to all models
 		if (diffuseMaps.size() == 0)
-			textures.push_back(new Texture("Textures/default_diffuse.png", "TextureDiffuse"));
+			textures.push_back(this->LoadTexture("Textures/default_diffuse.png", "TextureDiffuse"));
 		if (ambientMaps.size() == 0)
-			textures.push_back(new Texture("Textures/default_ambient.png", "TextureAmbient"));
+			textures.push_back(this->LoadTexture("Textures/default_ambient.png", "TextureAmbient"));
 		if (specularMaps.size() == 0)
-			textures.push_back(new Texture("Textures/default_specular.png", "TextureSpecular"));
+			textures.push_back(this->LoadTexture("Textures/default_specular.png", "TextureSpecular"));
 		if (normalMaps.size() == 0)
-			textures.push_back(new Texture("Textures/default_normal.png", "TextureNormal"));
+			textures.push_back(this->LoadTexture("Textures/default_normal.png", "TextureNormal"));
 
-		// TODO: Fix heightmap?
+		// TODO: Fix heightmap
 		//if (heightMaps.size() == 0)
 		//	textures.push_back(new Texture("Textures/default_height.png", "TextureHeight"));
 
@@ -158,11 +158,11 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 	else
 	{
 		// Add default textures to it
-		textures.push_back(new Texture("Textures/default_diffuse.png", "TextureDiffuse"));
-		textures.push_back(new Texture("Textures/default_normal.png", "TextureNormal"));
-		textures.push_back(new Texture("Textures/default_specular.png", "TextureSpecular"));
-		textures.push_back(new Texture("Textures/default_ambient.png", "TextureAmbient"));
-		textures.push_back(new Texture("Textures/default_height.png", "TextureHeight"));
+		textures.push_back(this->LoadTexture("Textures/default_diffuse.png", "TextureDiffuse"));
+		textures.push_back(this->LoadTexture("Textures/default_normal.png", "TextureNormal"));
+		textures.push_back(this->LoadTexture("Textures/default_specular.png", "TextureSpecular"));
+		textures.push_back(this->LoadTexture("Textures/default_ambient.png", "TextureAmbient"));
+		textures.push_back(this->LoadTexture("Textures/default_height.png", "TextureHeight"));
 	}
 
 	Mesh* temp = new Mesh(vertices, indices, textures);
@@ -175,32 +175,33 @@ std::vector<Texture*> Model::LoadMaterialTextures(aiMaterial * mat, aiTextureTyp
 	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
 	{
 		aiString str;
-		mat->GetTexture(type, i, &str);
-		bool skipLoad = false;
-		for (unsigned int j = 0; j < this->loadedTextures.size(); j++)
-		{
-			// Remove the directory path of the texture
-			std::string textureName = this->loadedTextures[j]->GetPath().substr(this->directoryPath.length() + 1);
-			// Check if texture is already loaded
-			if (std::strcmp(textureName.data(), str.C_Str()) == 0)
-			{
-				// Push the loaded texture in to the meshs texture
-				textures.push_back(this->loadedTextures[j]);
-				skipLoad = true;
-				break;
-			}
-		}
-		if (!skipLoad)
-		{
-			// If texture hasn't been loaded already, load it
-			Texture* texture = new Texture(this->directoryPath + '/' + str.C_Str(), typeName, this->gammaCorrection);
-			textures.push_back(texture);
-			this->loadedTextures.push_back(texture); // Add to loaded textures
-		}
+		mat->GetTexture(type, i, &str); // Get texture name
+		textures.push_back(this->LoadTexture((this->directoryPath + '/' + str.C_Str()).c_str(), typeName));
 	}
 	return textures;
 }
 
-void Model::LoadTexture(std::string path)
+Texture* Model::LoadTexture(const char* path, std::string type)
 {
+	bool skipLoad = false;
+	for (unsigned int j = 0; j < this->loadedTextures.size(); j++)
+	{
+		// Remove the directory path of the texture
+		std::string loadedTexturePath = this->loadedTextures[j]->GetPath();
+		// Check if texture is already loaded
+		if (std::strcmp(loadedTexturePath.data(), path) == 0)
+		{
+			// Push the loaded texture in to the meshs texture
+			return this->loadedTextures[j];
+			skipLoad = true;
+			break;
+		}
+	}
+	if (!skipLoad)
+	{
+		// If texture hasn't been loaded already, load it
+		Texture* texture = new Texture(path, type, this->gammaCorrection);
+		this->loadedTextures.push_back(texture); // Add to loaded textures
+		return texture;
+	}
 }

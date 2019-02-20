@@ -34,7 +34,7 @@ private:
 	Mesh* ProcessMesh(aiMesh *mesh, const aiScene *scene);
 	std::vector<Texture*> LoadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 
-	void LoadTexture(std::string path);
+	Texture* LoadTexture(const char* path, std::string type);
 };
 
 #endif //MODEL_H
