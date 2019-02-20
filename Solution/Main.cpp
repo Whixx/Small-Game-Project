@@ -119,10 +119,6 @@ int main()
 	ObjectHandler OH = ObjectHandler();
 
 	//TODO: Byta ground.png till floor.png
-	int ground = OH.CreateObject("ObjectFiles/ground.obj", &groundMesh, &groundTexture);
-	
-	//=================================================================================//
-
 	
 	// https://rauwendaal.net/2014/06/14/rendering-a-screen-covering-triangle-in-opengl/
 	Vertex fullScreenVerticesTriangle[] =
