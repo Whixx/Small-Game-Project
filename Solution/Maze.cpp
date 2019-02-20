@@ -16,6 +16,11 @@ Maze::Maze()
 	this->floorTbo = 0;
 	this->floorVbo = 0;
 	this->floorVao = 0;
+
+	// Set maze position, rotation and scale
+	this->transform.SetPos(glm::vec3(0, 0, 0));
+	this->transform.SetRot(glm::vec3(0, 0, 0));
+	this->transform.SetScale(glm::vec3(scaleXZ, scaleY, scaleXZ));
 }
 
 Maze::~Maze()

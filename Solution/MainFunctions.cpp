@@ -9,6 +9,8 @@ void InitWallShader(Shader * shader, Maze * maze)
 	shader->SendInt("texture", 0);
 	shader->SendInt("width", maze->GetMazeWidth());
 	shader->SendInt("height", maze->GetMazeHeight());
+	shader->SendInt("scaleUVX", maze->GetTransform()->GetScale().x);
+	shader->SendInt("scaleUVY", maze->GetTransform()->GetScale().y);
 
 	shader->ValidateShaders();
 }
@@ -22,6 +24,8 @@ void InitFloorShader(Shader * shader, Maze * maze)
 	shader->SendInt("texture", 0);
 	shader->SendInt("width", maze->GetMazeWidth());
 	shader->SendInt("height", maze->GetMazeHeight());
+	// Since the floor's UV have the same scaling, both their UV's will be scaled with the same value
+	shader->SendInt("scaleUVXZ", maze->GetTransform()->GetScale().x);
 
 	shader->ValidateShaders();
 }
