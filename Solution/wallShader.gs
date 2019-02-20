@@ -10,6 +10,8 @@ uniform sampler2D texture;
 
 uniform int width;
 uniform int height;
+uniform int scaleUVX;
+uniform int scaleUVY;
 
 // Single wall functions
 void drawSW_n(float i, float j);
@@ -164,12 +166,12 @@ void drawSW_n(float i, float j)
 																  
 	// Left Top Vertex											  
 	outPosition = vec3(i - 0.5f, 1, j - 0.5);
-	outTexCoords = vec2(0, 1);
+	outTexCoords = vec2(0, scaleUVY);
 	EmitVertex();												  
 																  
 	//Right Top Vertex											  
 	outPosition = vec3(i + 0.5f, 1, j - 0.5);
-	outTexCoords = vec2(1, 1);
+	outTexCoords = vec2(scaleUVX, scaleUVY);
 	EmitVertex();
 				
 	EndPrimitive();
@@ -184,12 +186,12 @@ void drawSW_n(float i, float j)
 				
 	// Right Top vertex
 	outPosition = vec3(i + 0.5f, 1, j - 0.5);
-	outTexCoords = vec2(1, 1);
+	outTexCoords = vec2(scaleUVX, scaleUVY);
 	EmitVertex();
 				
 	// Right Bottom vertex
 	outPosition = vec3(i + 0.5f, 0, j - 0.5);
-	outTexCoords = vec2(1, 0);
+	outTexCoords = vec2(scaleUVX, 0);
 	EmitVertex();
 				
 	EndPrimitive();
@@ -205,12 +207,12 @@ void drawSW_s(float i, float j)
 	
 	//Right Top Vertex
 	outPosition = vec3(i + 0.5, 1, j + 0.5);
-	outTexCoords = vec2(1, 1);
+	outTexCoords = vec2(scaleUVX, scaleUVY);
 	EmitVertex();
 
 	// Left Top Vertex
 	outPosition = vec3(i - 0.5, 1, j + 0.5);
-	outTexCoords = vec2(0, 1);
+	outTexCoords = vec2(0, scaleUVY);
 	EmitVertex();
 							
 	EndPrimitive();
@@ -225,12 +227,12 @@ void drawSW_s(float i, float j)
 	
 	// Right Bottom vertex
 	outPosition = vec3(i + 0.5, 0, j + 0.5);
-	outTexCoords = vec2(1, 0);
+	outTexCoords = vec2(scaleUVX, 0);
 	EmitVertex();
 
 	// Right Top vertex
 	outPosition = vec3(i + 0.5, 1, j + 0.5);
-	outTexCoords = vec2(1, 1);
+	outTexCoords = vec2(scaleUVX, scaleUVY);
 	EmitVertex();
 				
 	EndPrimitive();
@@ -246,12 +248,12 @@ void drawSW_e(float i, float j)
 	
 	// Left Top Vertex
 	outPosition = vec3(i + 0.5, 1, j - 0.5);
-	outTexCoords = vec2(0, 1);
+	outTexCoords = vec2(0, scaleUVY);
 	EmitVertex();
 
 	//Right Top Vertex
 	outPosition = vec3(i + 0.5, 1, j + 0.5);
-	outTexCoords = vec2(1, 1);
+	outTexCoords = vec2(scaleUVX, scaleUVY);
 	EmitVertex();
 						
 	EndPrimitive();
@@ -266,12 +268,12 @@ void drawSW_e(float i, float j)
 	
 	// Right Top vertex
 	outPosition = vec3(i + 0.5, 1, j + 0.5);
-	outTexCoords = vec2(1, 1);
+	outTexCoords = vec2(scaleUVX, scaleUVY);
 	EmitVertex();
 
 	// Right Bottom vertex
 	outPosition = vec3(i + 0.5, 0, j + 0.5);
-	outTexCoords = vec2(1, 0);
+	outTexCoords = vec2(scaleUVX, 0);
 	EmitVertex();
 		
 	EndPrimitive();
@@ -287,12 +289,12 @@ void drawSW_w(float i, float j)
 	
 	// Left Top Vertex
 	outPosition = vec3(i - 0.5, 1, j + 0.5);
-	outTexCoords = vec2(0, 1);
+	outTexCoords = vec2(0, scaleUVY);
 	EmitVertex();
 
 	//Right Top Vertex
 	outPosition = vec3(i - 0.5, 1, j - 0.5);
-	outTexCoords = vec2(1, 1);
+	outTexCoords = vec2(scaleUVX, scaleUVY);
 	EmitVertex();
 						
 	EndPrimitive();
@@ -307,12 +309,12 @@ void drawSW_w(float i, float j)
 	
 	// Right Top vertex
 	outPosition = vec3(i - 0.5, 1, j - 0.5);
-	outTexCoords = vec2(1, 1);
+	outTexCoords = vec2(scaleUVX, scaleUVY);
 	EmitVertex();
 
 	// Right Bottom vertex
 	outPosition = vec3(i - 0.5, 0, j - 0.5);
-	outTexCoords = vec2(1, 0);
+	outTexCoords = vec2(scaleUVX, 0);
 	EmitVertex();
 				
 	EndPrimitive();

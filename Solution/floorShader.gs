@@ -10,6 +10,7 @@ uniform sampler2D texture;
 
 uniform int width;
 uniform int height;
+uniform int scaleUVXZ;
 
 void drawFloor(float i, float j);
 
@@ -54,12 +55,12 @@ void drawFloor(float i, float j)
 			
 	//Right Top Vertex											  
 	outPosition = vec3(i + 0.5f, 0, j - 0.5);
-	outTexCoords = vec2(1, 1);
+	outTexCoords = vec2(scaleUVXZ, scaleUVXZ);
 	EmitVertex();
 
 	// Left Top Vertex											  
 	outPosition = vec3(i - 0.5f, 0, j - 0.5);
-	outTexCoords = vec2(0, 1);
+	outTexCoords = vec2(0, scaleUVXZ);
 	EmitVertex();												  		
 	EndPrimitive();
 		
@@ -73,12 +74,12 @@ void drawFloor(float i, float j)
 		
 	// Right Bottom vertex
 	outPosition = vec3(i + 0.5f, 0, j + 0.5);
-	outTexCoords = vec2(1, 0);
+	outTexCoords = vec2(scaleUVXZ, 0);
 	EmitVertex();
 
 	// Right Top vertex
 	outPosition = vec3(i + 0.5f, 0, j - 0.5);
-	outTexCoords = vec2(1, 1);
+	outTexCoords = vec2(scaleUVXZ, scaleUVXZ);
 	EmitVertex();		
 	EndPrimitive();
 }
