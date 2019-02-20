@@ -149,6 +149,7 @@ void Maze::DrawWallsToBuffer()
 	// Something ...
 	glFlush();
 
+	// Memory barrier
 	glBindVertexArray(0);
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
@@ -175,6 +176,7 @@ void Maze::DrawFloorToBuffer()
 	// Something ...
 	glFlush();
 
+	// Memory barrier
 	glBindVertexArray(0);
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
