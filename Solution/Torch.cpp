@@ -1,14 +1,21 @@
 #include "Torch.h"
 
 Torch::Torch(Transform transform, Mesh * mesh, Texture * texture, PointLightHandler* PLH, glm::vec3 lightColor)
+	:particleTexture("Textures/particle.png", "NormalMaps/flat_normal.jpg")
 {
 	this->texture = texture;
 	this->mesh = mesh;
 	this->mesh->CreateMesh("ObjectFiles/torch.obj");
 	this->transform = transform;
 	this->transform.SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
-	this->transform.GetRot() = glm::vec3(0.1f, 0.0f, 0.0f);
+	this->transform.GetRot().x = 0;
+	this->transform.GetRot().y = -transform.GetRot().y;
+	this->transform.GetRot().z = 0;
 
+	this->particle.SetTexture(&this->particleTexture);
+
+
+	// Calculate the position of the torchLight
 	glm::mat4 scaleMatrix = glm::scale(glm::vec3(0, this->transform.GetScale().y, 0));
 
 	glm::mat4 rotationXMatrix = glm::rotate(this->transform.GetRot().x, glm::vec3(1, 0, 0));
@@ -20,6 +27,12 @@ Torch::Torch(Transform transform, Mesh * mesh, Texture * texture, PointLightHand
 
 	this->lightPos = this->transform.GetPos() + glm::vec3(scaleRotMatrix * this->lightStartingPos);
 	this->torchLight = PLH->CreateLight(this->lightPos, lightColor, 1.0f);
+
+	// Rotate according to camera
+	rotationXMatrix = glm::rotate(0.0f,					glm::vec3(1, 0, 0));
+	rotationYMatrix = glm::rotate(-transform.GetRot().y,	glm::vec3(0, 1, 0));
+	rotationZMatrix = glm::rotate(0.0f,					glm::vec3(0, 0, 1));
+	rotationMatrix = rotationZMatrix * rotationYMatrix * rotationXMatrix;
 }
 
 Torch::Torch()
@@ -70,6 +83,16 @@ Transform Torch::GetTransform()
 	return this->transform;
 }
 
+Particle & Torch::GetParticle()
+{
+	return this->particle;
+}
+
+glm::vec3 Torch::GetFirePos()
+{
+	return this->lightPos;
+}
+
 void Torch::BindTexture()
 {
 	this->texture->Bind(0);
@@ -80,34 +103,15 @@ void Torch::Draw()
 	this->mesh->Draw();
 }
 
-void Torch::Update(double dt, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camRight, glm::vec3 camUp, float distFromPlayer)
+void Torch::Update(double dt, Transform transform, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camRight, glm::vec3 camUp, float distFromPlayer)
 {
-	// Update the torch so that it is located in front of the player
+	this->transform.GetRot().y = -transform.GetRot().y;
 
+	// Update the torch so that it is located in front of the player
 	this->GetPos() = camPos
 		+ camForward * distFromPlayer
 		+ camRight * 0.4f
 		+ camUp * -0.5f;
-
-	//printf("%f, %f, %f \n", camForward.x, camForward.y, camForward.z);
-
-	//glm::vec3 forward = glm::vec3(this->transform.GetWorldMatrix()[2][0], this->transform.GetWorldMatrix()[2][1], this->transform.GetWorldMatrix()[2][2]);
-	//glm::vec3 camToTorch = glm::vec3(this->transform.GetPos() - camPos);
-	//glm::vec3 crossVect = normalize(glm::cross(camToTorch, forward));
-	//
-	//if (crossVect.y > 0.3f)
-	//{
-	//	this->transform.GetRot().y -= dt * 10;
-	//}
-	//else if (crossVect.y < -0.3f)
-	//{
-	//	this->transform.GetRot().y += dt * 10;
-	//}
-	//else
-	//{
-	//	// No rotation
-	//}
-
 
 	// Update the lights position (Should be in the correct spot on the torch)
 	glm::mat4 scaleMatrix = glm::scale(glm::vec3(0, this->transform.GetScale().y, 0));

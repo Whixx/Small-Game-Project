@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "Transform.h"
 #include "PointLight.h"
+#include "Particle.h"
 
 class Torch
 {
@@ -24,16 +25,21 @@ public:
 	glm::vec3 &GetRot();
 	Transform GetTransform();
 
+	Particle &GetParticle();
+	glm::vec3 GetFirePos();
+
 	void BindTexture();
 	void Draw();
-	virtual void Update(double dt, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camRight, glm::vec3 camUp, float distFromPlayer);
+	virtual void Update(double dt, Transform transform, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camRight, glm::vec3 camUp, float distFromPlayer);
 	
 private:
 	Mesh *mesh;
 	Texture *texture;
 	Transform transform;
 	PointLight* torchLight;
-	const glm::vec4 lightStartingPos = glm::vec4(0, 6, 0, 0);
+	Particle particle;
+	Texture particleTexture;
+	const glm::vec4 lightStartingPos = glm::vec4(0, 4.6f, 0, 0);
 	glm::vec3 lightPos;
 };
 

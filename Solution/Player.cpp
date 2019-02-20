@@ -168,9 +168,11 @@ void Player::Update(double dt)
 
 	// Set player position to the cameras position
 	this->transform.GetPos() = this->playerCamera.GetCameraPosition();
-	
+	this->transform.GetRot() = glm::vec3(glm::radians(this->GetCamera()->GetPitch()), glm::radians(this->GetCamera()->GetYaw()), 0);
+
 	// Update the torch
-	this->playerTorch.Update(dt, 
+	this->playerTorch.Update(dt,
+		this->transform,
 		this->playerCamera.GetCameraPosition(),
 		this->walkingVector, 
 		this->playerCamera.GetRightVector(), 

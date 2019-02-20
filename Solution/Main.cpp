@@ -189,7 +189,7 @@ int main()
 		finalFBO.CopyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.GetFBO());
 
 		// Draw particles to the FinalFBO
-		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, player.GetTorch()->GetPos());
+		ParticlePass(&finalFBO, &player.GetTorch()->GetParticle(), player.GetCamera(), &particleShader, deltaTime, player.GetTorch()->GetFirePos());
 
 		// Render everything
 		FinalPass(&finalFBO, &finalShader, &fullScreenTriangle);
