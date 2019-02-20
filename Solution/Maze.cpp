@@ -79,21 +79,25 @@ Transform * Maze::GetTransform()
 bool Maze::IsWallAtWorld(float x, float y)
 {
 	bool isAWall = true;
+	float newX = x;
+	float newY = y;
 
 	// NOT NEEDED Transform world coords to texture coords. ( 1 pixel on texture corresponds to 1.0, origo is (0, 0) for both spaces
 
-	// The walls have a offset and the maze may be translated and centralized in origin
-	float wallOffset = 0.5f;
-	float offsetWidth = (this->GetMazeWidth() / 2) + wallOffset;
-	float offsetHeight = (this->GetMazeHeight() / 2) + wallOffset;
-
 	// The maze can be translated
-	
-	// The maze can be scaled
-	float pixelScaledWidth = (x - this->GetTransform()->GetPos().x) / this->GetTransform()->GetScale().x + offsetWidth;
-	float pixelScaledHeight = (y - this->GetTransform()->GetPos().z) / this->GetTransform()->GetScale().z + offsetHeight;
+	newX -= this->GetTransform()->GetPos().x;
+	newY -= this->GetTransform()->GetPos().z;
 
-	glm::vec3 pixel = readPixel(pixelScaledWidth, pixelScaledHeight);
+	// The maze can be scaled
+	newX /= this->GetTransform()->GetScale().x;
+	newY /= this->GetTransform()->GetScale().z;
+
+	// The walls have a offset, while the maze's center is in the origin (0,0)
+	float wallOffset = 0.5f;
+	newX += (this->GetMazeWidth() / 2) + wallOffset;
+	newY += (this->GetMazeHeight() / 2) + wallOffset;
+
+	glm::vec3 pixel = readPixel(newX, newY);
 
 	if (pixel == glm::vec3(0.0f, 0.0f, 0.0f))
 	{

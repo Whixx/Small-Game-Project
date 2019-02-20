@@ -59,7 +59,7 @@ void Player::MoveForward(float elapsedTime)
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
 	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
 	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * this->walkingVector * elapsedTime;
-
+	
 	// Looking for collision
 	this->DetectCollision(newPos, oldPos);
 	
@@ -72,7 +72,7 @@ void Player::MoveBackward(float elapsedTime)
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
 	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
 	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * this->walkingVector * elapsedTime;
-
+	
 	// Looking for collision
 	this->DetectCollision(newPos, oldPos);
 
@@ -84,8 +84,8 @@ void Player::MoveRight(float elapsedTime)
 	// Getting the positions
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
 	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
-	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
-
+	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * playerCamera.GetRightVector() * elapsedTime;
+	
 	// Looking for collision
 	this->DetectCollision(newPos, oldPos);
 
@@ -97,7 +97,7 @@ void Player::MoveLeft(float elapsedTime)
 	// Getting the positions
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
 	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
-	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * playerCamera.GetRotateAround() * elapsedTime;
+	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * playerCamera.GetRightVector() * elapsedTime;
 
 	// Looking for collision
 	this->DetectCollision(newPos, oldPos);
@@ -131,64 +131,87 @@ void Player::MoveDown(float elapsedTime)
 
 void Player::DetectCollision(glm::vec3 newPos, glm::vec3 oldPos)
 {
+	// Recieving components
+	float height = this->maze->GetMazeHeight();
+	float width = this->maze->GetMazeWidth();
+
 	// The player needs an offset to not be able to clip the walls
 	float playerOffset = 0.1f;
 
 	// The offset is the offset for the whole bounding box which includes the player's torch
 	float offset = this->boundingBoxHalfSize + playerOffset;
 
-	// Check collision if player is inside the labyrinth
-	if (/*newPos.x > 0 && newPos.z > 0 && newPos.z < maze->GetMazeHeight() && newPos.x < maze->GetMazeWidth() && */this->playerHeight < 2.0f)
+	// Check collision if player is on ground level
+	if (this->playerHeight < 2.0f)
 	{
+		// Flat walls
 		// Check right
-		if (this->maze->IsWallAtWorld(newPos.x + offset, newPos.z) == true && (newPos.x > oldPos.x)) {
+		if (this->maze->IsWallAtWorld(newPos.x + offset, newPos.z) == true && (newPos.x > oldPos.x)) 
+		{
 			newPos.x = oldPos.x;
 		}
 		// Check left
-		if (this->maze->IsWallAtWorld(newPos.x - offset, newPos.z) == true && (newPos.x < oldPos.x)) {
+		if (this->maze->IsWallAtWorld(newPos.x - offset, newPos.z) == true && (newPos.x < oldPos.x)) 
+		{
 			newPos.x = oldPos.x;
 		}
 		// Check up
-		if (this->maze->IsWallAtWorld(newPos.x, newPos.z + offset) == true && (newPos.z > oldPos.z)) {
+		if (this->maze->IsWallAtWorld(newPos.x, newPos.z + offset) == true && (newPos.z > oldPos.z)) 
+		{
 			newPos.z = oldPos.z;
 		}
 		// Check down
-		if (this->maze->IsWallAtWorld(newPos.x, newPos.z - offset) == true && (newPos.z < oldPos.z)) {
+		if (this->maze->IsWallAtWorld(newPos.x, newPos.z - offset) == true && (newPos.z < oldPos.z))
+		{
 			newPos.z = oldPos.z;
 		}
+
+		// Corners
 		// Check right-down corner
-		if (this->maze->IsWallAtWorld(newPos.x + offset, newPos.z + offset) == true) {
-			if (newPos.x > oldPos.x) {
+		if (this->maze->IsWallAtWorld(newPos.x + offset, newPos.z + offset) == true) 
+		{
+			if (newPos.x > oldPos.x) 
+			{
 				newPos.x = oldPos.x;
 			}
-			if (newPos.z > oldPos.z) {
+			if (newPos.z > oldPos.z) 
+			{
 				newPos.z = oldPos.z;
 			}
 		}
 		// Check left-up corner
-		if (this->maze->IsWallAtWorld(newPos.x - offset, newPos.z - offset) == true) {
-			if (newPos.x < oldPos.x) {
+		if (this->maze->IsWallAtWorld(newPos.x - offset, newPos.z - offset) == true) 
+		{
+			if (newPos.x < oldPos.x) 
+			{
 				newPos.x = oldPos.x;
 			}
-			if (newPos.z < oldPos.z) {
+			if (newPos.z < oldPos.z) 
+			{
 				newPos.z = oldPos.z;
 			}
 		}
 		// Check right-up corner
-		if (this->maze->IsWallAtWorld(newPos.x + offset, newPos.z - offset) == true) {
-			if (newPos.x > oldPos.x) {
+		if (this->maze->IsWallAtWorld(newPos.x + offset, newPos.z - offset) == true) 
+		{
+			if (newPos.x > oldPos.x) 
+			{
 				newPos.x = oldPos.x;
 			}
-			if (newPos.z < oldPos.z) {
+			if (newPos.z < oldPos.z) 
+			{
 				newPos.z = oldPos.z;
 			}
 		}
 		// Check left-down corner
-		if (this->maze->IsWallAtWorld(newPos.x - offset, newPos.z + offset) == true) {
-			if (newPos.x < oldPos.x) {
+		if (this->maze->IsWallAtWorld(newPos.x - offset, newPos.z + offset) == true) 
+		{
+			if (newPos.x < oldPos.x) 
+			{
 				newPos.x = oldPos.x;
 			}
-			if (newPos.z > oldPos.z) {
+			if (newPos.z > oldPos.z) 
+			{
 				newPos.z = oldPos.z;
 			}
 		}
@@ -200,8 +223,8 @@ void Player::DetectCollision(glm::vec3 newPos, glm::vec3 oldPos)
 
 void Player::CenterPlayer()
 {
-	int halfMazeWidth = floor(this->maze->GetMazeWidth() / 2);
-	int halfMazeHeight = floor(this->maze->GetMazeHeight() / 2);
+	float halfMazeWidth = (this->maze->GetTransform()->GetPos().x + (this->maze->GetMazeWidth() / 2)) / this->maze->GetTransform()->GetScale().x;
+	float halfMazeHeight = (this->maze->GetTransform()->GetPos().y + (this->maze->GetMazeHeight() / 2)) / this->maze->GetTransform()->GetScale().z;
 
 	bool pingpong = false;
 	while (this->maze->IsWallAtWorld(halfMazeWidth, halfMazeHeight) == true) 
@@ -209,12 +232,12 @@ void Player::CenterPlayer()
 		//If wall, move start position
 		if (pingpong = false)
 		{
-			halfMazeWidth += 1;
+			halfMazeWidth += 1 * this->maze->GetTransform()->GetScale().x;
 			pingpong = true;
 		}
 		else
 		{
-			halfMazeWidth += 1;
+			halfMazeWidth += 1 * this->maze->GetTransform()->GetScale().z;
 			pingpong = false;
 		}
 	}
