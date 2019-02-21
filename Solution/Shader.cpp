@@ -94,6 +94,11 @@ void Shader::SendFloat(const char * name, float value)
 	glUniform1f(this->GetUniformLocation(name), value);
 }
 
+void Shader::SendVec2(const char * name, float x, float y)
+{
+	glUniform2f(this->GetUniformLocation(name), x, y);
+}
+
 void Shader::SendVec3(const char * name, float x, float y, float z)
 {
 	glUniform3f(this->GetUniformLocation(name), x, y, z);

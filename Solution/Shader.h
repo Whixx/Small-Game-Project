@@ -26,6 +26,7 @@ public:
 
 	void SendInt(const char *name, int value);
 	void SendFloat(const char *name, float value);
+	void SendVec2(const char *name, float x, float y);
 	void SendVec3(const char *name, float x, float y, float z);
 	void SendMat4(const char *name, const glm::mat4 &mat);
 	void SendCameraLocation(Camera *camera);

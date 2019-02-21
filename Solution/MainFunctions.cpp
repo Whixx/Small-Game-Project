@@ -12,6 +12,12 @@ void InitWallShader(Shader * shader, Maze * maze)
 	shader->SendInt("scaleUVX", maze->GetTransform()->GetScale().x);
 	shader->SendInt("scaleUVY", maze->GetTransform()->GetScale().y);
 
+	glm::vec2* drawOrder = maze->GetDrawOrder();
+	for (int i = 0; i < maze->GetTileCount(); ++i)
+	{
+		shader->SendVec2(("drawOrder[" + std::to_string(i) + "]").c_str(), drawOrder[i].x, drawOrder[i].y);
+	}
+
 	shader->ValidateShaders();
 }
 
@@ -26,6 +32,12 @@ void InitFloorShader(Shader * shader, Maze * maze)
 	shader->SendInt("height", maze->GetMazeHeight());
 	// Since the floor's UV have the same scaling, both their UV's will be scaled with the same value
 	shader->SendInt("scaleUVXZ", maze->GetTransform()->GetScale().x);
+
+	glm::vec2* drawOrder = maze->GetDrawOrder();
+	for (int i = 0; i < maze->GetTileCount(); ++i)
+	{
+		shader->SendVec2(("drawOrder[" + std::to_string(i) + "]").c_str(), drawOrder[i].x, drawOrder[i].y);
+	}
 
 	shader->ValidateShaders();
 }
@@ -120,7 +132,7 @@ void InitFinalShader(Shader * shader)
 	shader->ValidateShaders();
 }
 
-void WallPass(Shader * wallShader, Maze * maze)
+void WallPass(Shader * wallShader, Maze * maze, Player * player)
 {
 	wallShader->Bind();
 
@@ -128,6 +140,10 @@ void WallPass(Shader * wallShader, Maze * maze)
 	maze->BindTexture(0);
 
 	// Send uniforms that needs to be updated each frame
+	//wallShader->SendCameraLocation(player->GetCamera());
+	wallShader->SendVec3("cameraPos", player->GetCamera()->GetCameraPosition().x, player->GetCamera()->GetCameraPosition().y, player->GetCamera()->GetCameraPosition().z);
+
+
 
 	// Draw the walls and store data with transform feedback
 	maze->DrawWallsToBuffer();
@@ -135,7 +151,7 @@ void WallPass(Shader * wallShader, Maze * maze)
 	wallShader->UnBind();
 }
 
-void FloorPass(Shader * floorShader, Maze * maze)
+void FloorPass(Shader * floorShader, Maze * maze, Player * player)
 {
 	floorShader->Bind();
 
@@ -143,6 +159,8 @@ void FloorPass(Shader * floorShader, Maze * maze)
 	maze->BindTexture(0);
 
 	// Send uniforms that needs to be updated each frame
+	//floorShader->SendCameraLocation(player->GetCamera());
+	floorShader->SendVec3("cameraPos", player->GetCamera()->GetCameraPosition().x, player->GetCamera()->GetCameraPosition().y, player->GetCamera()->GetCameraPosition().z);
 
 	// Draw the floor and store data with transform feedback
 	maze->DrawFloorToBuffer();

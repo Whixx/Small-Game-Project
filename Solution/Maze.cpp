@@ -21,6 +21,8 @@ Maze::Maze()
 	this->transform.SetPos(glm::vec3(0, 0, 0));
 	this->transform.SetRot(glm::vec3(0, 0, 0));
 	this->transform.SetScale(glm::vec3(scaleXZ, scaleY, scaleXZ));
+
+	this->GenerateDrawOrder();
 }
 
 Maze::~Maze()
@@ -81,6 +83,16 @@ Transform * Maze::GetTransform()
 	return &this->transform;
 }
 
+glm::vec2 * Maze::GetDrawOrder()
+{
+	return this->drawOrder;
+}
+
+unsigned int Maze::GetTileCount()
+{
+	return (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE);
+}
+
 bool Maze::IsWallAtWorld(float x, float y)
 {
 	bool isAWall = true;
@@ -112,19 +124,6 @@ bool Maze::IsWallAtWorld(float x, float y)
 	return isAWall;
 }
 
-// Returns a vector with the rgb value of a pixel
-glm::vec3 Maze::readPixel(unsigned int x, unsigned int y)
-{
-	unsigned char* pixelOffset = this->imageData + (x + this->width * y) * this->numComponents;
-
-	vector<unsigned char> pixel;
-	for (int i = 0; i < 3; i++)
-	{
-		pixel.push_back(pixelOffset[i]);
-	}
-
-	return glm::vec3(pixel[0], pixel[1], pixel[2]);
-}
 
 void Maze::BindTexture(unsigned int textureUnit)
 {
@@ -181,7 +180,7 @@ void Maze::DrawWallsToBuffer()
 
 	// Perform transform feedback
 	glBeginTransformFeedback(GL_TRIANGLES);
-	glDrawArrays(GL_POINTS, 0, this->width * this->height);
+	glDrawArrays(GL_POINTS, 0, (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE));
 	glEndTransformFeedback();
 
 	// Enable the fragment shader again
@@ -208,7 +207,7 @@ void Maze::DrawFloorToBuffer()
 
 	// Perform transform feedback
 	glBeginTransformFeedback(GL_TRIANGLES);
-	glDrawArrays(GL_POINTS, 0, this->width * this->height);
+	glDrawArrays(GL_POINTS, 0, (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE));
 	glEndTransformFeedback();
 
 	// Enable the fragment shader again
@@ -263,10 +262,10 @@ void Maze::initiateWallBuffers()
 	// allocate space (no data)
 	glBufferData(
 		GL_ARRAY_BUFFER,
-		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height +	// Position
-		sizeof(glm::vec2) * maxNrOfVertices * this->width * this->height +	// Texcoords
-		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height +	// Normals
-		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height,	// Tangents
+		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Position
+		sizeof(glm::vec2) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Texcoords
+		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Normals
+		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE),	// Tangents
 		NULL,							// no data passed
 		GL_DYNAMIC_COPY);
 
@@ -304,10 +303,10 @@ void Maze::initiateFloorBuffers()
 	// allocate space (no data)
 	glBufferData(
 		GL_ARRAY_BUFFER,
-		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height +	// Position
-		sizeof(glm::vec2) * maxNrOfVertices * this->width * this->height +	// Texcoords
-		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height +	// Normals
-		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height,	// Tangents
+		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Position
+		sizeof(glm::vec2) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Texcoords
+		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Normals
+		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE),	// Tangents
 		NULL,							// no data passed
 		GL_DYNAMIC_COPY);
 
@@ -327,4 +326,48 @@ void Maze::initiateFloorBuffers()
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->floorVbo);
 
 	glBindVertexArray(0);
+}
+
+void Maze::GenerateDrawOrder()
+{
+	int layer = 0;
+	int ID = 0;
+
+	if (layer == 0)
+	{
+		this->drawOrder[ID].x = 0;
+		this->drawOrder[ID].y = 0;
+		ID++;
+		layer++;
+	}
+
+	while (layer <= DRAWDISTANCE)
+	{
+		for (int y = (-layer); y < (1 + (2 * layer)) - layer; y++)
+		{
+			for (int x = (-layer); x < (1 + (2 * layer)) - layer; x++)
+			{
+				if (x == 1 - layer && y > (-layer) && y < (2 * layer) - layer)
+					x += (1 + 2 * (layer - 1));
+				this->drawOrder[ID].x = x;
+				this->drawOrder[ID].y = y;
+				ID++;
+			}
+		}
+		layer++;
+	}
+}
+
+// Returns a vector with the rgb value of a pixel
+glm::vec3 Maze::readPixel(unsigned int x, unsigned int y)
+{
+	unsigned char* pixelOffset = this->imageData + (x + this->width * y) * this->numComponents;
+
+	vector<unsigned char> pixel;
+	for (int i = 0; i < 3; i++)
+	{
+		pixel.push_back(pixelOffset[i]);
+	}
+
+	return glm::vec3(pixel[0], pixel[1], pixel[2]);
 }

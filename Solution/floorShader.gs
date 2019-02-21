@@ -10,9 +10,6 @@ out vec3 outTangent;
 
 uniform sampler2D texture;
 
-uniform int width;
-uniform int height;
-
 // This uniform are used to scale the UV-coords along with the walls.
 uniform int scaleUVXZ;
 
@@ -40,10 +37,6 @@ void main()
 	// Draw floor depending on if the color of the pixel is black
 	if(pixelValue == black)
 	{
-		// Draw floor in local space. (Move i and j so that origo is in the middle of the maze)
-		i -= (width / 2);
-		j -= (height / 2);
-
 		DrawFloor(i, j);
 	}
 }
