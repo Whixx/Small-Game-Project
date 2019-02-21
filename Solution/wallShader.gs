@@ -83,8 +83,8 @@ void main()
 
 	// Find i and j depending on the vertex ID (outputs from the vertex shader and stored in gl_Position)
 	vec4 pointPosition = gl_in[0].gl_Position;
-	float i = int(pointPosition.x);
-	float j = int(pointPosition.y);
+	int i = int(pointPosition.x);
+	int j = int(pointPosition.y);
 
 	// Find the pixelColor
 	pixelValue = texelFetch(texture, ivec2(i,j), 0).rgb;

@@ -8,10 +8,10 @@ out vec2 outTexCoords;
 out vec3 outNormal;
 out vec3 outTangent;
 
-uniform sampler2D texture;
-
 uniform int width;
 uniform int height;
+
+uniform sampler2D texture;
 
 // This uniform are used to scale the UV-coords along with the walls.
 uniform int scaleUVXZ;
@@ -26,8 +26,8 @@ void main()
 
 	// Find i and j depending on the vertex ID (outputs from the vertex shader and stored in gl_Position)
 	vec4 pointPosition = gl_in[0].gl_Position;
-	float i = int(pointPosition.x);
-	float j = int(pointPosition.y);
+	int i = int(pointPosition.x);
+	int j = int(pointPosition.y);
 
 	// Find the pixelColor
 	pixelValue = texelFetch(texture, ivec2(i,j), 0).rgb;
@@ -37,18 +37,15 @@ void main()
 	pixelValue.g = floor(pixelValue.g);
 	pixelValue.b = floor(pixelValue.b);
 
+	i -= (width / 2);
+	j -= (height / 2);
 	// Draw floor depending on if the color of the pixel is black
 	if(pixelValue == black)
 	{
-		// Draw floor in local space. (Move i and j so that origo is in the middle of the maze)
-		i -= (width / 2);
-		j -= (height / 2);
-
 		DrawFloor(i, j);
 	}
 }
-		 
-// Draw the floor
+	
 void DrawFloor(float i, float j)
 {
 	// First Triangle

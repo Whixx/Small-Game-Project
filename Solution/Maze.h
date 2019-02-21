@@ -11,19 +11,19 @@
 
 using namespace std;
 
+const unsigned int DRAWDISTANCE = 6;
+
 class Maze
 {
 public:
 	Maze();
 	~Maze();
 
-	// Not tested or used
-	//Maze(const Maze &other);
-	//Maze& operator=(const Maze& other);
-
 	int GetMazeHeight();
 	int GetMazeWidth();
 	Transform *GetTransform();
+	glm::vec2* GetDrawOrder();
+	unsigned int GetTileCount();
 
 	void InitiateBuffers();
 
@@ -41,12 +41,14 @@ public:
 
 	void BindTexture(unsigned int textureUnit);
 private:
+
 	unsigned char* imageData;
 	string path;
 	int width;
 	int height;
 	int numComponents;
 	GLuint texture;
+	glm::vec2 drawOrder[(1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE)];
 
 	Transform transform;
 
@@ -59,9 +61,13 @@ private:
 	GLuint floorVao;
 
 	const int scaleXZ = 1;
-	const int scaleY = 1;
+	const int scaleY  = 1;
+
+	// Private functions
 	void initiateWallBuffers();
 	void initiateFloorBuffers();
+	// When generating the maze outwards from the player
+	void GenerateDrawOrder();
 	glm::vec3 readPixel(unsigned int x, unsigned int y);
 };
 #endif

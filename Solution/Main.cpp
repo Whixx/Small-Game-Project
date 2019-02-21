@@ -202,10 +202,10 @@ int main()
 		// ================== DRAW ==================
 
 		// Here the walls are created and stored in a buffer with transform feedback
-		WallPass(&wallShader, &maze);
+		WallPass(&wallShader, &maze, &player);
 
 		// Here the floor is created and stored in a buffer with transform feedback
-		FloorPass(&floorShader, &maze);
+		FloorPass(&floorShader, &maze, &player);
 
 		// Here a cube map is calculated and stored in the shadowMap FBO
 		ShadowPass(&shadowShader, &OH, &lights, &shadowMap, &player, &maze);
