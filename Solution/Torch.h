@@ -12,8 +12,7 @@
 class Torch
 {
 public:
-	Torch(Transform transform, Mesh * mesh, Texture * texture, irrklang::ISoundEngine* engine);
-	Torch(Transform transform, Mesh * mesh, Texture * texture, PointLightHandler* PLH, glm::vec3 lightColor);
+	Torch(Transform transform, Mesh * mesh, Texture * texture, glm::vec3 lightColor, irrklang::ISoundEngine* engine, PointLightHandler* PLH);
 	Torch();
 	~Torch();
 

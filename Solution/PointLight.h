@@ -16,7 +16,7 @@ using namespace std;
 
 const int MAX_NUMBER_OF_LIGHTS = 256;
 const int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
-const int NEAR_PLANE = 1, FAR_PLANE = 100;
+const float NEAR_PLANE = 0.1f, FAR_PLANE = 100;
 
 class PointLight
 {
