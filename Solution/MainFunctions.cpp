@@ -2,7 +2,7 @@
 
 void InitShadowShader(Shader * shader)
 {
-	shader->InitiateShaders(false);
+	shader->InitiateShaders();
 
 	// Set constant uniforms
 
@@ -11,7 +11,7 @@ void InitShadowShader(Shader * shader)
 
 void InitGeometryPass(Shader * shader)
 {
-	shader->InitiateShaders(false);
+	shader->InitiateShaders();
 
 	// Set constant uniforms
 	shader->Bind();
@@ -21,7 +21,7 @@ void InitGeometryPass(Shader * shader)
 
 void InitLightPass(Shader * shader)
 {
-	shader->InitiateShaders(false);
+	shader->InitiateShaders();
 
 	// Set constant uniforms
 	shader->Bind();
@@ -37,7 +37,7 @@ void InitLightPass(Shader * shader)
 
 void InitParticleShader(Shader * shader)
 {
-	shader->InitiateShaders(false);
+	shader->InitiateShaders();
 
 	// Set constant uniforms
 	shader->Bind();
@@ -48,7 +48,8 @@ void InitParticleShader(Shader * shader)
 
 void InitPointLightPass(Shader * shader)
 {
-	shader->InitiateShaders(true);
+
+	shader->InitiateShaders();
 
 	// Set constant uniforms
 	shader->Bind();
@@ -58,7 +59,7 @@ void InitPointLightPass(Shader * shader)
 
 void InitBlurShader(Shader * shader)
 {
-	shader->InitiateShaders(false);
+	shader->InitiateShaders();
 
 	// Set constant uniforms
 	shader->Bind();
@@ -69,7 +70,7 @@ void InitBlurShader(Shader * shader)
 
 void InitFinalBloomShader(Shader * shader)
 {
-	shader->InitiateShaders(false);
+	shader->InitiateShaders();
 
 	// Set constant uniforms
 	shader->Bind();
@@ -81,7 +82,7 @@ void InitFinalBloomShader(Shader * shader)
 
 void InitFinalShader(Shader * shader)
 {
-	shader->InitiateShaders(false);
+	shader->InitiateShaders();
 
 	// Set constant uniforms
 	shader->Bind();
@@ -137,8 +138,6 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH)
 {
 	geometryPass->Bind();
-
-	geometryPass->SendCameraLocation(player->GetCamera());
 
 	gBuffer->BindForWriting();
 

@@ -37,6 +37,7 @@ glm::vec3 & Object::GetScale()
 
 void Object::Update(double dt)
 {
+	this->GetRot() += glm::vec3(dt, 0.0, 0.0);
 }
 
 void Object::Draw(Shader* shader)

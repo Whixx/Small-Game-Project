@@ -120,6 +120,7 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 	}
 
 	// Get Material
+	Material mat;
 	if (mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
@@ -148,6 +149,21 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+
+		// Load material variables
+		float shininess;
+		material->Get(AI_MATKEY_SHININESS, shininess);
+		if(mat.shininess > 0)
+			mat.shininess = shininess;
+
+		aiColor3D specColor;
+		material->Get(AI_MATKEY_COLOR_SPECULAR, specColor);
+		if (specColor != aiColor3D(0, 0, 0))
+		{
+			mat.specularColor.r = specColor.r;
+			mat.specularColor.g = specColor.g;
+			mat.specularColor.b = specColor.b;
+		}
 	}
 	else
 	{
@@ -159,7 +175,7 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 		textures.push_back(this->LoadTexture("Textures/default_height.png", "TextureHeight"));
 	}
 
-	Mesh* temp = new Mesh(vertices, indices, textures);
+	Mesh* temp = new Mesh(vertices, indices, textures, mat);
 	return temp;
 }
 

@@ -1,7 +1,7 @@
 #version 440
 
 in vec2 texCoords;
-in vec4 posWorld1;
+in vec3 posWorld1;
 in mat3 TBN;
 
 out vec3 WorldPosOut;
@@ -14,8 +14,6 @@ uniform sampler2D TextureDiffuse;
 uniform sampler2D TextureNormal;
 uniform sampler2D TextureSpecular;
 uniform sampler2D TextureAmbient;
-
-uniform float illuminated;
 
 void main()
 {	

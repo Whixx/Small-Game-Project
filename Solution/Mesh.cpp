@@ -1,10 +1,11 @@
 #include "Mesh.h"
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture*> textures)
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture*> textures, Material material)
 {
 	this->vertices = vertices;
 	this->indices = indices;
 	this->textures = textures;
+	this->material = material;
 
 	SetupMesh();
 }
@@ -90,6 +91,13 @@ void Mesh::BindTextures(Shader * shader, unsigned int slot)
 			}
 		}
 	}
+}
+
+void Mesh::SendMaterial(Shader* shader)
+{
+	shader->SendVec3("Material.specColor", this->material.specularColor.x, this->material.specularColor.y, this->material.specularColor.z);
+	shader->SendInt("Material.shininess", this->material.shininess);
+	shader->SendFloat("Material.d", this->material.d);
 }
 
 void Mesh::Draw()

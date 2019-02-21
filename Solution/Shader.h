@@ -16,7 +16,7 @@ public:
 
 	void Bind();
 	void UnBind();
-	void InitiateShaders(bool color);
+	void InitiateShaders(bool color = false);
 	void ValidateShaders();
 
 	GLuint CreateShader(const std::string& fileName, GLenum shaderType);

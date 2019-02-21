@@ -34,7 +34,7 @@ void Shader::InitiateShaders(bool color)
 	else
 	{
 		glBindAttribLocation(this->program, 1, "texCoord");
-	}	
+	}
 
 	glLinkProgram(this->program);
 	CheckShaderError(this->program, GL_LINK_STATUS, true, "Error: Program linking failed: ");
