@@ -263,16 +263,22 @@ void Maze::initiateWallBuffers()
 	// allocate space (no data)
 	glBufferData(
 		GL_ARRAY_BUFFER,
-		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height +
-		sizeof(glm::vec2) * maxNrOfVertices * this->width * this->height,
+		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height +	// Position
+		sizeof(glm::vec2) * maxNrOfVertices * this->width * this->height +	// Texcoords
+		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height +	// Normals
+		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height,	// Tangents
 		NULL,							// no data passed
 		GL_DYNAMIC_COPY);
 
 	// Set the output Layout
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), 0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3)));
+	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2)));
 
 	// create and bind transform feedback object and buffer to write to.
 	glGenTransformFeedbacks(1, &this->wallTbo);
@@ -298,16 +304,22 @@ void Maze::initiateFloorBuffers()
 	// allocate space (no data)
 	glBufferData(
 		GL_ARRAY_BUFFER,
-		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height +
-		sizeof(glm::vec2) * maxNrOfVertices * this->width * this->height,
+		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height +	// Position
+		sizeof(glm::vec2) * maxNrOfVertices * this->width * this->height +	// Texcoords
+		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height +	// Normals
+		sizeof(glm::vec3) * maxNrOfVertices * this->width * this->height,	// Tangents
 		NULL,							// no data passed
 		GL_DYNAMIC_COPY);
 
 	// Set the output Layout
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), 0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3)));
+	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2)));
 
 	// create and bind transform feedback object and buffer to write to.
 	glGenTransformFeedbacks(1, &this->floorTbo);

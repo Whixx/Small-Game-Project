@@ -5,35 +5,39 @@ layout (triangle_strip, max_vertices = 18) out;
 
 out vec3 outPosition;
 out vec2 outTexCoords;
+out vec3 outNormal;
+out vec3 outTangent;
 
 uniform sampler2D texture;
 
 uniform int width;
 uniform int height;
+
+// These uniforms are used to scale the UV-coords along with the walls.
 uniform int scaleUVX;
 uniform int scaleUVY;
 
 // Single wall functions
-void drawSW_n(float i, float j);
-void drawSW_s(float i, float j);
-void drawSW_e(float i, float j);
-void drawSW_w(float i, float j);
+void DrawSW_n(float i, float j);
+void DrawSW_s(float i, float j);
+void DrawSW_e(float i, float j);
+void DrawSW_w(float i, float j);
 
 // Corner wall functions
-void drawCW_ne(float i, float j);
-void drawCW_nw(float i, float j);
-void drawCW_sw(float i, float j);
-void drawCW_se(float i, float j);
+void DrawCW_ne(float i, float j);
+void DrawCW_nw(float i, float j);
+void DrawCW_sw(float i, float j);
+void DrawCW_se(float i, float j);
 
 // End wall functions
-void drawEW_n(float i, float j);
-void drawEW_s(float i, float j);
-void drawEW_e(float i, float j);
-void drawEW_w(float i, float j);
+void DrawEW_n(float i, float j);
+void DrawEW_s(float i, float j);
+void DrawEW_e(float i, float j);
+void DrawEW_w(float i, float j);
 
 // Double wall functions
-void drawDW_v(float i, float j);
-void drawDW_h(float i, float j);
+void DrawDW_v(float i, float j);
+void DrawDW_h(float i, float j);
 
 void main()
 {
@@ -51,8 +55,6 @@ void main()
 
 	// v = vertical
 	// h = horizontal
-
-	
 
 	// The following vectors are used to define the colors of the texture.
 	// Each color represents a wall-type.
@@ -99,79 +101,85 @@ void main()
 	// Draw walls depending on the color of each pixel
 	if(pixelValue == SW_n)
 	{
-		drawSW_n(i, j);
+		DrawSW_n(i, j);
 	}
 	else if(pixelValue == SW_s)
 	{
-		drawSW_s(i, j);
+		DrawSW_s(i, j);
 	}
 	else if(pixelValue == SW_e)
 	{
-		drawSW_e(i, j);
+		DrawSW_e(i, j);
 	}
 	else if(pixelValue == SW_w)
 	{
-		drawSW_w(i, j);
+		DrawSW_w(i, j);
 	}
 	else if(pixelValue == CW_ne)
 	{
-		drawCW_ne(i, j);
+		DrawCW_ne(i, j);
 	}
 	else if(pixelValue == CW_nw)
 	{
-		drawCW_nw(i, j);
+		DrawCW_nw(i, j);
 	}
 	else if(pixelValue == CW_sw)
 	{
-		drawCW_sw(i, j);
+		DrawCW_sw(i, j);
 	}
 	else if(pixelValue == CW_se)
 	{
-		drawCW_se(i, j);
+		DrawCW_se(i, j);
 	}
 	else if(pixelValue == EW_n)
 	{
-		drawEW_n(i, j);
+		DrawEW_n(i, j);
 	}
 	else if(pixelValue == EW_s)
 	{
-		drawEW_s(i, j);
+		DrawEW_s(i, j);
 	}
 	else if(pixelValue == EW_e)
 	{
-		drawEW_e(i, j);
+		DrawEW_e(i, j);
 	}
 	else if(pixelValue == EW_w)
 	{
-		drawEW_w(i, j);
+		DrawEW_w(i, j);
 	}
 	else if(pixelValue == DW_v)
 	{
-		drawDW_v(i, j);
+		DrawDW_v(i, j);
 	}
 	else if(pixelValue == DW_h)
 	{
-		drawDW_h(i, j);
+		DrawDW_h(i, j);
 	}
 }
 		 
 // Single wall functions
-void drawSW_n(float i, float j)
+void DrawSW_n(float i, float j)
 {
 	// First Triangle
 	// Left Bottom vertex
 	outPosition = vec3(i - 0.5f, 0, j - 0.5);
 	outTexCoords = vec2(0, 0);
+	outNormal  = vec3(0.0f, 0.0f, -1.0f);
+	outTangent = vec3(-1.0f, 0.0f, 0.0f);
 	EmitVertex();												  
 																  
 	// Left Top Vertex											  
 	outPosition = vec3(i - 0.5f, 1, j - 0.5);
 	outTexCoords = vec2(0, scaleUVY);
+	outNormal  = vec3(0.0f, 0.0f, -1.0f);
+	outTangent = vec3(-1.0f, 0.0f, 0.0f);
 	EmitVertex();												  
 																  
 	//Right Top Vertex											  
 	outPosition = vec3(i + 0.5f, 1, j - 0.5);
 	outTexCoords = vec2(scaleUVX, scaleUVY);
+	outNormal  = vec3(0.0f, 0.0f, -1.0f);
+	outTangent = vec3(-1.0f, 0.0f, 0.0f);
 	EmitVertex();
 				
 	EndPrimitive();
@@ -182,37 +190,49 @@ void drawSW_n(float i, float j)
 	// Left Bottom vertex
 	outPosition = vec3(i - 0.5f, 0, j - 0.5);
 	outTexCoords = vec2(0, 0);
+	outNormal  = vec3(0.0f, 0.0f, -1.0f);
+	outTangent = vec3(-1.0f, 0.0f, 0.0f);
 	EmitVertex();
 				
 	// Right Top vertex
 	outPosition = vec3(i + 0.5f, 1, j - 0.5);
 	outTexCoords = vec2(scaleUVX, scaleUVY);
+	outNormal  = vec3(0.0f, 0.0f, -1.0f);
+	outTangent = vec3(-1.0f, 0.0f, 0.0f);
 	EmitVertex();
 				
 	// Right Bottom vertex
 	outPosition = vec3(i + 0.5f, 0, j - 0.5);
 	outTexCoords = vec2(scaleUVX, 0);
+	outNormal  = vec3(0.0f, 0.0f, -1.0f);
+	outTangent = vec3(-1.0f, 0.0f, 0.0f);
 	EmitVertex();
 				
 	EndPrimitive();
 }
 
-void drawSW_s(float i, float j)
+void DrawSW_s(float i, float j)
 {
 	// First Triangle
 	// Left Bottom vertex
 	outPosition = vec3(i - 0.5, 0, j + 0.5);
 	outTexCoords = vec2(0, 0);
+	outNormal  = vec3(0.0f, 0.0f, 1.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
 	EmitVertex();
 	
 	//Right Top Vertex
 	outPosition = vec3(i + 0.5, 1, j + 0.5);
 	outTexCoords = vec2(scaleUVX, scaleUVY);
+	outNormal  = vec3(0.0f, 0.0f, 1.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
 	EmitVertex();
 
 	// Left Top Vertex
 	outPosition = vec3(i - 0.5, 1, j + 0.5);
 	outTexCoords = vec2(0, scaleUVY);
+	outNormal  = vec3(0.0f, 0.0f, 1.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
 	EmitVertex();
 							
 	EndPrimitive();
@@ -223,37 +243,49 @@ void drawSW_s(float i, float j)
 	// Left Bottom vertex
 	outPosition = vec3(i - 0.5, 0, j + 0.5);
 	outTexCoords = vec2(0, 0);
+	outNormal  = vec3(0.0f, 0.0f, 1.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
 	EmitVertex();
 	
 	// Right Bottom vertex
 	outPosition = vec3(i + 0.5, 0, j + 0.5);
 	outTexCoords = vec2(scaleUVX, 0);
+	outNormal  = vec3(0.0f, 0.0f, 1.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
 	EmitVertex();
 
 	// Right Top vertex
 	outPosition = vec3(i + 0.5, 1, j + 0.5);
 	outTexCoords = vec2(scaleUVX, scaleUVY);
+	outNormal  = vec3(0.0f, 0.0f, 1.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
 	EmitVertex();
 				
 	EndPrimitive();
 }
 
-void drawSW_e(float i, float j)
+void DrawSW_e(float i, float j)
 {
 	// First Triangle
 	// Left Bottom vertex
 	outPosition = vec3(i + 0.5, 0, j - 0.5);
 	outTexCoords = vec2(0, 0);
+	outNormal  = vec3(1.0f, 0.0f, 0.0f);
+	outTangent = vec3(0.0f, 0.0f, -1.0f);
 	EmitVertex();
 	
 	// Left Top Vertex
 	outPosition = vec3(i + 0.5, 1, j - 0.5);
 	outTexCoords = vec2(0, scaleUVY);
+	outNormal  = vec3(1.0f, 0.0f, 0.0f);
+	outTangent = vec3(0.0f, 0.0f, -1.0f);
 	EmitVertex();
 
 	//Right Top Vertex
 	outPosition = vec3(i + 0.5, 1, j + 0.5);
 	outTexCoords = vec2(scaleUVX, scaleUVY);
+	outNormal  = vec3(1.0f, 0.0f, 0.0f);
+	outTangent = vec3(0.0f, 0.0f, -1.0f);
 	EmitVertex();
 						
 	EndPrimitive();
@@ -264,37 +296,49 @@ void drawSW_e(float i, float j)
 	// Left Bottom vertex
 	outPosition = vec3(i + 0.5, 0, j - 0.5);
 	outTexCoords = vec2(0, 0);
+	outNormal  = vec3(1.0f, 0.0f, 0.0f);
+	outTangent = vec3(0.0f, 0.0f, -1.0f);
 	EmitVertex();
 	
 	// Right Top vertex
 	outPosition = vec3(i + 0.5, 1, j + 0.5);
 	outTexCoords = vec2(scaleUVX, scaleUVY);
+	outNormal  = vec3(1.0f, 0.0f, 0.0f);
+	outTangent = vec3(0.0f, 0.0f, -1.0f);
 	EmitVertex();
 
 	// Right Bottom vertex
 	outPosition = vec3(i + 0.5, 0, j + 0.5);
 	outTexCoords = vec2(scaleUVX, 0);
+	outNormal  = vec3(1.0f, 0.0f, 0.0f);
+	outTangent = vec3(0.0f, 0.0f, -1.0f);
 	EmitVertex();
 		
 	EndPrimitive();
 }
 
-void drawSW_w(float i, float j)
+void DrawSW_w(float i, float j)
 {
 	// First Triangle
 	// Left Bottom vertex
 	outPosition = vec3(i - 0.5, 0, j + 0.5);
 	outTexCoords = vec2(0, 0);
+	outNormal  = vec3(-1.0f, 0.0f, 0.0f);
+	outTangent = vec3(0.0f, 0.0f, 1.0f);
 	EmitVertex();
 	
 	// Left Top Vertex
 	outPosition = vec3(i - 0.5, 1, j + 0.5);
 	outTexCoords = vec2(0, scaleUVY);
+	outNormal  = vec3(-1.0f, 0.0f, 0.0f);
+	outTangent = vec3(0.0f, 0.0f, 1.0f);
 	EmitVertex();
 
 	//Right Top Vertex
 	outPosition = vec3(i - 0.5, 1, j - 0.5);
 	outTexCoords = vec2(scaleUVX, scaleUVY);
+	outNormal  = vec3(-1.0f, 0.0f, 0.0f);
+	outTangent = vec3(0.0f, 0.0f, 1.0f);
 	EmitVertex();
 						
 	EndPrimitive();
@@ -305,16 +349,22 @@ void drawSW_w(float i, float j)
 	// Left Bottom vertex
 	outPosition = vec3(i - 0.5, 0, j + 0.5);
 	outTexCoords = vec2(0, 0);
+	outNormal  = vec3(-1.0f, 0.0f, 0.0f);
+	outTangent = vec3(0.0f, 0.0f, 1.0f);
 	EmitVertex();
 	
 	// Right Top vertex
 	outPosition = vec3(i - 0.5, 1, j - 0.5);
 	outTexCoords = vec2(scaleUVX, scaleUVY);
+	outNormal  = vec3(-1.0f, 0.0f, 0.0f);
+	outTangent = vec3(0.0f, 0.0f, 1.0f);
 	EmitVertex();
 
 	// Right Bottom vertex
 	outPosition = vec3(i - 0.5, 0, j - 0.5);
 	outTexCoords = vec2(scaleUVX, 0);
+	outNormal  = vec3(-1.0f, 0.0f, 0.0f);
+	outTangent = vec3(0.0f, 0.0f, 1.0f);
 	EmitVertex();
 				
 	EndPrimitive();
@@ -322,63 +372,63 @@ void drawSW_w(float i, float j)
 
 
 // Corner wall functions
-void drawCW_ne(float i,float j)
+void DrawCW_ne(float i,float j)
 {
-	drawSW_n(i, j);
-	drawSW_e(i, j);
+	DrawSW_n(i, j);
+	DrawSW_e(i, j);
 }
-void drawCW_nw(float i,float j)
+void DrawCW_nw(float i,float j)
 {
-	drawSW_n(i, j);
-	drawSW_w(i, j);
+	DrawSW_n(i, j);
+	DrawSW_w(i, j);
 }
-void drawCW_sw(float i,float j)
+void DrawCW_sw(float i,float j)
 {
-	drawSW_s(i, j);
-	drawSW_w(i, j);
+	DrawSW_s(i, j);
+	DrawSW_w(i, j);
 }
-void drawCW_se(float i,float j)
+void DrawCW_se(float i,float j)
 {
-	drawSW_s(i, j);
-	drawSW_e(i, j);
+	DrawSW_s(i, j);
+	DrawSW_e(i, j);
 }
 
 
 // End wall functions
-void drawEW_n(float i,float j)
+void DrawEW_n(float i,float j)
 {
-	drawSW_e(i, j);
-	drawSW_n(i, j);
-	drawSW_w(i, j);
+	DrawSW_e(i, j);
+	DrawSW_n(i, j);
+	DrawSW_w(i, j);
 }
-void drawEW_s(float i,float j)
+void DrawEW_s(float i,float j)
 {
-	drawSW_e(i, j);
-	drawSW_s(i, j);
-	drawSW_w(i, j);
+	DrawSW_e(i, j);
+	DrawSW_s(i, j);
+	DrawSW_w(i, j);
 }
-void drawEW_e(float i,float j)
+void DrawEW_e(float i,float j)
 {
-	drawSW_e(i, j);
-	drawSW_n(i, j);
-	drawSW_s(i, j);
+	DrawSW_e(i, j);
+	DrawSW_n(i, j);
+	DrawSW_s(i, j);
 }
-void drawEW_w(float i,float j)
+void DrawEW_w(float i,float j)
 {
-	drawSW_w(i, j);
-	drawSW_n(i, j);
-	drawSW_s(i, j);
+	DrawSW_w(i, j);
+	DrawSW_n(i, j);
+	DrawSW_s(i, j);
 }
 
 
 // Double wall functions
-void drawDW_v(float i,float j)
+void DrawDW_v(float i,float j)
 {
-	drawSW_e(i, j);
-	drawSW_w(i, j);
+	DrawSW_e(i, j);
+	DrawSW_w(i, j);
 }
-void drawDW_h(float i,float j)
+void DrawDW_h(float i,float j)
 {
-	drawSW_n(i, j);
-	drawSW_s(i, j);
+	DrawSW_n(i, j);
+	DrawSW_s(i, j);
 }
