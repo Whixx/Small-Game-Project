@@ -7,6 +7,7 @@
 #include "Display.h"
 #include "Torch.h"
 #include "SoundHandler.h"
+#include "Maze.h"
 
 #define PI 3.1415926535
 
@@ -16,7 +17,7 @@ class Player
 {
 public:
 	// Default constructor
-	Player(float height, float fov, float near, float far, Mesh *mesh, Texture *texture, Maze * maze, irrklang::ISoundEngine* engine, PointLightHandler* PLH);
+	Player(float height, float fov, float near, float far, Maze * maze, irrklang::ISoundEngine* engine, PointLightHandler* PLH);
 	virtual ~Player();
 	
 	float GetPlayerSpeed();

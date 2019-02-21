@@ -8,6 +8,8 @@
 #include <glew\glew.h>
 #include <vector>
 #include "Transform.h"
+#include "Texture.h"
+#include "Shader.h"
 
 using namespace std;
 
@@ -35,6 +37,9 @@ public:
 	void DrawWalls();
 	void DrawFloor();
 
+	void BindWallMaterial(Shader* shader);
+	void BindFloorMaterial(Shader* shader);
+
 	void LoadMaze(const std::string& fileName);
 
 	bool IsWallAtWorld(float x, float y);
@@ -42,15 +47,20 @@ public:
 	void BindTexture(unsigned int textureUnit);
 private:
 
+	void LoadTextures();
+
 	unsigned char* imageData;
 	string path;
 	int width;
 	int height;
 	int numComponents;
-	GLuint texture;
+	GLuint mazeTexture;
 	glm::vec2 drawOrder[(1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE)];
 
 	Transform transform;
+
+	std::vector<Texture*> wallTextures;
+	std::vector<Texture*> floorTextures;
 
 	GLuint wallTbo;
 	GLuint wallVbo;

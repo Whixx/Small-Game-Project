@@ -6,12 +6,12 @@
 #include "PointLight.h"
 #include "Particle.h"
 #include "SoundHandler.h"
+#include "Model.h"
 
 class Torch
 {
 public:
-	Torch(Transform transform, Mesh * mesh, Texture * texture, glm::vec3 lightColor, irrklang::ISoundEngine* engine, PointLightHandler* PLH);
-	Torch();
+	Torch(Transform transform, glm::vec3 lightColor, irrklang::ISoundEngine* engine, PointLightHandler* PLH);
 	~Torch();
 
 	void SetScale(glm::vec3 scale);
@@ -23,22 +23,22 @@ public:
 	glm::vec3 &GetPos();
 	glm::vec3 &GetRot();
 	Transform GetTransform();
+	Model* GetModel();
+	Particle* GetParticle();
 
-	Particle &GetParticle();
 	glm::vec3 GetFirePos();
 
-	void BindTexture();
-	void Draw();
+	void BindMaterial(Shader* shader);
+	void Draw(Shader* shader);
 	virtual void Update(double dt, Transform transform, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camRight, glm::vec3 camUp, float distFromPlayer);
 	
 private:
 	Model model;
+	Particle particle;
 	Transform transform;
 	SoundHandler torchSound;
 	const float size = 0.02f;
 	PointLight* torchLight;
-	Particle particle;
-	Texture particleTexture;
 	const glm::vec4 lightStartingPos = glm::vec4(0, 4.6f, 0, 0);
 	glm::vec3 lightPos;
 };

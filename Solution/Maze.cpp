@@ -7,7 +7,7 @@ Maze::Maze()
 	this->width = 0;
 	this->height = 0;
 	this->numComponents = 0;
-	this->texture = 0;
+	this->mazeTexture = 0;
 
 	this->wallTbo = 0;
 	this->wallVbo = 0;
@@ -22,11 +22,28 @@ Maze::Maze()
 	this->transform.SetRot(glm::vec3(0, 0, 0));
 	this->transform.SetScale(glm::vec3(scaleXZ, scaleY, scaleXZ));
 
+	// Load wall & floor texture
+	this->LoadTextures();
+
+	this->LoadMaze("MazePNG/mazeColorCoded.png");
+
+	this->InitiateBuffers();
+
 	this->GenerateDrawOrder();
 }
 
 Maze::~Maze()
 {
+	for (Texture* t : this->wallTextures)
+	{
+		delete t;
+	}
+
+	for (Texture* t : this->floorTextures)
+	{
+		delete t;
+	}
+
 	stbi_image_free(imageData);
 
 	glDeleteBuffers(1, &this->wallTbo);
@@ -130,7 +147,7 @@ void Maze::BindTexture(unsigned int textureUnit)
 	if (textureUnit >= 0 && textureUnit <= 31)
 	{
 		glActiveTexture(GL_TEXTURE0 + textureUnit);
-		glBindTexture(GL_TEXTURE_2D, this->texture);
+		glBindTexture(GL_TEXTURE_2D, this->mazeTexture);
 	}
 	else
 	{
@@ -156,8 +173,8 @@ void Maze::LoadMaze(const std::string & fileName)
 	if (this->imageData == NULL)
 		std::cerr << "Loading failed for texture: " << fileName << std::endl;
 
-	glGenTextures(1, &this->texture);
-	glBindTexture(GL_TEXTURE_2D, this->texture);
+	glGenTextures(1, &this->mazeTexture);
+	glBindTexture(GL_TEXTURE_2D, this->mazeTexture);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -244,6 +261,28 @@ void Maze::DrawFloor()
 	glBindVertexArray(0);
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
+}
+
+void Maze::BindWallMaterial(Shader* shader)
+{
+	shader->SendInt("TextureDiffuse", 0);
+	this->wallTextures[0]->Bind(0);
+
+	shader->SendInt("TextureNormal", 1);
+	this->wallTextures[1]->Bind(1);
+
+	// Add shininess
+}
+
+void Maze::BindFloorMaterial(Shader* shader)
+{
+	shader->SendInt("TextureDiffuse", 0);
+	this->floorTextures[0]->Bind(0);
+
+	shader->SendInt("TextureNormal", 1);
+	this->floorTextures[1]->Bind(1);
+
+	// Add shininess
 }
 
 void Maze::initiateWallBuffers()
@@ -356,6 +395,29 @@ void Maze::GenerateDrawOrder()
 		}
 		layer++;
 	}
+}
+
+void Maze::LoadTextures()
+{
+	Texture* wallDiffuse = new Texture("Textures/brickwall.jpg");
+	Texture* wallNormal = new Texture("Textures/brickwall_normal.jpg", "TextureNormal");
+
+	Texture* floorDiffuse = new Texture("Textures/ground.png");
+	Texture* floorNormal = new Texture("Textures/ground_normal.png", "TextureNormal");
+
+	// Add Ambient
+	// Add Height
+	// Add Specular
+	// Add Shininess
+	// Add Ambient
+
+
+
+	wallTextures.push_back(wallDiffuse);
+	wallTextures.push_back(wallNormal);
+
+	floorTextures.push_back(floorDiffuse);
+	floorTextures.push_back(floorNormal);
 }
 
 // Returns a vector with the rgb value of a pixel

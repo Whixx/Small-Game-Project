@@ -205,8 +205,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		// Draw Torch
 		glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 		shadowShader->SendMat4("WorldMatrix", worldMatrix);
-		player->GetTorch()->BindTexture();
-		player->GetTorch()->Draw();
+		player->GetTorch()->GetModel()->Draw(shadowShader);
 
 
 		// Same world matrix for walls and floor
@@ -225,7 +224,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH, Maze * maze, Texture * tempBrickTexture, Texture * realFloorTexture)
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH, Maze * maze)
 {
 	geometryPass->Bind();
 
@@ -252,27 +251,25 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 	geometryPass->SendMat4("WorldMatrix", worldMatrix);
-	player->GetTorch()->BindTexture();
-	player->GetTorch()->Draw();
-
+	player->GetTorch()->BindMaterial(geometryPass);
+	player->GetTorch()->Draw(geometryPass);
 
 	// Same world matrix for walls and floor
 	glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
+
 	// Draw MazeWalls
-	geometryPass->SendFloat("illuminated", 1.0f);
 	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * mazeWorldMatrix);
 	geometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
-	tempBrickTexture->Bind(0);
+	maze->BindWallMaterial(geometryPass);
 	maze->DrawWalls();
 
 	// Draw MazeFloor
-	geometryPass->SendFloat("illuminated", 1.0f);
 	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * mazeWorldMatrix);
 	geometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
-	realFloorTexture->Bind(0);
+	maze->BindFloorMaterial(geometryPass);
 	maze->DrawFloor();
 
-	player->GetTorch()->GetModel()->BindMaterial(geometryPass);
+	
 	geometryPass->UnBind();
 }
 

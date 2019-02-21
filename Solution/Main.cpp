@@ -1,5 +1,4 @@
-﻿#define STB_IMAGE_IMPLEMENTATION
-//#define STBI_MSC_SECURE_CRT
+﻿
 
 // Finns en main funktion i GLEW, d�rmed m�ste vi undefinera den innan vi kan anv�nda v�ran main
 #include <glew\glew.h>
@@ -7,25 +6,8 @@
 
 // Uses stb_image
 
-
-//
-#include "MazeGeneratePNG.h"
-#include "Texture.h"
-
-
-#include "Shader.h"
-#include "ObjectHandler.h"
-#include "PointLight.h"
-#include "ShadowMap.h"
-#include "Bloom.h"
-#include "Blur.h"
-#include "GBuffer.h"
-#include "FinalFBO.h"
-#include "Player.h"
-#include "Particle.h"
-#include "InputHandler.h"
-
 #include "MainFunctions.h"
+
 
 int main()
 {
@@ -44,7 +26,6 @@ int main()
 	GenerateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
 
 	Maze maze;
-	maze.LoadMaze("MazePNG/mazeColorCoded.png");
 
 	//=========================== Creating Shaders ====================================//
 	Shader wallShader;
@@ -113,15 +94,10 @@ int main()
 
 	//=========================== Creating Objects ====================================//
 
-	// Temp texture for the mazeWalls
-	Texture brickTexture("Textures/brickwall.jpg", "NormalMaps/brickwall_normal.jpg");
+
 
 	// Create Lights
 	PointLightHandler lights;	// use .CreateLight()
-
-	Mesh groundMesh;
-	Mesh torchMesh;
-	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
 
 
 	// Sound engine that plays all the sounds, pass reference to classes that will use sound with enginePtr
@@ -137,11 +113,9 @@ int main()
 
 
 	float playerHeight = 1.8f;
-	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, &maze, enginePtr, &lights);
+	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights);
 	player.SetPlayerSpeed(2.0f);
 	player.CenterPlayer(); //Space to return to origin
-
-	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
 
 	ObjectHandler OH;
 
@@ -149,9 +123,10 @@ int main()
 	
 	Model lightSphereModel("Models/Ball/ball.obj");
 	GLuint screenQuad = CreateScreenQuad();
-	Particle particle;
-	Texture particleTexture("Textures/particle.png");
-	particle.SetTexture(&particleTexture);
+	//Particle particle;
+	//Texture particleTexture("Textures/particle.png");
+	//particle.SetTexture(&particleTexture);
+
 	// Initiate timer
 	double currentTime = 0;
 	double lastTime = glfwGetTime();
@@ -193,7 +168,7 @@ int main()
 		lights.UpdateShadowTransform(0);
 
 		// Update particles
-		particle.Update(deltaTime, player.GetCamera(), player.GetTorch()->GetPos());
+		player.GetTorch()->GetParticle()->Update(deltaTime, player.GetCamera(), player.GetTorch()->GetPos());
 
 		// update sound engine with position and view direction
 		soundEngine.Update(player.GetCamera()->GetCameraPosition(), player.GetCamera()->GetForwardVector());
@@ -220,7 +195,7 @@ int main()
 		
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, &geometryPass, &player, &OH, &maze, &brickTexture, &groundTexture);
+		DRGeometryPass(&gBuffer, &geometryPass, &player, &OH, &maze);
 		
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
@@ -243,9 +218,7 @@ int main()
 		// Copy the depth from the bloomBuffer to the finalFBO
 		finalFBO.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, bloomBuffer.GetFBO());
 
-		// Draw particles to the FinalFBO
-		//ParticlePass(&finalFBO, &player.GetTorch()->GetParticle(), player.GetCamera(), &particleShader, deltaTime, player.GetTorch()->GetFirePos());
-		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader);
+		ParticlePass(&finalFBO, player.GetTorch()->GetParticle(), player.GetCamera(), &particleShader);
 
 		// Render everything
 		FinalPass(&finalFBO, &finalShader, &screenQuad);

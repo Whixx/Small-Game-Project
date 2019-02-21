@@ -31,7 +31,7 @@ struct ParticleStruct
 class Particle
 {
 public:
-	Particle();
+	Particle(std::string path = "Textures/default_diffuse.png");
 	~Particle();
 
 	void GenerateParticles(float deltaTime, glm::vec3 particlePos);

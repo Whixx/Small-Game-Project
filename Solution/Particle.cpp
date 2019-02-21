@@ -2,8 +2,10 @@
 #include <iostream>
 
 
-Particle::Particle()
+Particle::Particle(std::string path)
 {
+	this->texture = new Texture(path, "TextureDiffuse");
+
 	// Preparing for the find function
 	this->lastUsedParticle = 0;
 
@@ -87,6 +89,8 @@ Particle::~Particle()
 {
 	delete[] this->particlePosSizeBuffer;
 	delete[] this->particleColorBuffer;
+
+	delete this->texture;
 
 	glDeleteBuffers(1, &this->billboardVertexBuffer);
 }

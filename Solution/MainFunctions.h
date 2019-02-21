@@ -2,10 +2,6 @@
 #define MAINFUNCTIONS_H
 
 
-
-// Finns en main funktion i GLEW, d�rmed m�ste vi undefinera den innan vi kan anv�nda v�ran main
-#include <glew\glew.h>
-
 #include "MazeGeneratePNG.h"
 
 #include "Shader.h"
@@ -39,9 +35,12 @@ void InitBlurShader(Shader *shader);
 void InitFinalBloomShader(Shader *shader);
 void InitFinalShader(Shader *shader);
 
+void WallPass(Shader * wallShader, Maze * maze, Player * player);
+void FloorPass(Shader * floorShader, Maze * maze, Player * player);
+
 // Shader pass functions
-void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player);
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH);
+void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Maze* maze);
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH, Maze* maze);
 void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenQuad, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera);
 void LightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, Model *renderModel);
 void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, GLuint *fullScreenTriangle);

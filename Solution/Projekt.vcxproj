@@ -107,6 +107,8 @@
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
+    <ClCompile Include="SoundEngine.cpp" />
+    <ClCompile Include="SoundHandler.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="timer.c" />
     <ClCompile Include="Torch.cpp" />

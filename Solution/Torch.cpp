@@ -1,16 +1,15 @@
 #include "Torch.h"
 
-Torch::Torch(Transform transform, Mesh * mesh, Texture * texture, glm::vec3 lightColor, irrklang::ISoundEngine* engine, PointLightHandler* PLH)
-	:torchSound("Sounds/torch.wav", true, engine),
-	particleTexture("Textures/particle.png", "NormalMaps/flat_normal.jpg")
+Torch::Torch(Transform transform, glm::vec3 lightColor, irrklang::ISoundEngine* engine, PointLightHandler* PLH)
+	:torchSound("Sounds/torch.wav", true, engine), 
+	model("Models/Torch/torch.obj"),
+	particle("Textures/particle.png")
 {
 	this->transform = transform;
 	this->transform.SetScale(glm::vec3(0.02f, 0.02f, 0.02f));
 	this->transform.GetRot().x = 0;
 	this->transform.GetRot().y = -transform.GetRot().y;
 	this->transform.GetRot().z = 0;
-
-	this->particle.SetTexture(&this->particleTexture);
 
 
 	// Calculate the position of the torchLight
@@ -79,9 +78,14 @@ Transform Torch::GetTransform()
 	return this->transform;
 }
 
-Particle & Torch::GetParticle()
+Model * Torch::GetModel()
 {
-	return this->particle;
+	return &this->model;
+}
+
+Particle * Torch::GetParticle()
+{
+	return &this->particle;
 }
 
 glm::vec3 Torch::GetFirePos()
@@ -89,9 +93,9 @@ glm::vec3 Torch::GetFirePos()
 	return this->lightPos;
 }
 
-void Torch::BindTexture()
+void Torch::BindMaterial(Shader * shader)
 {
-	return &this->model;
+	this->model.BindMaterial(shader);
 }
 
 void Torch::Draw(Shader* shader)
@@ -123,4 +127,6 @@ void Torch::Update(double dt, Transform transform, glm::vec3 camPos, glm::vec3 c
 	this->lightPos = this->transform.GetPos() + glm::vec3(scaleRotMatrix * this->lightStartingPos);
 	
 	this->torchLight->GetPos() = this->lightPos;
+
+	
 }
