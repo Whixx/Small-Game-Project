@@ -61,7 +61,7 @@ private:
 	GLuint floorVao;
 
 	const int scaleXZ = 1;
-	const int scaleY = 1;
+	const int scaleY  = 1;
 
 	// Private functions
 	void initiateWallBuffers();
