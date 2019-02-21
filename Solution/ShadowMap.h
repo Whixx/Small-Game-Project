@@ -4,9 +4,6 @@
 #include <glew\glew.h>
 #include <iostream>
 
-const unsigned int SHADOWMAPWIDTH = 1024;
-const unsigned int SHADOWMAPHEIGHT = 1024;
-
 class ShadowMap
 {
 public:

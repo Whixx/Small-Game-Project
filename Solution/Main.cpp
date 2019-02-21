@@ -1,5 +1,29 @@
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#define STBI_MSC_SECURE_CRT
+﻿#define STB_IMAGE_IMPLEMENTATION
+//#define STBI_MSC_SECURE_CRT
+
+// Finns en main funktion i GLEW, d�rmed m�ste vi undefinera den innan vi kan anv�nda v�ran main
+#include <glew\glew.h>
+#undef main
+
+// Uses stb_image
+
+
+//
+#include "MazeGeneratePNG.h"
+#include "Texture.h"
+
+
+#include "Shader.h"
+#include "ObjectHandler.h"
+#include "PointLight.h"
+#include "ShadowMap.h"
+#include "Bloom.h"
+#include "Blur.h"
+#include "GBuffer.h"
+#include "FinalFBO.h"
+#include "Player.h"
+#include "Particle.h"
+#include "InputHandler.h"
 
 #include "MainFunctions.h"
 
@@ -81,11 +105,11 @@ int main()
 	//=================================================================================//
 
 	//=========================== Buffers ====================================//
-	ShadowMap shadowMap(SHADOWMAPWIDTH, SHADOWMAPHEIGHT);
-	GBuffer gBuffer(SCREENWIDTH, SCREENHEIGHT);
-	BloomBuffer bloomBuffer(SCREENWIDTH, SCREENHEIGHT);
-	BlurBuffer blurBuffers(SCREENWIDTH, SCREENHEIGHT);
-	FinalFBO finalFBO(SCREENWIDTH, SCREENHEIGHT);
+	ShadowMap shadowMap(SHADOW_WIDTH, SHADOW_HEIGHT);
+	GBuffer gBuffer(SCREEN_WIDTH, SCREEN_HEIGHT);
+	BloomBuffer bloomBuffer(SCREEN_WIDTH, SCREEN_HEIGHT);
+	BlurBuffer blurBuffers(SCREEN_WIDTH, SCREEN_HEIGHT);
+	FinalFBO finalFBO(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	//=========================== Creating Objects ====================================//
 
@@ -123,28 +147,17 @@ int main()
 
 	//TODO: Byta ground.png till floor.png
 	
-	// https://rauwendaal.net/2014/06/14/rendering-a-screen-covering-triangle-in-opengl/
-	Vertex fullScreenVerticesTriangle[] =
-	{ 
-		Vertex(glm::vec3(-1, 3, 0), glm::vec2(0.0,2.0)),
-		Vertex(glm::vec3(-1, -1, 0), glm::vec2(0.0,0.0)),
-		Vertex(glm::vec3(3, -1, 0), glm::vec2(2.0,0.0)),
-	};
-
-	Mesh fullScreenTriangle(fullScreenVerticesTriangle, (sizeof(fullScreenVerticesTriangle) / sizeof(fullScreenVerticesTriangle[0])));
-
+	Model lightSphereModel("Models/Ball/ball.obj");
+	GLuint screenQuad = CreateScreenQuad();
+	Particle particle;
+	Texture particleTexture("Textures/particle.png");
+	particle.SetTexture(&particleTexture);
 	// Initiate timer
 	double currentTime = 0;
 	double lastTime = glfwGetTime();
 	double deltaTime = 0;
 	double constLastTime = 0;
 	int nrOfFrames = 0;
-
-	//Particle particle;
-	//Texture particleTexture("Textures/particle.png", "NormalMaps/flat_normal.jpg");
-	//particle.SetTexture(&particleTexture);
-
-	maze.InitiateBuffers();
 
 	while (!display.IsWindowClosed())
 	{
@@ -179,6 +192,8 @@ int main()
 		//lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch()->GetPos().x, player.GetTorch()->GetPos().y + 1.5f, player.GetTorch()->GetPos().z);
 		lights.UpdateShadowTransform(0);
 
+		// Update particles
+		particle.Update(deltaTime, player.GetCamera(), player.GetTorch()->GetPos());
 
 		// update sound engine with position and view direction
 		soundEngine.Update(player.GetCamera()->GetCameraPosition(), player.GetCamera()->GetForwardVector());
@@ -209,35 +224,36 @@ int main()
 		
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
-		DRLightPass(&gBuffer, &bloomBuffer, &fullScreenTriangle, lightPass.GetProgram(), &lightPass, &shadowMap, &lights, player.GetCamera());
-		
+		DRLightPass(&gBuffer, &bloomBuffer, &screenQuad, &lightPass, &shadowMap, &lights, player.GetCamera());
+
 		// Copy the depth from the gBuffer to the bloomBuffer
-		bloomBuffer.CopyDepth(SCREENWIDTH, SCREENHEIGHT, gBuffer.GetFBO());
-		
+		bloomBuffer.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, gBuffer.GetFBO());
+
 		// Draw lightSpheres
 		#ifdef DEBUG
-			LightSpherePass(&pointLightPass, &bloomBuffer, &lights, player.GetCamera());
+			LightSpherePass(&pointLightPass, &bloomBuffer, &lights, player.GetCamera(), &lightSphereModel);
 		#endif
 			
 		// Blur the bright texture
-		BlurPass(&blurShader, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
-		
+		BlurPass(&blurShader, &bloomBuffer, &blurBuffers, &screenQuad);
+
 		// Combine the bright texture and the scene and store the Result in FinalFBO.
-		FinalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
-		
+		FinalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &screenQuad);
+
 		// Copy the depth from the bloomBuffer to the finalFBO
-		finalFBO.CopyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.GetFBO());
-		
+		finalFBO.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, bloomBuffer.GetFBO());
+
 		// Draw particles to the FinalFBO
 		//ParticlePass(&finalFBO, &player.GetTorch()->GetParticle(), player.GetCamera(), &particleShader, deltaTime, player.GetTorch()->GetFirePos());
+		ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader);
 
 		// Render everything
-		FinalPass(&finalFBO, &finalShader, &fullScreenTriangle);
+		FinalPass(&finalFBO, &finalShader, &screenQuad);
 
 
 
 		// ================== POST DRAW ==================
-		display.SwapBuffers(SCREENWIDTH, SCREENHEIGHT);
+		display.SwapBuffers(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 		constLastTime = currentTime;
 	}

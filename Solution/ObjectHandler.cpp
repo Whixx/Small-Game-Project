@@ -2,59 +2,39 @@
 
 ObjectHandler::ObjectHandler()
 {
-	this->numberOfObjects = 0;
+	
 }
 
 ObjectHandler::~ObjectHandler()
 {
-
+	for (int i = 0; i < this->allObjects.size(); i++)
+	{
+		delete this->allObjects[i];
+	}
 }
 
-int ObjectHandler::CreateObject(Mesh *mesh,  Texture *texture)
+int ObjectHandler::CreateObject(const char* filePath)
 {
-	this->allObjects[this->numberOfObjects] = Object(mesh, texture, this->numberOfObjects);
+	Object* temp = new Object(filePath);
+	this->allObjects.push_back(temp);
 
-	return this->numberOfObjects++;
-}
-
-int ObjectHandler::CreateObject(const char* filePath, Mesh *mesh, Texture *texture)
-{
-	bool loaded = false;
-	loaded = mesh->CreateMesh(filePath);
-
-	if (loaded == true)
-	{
-#if DEBUG
-		std::cout << "The object has been loaded correctly!" << std::endl;
-#endif // DEBUG
-	}
-	else
-	{
-#if DEBUG
-		std::cout << "Bad things happened during the attempt to load the object!" << std::endl;
-#endif // DEBUG
-	}
-
-	this->allObjects[this->numberOfObjects] = Object(mesh, texture, this->numberOfObjects);
-
-	return this->numberOfObjects++;
+	return this->allObjects.size() - 1;
 }
 
 void ObjectHandler::UpdateAllObjects(double dt)
 {
-	for (int i = 0; i < numberOfObjects; i++)
+	for (int i = 0; i < this->allObjects.size(); i++)
 	{
-		allObjects[i].Update(dt);
+		allObjects[i]->Update(dt);
 	}
 }
 
-
 unsigned int ObjectHandler::GetNrOfObjects()
 {
-	return this->numberOfObjects;
+	return this->allObjects.size();
 }
 
 Object* ObjectHandler::GetObject(int index)
 {
-	return &this->allObjects[index];
+	return this->allObjects[index];
 }

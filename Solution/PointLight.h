@@ -9,7 +9,6 @@
 #include "Transform.h"
 #include "Shader.h"
 
-#include <glm\glm.hpp>
 #include <string>
 
 using namespace std;
@@ -22,7 +21,6 @@ class PointLight
 {
 public:
 	PointLight();
-	Mesh& GetMesh();
 
 	glm::vec3& GetPos();
 	glm::vec3& GetScale();
@@ -36,11 +34,9 @@ public:
 	void CreateShadowTransforms();
 	void ResetShadowTransforms();
 
-	void Draw();
 	virtual ~PointLight();
 
 private:
-	Mesh mesh;
 	Transform transform;
 	glm::mat4 shadowProj;
 	vector<glm::mat4> shadowTransforms;
@@ -58,8 +54,7 @@ public:
 
 	void SendLightsToShader(Shader* shader);
 	void UpdateShadowTransform(GLuint cameraIndex);
-	void Draw(int index);
-	
+
 	vector<glm::mat4> GetShadowTransform(int index);
 
 	GLuint GetNrOfLights();

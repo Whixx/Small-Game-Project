@@ -5,57 +5,48 @@
 #include <glew\glew.h>
 #include <iostream>
 #include <vector>
+#include "Texture.h"
+#include "Shader.h"
 
 using namespace std;
 
-class Vertex
-{
-public:
-	Vertex(const glm::vec3& pos, const glm::vec2& texCoord)
-	{
-		this->pos = pos;
-		this->texCoord = texCoord;
-	}
-
-	inline glm::vec3* GetPos() { return &this->pos; }
-	inline glm::vec2* GetTexCoord() { return &this->texCoord; }
-
-private:
-	glm::vec3 pos;
-	glm::vec2 texCoord;
+struct Vertex {
+	glm::vec3 Position;
+	glm::vec2 UVCoords;
+	glm::vec3 Normal;
+	glm::vec3 Tangent;
 };
+
+struct Material {
+	glm::vec3 specularColor = glm::vec3(1.0, 1.0, 1.0);
+	float shininess = 16;
+	float d = 0.0f; // Not used
+};
+
 
 class Mesh
 {
-public:
-	Mesh(Vertex* vertices, unsigned int numOfVertices);
-	//Mesh(std::vector<glm::vec3> vertices, std::vector<glm::vec2> uvCoords);
-	Mesh(const char * meshPath);
-	Mesh(const char * meshPath, glm::vec3 color);
-	Mesh() {}
-	void Draw();
-	unsigned int GetDrawCount();
-
-	void operator=(const Mesh& other) {}
-
-	virtual ~Mesh();
-	bool CreateMesh(const char * meshPath);
-	void CreateMesh(std::vector<glm::vec3> vertices, std::vector<glm::vec2> uvCoords);
-	bool CreateMesh(const char * meshPath, glm::vec3 color);
-	bool LoadMesh(const char * objectPath, vector<glm::vec3>& vertices, vector<glm::vec2>& uvs, vector<glm::vec3>& normals);
-
 private:
-	enum
-	{
-		POSITION_VB,
-		TEXCOORD_VB,
-
-		NUM_OF_BUFFERS
-	};
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+	std::vector<Texture*> textures;
+	Material material;
 
 	GLuint vertexArrayObject;
-	GLuint vertexArrayBuffers[NUM_OF_BUFFERS];
-	unsigned int drawCount;
-};
+	GLuint vertexArrayBuffer;
+	GLuint vertexIndexBuffer;
 
+	void SetupMesh();
+
+public:
+	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture*> textures, Material mat);
+	virtual ~Mesh();
+
+	void Bind();
+	void BindTextures(Shader* shader, unsigned int slot = 0);
+	void SendMaterial(Shader* shader);
+	void Draw();
+
+	inline std::vector<Texture*> GetTextures() const { return this->textures; };
+};
 #endif //MESH_H

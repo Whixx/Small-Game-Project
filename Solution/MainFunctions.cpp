@@ -44,7 +44,7 @@ void InitFloorShader(Shader * shader, Maze * maze)
 
 void InitShadowShader(Shader * shader)
 {
-	shader->InitiateShaders(false);
+	shader->InitiateShaders();
 
 	// Set constant uniforms
 
@@ -53,33 +53,34 @@ void InitShadowShader(Shader * shader)
 
 void InitGeometryPass(Shader * shader)
 {
-	shader->InitiateShaders(false);
+	shader->InitiateShaders();
 
 	// Set constant uniforms
 	shader->Bind();
-	shader->SendInt("texture", 0);
-	shader->SendInt("normalMap", 1);
 
 	shader->ValidateShaders();
 }
 
 void InitLightPass(Shader * shader)
 {
-	shader->InitiateShaders(false);
+	shader->InitiateShaders();
 
 	// Set constant uniforms
 	shader->Bind();
+	shader->SendFloat("farPlane", (float)FAR_PLANE);
 	shader->SendInt("gPosition", 0);
 	shader->SendInt("gDiffuse", 1);
 	shader->SendInt("gNormal", 2);
-	shader->SendInt("shadowMap", 3);
+	shader->SendInt("gSpecularShininessHeight", 3);
+	shader->SendInt("gAmbient", 4);
+	shader->SendInt("shadowMap", 5);
 
 	shader->ValidateShaders();
 }
 
 void InitParticleShader(Shader * shader)
 {
-	shader->InitiateShaders(false);
+	shader->InitiateShaders();
 
 	// Set constant uniforms
 	shader->Bind();
@@ -90,7 +91,8 @@ void InitParticleShader(Shader * shader)
 
 void InitPointLightPass(Shader * shader)
 {
-	shader->InitiateShaders(true);
+
+	shader->InitiateShaders();
 
 	// Set constant uniforms
 	shader->Bind();
@@ -100,7 +102,7 @@ void InitPointLightPass(Shader * shader)
 
 void InitBlurShader(Shader * shader)
 {
-	shader->InitiateShaders(false);
+	shader->InitiateShaders();
 
 	// Set constant uniforms
 	shader->Bind();
@@ -111,7 +113,7 @@ void InitBlurShader(Shader * shader)
 
 void InitFinalBloomShader(Shader * shader)
 {
-	shader->InitiateShaders(false);
+	shader->InitiateShaders();
 
 	// Set constant uniforms
 	shader->Bind();
@@ -123,7 +125,7 @@ void InitFinalBloomShader(Shader * shader)
 
 void InitFinalShader(Shader * shader)
 {
-	shader->InitiateShaders(false);
+	shader->InitiateShaders();
 
 	// Set constant uniforms
 	shader->Bind();
@@ -197,8 +199,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		{
 			glm::mat4 worldMatrix = OH->GetObject(j)->GetTransform().GetWorldMatrix();
 			shadowShader->SendMat4("WorldMatrix", worldMatrix);
-			OH->GetObject(j)->BindTexture();
-			OH->GetObject(j)->Draw();
+			OH->GetObject(j)->Draw(shadowShader);
 		}
 		
 		// Draw Torch
@@ -220,16 +221,13 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	}
 
 	shadowShader->UnBind();
-	glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
+	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	glDisable(GL_DEPTH_TEST);
 }
 
 void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH, Maze * maze, Texture * tempBrickTexture, Texture * realFloorTexture)
 {
 	geometryPass->Bind();
-
-	
-	geometryPass->SendCameraLocation(player->GetCamera());
 
 	gBuffer->BindForWriting();
 
@@ -242,22 +240,15 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	// Update and Draw all objects
 	for (unsigned int i = 0; i < OH->GetNrOfObjects(); i++)
 	{
-		geometryPass->SendFloat("illuminated", 1.0f);
 		glm::mat4 worldMatrix = OH->GetObject(i)->GetTransform().GetWorldMatrix();
 		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 		geometryPass->SendMat4("WorldMatrix", worldMatrix);
-		OH->GetObject(i)->BindTexture();
-		OH->GetObject(i)->Draw();
+
+		OH->GetObject(i)->BindMaterial(geometryPass);
+		OH->GetObject(i)->Draw(geometryPass);
 	}
 
 	// Draw player torch
-	geometryPass->SendFloat("illuminated", 3.0f);
-	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * player->GetTorch()->GetTransform().GetWorldMatrix()); // viewProjection * world
-	geometryPass->SendMat4("WorldMatrix", player->GetTorch()->GetTransform().GetWorldMatrix());
-	player->GetTorch()->BindTexture();
-	player->GetTorch()->Draw();
-	
-	geometryPass->SendFloat("illuminated", 4.0f);
 	glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 	geometryPass->SendMat4("WorldMatrix", worldMatrix);
@@ -281,34 +272,34 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	realFloorTexture->Bind(0);
 	maze->DrawFloor();
 
+	player->GetTorch()->GetModel()->BindMaterial(geometryPass);
 	geometryPass->UnBind();
 }
 
-void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, Mesh *fullScreenTriangle, GLuint *program, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera)
+void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenTriangle, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera)
 {
 	lightPass->Bind();
 
 	lights->SendLightsToShader(lightPass);
 	lightPass->SendCameraLocation(camera);
-	lightPass->SendFloat("farPlane", (float)FAR_PLANE);
 
 	// Bloom buffer, write finalColor and brightness.
 	bloomBuffer->BindForWriting();
-	bloomBuffer->BindForReading();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	gBuffer->BindForReading(); // Binds texture slot 0,1,2
-	shadowBuffer->BindForReading(3); // Binds texture slot 3
+	gBuffer->BindForReading(); // Binds texture slot 0,1,2,3,4
+	shadowBuffer->BindForReading(5); // Binds texture slot 5
 
 	glDisable(GL_DEPTH_TEST);
-	fullScreenTriangle->Draw();
+	glBindVertexArray(*fullScreenTriangle);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glEnable(GL_DEPTH_TEST);
 
 	lightPass->UnBind();
 }
 
 // This function draws particles to the screen.
-void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader, float deltaTime, glm::vec3 position)
+void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader)
 {
 	// Bind the correct shader
 	particleShader->Bind();
@@ -321,24 +312,13 @@ void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 	particleShader->SendVec3("cameraUpWorld", camera->GetViewProjection()[0][1], camera->GetViewProjection()[1][1], camera->GetViewProjection()[2][1]);
 	particleShader->SendMat4("viewProjectionMatrix", camera->GetViewProjection());
 
-
-	// Create new particles
-	particle->GenerateParticles(deltaTime, position);
-
-	// Simulate all the particles
-	particle->SimulateParticles(camera->GetCameraPosition(), deltaTime);
-
-	// Update the buffers holding the particles
-	particle->Update();
-
-
-
 	// Disable depthbuffer and enable blend
 	glDepthMask(false);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-	particle->BindTexture();
+	particle->GetTexture()->Bind(0);
+	particleShader->SendInt("particleTexture", 0);
 
 	// Bind the buffers holding the particles
 	particle->Bind();
@@ -353,7 +333,7 @@ void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 	particleShader->UnBind();
 }
 
-void LightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera)
+void LightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, Model *renderModel)
 {
 	bloomBuffer->BindForWriting();
 
@@ -366,13 +346,13 @@ void LightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLigh
 		glm::mat4 worldMatrix = lights->GetTransform(i)->GetWorldMatrix();
 		pointLightPass->SendMat4("transformationMatrix", camera->GetViewProjection() * worldMatrix);
 
-		lights->Draw(i);
+		renderModel->Draw(pointLightPass);
 	}
 	pointLightPass->UnBind();
 	glDisable(GL_CULL_FACE);
 }
 
-void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle)
+void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, GLuint *fullScreenTriangle)
 {
 	blurShader->Bind();
 	int timesToBlur = 10;
@@ -399,7 +379,8 @@ void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuff
 		}
 
 		glDisable(GL_DEPTH_TEST);
-		fullScreenTriangle->Draw();
+		glBindVertexArray(*fullScreenTriangle);
+		glDrawArrays(GL_TRIANGLES, 0, 3);;
 		glEnable(GL_DEPTH_TEST);
 
 		horizontal = !horizontal;
@@ -412,7 +393,7 @@ void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuff
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void FinalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, Mesh *fullScreenTriangle)
+void FinalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, GLuint *fullScreenTriangle)
 {
 	finalFBO->BindForWriting();
 
@@ -424,12 +405,13 @@ void FinalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *
 	blurBuffers->BindForReading(1, 1);
 
 	glDisable(GL_DEPTH_TEST);
-	fullScreenTriangle->Draw();
+	glBindVertexArray(*fullScreenTriangle);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glEnable(GL_DEPTH_TEST);
 
 }
 
-void FinalPass(FinalFBO * finalFBO, Shader * finalShader, Mesh * fullScreenTriangle)
+void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint * fullScreenTriangle)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -438,7 +420,8 @@ void FinalPass(FinalFBO * finalFBO, Shader * finalShader, Mesh * fullScreenTrian
 	finalShader->Bind();
 
 	glDisable(GL_DEPTH_TEST);
-	fullScreenTriangle->Draw();
+	glBindVertexArray(*fullScreenTriangle);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -452,4 +435,37 @@ void GenerateMazeBitmaps(int height, int width)
 
 	mazeGen.Generate();
 	mazeGen.Draw_png();
+}
+
+GLuint CreateScreenQuad()
+{
+	// https://rauwendaal.net/2014/06/14/rendering-a-screen-covering-triangle-in-opengl/
+	 
+
+	float fullScreenTriangleData[] = {
+		-1.0, 3.0, 0.0, 0.0, 2.0,
+		-1.0, -1.0, 0.0, 0.0, 0.0,
+		3.0, -1.0, 0.0, 2.0, 0.0
+	};
+	
+	GLuint screenQuad;
+
+	glGenVertexArrays(1, &screenQuad);
+	glBindVertexArray(screenQuad);
+
+	GLuint quadBuffer;
+	glGenBuffers(1, &quadBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, quadBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5 * 3, &fullScreenTriangleData[0], GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(float) * 5, 0);
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, false, sizeof(float) * 5, (void*) (sizeof(float) * 3));
+
+
+	glBindVertexArray(0);
+
+	return screenQuad;
 }

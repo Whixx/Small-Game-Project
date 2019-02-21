@@ -16,6 +16,7 @@ Player::Player(float height, float fov, float near, float far, Mesh * mesh, Text
 
 Player::~Player()
 {
+
 }
 
 float Player::GetPlayerSpeed()

@@ -2,8 +2,6 @@
 #define TORCH_H
 
 #include <glew\glew.h>
-#include "Mesh.h"
-#include "Texture.h"
 #include "Transform.h"
 #include "PointLight.h"
 #include "Particle.h"
@@ -34,8 +32,7 @@ public:
 	virtual void Update(double dt, Transform transform, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camRight, glm::vec3 camUp, float distFromPlayer);
 	
 private:
-	Mesh *mesh;
-	Texture *texture;
+	Model model;
 	Transform transform;
 	SoundHandler torchSound;
 	const float size = 0.02f;

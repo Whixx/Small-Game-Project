@@ -5,7 +5,6 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "Display.h"
-#include "Maze.h"
 #include "Torch.h"
 #include "SoundHandler.h"
 

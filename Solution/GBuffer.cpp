@@ -9,6 +9,7 @@ GBuffer::GBuffer(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT)
 	this->height = SCREENHEIGHT;
 
 	this->Init();
+	GLenum a = glCheckFramebufferStatus(this->fbo);
 }
 
 GBuffer::~GBuffer()
@@ -41,6 +42,7 @@ bool GBuffer::Init()
 	// Initialize vertex attributes textures (Allocate memory for the gBuffer textures)
 	glGenTextures(GBUFFER_NUM_TEXTURES, this->textures);
 
+	std::vector<unsigned int> attachments;
 	for (unsigned int i = 0; i < GBUFFER_NUM_TEXTURES; i++)
 	{
 		// Make all the textures active
@@ -56,12 +58,12 @@ bool GBuffer::Init()
 
 		// Attach the texture to the framebuffer. All textures will be in GL_COLOR_ATTACHMENT0-1-2-3
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, this->textures[i], 0);
+		attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
 	}
 
 	// Tell OpenGl which color attachments we'll use (of this FBO) for rendering
 	// Enables writing to all our textures
-	GLenum attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-	glDrawBuffers(GBUFFER_NUM_TEXTURES, attachments);
+	glDrawBuffers(GBUFFER_NUM_TEXTURES, attachments.data());
 
 	// Create the depthTexture
 	glGenTextures(1, &this->depthTexture);

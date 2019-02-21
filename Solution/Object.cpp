@@ -1,25 +1,13 @@
 #include "Object.h"
 
-Object::Object(Mesh *mesh, Texture *texture)
+Object::Object(string path)
 {
-	this->mesh = mesh;
-	this->texture = texture;
-	this->id = -1;
-}
-
-Object::Object(Mesh * mesh, Texture * texture, unsigned int id)
-{
-	this->mesh = mesh;
-	this->texture = texture;
-	this->id = id;
-}
-
-Object::Object()
-{
+	this->model = new Model(path, false);
 }
 
 Object::~Object()
 {
+	delete this->model;
 }
 
 glm::mat4 Object::GetWorldMatrix() const
@@ -51,12 +39,12 @@ void Object::Update(double dt)
 {
 }
 
-void Object::Draw()
+void Object::BindMaterial(Shader* shader)
 {
-	this->mesh->Draw();
+	this->model->BindMaterial(shader);
 }
 
-void Object::BindTexture()
+void Object::Draw(Shader* shader)
 {
-	this->texture->Bind(0);
+	this->model->Draw(shader);
 }

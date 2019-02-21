@@ -4,9 +4,6 @@ Torch::Torch(Transform transform, Mesh * mesh, Texture * texture, glm::vec3 ligh
 	:torchSound("Sounds/torch.wav", true, engine),
 	particleTexture("Textures/particle.png", "NormalMaps/flat_normal.jpg")
 {
-	this->texture = texture;
-	this->mesh = mesh;
-	this->mesh->CreateMesh("ObjectFiles/torch.obj");
 	this->transform = transform;
 	this->transform.SetScale(glm::vec3(0.02f, 0.02f, 0.02f));
 	this->transform.GetRot().x = 0;
@@ -94,12 +91,12 @@ glm::vec3 Torch::GetFirePos()
 
 void Torch::BindTexture()
 {
-	this->texture->Bind(0);
+	return &this->model;
 }
 
-void Torch::Draw()
+void Torch::Draw(Shader* shader)
 {
-	this->mesh->Draw();
+	this->model.Draw(shader);
 }
 
 void Torch::Update(double dt, Transform transform, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camRight, glm::vec3 camUp, float distFromPlayer)

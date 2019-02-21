@@ -20,6 +20,8 @@ uniform PointLight PointLights[256];
 uniform sampler2D gPosition;
 uniform sampler2D gDiffuse;
 uniform sampler2D gNormal;
+uniform sampler2D gSpecularShininessHeight;
+uniform sampler2D gAmbient;
 
 // ShadowBuffer variables
 uniform samplerCube shadowMap;
@@ -72,13 +74,17 @@ void main()
 	vec3 pixelPos = texture2D(gPosition, texCoord0).xyz;
 	vec3 materialColor = texture2D(gDiffuse, texCoord0).rgb;
 	vec3 normal = texture2D(gNormal, texCoord0).xyz;
+	vec3 ambientColor = texture2D(gAmbient, texCoord0).rgb;
+	float specular = texture2D(gSpecularShininessHeight, texCoord0).r;
+	float shininess = texture2D(gSpecularShininessHeight, texCoord0).g;
+	
 
 	// Attenuation
 	float attenuation;
 	float distancePixelToLight;
 
 	// Ambient
-	vec4 ambient = vec4(0.1f,0.1f,0.1,1.0f) * vec4(materialColor.rgb, 1.0f);
+	vec3 ambient = ambientColor;
 	
 	// Diffuse
 	vec3 lightDir;
@@ -88,9 +94,9 @@ void main()
 	// Specular
 	vec3 vecToCam;
 	vec4 reflection;
+	vec4 finalSpecular;
     vec3 halfwayDir;
 	vec4 specular;
-	float shininess = 30;
 
 	for(int i = 0; i < NR_OF_POINT_LIGHTS; i++)
 	{
@@ -104,6 +110,10 @@ void main()
         halfwayDir = normalize(lightDir + vecToCam);
 		float spec = pow(max(dot(normal, halfwayDir), 0.0), shininess);
         specular += vec4(materialColor.rgb, 1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * pow(max(dot(normal, halfwayDir), 0.0), shininess);
+		// Source: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/reflect.xhtml
+		reflection = reflect(vec4(-lightDir.xyz, 0.0f), vec4(normal.xyz,1.0f));
+		finalSpecular += specular * vec4(PointLights[i].color.rgb, 1.0f) * pow(max(dot(reflection.xyz, vecToCam.xyz),0), ceil(shininess));
+		finalSpecular.w = 1.0;
 
 		// attenuation
 		distancePixelToLight = length(PointLights[i].position - pixelPos);
@@ -112,7 +122,7 @@ void main()
 
 	float shadow = calculateShadows(pixelPos, cameraPos, normal);
 
-	vec4 finalColor = ambient + ((1 - shadow) * attenuation*(diffuse + specular));
+	vec4 finalColor = ambient + ((1 - shadow) * attenuation*(diffuse + finalSpecular));
 	finalColor = min(vec4(1.0f,1.0f,1.0f,1.0f), finalColor);
 
 	fragment_color = vec4(finalColor.xyz, 1.0f);

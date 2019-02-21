@@ -7,7 +7,6 @@ PointLightHandler::PointLightHandler()
 
 PointLight* PointLightHandler::CreateLight(glm::vec3 position, glm::vec3 color, float intensity)
 {
-	this->lightArray[this->nrOfLights].GetMesh().CreateMesh("ObjectFiles/moon.obj", color);
 	this->lightArray[this->nrOfLights].GetPos() = position;
 	this->lightArray[this->nrOfLights].GetColor() = color * intensity;
 	this->lightArray[this->nrOfLights].GetIntensity() = intensity;
@@ -39,11 +38,6 @@ void PointLightHandler::UpdateShadowTransform(GLuint cameraIndex)
 	this->lightArray[cameraIndex].CreateShadowTransforms();
 }
 
-void PointLightHandler::Draw(int index)
-{
-	this->lightArray[index].Draw();
-}
-
 vector<glm::mat4> PointLightHandler::GetShadowTransform(int index)
 {
 	return this->lightArray[index].GetShadowTransforms();
@@ -70,11 +64,6 @@ PointLight::PointLight()
 	float near = (float)NEAR_PLANE;
 	float far = (float)FAR_PLANE;
 	this->shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
-}
-
-Mesh & PointLight::GetMesh()
-{
-	return this->mesh;
 }
 
 glm::vec3 & PointLight::GetPos()
@@ -128,11 +117,6 @@ void PointLight::ResetShadowTransforms()
 	{
 		this->shadowTransforms.pop_back();
 	}
-}
-
-void PointLight::Draw()
-{
-	this->mesh.Draw();
 }
 
 PointLight::~PointLight()

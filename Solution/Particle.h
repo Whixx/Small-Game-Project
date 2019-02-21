@@ -8,6 +8,7 @@
 // algorithm for usage of std::sort()
 #include <algorithm>
 #include "Texture.h"
+#include "Camera.h"
 
 #define maxParticles 500
 
@@ -35,12 +36,13 @@ public:
 
 	void GenerateParticles(float deltaTime, glm::vec3 particlePos);
 	void SimulateParticles(glm::vec3 cameraPosition, float deltaTime);
-	void Update();
+	void Update(double deltaTime, Camera* camera, glm::vec3 position);
 	void Bind();
 	void Draw();
-	void BindTexture();
+	Texture* GetTexture() const;
 	void SetTexture(Texture* texture);
 private:
+	GLuint VA;
 	GLuint billboardVertexBuffer;
 	GLuint particlesPositionBuffer;
 	GLuint particlesColorBuffer;

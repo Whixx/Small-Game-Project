@@ -6,7 +6,7 @@
 #include <random>
 #include <algorithm>
 #include <stdexcept>
-#include "stb_image_write.h"
+
 
 class MazeGeneratePNG
 {

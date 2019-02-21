@@ -6,7 +6,6 @@
 #include <string>
 #include <glm\glm.hpp>
 #include <glew\glew.h>
-#include "Transform.h"
 #include "Camera.h"
 #include <unordered_map>
 
@@ -18,7 +17,7 @@ public:
 	void Bind();
 	void initiateMazeShader();
 	void UnBind();
-	void InitiateShaders(bool color);
+	void InitiateShaders(bool color = false);
 	void ValidateShaders();
 
 	GLuint CreateShader(const std::string& fileName, GLenum shaderType);
