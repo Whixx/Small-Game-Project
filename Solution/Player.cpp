@@ -56,7 +56,7 @@ void Player::SetPlayerSpeed(float speed)
 void Player::MoveDiagonalRightUp(float elapsedTime)
 {
 	// Getting diagonal vector
-	glm::vec3 diagonal = (this->walkingVector + this->GetCamera()->GetRightVector());
+	glm::vec3 diagonal = (this->walkingVector + this->GetCamera()->GetRightVector()) * 0.8f;
 
 	// Getting the positions
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
@@ -72,7 +72,7 @@ void Player::MoveDiagonalRightUp(float elapsedTime)
 void Player::MoveDiagonalLeftUp(float elapsedTime)
 {
 	// Getting diagonal vector
-	glm::vec3 diagonal = (this->walkingVector - this->GetCamera()->GetRightVector());
+	glm::vec3 diagonal = (this->walkingVector - this->GetCamera()->GetRightVector()) * 0.8f;
 
 	// Getting the positions
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
@@ -88,7 +88,7 @@ void Player::MoveDiagonalLeftUp(float elapsedTime)
 void Player::MoveDiagonalRightDown(float elapsedTime)
 {
 	// Getting diagonal vector
-	glm::vec3 diagonal = (this->walkingVector - this->GetCamera()->GetRightVector());
+	glm::vec3 diagonal = (this->walkingVector - this->GetCamera()->GetRightVector()) * 0.8f;
 
 	// Getting the positions
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
@@ -104,7 +104,7 @@ void Player::MoveDiagonalRightDown(float elapsedTime)
 void Player::MoveDiagonalLeftDown(float elapsedTime)
 {
 	// Getting diagonal vector
-	glm::vec3 diagonal = (this->walkingVector + this->GetCamera()->GetRightVector());
+	glm::vec3 diagonal = (this->walkingVector + this->GetCamera()->GetRightVector()) * 0.8f;
 
 	// Getting the positions
 	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());

@@ -53,28 +53,28 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	bool doubleKeys = false;
 
 	// ForwardRight
-	if (W == GLFW_PRESS && D == GLFW_PRESS)
+	if (W == GLFW_PRESS && D == GLFW_PRESS && doubleKeys == false)
 	{
 		player->MoveDiagonalRightUp(elapsedTime);
 		doubleKeys = true;
 	}
 
 	// ForwardLeft
-	if (W == GLFW_PRESS && A == GLFW_PRESS)
+	if (W == GLFW_PRESS && A == GLFW_PRESS && doubleKeys == false)
 	{
 		player->MoveDiagonalLeftUp(elapsedTime);
 		doubleKeys = true;
 	}
 
 	// BackwardRight
-	if (S == GLFW_PRESS && D == GLFW_PRESS)
+	if (S == GLFW_PRESS && D == GLFW_PRESS && doubleKeys == false)
 	{
 		player->MoveDiagonalRightDown(elapsedTime);
 		doubleKeys = true;
 	}
 
 	// BackwardLeft
-	if (S == GLFW_PRESS && A == GLFW_PRESS)
+	if (S == GLFW_PRESS && A == GLFW_PRESS && doubleKeys == false)
 	{
 		player->MoveDiagonalLeftDown(elapsedTime);
 		doubleKeys = true;
