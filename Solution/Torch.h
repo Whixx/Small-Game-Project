@@ -21,6 +21,8 @@ public:
 	glm::vec3 &GetRot();
 	Transform GetTransform();
 
+	Model* GetModel();
+
 	void Draw(Shader* shader);
 	virtual void Update(double dt);
 	

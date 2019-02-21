@@ -22,6 +22,7 @@ public:
 	inline std::string GetDirectory() const { return this->directoryPath; };
 
 	void Draw(Shader* shader);
+	void BindMaterial(Shader* shader);
 
 private:
 	std::vector<Texture*> loadedTextures;

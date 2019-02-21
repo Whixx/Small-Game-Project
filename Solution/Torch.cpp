@@ -51,6 +51,11 @@ Transform Torch::GetTransform()
 	return this->transform;
 }
 
+Model* Torch::GetModel()
+{
+	return &this->model;
+}
+
 void Torch::Draw(Shader* shader)
 {
 	this->model.Draw(shader);

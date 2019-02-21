@@ -153,6 +153,8 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 		glm::mat4 worldMatrix = OH->GetObject(i)->GetTransform().GetWorldMatrix();
 		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 		geometryPass->SendMat4("WorldMatrix", worldMatrix);
+
+		OH->GetObject(i)->BindMaterial(geometryPass);
 		OH->GetObject(i)->Draw(geometryPass);
 	}
 
@@ -160,7 +162,9 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 	geometryPass->SendMat4("WorldMatrix", worldMatrix);
-	player->GetTorch()->Draw(geometryPass);
+
+	player->GetTorch()->GetModel()->BindMaterial(geometryPass);
+	player->GetTorch()->GetModel()->Draw(geometryPass);
 	
 	geometryPass->UnBind();
 }

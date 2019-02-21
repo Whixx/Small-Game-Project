@@ -23,12 +23,19 @@ Model::~Model()
 	}
 }
 
-void Model::Draw(Shader* shader)
+void Model::BindMaterial(Shader* shader)
 {
 	for (Mesh* m : this->meshes)
 	{
 		m->BindTextures(shader);
 		m->SendMaterial(shader);
+	}
+}
+
+void Model::Draw(Shader* shader)
+{
+	for (Mesh* m : this->meshes)
+	{
 		m->Bind();
 		m->Draw();
 	}
