@@ -19,7 +19,7 @@ struct Vertex {
 
 struct Material {
 	glm::vec3 specularColor = glm::vec3(1.0, 1.0, 1.0);
-	unsigned int shininess = 16;
+	float shininess = 16;
 	float d = 0.0f; // Not used
 };
 

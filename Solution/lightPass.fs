@@ -20,7 +20,7 @@ uniform PointLight PointLights[256];
 uniform sampler2D gPosition;
 uniform sampler2D gDiffuse;
 uniform sampler2D gNormal;
-uniform sampler2D gSpecularAndHeight;
+uniform sampler2D gSpecularShininessHeight;
 uniform sampler2D gAmbient;
 
 // ShadowBuffer variables
@@ -50,16 +50,17 @@ void main()
 	vec3 pixelPos = texture2D(gPosition, texCoord0).xyz;
 	vec3 materialColor = texture2D(gDiffuse, texCoord0).rgb;
 	vec3 normal = texture2D(gNormal, texCoord0).xyz;
-	float specular = texture2D(gSpecularAndHeight, texCoord0).r;
-	float heightMap = texture2D(gSpecularAndHeight, texCoord0).b;
-	vec3 ambient = texture2D(gAmbient, texCoord0).rgb;
+	vec3 ambientColor = texture2D(gAmbient, texCoord0).rgb;
+	float specular = texture2D(gSpecularShininessHeight, texCoord0).r;
+	float shininess = texture2D(gSpecularShininessHeight, texCoord0).g;
+	
 
 	// Attenuation
 	float attenuation;
 	float distancePixelToLight;
 
 	// Ambient
-	//vec4 ambient = vec4(0.1f,0.1f,0.1,1.0f) * vec4(materialColor.rgb, 1.0f);
+	vec3 ambient = ambientColor;
 	
 	// Diffuse
 	vec3 lightDir;
@@ -70,7 +71,6 @@ void main()
 	vec3 vecToCam;
 	vec4 reflection;
 	vec4 finalSpecular;
-	float shininess = 30;
 
 	for(int i = 0; i < NR_OF_POINT_LIGHTS; i++)
 	{
@@ -83,7 +83,7 @@ void main()
 		vecToCam = normalize(vec3(cameraPos.xyz - pixelPos.xyz));	
 		// Source: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/reflect.xhtml
 		reflection = reflect(vec4(-lightDir.xyz, 0.0f), vec4(normal.xyz,1.0f));
-		finalSpecular += specular * vec4(PointLights[i].color.rgb, 1.0f) * pow(max(dot(reflection.xyz, vecToCam.xyz),0), shininess);
+		finalSpecular += specular * vec4(PointLights[i].color.rgb, 1.0f) * pow(max(dot(reflection.xyz, vecToCam.xyz),0), ceil(shininess));
 		finalSpecular.w = 1.0;
 
 		// attenuation

@@ -166,7 +166,6 @@ int main()
 
 		OH.UpdateAllObjects(deltaTime);
 
-		lights.GetTransform(0)->GetPos() = glm::vec3(0, 1, 0);
 		lights.UpdateShadowTransform(0);
 
 		// Update particles

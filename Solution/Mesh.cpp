@@ -95,9 +95,11 @@ void Mesh::BindTextures(Shader * shader, unsigned int slot)
 
 void Mesh::SendMaterial(Shader* shader)
 {
-	shader->SendVec3("Material.specColor", this->material.specularColor.x, this->material.specularColor.y, this->material.specularColor.z);
-	shader->SendInt("Material.shininess", this->material.shininess);
-	shader->SendFloat("Material.d", this->material.d);
+	//shader->SendVec3("Material.specColor", this->material.specularColor.x, this->material.specularColor.y, this->material.specularColor.z);
+	//shader->SendInt("Material.shininess", this->material.shininess);
+	//shader->SendFloat("Material.d", this->material.d);
+
+	shader->SendFloat("shininess", this->material.shininess);
 }
 
 void Mesh::Draw()

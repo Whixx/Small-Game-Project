@@ -25,10 +25,11 @@ void InitLightPass(Shader * shader)
 
 	// Set constant uniforms
 	shader->Bind();
+	shader->SendFloat("farPlane", (float)FAR_PLANE);
 	shader->SendInt("gPosition", 0);
 	shader->SendInt("gDiffuse", 1);
 	shader->SendInt("gNormal", 2);
-	shader->SendInt("gSpecularAndHeight", 3);
+	shader->SendInt("gSpecularShininessHeight", 3);
 	shader->SendInt("gAmbient", 4);
 	shader->SendInt("shadowMap", 5);
 
@@ -126,8 +127,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		// Draw player torch
 		glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 		shadowShader->SendMat4("WorldMatrix", worldMatrix);
-		//player->GetTorch()->BindTexture();
-		//player->GetTorch()->Draw(shadowShader);
+		player->GetTorch()->Draw(shadowShader);
 	}
 
 	shadowShader->UnBind();
@@ -150,7 +150,6 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	// Update and Draw all objects
 	for (unsigned int i = 0; i < OH->GetNrOfObjects(); i++)
 	{
-		geometryPass->SendFloat("illuminated", 1.0f);
 		glm::mat4 worldMatrix = OH->GetObject(i)->GetTransform().GetWorldMatrix();
 		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 		geometryPass->SendMat4("WorldMatrix", worldMatrix);
@@ -158,7 +157,6 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	}
 
 	// Draw player torch
-	geometryPass->SendFloat("illuminated", 3.0f);
 	glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 	geometryPass->SendMat4("WorldMatrix", worldMatrix);
@@ -173,7 +171,6 @@ void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenT
 
 	lights->SendLightsToShader(lightPass);
 	lightPass->SendCameraLocation(camera);
-	lightPass->SendFloat("farPlane", (float)FAR_PLANE);
 
 	// Bloom buffer, write finalColor and brightness.
 	bloomBuffer->BindForWriting();

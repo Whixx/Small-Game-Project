@@ -28,6 +28,7 @@ void Model::Draw(Shader* shader)
 	for (Mesh* m : this->meshes)
 	{
 		m->BindTextures(shader);
+		m->SendMaterial(shader);
 		m->Bind();
 		m->Draw();
 	}
@@ -152,13 +153,14 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 
 		// Load material variables
 		float shininess;
-		material->Get(AI_MATKEY_SHININESS, shininess);
-		if(mat.shininess > 0)
+		unsigned int success;
+		success = material->Get(AI_MATKEY_SHININESS, shininess);
+		if(success == AI_SUCCESS)
 			mat.shininess = shininess;
 
 		aiColor3D specColor;
-		material->Get(AI_MATKEY_COLOR_SPECULAR, specColor);
-		if (specColor != aiColor3D(0, 0, 0))
+		success = material->Get(AI_MATKEY_COLOR_SPECULAR, specColor);
+		if (success == AI_SUCCESS && specColor != aiColor3D(0, 0, 0))
 		{
 			mat.specularColor.r = specColor.r;
 			mat.specularColor.g = specColor.g;

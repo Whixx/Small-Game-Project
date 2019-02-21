@@ -15,6 +15,8 @@ uniform sampler2D TextureNormal;
 uniform sampler2D TextureSpecular;
 uniform sampler2D TextureAmbient;
 
+uniform float shininess;
+
 void main()
 {	
 	// Deferred rendering Geometry pass
@@ -29,7 +31,7 @@ void main()
 	WorldNormalOut = normalize(TBN * WorldNormalOut);
 
 	TextureSpecularAndHeightOut.rgb = texture2D(TextureSpecular, texCoords).rgb;
-	//TextureSpecularAndHeightOut.g = 0;
-	//TextureSpecularAndHeightOut.b = 0;
+	TextureSpecularAndHeightOut.g = shininess;
+	TextureSpecularAndHeightOut.b = 0;
 
 }
