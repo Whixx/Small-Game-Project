@@ -5,14 +5,18 @@ layout (triangle_strip, max_vertices = 6) out;
 
 out vec3 outPosition;
 out vec2 outTexCoords;
+out vec3 outNormal;
+out vec3 outTangent;
 
 uniform sampler2D texture;
 
 uniform int width;
 uniform int height;
+
+// This uniform are used to scale the UV-coords along with the walls.
 uniform int scaleUVXZ;
 
-void drawFloor(float i, float j);
+void DrawFloor(float i, float j);
 
 void main()
 {
@@ -40,27 +44,33 @@ void main()
 		i -= (width / 2);
 		j -= (height / 2);
 
-		drawFloor(i, j);
+		DrawFloor(i, j);
 	}
 }
 		 
 // Draw the floor
-void drawFloor(float i, float j)
+void DrawFloor(float i, float j)
 {
 	// First Triangle
 	// Left Bottom vertex
 	outPosition = vec3(i - 0.5f, 0, j + 0.5);
 	outTexCoords = vec2(0, 0);
+	outNormal  = vec3(0.0f, 1.0f, 0.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
 	EmitVertex();												  
 			
 	//Right Top Vertex											  
 	outPosition = vec3(i + 0.5f, 0, j - 0.5);
 	outTexCoords = vec2(scaleUVXZ, scaleUVXZ);
+	outNormal  = vec3(0.0f, 1.0f, 0.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
 	EmitVertex();
 
 	// Left Top Vertex											  
 	outPosition = vec3(i - 0.5f, 0, j - 0.5);
 	outTexCoords = vec2(0, scaleUVXZ);
+	outNormal  = vec3(0.0f, 1.0f, 0.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
 	EmitVertex();												  		
 	EndPrimitive();
 		
@@ -70,16 +80,22 @@ void drawFloor(float i, float j)
 	// Left Bottom vertex
 	outPosition = vec3(i - 0.5f, 0, j + 0.5);
 	outTexCoords = vec2(0, 0);
+	outNormal  = vec3(0.0f, 1.0f, 0.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
 	EmitVertex();
 		
 	// Right Bottom vertex
 	outPosition = vec3(i + 0.5f, 0, j + 0.5);
 	outTexCoords = vec2(scaleUVXZ, 0);
+	outNormal  = vec3(0.0f, 1.0f, 0.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
 	EmitVertex();
 
 	// Right Top vertex
 	outPosition = vec3(i + 0.5f, 0, j - 0.5);
 	outTexCoords = vec2(scaleUVXZ, scaleUVXZ);
+	outNormal  = vec3(0.0f, 1.0f, 0.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
 	EmitVertex();		
 	EndPrimitive();
 }
