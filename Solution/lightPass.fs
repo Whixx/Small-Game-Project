@@ -38,7 +38,7 @@ float calculateShadows(vec3 objPos, vec3 camPos, vec3 normal)
     // PCF (Percentage-closer filtering)
     // Change these two to optimize the look of the shadow
     int smoothness = 100; // Higher value will make the overall shadow "more compact"
-    int samples = 30; // Higher value will lower the performance but make the smoothness' stages translate better
+    int samples = 20; // Higher value will lower the performance but make the smoothness' stages translate better
 
     float diskRadius = (1.0 + (viewDist / farPlane)) / smoothness; // Sharper the closer the camera is
     vec3 sampleOffsetDirections[20] = vec3[]
