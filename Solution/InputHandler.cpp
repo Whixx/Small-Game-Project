@@ -35,44 +35,81 @@ void InputHandler::MouseControls(Display * display, Player * player, float elaps
 
 void InputHandler::KeyboardControls(Display * display, Player * player, float elapsedTime)
 {
-	int keyboardButton;
+	// Front
+	int W = glfwGetKey(display->GetWindow(), GLFW_KEY_W);
+	int	S = glfwGetKey(display->GetWindow(), GLFW_KEY_S);
+	
+	// Sides
+	int D = glfwGetKey(display->GetWindow(), GLFW_KEY_D);
+	int A = glfwGetKey(display->GetWindow(), GLFW_KEY_A);
+
+	// Upside
+	int R = glfwGetKey(display->GetWindow(), GLFW_KEY_R);
+	int F = glfwGetKey(display->GetWindow(), GLFW_KEY_F);
+
+	// Recenter
+	int Space = glfwGetKey(display->GetWindow(), GLFW_KEY_SPACE);
+
+	bool doubleKeys = false;
+
+	// ForwardRight
+	if (W == GLFW_PRESS && D == GLFW_PRESS)
+	{
+		player->MoveDiagonalRightUp(elapsedTime);
+		doubleKeys = true;
+	}
+
+	// ForwardLeft
+	if (W == GLFW_PRESS && A == GLFW_PRESS)
+	{
+		player->MoveDiagonalLeftUp(elapsedTime);
+		doubleKeys = true;
+	}
+
+	// BackwardRight
+	if (S == GLFW_PRESS && D == GLFW_PRESS)
+	{
+		player->MoveDiagonalRightDown(elapsedTime);
+		doubleKeys = true;
+	}
+
+	// BackwardLeft
+	if (S == GLFW_PRESS && A == GLFW_PRESS)
+	{
+		player->MoveDiagonalLeftDown(elapsedTime);
+		doubleKeys = true;
+	}
+
 	// Check for keyboard inputs, used to move the camera around.
 	// WASD for movearound, RF (Rise,Fall) and space to set the initial camera position & viewDir.
-	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_W);
-	if (keyboardButton == GLFW_PRESS)
+	if (W == GLFW_PRESS && doubleKeys == false)
 	{
 		player->MoveForward(elapsedTime);
 		//player->minotaurSound.PlayGrowl();
 	}
-	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_S);
-	if (keyboardButton == GLFW_PRESS)
+	if (S == GLFW_PRESS && doubleKeys == false)
 	{
 		player->MoveBackward(elapsedTime);
 		//player->minotaurSound.StopAllSounds();
 		//player->sound.StopAllSounds();
 	}
-	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_D);
-	if (keyboardButton == GLFW_PRESS)
+	if (D == GLFW_PRESS && doubleKeys == false)
 	{
 		player->MoveRight(elapsedTime);
 	}
-	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_A);
-	if (keyboardButton == GLFW_PRESS)
+	if (A == GLFW_PRESS && doubleKeys == false)
 	{
 		player->MoveLeft(elapsedTime);
 	}
-	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_R);
-	if (keyboardButton == GLFW_PRESS)
+	if (R == GLFW_PRESS && doubleKeys == false)
 	{
 		player->MoveUp(elapsedTime);
 	}
-	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_F);
-	if (keyboardButton == GLFW_PRESS)
+	if (F == GLFW_PRESS && doubleKeys == false)
 	{
 		player->MoveDown(elapsedTime);
 	}
-	keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_SPACE);
-	if (keyboardButton == GLFW_PRESS)
+	if (Space == GLFW_PRESS)
 	{
 		player->CenterPlayer();
 	}

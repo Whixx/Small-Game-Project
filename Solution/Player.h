@@ -28,6 +28,10 @@ public:
 
 	void SetPlayerHeight(float height);
 	void SetPlayerSpeed(float speed);
+	void MoveDiagonalRightUp(float elapsedTime);
+	void MoveDiagonalLeftUp(float elapsedTime);
+	void MoveDiagonalRightDown(float elapsedTime);
+	void MoveDiagonalLeftDown(float elapsedTime);
 	void MoveForward(float elapsedTime);
 	void MoveBackward(float elapsedTime);
 	void MoveRight(float elapsedTime);

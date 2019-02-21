@@ -53,6 +53,70 @@ void Player::SetPlayerSpeed(float speed)
 	this->playerSpeed = speed;
 }
 
+void Player::MoveDiagonalRightUp(float elapsedTime)
+{
+	// Getting diagonal vector
+	glm::vec3 diagonal = (this->walkingVector + this->GetCamera()->GetRightVector());
+
+	// Getting the positions
+	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
+	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
+	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * diagonal * elapsedTime;
+
+	// Looking for collision
+	this->DetectCollision(newPos, oldPos);
+
+	footStep.Play();
+}
+
+void Player::MoveDiagonalLeftUp(float elapsedTime)
+{
+	// Getting diagonal vector
+	glm::vec3 diagonal = (this->walkingVector - this->GetCamera()->GetRightVector());
+
+	// Getting the positions
+	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
+	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
+	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * diagonal * elapsedTime;
+
+	// Looking for collision
+	this->DetectCollision(newPos, oldPos);
+
+	footStep.Play();
+}
+
+void Player::MoveDiagonalRightDown(float elapsedTime)
+{
+	// Getting diagonal vector
+	glm::vec3 diagonal = (this->walkingVector - this->GetCamera()->GetRightVector());
+
+	// Getting the positions
+	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
+	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
+	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * diagonal * elapsedTime;
+
+	// Looking for collision
+	this->DetectCollision(newPos, oldPos);
+
+	footStep.Play();
+}
+
+void Player::MoveDiagonalLeftDown(float elapsedTime)
+{
+	// Getting diagonal vector
+	glm::vec3 diagonal = (this->walkingVector + this->GetCamera()->GetRightVector());
+
+	// Getting the positions
+	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
+	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
+	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * diagonal * elapsedTime;
+
+	// Looking for collision
+	this->DetectCollision(newPos, oldPos);
+
+	footStep.Play();
+}
+
 void Player::MoveForward(float elapsedTime)
 {
 	// Getting the positions
@@ -244,17 +308,17 @@ void Player::CenterPlayer()
 		}
 	}
 
-	playerCamera.SetCameraPosition(glm::vec3(x, playerHeight, y));
+	this->playerCamera.SetCameraPosition(glm::vec3(x, this->playerHeight + this->maze->GetTransform()->GetPos().y, y));
 }
 
 void Player::UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime)
 {
 	// Get mouse delta vector, how much the mouse has moved, update rotatearound vector
-	playerCamera.SetMouseDelta(newMousePosition - playerCamera.GetOldMousePosition());
-	playerCamera.SetRotateAround(glm::cross(playerCamera.GetForwardVector(), playerCamera.GetUpVector()));
+	this->playerCamera.SetMouseDelta(newMousePosition - playerCamera.GetOldMousePosition());
+	this->playerCamera.SetRotateAround(glm::cross(playerCamera.GetForwardVector(), playerCamera.GetUpVector()));
 
 	// Rotate forwardVector
-	playerCamera.UpdateRotation();
+	this->playerCamera.UpdateRotation();
 
 	glm::vec3 forwardVector = playerCamera.GetForwardVector();
 	float walkingX = forwardVector.x;
@@ -264,7 +328,7 @@ void Player::UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime)
 	this->walkingVector = glm::vec3(walkingX, walkingY, walkingZ);
 	this->walkingVector = glm::normalize(this->walkingVector);
 
-	playerCamera.SetOldMousePosition(newMousePosition);
+	this->playerCamera.SetOldMousePosition(newMousePosition);
 }
 
 void Player::Update(double dt)
