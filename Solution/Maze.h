@@ -58,8 +58,8 @@ private:
 	GLuint floorVbo;
 	GLuint floorVao;
 
-	const int scaleXZ = 2;
-	const int scaleY = 5;
+	const int scaleXZ = 1;
+	const int scaleY = 1;
 	void initiateWallBuffers();
 	void initiateFloorBuffers();
 	glm::vec3 readPixel(unsigned int x, unsigned int y);

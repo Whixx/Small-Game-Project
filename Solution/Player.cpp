@@ -223,26 +223,28 @@ void Player::DetectCollision(glm::vec3 newPos, glm::vec3 oldPos)
 
 void Player::CenterPlayer()
 {
-	float halfMazeWidth = (this->maze->GetTransform()->GetPos().x + (this->maze->GetMazeWidth() / 2)) / this->maze->GetTransform()->GetScale().x;
-	float halfMazeHeight = (this->maze->GetTransform()->GetPos().y + (this->maze->GetMazeHeight() / 2)) / this->maze->GetTransform()->GetScale().z;
+	float x = 0.0f;
+	float y = 0.0f;
+
+	// NOT NEEDED Transform world coords to texture coords. ( 1 pixel on texture corresponds to 1.0, origo is (0, 0) for both spaces
 
 	bool pingpong = false;
-	while (this->maze->IsWallAtWorld(halfMazeWidth, halfMazeHeight) == true) 
+	while (this->maze->IsWallAtWorld(x, y) == true) 
 	{
 		//If wall, move start position
 		if (pingpong = false)
 		{
-			halfMazeWidth += 1 * this->maze->GetTransform()->GetScale().x;
+			x += 1.0f;
 			pingpong = true;
 		}
 		else
 		{
-			halfMazeWidth += 1 * this->maze->GetTransform()->GetScale().z;
+			y += 1.0f;
 			pingpong = false;
 		}
 	}
 
-	playerCamera.SetCameraPosition(glm::vec3(halfMazeWidth, playerHeight, halfMazeHeight));
+	playerCamera.SetCameraPosition(glm::vec3(x, playerHeight, y));
 }
 
 void Player::UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime)
