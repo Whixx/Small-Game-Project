@@ -28,8 +28,9 @@ void InitLightPass(Shader * shader)
 	shader->SendInt("gPosition", 0);
 	shader->SendInt("gDiffuse", 1);
 	shader->SendInt("gNormal", 2);
-	shader->SendInt("gSpecular", 3);
-	shader->SendInt("shadowMap", 4);
+	shader->SendInt("gSpecularAndHeight", 3);
+	shader->SendInt("gAmbient", 4);
+	shader->SendInt("shadowMap", 5);
 
 	shader->ValidateShaders();
 }
@@ -179,8 +180,8 @@ void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenT
 	bloomBuffer->BindForWriting();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	gBuffer->BindForReading(); // Binds texture slot 0,1,2
-	shadowBuffer->BindForReading(3); // Binds texture slot 3
+	gBuffer->BindForReading(); // Binds texture slot 0,1,2,3,4
+	shadowBuffer->BindForReading(5); // Binds texture slot 5
 
 	glDisable(GL_DEPTH_TEST);
 	glBindVertexArray(*fullScreenTriangle);

@@ -61,7 +61,7 @@ bool GBuffer::Init()
 
 	// Tell OpenGl which color attachments we'll use (of this FBO) for rendering
 	// Enables writing to all our textures
-	GLenum attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+	GLenum attachments[5] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
 	glDrawBuffers(GBUFFER_NUM_TEXTURES, attachments);
 
 	// Create the depthTexture

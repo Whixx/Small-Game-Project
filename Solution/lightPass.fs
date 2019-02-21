@@ -20,7 +20,8 @@ uniform PointLight PointLights[256];
 uniform sampler2D gPosition;
 uniform sampler2D gDiffuse;
 uniform sampler2D gNormal;
-uniform sampler2D gSpecular;
+uniform sampler2D gSpecularAndHeight;
+uniform sampler2D gAmbient;
 
 // ShadowBuffer variables
 uniform samplerCube shadowMap;
@@ -49,14 +50,16 @@ void main()
 	vec3 pixelPos = texture2D(gPosition, texCoord0).xyz;
 	vec3 materialColor = texture2D(gDiffuse, texCoord0).rgb;
 	vec3 normal = texture2D(gNormal, texCoord0).xyz;
-	vec4 specular = texture2D(gSpecular, texCoord0);
+	float specular = texture2D(gSpecularAndHeight, texCoord0).r;
+	float heightMap = texture2D(gSpecularAndHeight, texCoord0).b;
+	vec3 ambient = texture2D(gAmbient, texCoord0).rgb;
 
 	// Attenuation
 	float attenuation;
 	float distancePixelToLight;
 
 	// Ambient
-	vec4 ambient = vec4(0.1f,0.1f,0.1,1.0f) * vec4(materialColor.rgb, 1.0f);
+	//vec4 ambient = vec4(0.1f,0.1f,0.1,1.0f) * vec4(materialColor.rgb, 1.0f);
 	
 	// Diffuse
 	vec3 lightDir;
@@ -80,9 +83,8 @@ void main()
 		vecToCam = normalize(vec3(cameraPos.xyz - pixelPos.xyz));	
 		// Source: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/reflect.xhtml
 		reflection = reflect(vec4(-lightDir.xyz, 0.0f), vec4(normal.xyz,1.0f));
-		finalSpecular += vec4(materialColor.rgb,1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * pow(max(dot(reflection.xyz, vecToCam.xyz),0), shininess) * specular;
-		//finalSpecular += PointLights[i].color.rgb * pow(max(dot(reflection.xyz, vecToCam.xyz),0), shininess) * specular;
-
+		finalSpecular += specular * vec4(PointLights[i].color.rgb, 1.0f) * pow(max(dot(reflection.xyz, vecToCam.xyz),0), shininess);
+		finalSpecular.w = 1.0;
 
 		// attenuation
 		distancePixelToLight = length(PointLights[i].position - pixelPos);

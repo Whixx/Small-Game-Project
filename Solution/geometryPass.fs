@@ -7,11 +7,13 @@ in mat3 TBN;
 out vec3 WorldPosOut;
 out vec3 TextureRGBOut;
 out vec3 WorldNormalOut;
-out vec3 TextureSpecularOut;
+out vec3 TextureSpecularAndHeightOut;
+out vec3 AmbientOut;
 
 uniform sampler2D TextureDiffuse;
 uniform sampler2D TextureNormal;
 uniform sampler2D TextureSpecular;
+uniform sampler2D TextureAmbient;
 
 uniform float illuminated;
 
@@ -28,8 +30,8 @@ void main()
 	// Transform the normal from tangent space to world space
 	WorldNormalOut = normalize(TBN * WorldNormalOut);
 
-	TextureSpecularOut.rgb = texture2D(TextureSpecular, texCoords).rgb;
-	//TextureSpecularOut.g = 0;
-	//TextureSpecularOut.b = 0;
+	TextureSpecularAndHeightOut.rgb = texture2D(TextureSpecular, texCoords).rgb;
+	//TextureSpecularAndHeightOut.g = 0;
+	//TextureSpecularAndHeightOut.b = 0;
 
 }
