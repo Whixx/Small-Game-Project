@@ -18,6 +18,7 @@ class Player
 public:
 	// Default constructor
 	Player(float height, float fov, float near, float far, Mesh *mesh, Texture *texture, Maze * maze, irrklang::ISoundEngine* engine);
+	Player(float height, float fov, float near, float far, Mesh *mesh, Texture *texture, Maze * maze, PointLightHandler* PLH);
 	virtual ~Player();
 	
 	float GetPlayerSpeed();

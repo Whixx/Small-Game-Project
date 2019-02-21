@@ -13,7 +13,7 @@ int main()
 	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetKeyCallback(display.GetWindow(), InputHandler::Key_callback);
 
-	InputHandler IH = InputHandler();
+	InputHandler IH;
 
 	// height and width must be odd numbers else the resulting maze will be off
 	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
@@ -92,6 +92,9 @@ int main()
 	// Temp texture for the mazeWalls
 	Texture brickTexture("Textures/brickwall.jpg", "NormalMaps/brickwall_normal.jpg");
 
+	// Create Lights
+	PointLightHandler lights;	// use .CreateLight()
+
 	Mesh groundMesh;
 	Mesh torchMesh;
 	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
@@ -116,7 +119,7 @@ int main()
 
 	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
 
-	ObjectHandler OH = ObjectHandler();
+	ObjectHandler OH;
 
 	//TODO: Byta ground.png till floor.png
 	
@@ -136,14 +139,6 @@ int main()
 	double deltaTime = 0;
 	double constLastTime = 0;
 	int nrOfFrames = 0;
-
-	// Create Lights
-	PointLightHandler lights;
-	PointLight torchLight;
-	float torchLightIntensity = 2.0f;
-	torchLight.GetColor() = glm::vec3(1.0f, 0.3f, 0.3f) * torchLightIntensity;
-	lights.CreateLight(player.GetTorch()->GetPos(), torchLight.GetColor());
-	lights.InitiateLights(lightPass.GetProgram());
 
 	//Particle particle;
 	//Texture particleTexture("Textures/particle.png", "NormalMaps/flat_normal.jpg");
@@ -178,12 +173,10 @@ int main()
 
 		// Update player
 		player.Update(deltaTime);
-		player.GetCamera()->UpdateViewMatrix();
-		player.GetTorch()->Update(deltaTime);
 
 		OH.UpdateAllObjects(deltaTime);
 
-		lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch()->GetPos().x, player.GetTorch()->GetPos().y + 1.5f, player.GetTorch()->GetPos().z);
+		//lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch()->GetPos().x, player.GetTorch()->GetPos().y + 1.5f, player.GetTorch()->GetPos().z);
 		lights.UpdateShadowTransform(0);
 
 
@@ -236,8 +229,8 @@ int main()
 		finalFBO.CopyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.GetFBO());
 		
 		// Draw particles to the FinalFBO
-		//ParticlePass(&finalFBO, &particle, player.GetCamera(), &particleShader, deltaTime, player.GetTorch().GetPos());
-		
+		ParticlePass(&finalFBO, &player.GetTorch()->GetParticle(), player.GetCamera(), &particleShader, deltaTime, player.GetTorch()->GetFirePos());
+
 		// Render everything
 		FinalPass(&finalFBO, &finalShader, &fullScreenTriangle);
 
