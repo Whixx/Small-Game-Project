@@ -119,7 +119,7 @@ int main()
 	PointLightHandler lights;
 	PointLight torchLight;
 	torchLight.GetColor() = glm::vec3(1.0f, 0.3f, 0.3f);
-	lights.CreateLight(player.GetTorch()->GetPos(), torchLight.GetColor(), 2.0f);
+	lights.CreateLight(glm::vec3(0, 2, 0), torchLight.GetColor(), 2.0f);
 
 	Particle particle;
 	Texture particleTexture("Textures/particle.png");
@@ -166,7 +166,7 @@ int main()
 
 		OH.UpdateAllObjects(deltaTime);
 
-		lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch()->GetPos().x, player.GetTorch()->GetPos().y + 1.5f, player.GetTorch()->GetPos().z);
+		lights.GetTransform(0)->GetPos() = glm::vec3(0, 1, 0);
 		lights.UpdateShadowTransform(0);
 
 		// Update particles

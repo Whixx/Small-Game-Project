@@ -28,7 +28,8 @@ void InitLightPass(Shader * shader)
 	shader->SendInt("gPosition", 0);
 	shader->SendInt("gDiffuse", 1);
 	shader->SendInt("gNormal", 2);
-	shader->SendInt("shadowMap", 3);
+	shader->SendInt("gSpecular", 3);
+	shader->SendInt("shadowMap", 4);
 
 	shader->ValidateShaders();
 }

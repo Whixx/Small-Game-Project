@@ -28,8 +28,8 @@ void main()
 	// Transform the normal from tangent space to world space
 	WorldNormalOut = normalize(TBN * WorldNormalOut);
 
-	TextureSpecularOut.r = texture2D(TextureSpecular, texCoords).r;
-	TextureSpecularOut.g = 0;
-	TextureSpecularOut.b = 0;
+	TextureSpecularOut.rgb = texture2D(TextureSpecular, texCoords).rgb;
+	//TextureSpecularOut.g = 0;
+	//TextureSpecularOut.b = 0;
 
 }
