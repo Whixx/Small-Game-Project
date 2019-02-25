@@ -25,6 +25,7 @@ public:
 	int GetMazeWidth();
 	Transform *GetTransform();
 	glm::vec2* GetDrawOrder();
+	glm::vec3 TransformToWorldCoords(glm::vec3 pos);
 	unsigned int GetTileCount();
 
 	// Draw to transform feedback buffer
