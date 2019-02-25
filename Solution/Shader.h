@@ -15,7 +15,7 @@ public:
 	Shader();
 
 	void Bind();
-	void initiateMazeShader();
+	void InitiateMazeGenerationShader();
 	void UnBind();
 	void InitiateShaders(bool color = false);
 	void ValidateShaders();

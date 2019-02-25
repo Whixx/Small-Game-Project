@@ -1,37 +1,16 @@
 #include "MainFunctions.h"
 
-void InitWallShader(Shader * shader, Maze * maze)
+void InitMazeGenerationShader(Shader * shader, Maze * maze)
 {
-	shader->initiateMazeShader();
+	shader->InitiateMazeGenerationShader();
 
 	// Set constant uniforms
 	shader->Bind();
 	shader->SendInt("texture", 0);
 	shader->SendInt("width", maze->GetMazeWidth());
 	shader->SendInt("height", maze->GetMazeHeight());
-	shader->SendInt("scaleUVX", maze->GetTransform()->GetScale().x);
-	shader->SendInt("scaleUVY", maze->GetTransform()->GetScale().y);
-
-	glm::vec2* drawOrder = maze->GetDrawOrder();
-	for (int i = 0; i < maze->GetTileCount(); ++i)
-	{
-		shader->SendVec2(("drawOrder[" + std::to_string(i) + "]").c_str(), drawOrder[i].x, drawOrder[i].y);
-	}
-
-	shader->ValidateShaders();
-}
-
-void InitFloorShader(Shader * shader, Maze * maze)
-{
-	shader->initiateMazeShader();
-
-	// Set constant uniforms
-	shader->Bind();
-	shader->SendInt("texture", 0);
-	shader->SendInt("width", maze->GetMazeWidth());
-	shader->SendInt("height", maze->GetMazeHeight());
-	// Since the floor's UV have the same scaling, both their UV's will be scaled with the same value
 	shader->SendInt("scaleUVXZ", maze->GetTransform()->GetScale().x);
+	shader->SendInt("scaleUVY", maze->GetTransform()->GetScale().y);
 
 	glm::vec2* drawOrder = maze->GetDrawOrder();
 	for (int i = 0; i < maze->GetTileCount(); ++i)
@@ -52,6 +31,16 @@ void InitShadowShader(Shader * shader)
 }
 
 void InitGeometryPass(Shader * shader)
+{
+	shader->InitiateShaders();
+
+	// Set constant uniforms
+	shader->Bind();
+
+	shader->ValidateShaders();
+}
+
+void InitMazeGeometryPass(Shader * shader)
 {
 	shader->InitiateShaders();
 
@@ -134,40 +123,23 @@ void InitFinalShader(Shader * shader)
 	shader->ValidateShaders();
 }
 
-void WallPass(Shader * wallShader, Maze * maze, Player * player)
+void MazeGenerationPass(Shader * mazeGenerationShader, Maze * maze, Player * player)
 {
-	wallShader->Bind();
+	mazeGenerationShader->Bind();
 
 	// Bind the mazeTexture (the colorcoded png)
 	maze->BindTexture(0);
 
 	// Send uniforms that needs to be updated each frame
 	//wallShader->SendCameraLocation(player->GetCamera());
-	wallShader->SendVec3("cameraPos", player->GetCamera()->GetCameraPosition().x, player->GetCamera()->GetCameraPosition().y, player->GetCamera()->GetCameraPosition().z);
+	mazeGenerationShader->SendVec3("cameraPos", player->GetCamera()->GetCameraPosition().x, player->GetCamera()->GetCameraPosition().y, player->GetCamera()->GetCameraPosition().z);
 
 
 
 	// Draw the walls and store data with transform feedback
-	maze->DrawWallsToBuffer();
+	maze->DrawMazeToBuffer();
 
-	wallShader->UnBind();
-}
-
-void FloorPass(Shader * floorShader, Maze * maze, Player * player)
-{
-	floorShader->Bind();
-
-	// Bind the mazeTexture (the colorcoded png)
-	maze->BindTexture(0);
-
-	// Send uniforms that needs to be updated each frame
-	//floorShader->SendCameraLocation(player->GetCamera());
-	floorShader->SendVec3("cameraPos", player->GetCamera()->GetCameraPosition().x, player->GetCamera()->GetCameraPosition().y, player->GetCamera()->GetCameraPosition().z);
-
-	// Draw the floor and store data with transform feedback
-	maze->DrawFloorToBuffer();
-
-	floorShader->UnBind();
+	mazeGenerationShader->UnBind();
 }
 
 void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Maze * maze)
@@ -210,13 +182,9 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 
 		// Same world matrix for walls and floor
 		glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
-		// Draw mazeWalls
+		// Draw maze
 		shadowShader->SendMat4("WorldMatrix", mazeWorldMatrix);
-		maze->DrawWalls();
-
-		// Draw mazeFloor
-		shadowShader->SendMat4("WorldMatrix", mazeWorldMatrix);
-		maze->DrawFloor();
+		maze->DrawMaze();
 	}
 
 	shadowShader->UnBind();
@@ -224,7 +192,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, ObjectHandler *OH, Maze * maze)
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze * maze)
 {
 	geometryPass->Bind();
 
@@ -254,23 +222,22 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	player->GetTorch()->BindMaterial(geometryPass);
 	player->GetTorch()->Draw(geometryPass);
 
+	geometryPass->UnBind();
+
+	// Different geometry pass for the maze
+	mazeGeometryPass->Bind();
+
 	// Same world matrix for walls and floor
 	glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
 
-	// Draw MazeWalls
-	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * mazeWorldMatrix);
-	geometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
-	maze->BindWallMaterial(geometryPass);
-	maze->DrawWalls();
+	// Draw Maze
+	mazeGeometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * mazeWorldMatrix);
+	mazeGeometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
+	maze->BindWallMaterial(mazeGeometryPass);
+	maze->BindFloorMaterial(mazeGeometryPass);
+	maze->DrawMaze();
 
-	// Draw MazeFloor
-	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * mazeWorldMatrix);
-	geometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
-	maze->BindFloorMaterial(geometryPass);
-	maze->DrawFloor();
-
-	
-	geometryPass->UnBind();
+	mazeGeometryPass->UnBind();
 }
 
 void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenTriangle, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera)
