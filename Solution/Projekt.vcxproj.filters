@@ -165,6 +165,12 @@
     <ClInclude Include="Model.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
+    <ClInclude Include="MaterialHandler.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="blurShader.fs">

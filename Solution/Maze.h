@@ -68,8 +68,8 @@ private:
 	GLuint floorVbo;
 	GLuint floorVao;
 
-	const int scaleXZ = 1;
-	const int scaleY  = 1;
+	const int scaleXZ = 2;
+	const int scaleY  = 2;
 
 	// Private functions
 	void LoadTextures();

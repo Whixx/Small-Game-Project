@@ -117,7 +117,9 @@ int main()
 	player.SetPlayerSpeed(2.0f);
 	player.CenterPlayer(); //Space to return to origin
 
+	//MaterialHandler MH;
 	ObjectHandler OH;
+	
 
 	//TODO: Byta ground.png till floor.png
 	

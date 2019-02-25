@@ -123,6 +123,8 @@
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="MainFunctions.h" />
     <ClInclude Include="InputHandler.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="MaterialHandler.h" />
     <ClInclude Include="Maze.h" />
     <ClInclude Include="MazeGeneratePNG.h" />
     <ClInclude Include="Mesh.h" />
