@@ -2,10 +2,11 @@
 #include <iostream>
 
 
-Particle::Particle(std::string path)
+Particle::Particle(float torchSize, std::string path)
 {
 	this->texture = new Texture(path, "TextureDiffuse");
-
+	this->torchSize = torchSize;
+	
 	// Preparing for the find function
 	this->lastUsedParticle = 0;
 
@@ -136,23 +137,27 @@ void Particle::GenerateParticles(float deltaTime, glm::vec3 particlePos)
 		// Set the start values of the new particle
 		// Life (Length in seconds which describes how long the particle should be alive)
 		this->particleArray[index].life = 1.0f;
-		
+
 		// Position
-		float randomPosX = ((rand() % 100) - 50) / 7000.0f;
-		float randomPosZ = ((rand() % 100) - 50) / 7000.0f;
-		float randomHeight = (rand() % 20) / 1000.0f;
+		float randomPosX = ((rand() % 100) - 50) / 90.0f;
+		float randomPosZ = ((rand() % 100) - 50) / 90.0f;
+		float randomHeight = (rand() % 20) / 10.0f;
+		randomPosX *= this->torchSize;
+		randomPosZ *= this->torchSize;
+		randomHeight *= this->torchSize;
 		this->particleArray[index].pos.x = particlePos.x + randomPosX;
-		this->particleArray[index].pos.y = particlePos.y + 0.09f + randomHeight;
+		this->particleArray[index].pos.y = particlePos.y + randomHeight - this->torchSize;
 		this->particleArray[index].pos.z = particlePos.z + randomPosZ;
 
 		// Speed
-		float speed = 0.15f;
-		glm::vec3 mainDir = glm::vec3(0.0f, 1.0f, 0.0f);
+		float speed = 10.0f;
+		speed *= this->torchSize;
 
+		glm::vec3 mainDir = glm::vec3(0.0f, 1.0f, 0.0f);
 		glm::vec3 randomDir = glm::vec3(
-			(rand() % 2000 - 1000.0f) / 5000.0f,
-			(rand() % 2000 - 1000.0f) / 5000.0f,
-			(rand() % 2000 - 1000.0f) / 5000.0f
+			(rand() % 2000 - 1000.0f) / 4000.0f,
+			(rand() % 2000 - 1000.0f) / 4000.0f,
+			(rand() % 2000 - 1000.0f) / 4000.0f
 		);
 
 		this->particleArray[index].speed = (mainDir + randomDir) * speed;
@@ -164,7 +169,7 @@ void Particle::GenerateParticles(float deltaTime, glm::vec3 particlePos)
 		this->particleArray[index].a = 150;
 
 		// Size
-		this->particleArray[index].size = 0.04f;
+		this->particleArray[index].size = 2.5f * this->torchSize;
 	}
 }
 
@@ -188,7 +193,7 @@ void Particle::SimulateParticles(glm::vec3 cameraPosition, float deltaTime)
 			{
 				// Update the attributes of the particle
 				// Speed
-				tempParticle.speed += deltaTime * 0.01f;
+				tempParticle.speed += deltaTime * this->torchSize * 0.5;
 
 				// Position
 				tempParticle.pos += tempParticle.speed * deltaTime;
@@ -241,13 +246,13 @@ void Particle::SimulateParticles(glm::vec3 cameraPosition, float deltaTime)
 }
 
 // Update the buffers that OpenGL uses for rendering. Here we send our buffers to the GPU
-void Particle::Update(double deltaTime, Camera* camera, glm::vec3 position)
+void Particle::Update(double deltaTime, glm::vec3 camPos, glm::vec3 position)
 {
 	// Create new particles
 	this->GenerateParticles(deltaTime, position);
 
 	// Simulate all the particles
-	this->SimulateParticles(camera->GetCameraPosition(), deltaTime);
+	this->SimulateParticles(camPos, deltaTime);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->particlesPositionBuffer);
 	glBufferData(GL_ARRAY_BUFFER, maxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
