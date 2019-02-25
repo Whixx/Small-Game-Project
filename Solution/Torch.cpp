@@ -32,7 +32,7 @@ Torch::Torch(Transform transform, glm::vec3 lightColor, irrklang::ISoundEngine* 
 	rotationZMatrix = glm::rotate(0.0f,						glm::vec3(0, 0, 1));
 	rotationMatrix = rotationZMatrix * rotationYMatrix * rotationXMatrix;
 
-	this->torchSound.SetVolume(0.4);
+	this->torchSound.SetVolume(0.6);
 }
 
 Torch::~Torch()

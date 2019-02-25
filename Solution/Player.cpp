@@ -11,7 +11,7 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	this->walkingVector = glm::vec3(0.0f, 0.0f, 1.0f);
 	this->maze = maze;
 
-	this->footStep.SetVolume(0.8);
+	this->footStep.SetVolume(0.2);
 }
 
 Player::~Player()
