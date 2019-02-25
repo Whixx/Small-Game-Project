@@ -31,12 +31,12 @@ struct ParticleStruct
 class Particle
 {
 public:
-	Particle(std::string path = "Textures/default/default_diffuse.png");
+	Particle(float torchSize, std::string path = "Textures/default/default_diffuse.png");
 	~Particle();
 
 	void GenerateParticles(float deltaTime, glm::vec3 particlePos);
 	void SimulateParticles(glm::vec3 cameraPosition, float deltaTime);
-	void Update(double deltaTime, Camera* camera, glm::vec3 position);
+	void Update(double deltaTime, glm::vec3 camPos, glm::vec3 position);
 	void Bind();
 	void Draw();
 	Texture* GetTexture() const;
@@ -57,6 +57,7 @@ private:
 	int findDeadParticle();
 
 	int nrOfActiveParticles;
+	float torchSize;
 
 	void sort();
 };

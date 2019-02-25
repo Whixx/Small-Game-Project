@@ -49,6 +49,7 @@ private:
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewMatrix;
 	glm::vec3 cameraPosition;
+	glm::vec3 cameraRotation;
 	glm::vec3 oldCameraPosition;
 	glm::vec3 forwardVector;	// Viewvector // frontal view
 	glm::vec3 upVector;

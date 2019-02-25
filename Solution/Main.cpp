@@ -113,7 +113,8 @@ int main()
 
 
 	float playerHeight = 1.8f;
-	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights);
+	float torchSize = 0.02f;
+	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize);
 	player.SetPlayerSpeed(2.0f);
 	player.CenterPlayer(); //Space to return to origin
 
@@ -132,7 +133,7 @@ int main()
 	double deltaTime = 0;
 	double constLastTime = 0;
 	int nrOfFrames = 0;
-
+	
 	while (!display.IsWindowClosed())
 	{
 		// Calculate DeltaTime
@@ -162,12 +163,9 @@ int main()
 		player.Update(deltaTime);
 
 		OH.UpdateAllObjects(deltaTime);
-
-		//lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch()->GetPos().x, player.GetTorch()->GetPos().y + 1.5f, player.GetTorch()->GetPos().z);
 		lights.UpdateShadowTransform(0);
 
-		// Update particles
-		player.GetTorch()->GetParticle()->Update(deltaTime, player.GetCamera(), player.GetTorch()->GetPos());
+		
 
 		// update sound engine with position and view direction
 		soundEngine.Update(player.GetCamera()->GetCameraPosition(), player.GetCamera()->GetForwardVector());

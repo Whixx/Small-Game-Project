@@ -11,7 +11,7 @@
 class Torch
 {
 public:
-	Torch(Transform transform, glm::vec3 lightColor, irrklang::ISoundEngine* engine, PointLightHandler* PLH);
+	Torch(Transform transform, glm::vec3 lightColor, irrklang::ISoundEngine* engine, PointLightHandler* PLH, float torchSize);
 	~Torch();
 
 	void SetScale(glm::vec3 scale);
@@ -30,14 +30,14 @@ public:
 
 	void BindMaterial(Shader* shader);
 	void Draw(Shader* shader);
-	virtual void Update(double dt, Transform transform, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camRight, glm::vec3 camUp, float distFromPlayer);
+	virtual void Update(double dt, Camera camera, glm::vec3 camForward, float distFromPlayer);
 	
 private:
 	Model model;
 	Particle particle;
 	Transform transform;
 	SoundHandler torchSound;
-	const float size = 0.02f;
+	float size;
 	PointLight* torchLight;
 	const glm::vec4 lightStartingPos = glm::vec4(0, 4.6f, 0, 0);
 	glm::vec3 lightPos;
