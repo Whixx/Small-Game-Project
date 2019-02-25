@@ -17,12 +17,13 @@ class Player
 {
 public:
 	// Default constructor
-	Player(float height, float fov, float near, float far, Maze * maze, irrklang::ISoundEngine* engine, PointLightHandler* PLH);
+	Player(float height, float fov, float near, float far, Maze * maze, irrklang::ISoundEngine* engine, PointLightHandler* PLH, float torchSize);
 	virtual ~Player();
 	
 	float GetPlayerSpeed();
 	float GetPlayerHeight();
 	glm::vec3 GetWalkingVector();
+	glm::vec3 DetectCollision(glm::vec3 newPos, glm::vec3 oldPos);
 	Camera* GetCamera();
 	Torch* GetTorch();
 
@@ -38,7 +39,6 @@ public:
 	void MoveLeft(float elapsedTime);
 	void MoveUp(float elapsedTime);
 	void MoveDown(float elapsedTime);
-	void DetectCollision(glm::vec3 newPos, glm::vec3 oldPos);
 	void CenterPlayer();
 	void UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime);
 	void Update(double dt);

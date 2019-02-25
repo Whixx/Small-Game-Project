@@ -35,7 +35,7 @@ float calculateShadows(vec3 objPos, vec3 camPos, vec3 normal)
 
     // Avoids "Shadow Acne"
     normal = normalize(normal);
-	float bias = max(0.005 * (1 - dot(normal, lightToObj)), 0.005);
+	float bias = max(0.05 * (1 - dot(normal, lightToObj)), 0.005);
     
     // PCF (Percentage-closer filtering)
     // Change these two to optimize the look of the shadow
