@@ -127,6 +127,4 @@ void Torch::Update(double dt, Transform transform, glm::vec3 camPos, glm::vec3 c
 	this->lightPos = this->transform.GetPos() + glm::vec3(scaleRotMatrix * this->lightStartingPos);
 	
 	this->torchLight->GetPos() = this->lightPos;
-
-	
 }

@@ -80,6 +80,10 @@ void main()
 	
 
 	// Attenuation
+	float radius = 6;
+	float a = 0;
+	float b = 0;
+	float minLight = 0.001f;
 	float attenuation;
 	float distancePixelToLight;
 
@@ -101,7 +105,8 @@ void main()
 	for(int i = 0; i < NR_OF_POINT_LIGHTS; i++)
 	{
 		distancePixelToLight = length(PointLights[i].position - pixelPos);
-		if(distancePixelToLight <= 7.0)
+
+		if(distancePixelToLight < radius)
 		{
 			// Diffuse
 			lightDir = normalize(PointLights[i].position.xyz - pixelPos.xyz);
@@ -114,9 +119,9 @@ void main()
 			float spec = pow(max(dot(normal, halfwayDir), 0.0), ceil(shininess));
 			finalSpecular += specular * vec4(materialColor.rgb, 1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * spec;
 
-			// attenuation // TODO: FIX good attenuation
-			float lightAttenuation = 0.2;
-			attenuation = 1.0f / (1.0 + (lightAttenuation * pow(distancePixelToLight, 2)));
+			// attenuation
+			b = 1.0f/(radius*radius*minLight);
+			attenuation = 1.0f / (1.0f + (a * distancePixelToLight) + (b/800 * pow(distancePixelToLight, 4.5f)));
 		}
 	}
 

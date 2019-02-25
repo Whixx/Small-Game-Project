@@ -2,7 +2,7 @@
 
 uniform int width;
 uniform int height;
-uniform vec2 drawOrder[256];
+uniform vec2 drawOrder[512];
 uniform vec3 cameraPos;
 
 void main()

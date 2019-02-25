@@ -13,7 +13,7 @@
 
 using namespace std;
 
-const unsigned int DRAWDISTANCE = 6;
+const unsigned int DRAWDISTANCE = 7;
 
 class Maze
 {
