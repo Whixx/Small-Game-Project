@@ -27,8 +27,7 @@ void Model::BindMaterial(Shader* shader)
 {
 	for (Mesh* m : this->meshes)
 	{
-		m->BindTextures(shader);
-		m->SendMaterial(shader);
+		m->BindMaterial(shader);
 	}
 }
 
@@ -127,64 +126,69 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 			indices.push_back(face.mIndices[j]);
 	}
 
+	aiString matName;
+	float matShininess;
+	std::vector<Texture*> diffuseMaps;
+	std::vector<Texture*> ambientMaps;
+	std::vector<Texture*> specularMaps;
+	std::vector<Texture*> normalMaps;
+	std::vector<Texture*> heightMaps;
+
 	// Get Material
-	Material mat;
 	if (mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-		// Load all texture types
-		std::vector<Texture*> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "TextureDiffuse");
-		std::vector<Texture*> ambientMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "TextureAmbient");
-		std::vector<Texture*> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "TextureSpecular");
-		std::vector<Texture*> normalMaps = LoadNormalMap(this->directoryPath + '/' + this->name + "_normal.png", "TextureNormal");
-		std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "TextureHeight");
 
-		// If they dont have a specific texture, add default // TODO: Don't load default textures to all models
-		if (diffuseMaps.size() == 0)
-			textures.push_back(this->LoadTexture("Textures/default/default_diffuse.png", "TextureDiffuse"));
-		if (ambientMaps.size() == 0)
-			textures.push_back(this->LoadTexture("Textures/default/default_ambient.png", "TextureAmbient"));
-		if (specularMaps.size() == 0)
-			textures.push_back(this->LoadTexture("Textures/default/default_specular.png", "TextureSpecular"));
-		if (normalMaps.size() == 0)
-			textures.push_back(this->LoadTexture("Textures/default/default_normal.png", "TextureNormal"));
-		if (heightMaps.size() == 0)
-			textures.push_back(this->LoadTexture("Textures/default/default_height.png", "TextureHeight"));
-
-		// Combine them
-		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-		textures.insert(textures.end(), ambientMaps.begin(), ambientMaps.end());
-		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-
-		// Load material variables
-		float shininess;
 		unsigned int success;
-		success = material->Get(AI_MATKEY_SHININESS, shininess);
-		if(success == AI_SUCCESS)
-			mat.shininess = shininess;
-
-		aiColor3D specColor;
-		success = material->Get(AI_MATKEY_COLOR_SPECULAR, specColor);
-		if (success == AI_SUCCESS && specColor != aiColor3D(0, 0, 0))
+		// Load material variables
+		success = material->Get(AI_MATKEY_NAME, matName);
+		if (success != AI_SUCCESS)
 		{
-			mat.specularColor.r = specColor.r;
-			mat.specularColor.g = specColor.g;
-			mat.specularColor.b = specColor.b;
+#ifdef DEBUG
+			cout << "ERROR: Assimp material !AI_SUCCESS" << endl;
+#endif
 		}
+
+		success = material->Get(AI_MATKEY_SHININESS, matShininess);
+		if (success != AI_SUCCESS)
+		{
+#ifdef DEBUG
+			cout << "ERROR: Assimp material !AI_SUCCESS" << endl;
+#endif
+		}
+
+
+
+		// Load all texture types
+		diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "TextureDiffuse");
+		ambientMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "TextureAmbient");
+		specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "TextureSpecular");
+		normalMaps = LoadNormalMap(this->directoryPath + '/' + this->name + "_normal.png", "TextureNormal");
+		heightMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "TextureHeight");
+
+		// Add default textures if nothing was loaded
+		if (diffuseMaps.size() == 0)
+			diffuseMaps.push_back(this->LoadTexture("Textures/default/default_diffuse.png", "TextureDiffuse"));
+		if (ambientMaps.size() == 0)
+			ambientMaps.push_back(this->LoadTexture("Textures/default/default_ambient.png", "TextureAmbient"));
+		if (specularMaps.size() == 0)
+			specularMaps.push_back(this->LoadTexture("Textures/default/default_specular.png", "TextureSpecular"));
+		if (normalMaps.size() == 0)
+			normalMaps.push_back(this->LoadTexture("Textures/default/default_normal.png", "TextureNormal"));
+		if (heightMaps.size() == 0)
+			heightMaps.push_back(this->LoadTexture("Textures/default/default_height.png", "TextureHeight"));
 	}
 	else
 	{
-		// Add default textures to it
-		textures.push_back(this->LoadTexture("Textures/default/default_diffuse.png", "TextureDiffuse"));
-		textures.push_back(this->LoadTexture("Textures/default/default_normal.png", "TextureNormal"));
-		textures.push_back(this->LoadTexture("Textures/default/default_specular.png", "TextureSpecular"));
-		textures.push_back(this->LoadTexture("Textures/default/default_ambient.png", "TextureAmbient"));
-		textures.push_back(this->LoadTexture("Textures/default/default_height.png", "TextureHeight"));
+		diffuseMaps.push_back(this->LoadTexture("Textures/default/default_diffuse.png", "TextureDiffuse"));
+		ambientMaps.push_back(this->LoadTexture("Textures/default/default_ambient.png", "TextureAmbient"));
+		specularMaps.push_back(this->LoadTexture("Textures/default/default_specular.png", "TextureSpecular"));
+		normalMaps .push_back(this->LoadTexture("Textures/default/default_normal.png", "TextureNormal"));
+		heightMaps .push_back(this->LoadTexture("Textures/default/default_height.png", "TextureHeight"));
 	}
 
-	Mesh* temp = new Mesh(vertices, indices, textures, mat);
+	Material* mat = MaterialHandler::GetInstance().AddMaterial(diffuseMaps[0], ambientMaps[0], specularMaps[0], normalMaps[0], heightMaps[0], matShininess, matName.C_Str());
+	Mesh* temp = new Mesh(vertices, indices, mat);
 	return temp;
 }
 

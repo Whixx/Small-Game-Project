@@ -20,6 +20,7 @@ int main()
 	glfwSetKeyCallback(display.GetWindow(), InputHandler::Key_callback);
 
 	InputHandler IH;
+	MaterialHandler& MH = MaterialHandler::GetInstance(); // Singleton
 
 	// height and width must be odd numbers else the resulting maze will be off
 	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
@@ -117,7 +118,7 @@ int main()
 	player.SetPlayerSpeed(2.0f);
 	player.CenterPlayer(); //Space to return to origin
 
-	//MaterialHandler MH;
+	
 	ObjectHandler OH;
 	
 

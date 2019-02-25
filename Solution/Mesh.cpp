@@ -1,11 +1,10 @@
 #include "Mesh.h"
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture*> textures, Material material)
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material* mat)
 {
 	this->vertices = vertices;
 	this->indices = indices;
-	this->textures = textures;
-	this->material = material;
+	this->material = mat;
 
 	SetupMesh();
 }
@@ -58,48 +57,9 @@ void Mesh::Bind()
 	glBindVertexArray(this->vertexArrayObject);
 }
 
-void Mesh::BindTextures(Shader * shader, unsigned int slot)
+void Mesh::BindMaterial(Shader * shader)
 {
-	const unsigned int textureTypes = 5;
-	if(slot >= 0 && slot <= 31 - textureTypes)
-	{
-		unsigned int diffuseNr = 1;
-		unsigned int ambientNr = 1;
-		unsigned int specularNr = 1;
-		unsigned int normalNr = 1;
-		unsigned int heightNr = 1;
-		for (int i = 0; i < this->textures.size(); i++)
-		{
-			string number;
-			string type = textures[i]->GetType();
-			if (type == "TextureDiffuse")
-				number = to_string(diffuseNr++);
-			else if (type == "TextureAmbient")
-				number = to_string(ambientNr++);
-			else if (type == "TextureSpecular")
-				number = to_string(specularNr++);
-			else if (type == "TextureNormal")
-				number = to_string(normalNr++);
-			else if (type == "TextureHeight")
-				number = to_string(heightNr++);
-
-			// Only using the first texture of each type
-			if (stoi(number) == 1)
-			{
-				shader->SendInt(type.c_str(), i);
-				this->textures[i]->Bind(i);
-			}
-		}
-	}
-}
-
-void Mesh::SendMaterial(Shader* shader)
-{
-	//shader->SendVec3("Material.specColor", this->material.specularColor.x, this->material.specularColor.y, this->material.specularColor.z);
-	//shader->SendInt("Material.shininess", this->material.shininess);
-	//shader->SendFloat("Material.d", this->material.d);
-
-	shader->SendFloat("shininess", this->material.shininess);
+	this->material->BindMaterial(shader);
 }
 
 void Mesh::Draw()

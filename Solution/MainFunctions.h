@@ -17,6 +17,7 @@
 #include "SoundHandler.h"
 #include "Particle.h"
 #include "InputHandler.h"
+#include "MaterialHandler.h"
 
 
 

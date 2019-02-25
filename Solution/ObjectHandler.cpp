@@ -2,7 +2,6 @@
 
 ObjectHandler::ObjectHandler()
 {
-	
 }
 
 ObjectHandler::~ObjectHandler()

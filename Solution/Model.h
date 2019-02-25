@@ -9,6 +9,7 @@
 #include <vector>
 #include "Mesh.h"
 #include "Texture.h"
+#include "MaterialHandler.h"
 
 using namespace std;
 

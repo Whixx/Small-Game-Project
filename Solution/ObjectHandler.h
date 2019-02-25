@@ -6,6 +6,8 @@
 #include <vector>
 #include <iostream>
 #include <stdio.h>
+#include "MaterialHandler.h"
+
 using namespace std;
 
 class ObjectHandler
@@ -24,6 +26,8 @@ public:
 
 private:
 	std::vector<Object*> allObjects;
+
+	MaterialHandler* MH;
 
 };
 
