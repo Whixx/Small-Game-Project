@@ -9,6 +9,9 @@ void InitMazeGenerationShader(Shader * shader, Maze * maze)
 	shader->SendInt("texture", 0);
 	shader->SendInt("width", maze->GetMazeWidth());
 	shader->SendInt("height", maze->GetMazeHeight());
+	shader->SendVec2("translation", maze->GetTransform()->GetPos().x, maze->GetTransform()->GetPos().z);
+
+
 	shader->SendInt("scaleUVXZ", maze->GetTransform()->GetScale().x);
 	shader->SendInt("scaleUVY", maze->GetTransform()->GetScale().y);
 
