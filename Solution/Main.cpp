@@ -28,15 +28,10 @@ int main()
 	Maze maze;
 
 	//=========================== Creating Shaders ====================================//
-	Shader wallShader;
-	wallShader.CreateShader(".\\wallShader.vs", GL_VERTEX_SHADER);
-	wallShader.CreateShader(".\\wallShader.gs", GL_GEOMETRY_SHADER);
-	wallShader.CreateShader(".\\wallShader.fs", GL_FRAGMENT_SHADER);
-
-	Shader floorShader;
-	floorShader.CreateShader(".\\floorShader.vs", GL_VERTEX_SHADER);
-	floorShader.CreateShader(".\\floorShader.gs", GL_GEOMETRY_SHADER);
-	floorShader.CreateShader(".\\floorShader.fs", GL_FRAGMENT_SHADER);
+	Shader mazeGenerationShader;
+	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.vs", GL_VERTEX_SHADER);
+	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.gs", GL_GEOMETRY_SHADER);
+	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.fs", GL_FRAGMENT_SHADER);
 	
 	Shader shadowShader;
 	shadowShader.CreateShader(".\\shadowShader.vs", GL_VERTEX_SHADER);
@@ -47,6 +42,11 @@ int main()
 	geometryPass.CreateShader(".\\geometryPass.vs", GL_VERTEX_SHADER);
 	geometryPass.CreateShader(".\\geometryPass.gs", GL_GEOMETRY_SHADER);
 	geometryPass.CreateShader(".\\geometryPass.fs", GL_FRAGMENT_SHADER);
+
+	Shader mazeGeometryPass;
+	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.vs", GL_VERTEX_SHADER);
+	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.gs", GL_GEOMETRY_SHADER);
+	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.fs", GL_FRAGMENT_SHADER);
 	
 	Shader lightPass;
 	lightPass.CreateShader(".\\lightPass.vs", GL_VERTEX_SHADER);
@@ -72,10 +72,10 @@ int main()
 	finalShader.CreateShader(".\\finalShader.vs", GL_VERTEX_SHADER);
 	finalShader.CreateShader(".\\finalShader.fs", GL_FRAGMENT_SHADER);
 
-	InitWallShader(&wallShader, &maze);
-	InitFloorShader(&floorShader, &maze);
+	InitMazeGenerationShader(&mazeGenerationShader, &maze);
 	InitShadowShader(&shadowShader);
 	InitGeometryPass(&geometryPass);
+	InitMazeGeometryPass(&mazeGeometryPass);
 	InitLightPass(&lightPass);
 	InitParticleShader(&particleShader);
 	InitPointLightPass(&pointLightPass);
@@ -183,18 +183,15 @@ int main()
 
 		// ================== DRAW ==================
 
-		// Here the walls are created and stored in a buffer with transform feedback
-		WallPass(&wallShader, &maze, &player);
-
-		// Here the floor is created and stored in a buffer with transform feedback
-		FloorPass(&floorShader, &maze, &player);
+		// Here the mazes is created and stored in a buffer with transform feedback
+		MazeGenerationPass(&mazeGenerationShader, &maze, &player);
 
 		// Here a cube map is calculated and stored in the shadowMap FBO
 		ShadowPass(&shadowShader, &OH, &lights, &shadowMap, &player, &maze);
 		
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, &geometryPass, &player, &OH, &maze);
+		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &player, &OH, &maze);
 		
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU

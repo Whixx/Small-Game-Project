@@ -9,13 +9,10 @@ Maze::Maze()
 	this->numComponents = 0;
 	this->mazeTexture = 0;
 
-	this->wallTbo = 0;
-	this->wallVbo = 0;
-	this->wallVao = 0;
+	this->mazeTbo = 0;
+	this->mazeVbo = 0;
+	this->mazeVao = 0;
 
-	this->floorTbo = 0;
-	this->floorVbo = 0;
-	this->floorVao = 0;
 
 	// Set maze position, rotation and scale
 	this->transform.SetPos(glm::vec3(0, 0, 0));
@@ -27,7 +24,7 @@ Maze::Maze()
 
 	this->LoadMaze("MazePNG/mazeColorCoded.png");
 
-	this->InitiateBuffers();
+	this->InitiateMazeBuffers();
 
 	this->GenerateDrawOrder();
 }
@@ -46,9 +43,9 @@ Maze::~Maze()
 
 	stbi_image_free(imageData);
 
-	glDeleteBuffers(1, &this->wallTbo);
-	glDeleteBuffers(1, &this->wallVbo);
-	glDeleteVertexArrays(1, &this->wallVao);
+	glDeleteBuffers(1, &this->mazeTbo);
+	glDeleteBuffers(1, &this->mazeVbo);
+	glDeleteVertexArrays(1, &this->mazeVao);
 }
 
 int Maze::GetMazeHeight()
@@ -121,15 +118,6 @@ void Maze::BindTexture(unsigned int textureUnit)
 	}
 }
 
-void Maze::InitiateBuffers()
-{
-	// Wall Buffers
-	initiateWallBuffers();
-
-	// Floor Buffers
-	initiateFloorBuffers();
-}
-
 void Maze::LoadMaze(const std::string & fileName)
 {
 	this->path = fileName;
@@ -152,14 +140,14 @@ void Maze::LoadMaze(const std::string & fileName)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, this->imageData);
 }
 
-void Maze::DrawWallsToBuffer()
+void Maze::DrawMazeToBuffer()
 {
 	// Skip the fragment shader
 	glEnable(GL_RASTERIZER_DISCARD);
 
-	glBindVertexArray(this->wallVao);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->wallTbo);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->wallVbo);
+	glBindVertexArray(this->mazeVao);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->mazeTbo);
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->mazeVbo);
 
 	// Perform transform feedback
 	glBeginTransformFeedback(GL_TRIANGLES);
@@ -178,50 +166,11 @@ void Maze::DrawWallsToBuffer()
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
 }
 
-void Maze::DrawFloorToBuffer()
+void Maze::DrawMaze()
 {
-	// Skip the fragment shader
-	glEnable(GL_RASTERIZER_DISCARD);
-
-	glBindVertexArray(this->floorVao);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->floorTbo);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->floorVbo);
-
-
-	// Perform transform feedback
-	glBeginTransformFeedback(GL_TRIANGLES);
-	glDrawArrays(GL_POINTS, 0, (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE));
-	glEndTransformFeedback();
-
-	// Enable the fragment shader again
-	glDisable(GL_RASTERIZER_DISCARD);
-
-	// Something ...
-	glFlush();
-
-	// Memory barrier
-	glBindVertexArray(0);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
-}
-
-void Maze::DrawWalls()
-{
-	glBindVertexArray(this->wallVao);
+	glBindVertexArray(this->mazeVao);
 	
-	glDrawTransformFeedback(GL_TRIANGLES, this->wallTbo);
-
-	// Memory barrier
-	glBindVertexArray(0);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
-}
-
-void Maze::DrawFloor()
-{
-	glBindVertexArray(this->floorVao);
-
-	glDrawTransformFeedback(GL_TRIANGLES, this->floorTbo);
+	glDrawTransformFeedback(GL_TRIANGLES, this->mazeTbo);
 
 	// Memory barrier
 	glBindVertexArray(0);
@@ -231,52 +180,55 @@ void Maze::DrawFloor()
 
 void Maze::BindWallMaterial(Shader* shader)
 {
-	shader->SendInt("TextureDiffuse", 0);
-	this->wallTextures[0]->Bind(0);
+	//  ================= FILIP SKA ÄNDRA DETTA  ======================
+	shader->SendInt("TextureDiffuse[1]", 1);
+	this->wallTextures[0]->Bind(1);
 
-	shader->SendInt("TextureNormal", 1);
-	this->wallTextures[1]->Bind(1);
+	shader->SendInt("TextureNormal[1]", 3);
+	this->wallTextures[1]->Bind(3);
 
-	shader->SendInt("TextureAmbient", 2);
-	this->wallTextures[2]->Bind(2);
-
+	shader->SendInt("TextureAmbient[1]", 5);
+	this->wallTextures[2]->Bind(5);
+	//  ================= FILIP SKA ÄNDRA DETTA  ======================
 	// Add shininess
 }
 
 void Maze::BindFloorMaterial(Shader* shader)
 {
-	shader->SendInt("TextureDiffuse", 0);
+	//  ================= FILIP SKA ÄNDRA DETTA  ======================
+	shader->SendInt("TextureDiffuse[0]", 0);
 	this->floorTextures[0]->Bind(0);
 
-	shader->SendInt("TextureNormal", 1);
-	this->floorTextures[1]->Bind(1);
+	shader->SendInt("TextureNormal[0]", 2);
+	this->floorTextures[1]->Bind(2);
 
-	shader->SendInt("TextureAmbient", 2);
-	this->floorTextures[2]->Bind(2);
-
+	shader->SendInt("TextureAmbient[0]", 4);
+	this->floorTextures[2]->Bind(4);
+	//  ================= FILIP SKA ÄNDRA DETTA  ======================
 	// Add shininess
 }
 
-void Maze::initiateWallBuffers()
+void Maze::InitiateMazeBuffers()
 {
-	// Three walls can be drawn with the same point
+	// Three walls can be drawn with the same point, hence 18 vertices and not 6
 	GLint maxNrOfVertices = 18;
 
-	// wallVao to draw points
-	glGenVertexArrays(1, &this->wallVao);
-	glBindVertexArray(this->wallVao);
+	// mazeVao to draw points
+	glGenVertexArrays(1, &this->mazeVao);
+	glBindVertexArray(this->mazeVao);
 
-	// create a buffer to hold the results of the transform feedback process.
-	glGenBuffers(1, &this->wallVbo);
-	glBindBuffer(GL_ARRAY_BUFFER, this->wallVbo);
+	// Create a buffer to hold the results of the transform feedback process.
+	glGenBuffers(1, &this->mazeVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, this->mazeVbo);
 
-	// allocate space (no data)
+	// Allocate space (no data)
 	glBufferData(
 		GL_ARRAY_BUFFER,
 		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Position
 		sizeof(glm::vec2) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Texcoords
 		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Normals
-		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE),	// Tangents
+		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Tangents
+		sizeof(float)     * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE),	// Type
 		NULL,							// no data passed
 		GL_DYNAMIC_COPY);
 
@@ -285,56 +237,17 @@ void Maze::initiateWallBuffers()
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), 0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3)));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(sizeof(glm::vec3)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(3 * sizeof(glm::vec3) + sizeof(glm::vec2)));
 
-	// create and bind transform feedback object and buffer to write to.
-	glGenTransformFeedbacks(1, &this->wallTbo);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->wallTbo);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->wallVbo);
-
-	glBindVertexArray(0);
-}
-
-void Maze::initiateFloorBuffers()
-{
-	// Only one floor for each point
-	GLint maxNrOfVertices = 6;
-
-	// wallVao to draw points
-	glGenVertexArrays(1, &this->floorVao);
-	glBindVertexArray(this->floorVao);
-
-	// create a buffer to hold the results of the transform feedback process.
-	glGenBuffers(1, &this->floorVbo);
-	glBindBuffer(GL_ARRAY_BUFFER, this->floorVbo);
-
-	// allocate space (no data)
-	glBufferData(
-		GL_ARRAY_BUFFER,
-		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Position
-		sizeof(glm::vec2) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Texcoords
-		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Normals
-		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE),	// Tangents
-		NULL,							// no data passed
-		GL_DYNAMIC_COPY);
-
-	// Set the output Layout
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), 0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3)));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2)));
-
-	// create and bind transform feedback object and buffer to write to.
-	glGenTransformFeedbacks(1, &this->floorTbo);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->floorTbo);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->floorVbo);
+	// Create and bind transform feedback object and buffer to write to.
+	glGenTransformFeedbacks(1, &this->mazeTbo);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->mazeTbo);
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->mazeVbo);
 
 	glBindVertexArray(0);
 }
@@ -373,7 +286,7 @@ void Maze::LoadTextures()
 {
 	Texture* wallDiffuse = new Texture("Textures/wall0/wall0_diffuse.png");
 	Texture* wallNormal = new Texture("Textures/wall0/wall0_normal.png", "TextureNormal");
-	Texture* wallAmbient = new Texture("Textures/wall0/wall0_ambient.png", "TextureNormal");
+	Texture* wallAmbient = new Texture("Textures/wall0/wall0_ambient.png", "TextureAmbient");
 
 	Texture* floorDiffuse = new Texture("Textures/floor0/floor0_diffuse.png");
 	Texture* floorNormal = new Texture("Textures/floor0/floor0_normal.png", "TextureNormal");

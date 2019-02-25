@@ -8,14 +8,23 @@ out vec2 outTexCoords;
 out vec3 outNormal;
 out vec3 outTangent;
 
+// outType is used to check if the primitive is a wall or a floor
+// 0 = floor     1 = wall
+out float outType;
+
+
+
 uniform sampler2D texture;
 
 uniform int width;
 uniform int height;
 
-// These uniforms are used to scale the UV-coords along with the walls.
-uniform int scaleUVX;
+// These uniforms are used to scale the UV-coords along with the walls and floor.
+uniform int scaleUVXZ;
 uniform int scaleUVY;
+
+// Floor function
+void DrawFloor(float i, float j);
 
 // Single wall functions
 void DrawSW_n(float i, float j);
@@ -43,6 +52,9 @@ void main()
 {
 	vec3 pixelValue;
 	
+	// Black pixels represent floor in the texture
+	vec3 floor = vec3(0.0f, 0.0f, 0.0f);
+
 	// CW = Corner Wall
 	// SW = Single Wall
 	// EW = End Wall
@@ -98,8 +110,12 @@ void main()
 	i -= (width / 2);
 	j -= (height / 2);
 
-	// Draw walls depending on the color of each pixel
-	if(pixelValue == SW_n)
+	// Draw the maze depending on the color of each pixel
+	if(pixelValue == floor)
+	{
+		DrawFloor(i, j);
+	}
+	else if(pixelValue == SW_n)
 	{
 		DrawSW_n(i, j);
 	}
@@ -156,7 +172,64 @@ void main()
 		DrawDW_h(i, j);
 	}
 }
-		 
+
+void DrawFloor(float i, float j)
+{
+	// First Triangle
+	// Left Bottom vertex
+	outPosition = vec3(i - 0.5f, 0, j + 0.5);
+	outTexCoords = vec2(0, 0);
+	outNormal  = vec3(0.0f, 1.0f, 0.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
+	outType = 0.0f;
+	EmitVertex();												  
+			
+	//Right Top Vertex											  
+	outPosition = vec3(i + 0.5f, 0, j - 0.5);
+	outTexCoords = vec2(scaleUVXZ, scaleUVXZ);
+	outNormal  = vec3(0.0f, 1.0f, 0.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
+	outType = 0.0f;
+	EmitVertex();
+
+	// Left Top Vertex											  
+	outPosition = vec3(i - 0.5f, 0, j - 0.5);
+	outTexCoords = vec2(0, scaleUVXZ);
+	outNormal  = vec3(0.0f, 1.0f, 0.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
+	outType = 0.0f;
+	EmitVertex();												  		
+	EndPrimitive();
+		
+		
+
+	// Second Triangle
+	// Left Bottom vertex
+	outPosition = vec3(i - 0.5f, 0, j + 0.5);
+	outTexCoords = vec2(0, 0);
+	outNormal  = vec3(0.0f, 1.0f, 0.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
+	outType = 0.0f;
+	EmitVertex();
+		
+	// Right Bottom vertex
+	outPosition = vec3(i + 0.5f, 0, j + 0.5);
+	outTexCoords = vec2(scaleUVXZ, 0);
+	outNormal  = vec3(0.0f, 1.0f, 0.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
+	outType = 0.0f;
+	EmitVertex();
+
+	// Right Top vertex
+	outPosition = vec3(i + 0.5f, 0, j - 0.5);
+	outTexCoords = vec2(scaleUVXZ, scaleUVXZ);
+	outNormal  = vec3(0.0f, 1.0f, 0.0f);
+	outTangent = vec3(1.0f, 0.0f, 0.0f);
+	outType = 0.0f;
+	EmitVertex();		
+	EndPrimitive();
+}
+
 // Single wall functions
 void DrawSW_n(float i, float j)
 {
@@ -166,6 +239,7 @@ void DrawSW_n(float i, float j)
 	outTexCoords = vec2(0, 0);
 	outNormal  = vec3(0.0f, 0.0f, -1.0f);
 	outTangent = vec3(-1.0f, 0.0f, 0.0f);
+	outType = 1.0f;
 	EmitVertex();												  
 																  
 	// Left Top Vertex											  
@@ -173,13 +247,15 @@ void DrawSW_n(float i, float j)
 	outTexCoords = vec2(0, scaleUVY);
 	outNormal  = vec3(0.0f, 0.0f, -1.0f);
 	outTangent = vec3(-1.0f, 0.0f, 0.0f);
+	outType = 1.0f;
 	EmitVertex();												  
 																  
 	//Right Top Vertex											  
 	outPosition = vec3(i + 0.5f, 1, j - 0.5);
-	outTexCoords = vec2(scaleUVX, scaleUVY);
+	outTexCoords = vec2(scaleUVXZ, scaleUVY);
 	outNormal  = vec3(0.0f, 0.0f, -1.0f);
 	outTangent = vec3(-1.0f, 0.0f, 0.0f);
+	outType = 1.0f;
 	EmitVertex();
 				
 	EndPrimitive();
@@ -192,20 +268,23 @@ void DrawSW_n(float i, float j)
 	outTexCoords = vec2(0, 0);
 	outNormal  = vec3(0.0f, 0.0f, -1.0f);
 	outTangent = vec3(-1.0f, 0.0f, 0.0f);
+	outType = 1.0f;
 	EmitVertex();
 				
 	// Right Top vertex
 	outPosition = vec3(i + 0.5f, 1, j - 0.5);
-	outTexCoords = vec2(scaleUVX, scaleUVY);
+	outTexCoords = vec2(scaleUVXZ, scaleUVY);
 	outNormal  = vec3(0.0f, 0.0f, -1.0f);
 	outTangent = vec3(-1.0f, 0.0f, 0.0f);
+	outType = 1.0f;
 	EmitVertex();
 				
 	// Right Bottom vertex
 	outPosition = vec3(i + 0.5f, 0, j - 0.5);
-	outTexCoords = vec2(scaleUVX, 0);
+	outTexCoords = vec2(scaleUVXZ, 0);
 	outNormal  = vec3(0.0f, 0.0f, -1.0f);
 	outTangent = vec3(-1.0f, 0.0f, 0.0f);
+	outType = 1.0f;
 	EmitVertex();
 				
 	EndPrimitive();
@@ -219,13 +298,15 @@ void DrawSW_s(float i, float j)
 	outTexCoords = vec2(0, 0);
 	outNormal  = vec3(0.0f, 0.0f, 1.0f);
 	outTangent = vec3(1.0f, 0.0f, 0.0f);
+	outType = 1.0f;
 	EmitVertex();
 	
 	//Right Top Vertex
 	outPosition = vec3(i + 0.5, 1, j + 0.5);
-	outTexCoords = vec2(scaleUVX, scaleUVY);
+	outTexCoords = vec2(scaleUVXZ, scaleUVY);
 	outNormal  = vec3(0.0f, 0.0f, 1.0f);
 	outTangent = vec3(1.0f, 0.0f, 0.0f);
+	outType = 1.0f;
 	EmitVertex();
 
 	// Left Top Vertex
@@ -233,6 +314,7 @@ void DrawSW_s(float i, float j)
 	outTexCoords = vec2(0, scaleUVY);
 	outNormal  = vec3(0.0f, 0.0f, 1.0f);
 	outTangent = vec3(1.0f, 0.0f, 0.0f);
+	outType = 1.0f;
 	EmitVertex();
 							
 	EndPrimitive();
@@ -245,20 +327,23 @@ void DrawSW_s(float i, float j)
 	outTexCoords = vec2(0, 0);
 	outNormal  = vec3(0.0f, 0.0f, 1.0f);
 	outTangent = vec3(1.0f, 0.0f, 0.0f);
+	outType = 1.0f;
 	EmitVertex();
 	
 	// Right Bottom vertex
 	outPosition = vec3(i + 0.5, 0, j + 0.5);
-	outTexCoords = vec2(scaleUVX, 0);
+	outTexCoords = vec2(scaleUVXZ, 0);
 	outNormal  = vec3(0.0f, 0.0f, 1.0f);
 	outTangent = vec3(1.0f, 0.0f, 0.0f);
+	outType = 1.0f;
 	EmitVertex();
 
 	// Right Top vertex
 	outPosition = vec3(i + 0.5, 1, j + 0.5);
-	outTexCoords = vec2(scaleUVX, scaleUVY);
+	outTexCoords = vec2(scaleUVXZ, scaleUVY);
 	outNormal  = vec3(0.0f, 0.0f, 1.0f);
 	outTangent = vec3(1.0f, 0.0f, 0.0f);
+	outType = 1.0f;
 	EmitVertex();
 				
 	EndPrimitive();
@@ -272,6 +357,7 @@ void DrawSW_e(float i, float j)
 	outTexCoords = vec2(0, 0);
 	outNormal  = vec3(1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, -1.0f);
+	outType = 1.0f;
 	EmitVertex();
 	
 	// Left Top Vertex
@@ -279,13 +365,15 @@ void DrawSW_e(float i, float j)
 	outTexCoords = vec2(0, scaleUVY);
 	outNormal  = vec3(1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, -1.0f);
+	outType = 1.0f;
 	EmitVertex();
 
 	//Right Top Vertex
 	outPosition = vec3(i + 0.5, 1, j + 0.5);
-	outTexCoords = vec2(scaleUVX, scaleUVY);
+	outTexCoords = vec2(scaleUVXZ, scaleUVY);
 	outNormal  = vec3(1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, -1.0f);
+	outType = 1.0f;
 	EmitVertex();
 						
 	EndPrimitive();
@@ -298,20 +386,23 @@ void DrawSW_e(float i, float j)
 	outTexCoords = vec2(0, 0);
 	outNormal  = vec3(1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, -1.0f);
+	outType = 1.0f;
 	EmitVertex();
 	
 	// Right Top vertex
 	outPosition = vec3(i + 0.5, 1, j + 0.5);
-	outTexCoords = vec2(scaleUVX, scaleUVY);
+	outTexCoords = vec2(scaleUVXZ, scaleUVY);
 	outNormal  = vec3(1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, -1.0f);
+	outType = 1.0f;
 	EmitVertex();
 
 	// Right Bottom vertex
 	outPosition = vec3(i + 0.5, 0, j + 0.5);
-	outTexCoords = vec2(scaleUVX, 0);
+	outTexCoords = vec2(scaleUVXZ, 0);
 	outNormal  = vec3(1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, -1.0f);
+	outType = 1.0f;
 	EmitVertex();
 		
 	EndPrimitive();
@@ -325,6 +416,7 @@ void DrawSW_w(float i, float j)
 	outTexCoords = vec2(0, 0);
 	outNormal  = vec3(-1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, 1.0f);
+	outType = 1.0f;
 	EmitVertex();
 	
 	// Left Top Vertex
@@ -332,13 +424,15 @@ void DrawSW_w(float i, float j)
 	outTexCoords = vec2(0, scaleUVY);
 	outNormal  = vec3(-1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, 1.0f);
+	outType = 1.0f;
 	EmitVertex();
 
 	//Right Top Vertex
 	outPosition = vec3(i - 0.5, 1, j - 0.5);
-	outTexCoords = vec2(scaleUVX, scaleUVY);
+	outTexCoords = vec2(scaleUVXZ, scaleUVY);
 	outNormal  = vec3(-1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, 1.0f);
+	outType = 1.0f;
 	EmitVertex();
 						
 	EndPrimitive();
@@ -351,20 +445,23 @@ void DrawSW_w(float i, float j)
 	outTexCoords = vec2(0, 0);
 	outNormal  = vec3(-1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, 1.0f);
+	outType = 1.0f;
 	EmitVertex();
 	
 	// Right Top vertex
 	outPosition = vec3(i - 0.5, 1, j - 0.5);
-	outTexCoords = vec2(scaleUVX, scaleUVY);
+	outTexCoords = vec2(scaleUVXZ, scaleUVY);
 	outNormal  = vec3(-1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, 1.0f);
+	outType = 1.0f;
 	EmitVertex();
 
 	// Right Bottom vertex
 	outPosition = vec3(i - 0.5, 0, j - 0.5);
-	outTexCoords = vec2(scaleUVX, 0);
+	outTexCoords = vec2(scaleUVXZ, 0);
 	outNormal  = vec3(-1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, 1.0f);
+	outType = 1.0f;
 	EmitVertex();
 				
 	EndPrimitive();
