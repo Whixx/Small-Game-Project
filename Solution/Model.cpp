@@ -23,15 +23,25 @@ Model::~Model()
 	}
 }
 
-void Model::BindMaterial(Shader* shader)
+void Model::SetMaterial(Material* newMat)
 {
 	for (Mesh* m : this->meshes)
 	{
-		m->BindMaterial(shader);
+		m->SetMaterial(newMat);
 	}
 }
 
 void Model::Draw(Shader* shader)
+{
+	for (Mesh* m : this->meshes)
+	{
+		m->BindMaterial(shader);
+		m->Bind();
+		m->Draw();
+	}
+}
+
+void Model::DrawMeshes(Shader * shader)
 {
 	for (Mesh* m : this->meshes)
 	{
@@ -144,17 +154,11 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 		success = material->Get(AI_MATKEY_NAME, matName);
 		if (success != AI_SUCCESS)
 		{
-#ifdef DEBUG
-			cout << "ERROR: Assimp material !AI_SUCCESS" << endl;
-#endif
 		}
 
 		success = material->Get(AI_MATKEY_SHININESS, matShininess);
 		if (success != AI_SUCCESS)
 		{
-#ifdef DEBUG
-			cout << "ERROR: Assimp material !AI_SUCCESS" << endl;
-#endif
 		}
 
 

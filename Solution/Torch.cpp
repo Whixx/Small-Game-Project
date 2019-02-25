@@ -6,7 +6,7 @@ Torch::Torch(Transform transform, glm::vec3 lightColor, irrklang::ISoundEngine* 
 	particle("Textures/particle.png")
 {
 	this->transform = transform;
-	this->transform.SetScale(glm::vec3(0.02f, 0.02f, 0.02f));
+	this->transform.SetScale(glm::vec3(0.02f));
 	this->transform.GetRot().x = 0;
 	this->transform.GetRot().y = -transform.GetRot().y;
 	this->transform.GetRot().z = 0;
@@ -91,11 +91,6 @@ Particle * Torch::GetParticle()
 glm::vec3 Torch::GetFirePos()
 {
 	return this->lightPos;
-}
-
-void Torch::BindMaterial(Shader * shader)
-{
-	this->model.BindMaterial(shader);
 }
 
 void Torch::Draw(Shader* shader)

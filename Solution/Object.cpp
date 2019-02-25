@@ -39,12 +39,12 @@ void Object::Update(double dt)
 {
 }
 
-void Object::BindMaterial(Shader* shader)
-{
-	this->model->BindMaterial(shader);
-}
-
 void Object::Draw(Shader* shader)
 {
 	this->model->Draw(shader);
+}
+
+Model * Object::GetModel() const
+{
+	return this->model;
 }

@@ -22,7 +22,6 @@ public:
 
 private:
 	MaterialHandler() {}
-	["name"] = Material;
 	std::unordered_map<std::string, Material*> materials;
 };
 

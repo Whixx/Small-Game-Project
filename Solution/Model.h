@@ -21,9 +21,10 @@ public:
 
 	inline std::vector<Mesh*> GetMeshes() const { return this->meshes; };
 	inline std::string GetDirectory() const { return this->directoryPath; };
+	void SetMaterial(Material* newMat);
 
 	void Draw(Shader* shader);
-	void BindMaterial(Shader* shader);
+	void DrawMeshes(Shader* shader);
 
 private:
 	std::vector<Texture*> loadedTextures;

@@ -39,6 +39,7 @@ public:
 	void BindMaterial(Shader* shader);
 	void Draw();
 
-	inline Material* GetMaterial() const { return this->material; };
+	inline void SetMaterial(Material* newMat) { this->material = newMat; }
+	inline Material* GetMaterial() const { return this->material; }
 };
 #endif //MESH_H

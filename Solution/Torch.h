@@ -28,7 +28,6 @@ public:
 
 	glm::vec3 GetFirePos();
 
-	void BindMaterial(Shader* shader);
 	void Draw(Shader* shader);
 	virtual void Update(double dt, Transform transform, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camRight, glm::vec3 camUp, float distFromPlayer);
 	

@@ -199,14 +199,13 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		{
 			glm::mat4 worldMatrix = OH->GetObject(j)->GetTransform().GetWorldMatrix();
 			shadowShader->SendMat4("WorldMatrix", worldMatrix);
-			OH->GetObject(j)->Draw(shadowShader);
+			OH->GetObject(j)->GetModel()->DrawMeshes(shadowShader);
 		}
 		
 		// Draw Torch
 		glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 		shadowShader->SendMat4("WorldMatrix", worldMatrix);
-		player->GetTorch()->GetModel()->Draw(shadowShader);
-
+		player->GetTorch()->GetModel()->DrawMeshes(shadowShader);
 
 		// Same world matrix for walls and floor
 		glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
@@ -243,7 +242,6 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 		geometryPass->SendMat4("WorldMatrix", worldMatrix);
 
-		OH->GetObject(i)->BindMaterial(geometryPass);
 		OH->GetObject(i)->Draw(geometryPass);
 	}
 
@@ -251,7 +249,6 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Player *player, Obje
 	glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 	geometryPass->SendMat4("WorldMatrix", worldMatrix);
-	player->GetTorch()->BindMaterial(geometryPass);
 	player->GetTorch()->Draw(geometryPass);
 
 	// Same world matrix for walls and floor
@@ -343,7 +340,6 @@ void LightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLigh
 		glm::mat4 worldMatrix = lights->GetTransform(i)->GetWorldMatrix();
 		pointLightPass->SendMat4("transformationMatrix", camera->GetViewProjection() * worldMatrix);
 
-		renderModel->BindMaterial(pointLightPass);
 		renderModel->Draw(pointLightPass);
 	}
 	pointLightPass->UnBind();
