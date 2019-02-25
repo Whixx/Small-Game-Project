@@ -10,3 +10,4 @@ d 1.000000
 illum 2
 map_Kd torch.png
 map_Ks SpecularSmoothness_torch.png
+map_Ka torch_ambient.png

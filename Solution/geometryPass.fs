@@ -34,4 +34,5 @@ void main()
 	TextureSpecularAndHeightOut.g = shininess;
 	TextureSpecularAndHeightOut.b = 0;
 
+	AmbientOut = texture2D(TextureAmbient, texCoords).rgb;
 }

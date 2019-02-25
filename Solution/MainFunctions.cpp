@@ -343,6 +343,7 @@ void LightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLigh
 		glm::mat4 worldMatrix = lights->GetTransform(i)->GetWorldMatrix();
 		pointLightPass->SendMat4("transformationMatrix", camera->GetViewProjection() * worldMatrix);
 
+		renderModel->BindMaterial(pointLightPass);
 		renderModel->Draw(pointLightPass);
 	}
 	pointLightPass->UnBind();

@@ -22,14 +22,11 @@ public:
 	glm::vec3& GetScale();
 
 	virtual void Update(double dt);
-	void BindMaterial(Shader* shader);
+	virtual void BindMaterial(Shader* shader);
 	virtual void Draw(Shader* shader);
-
 private:
 	Model* model;
 	Transform transform;
-
-	unsigned int id;
 };
 
 #endif //DISPLAY_H

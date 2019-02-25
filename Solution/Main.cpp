@@ -123,9 +123,6 @@ int main()
 	
 	Model lightSphereModel("Models/Ball/ball.obj");
 	GLuint screenQuad = CreateScreenQuad();
-	//Particle particle;
-	//Texture particleTexture("Textures/particle.png");
-	//particle.SetTexture(&particleTexture);
 
 	// Initiate timer
 	double currentTime = 0;

@@ -354,9 +354,9 @@ void Player::Update(double dt)
 	{
 		//printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
 
-		//std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
-		//std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;
-		//std::cout << "Forward Vector! Z: " << this->playerCamera.GetForwardVector().z << std::endl;
+		std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
+		std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;
+		std::cout << "Forward Vector! Z: " << this->playerCamera.GetForwardVector().z << std::endl;
 	}
 	
 #endif

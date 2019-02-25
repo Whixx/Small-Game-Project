@@ -47,8 +47,6 @@ public:
 	void BindTexture(unsigned int textureUnit);
 private:
 
-	void LoadTextures();
-
 	unsigned char* imageData;
 	string path;
 	int width;
@@ -74,6 +72,8 @@ private:
 	const int scaleY  = 1;
 
 	// Private functions
+	void LoadTextures();
+
 	void initiateWallBuffers();
 	void initiateFloorBuffers();
 	// When generating the maze outwards from the player

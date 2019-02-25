@@ -141,15 +141,15 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 
 		// If they dont have a specific texture, add default // TODO: Don't load default textures to all models
 		if (diffuseMaps.size() == 0)
-			textures.push_back(this->LoadTexture("Textures/default_diffuse.png", "TextureDiffuse"));
+			textures.push_back(this->LoadTexture("Textures/default/default_diffuse.png", "TextureDiffuse"));
 		if (ambientMaps.size() == 0)
-			textures.push_back(this->LoadTexture("Textures/default_ambient.png", "TextureAmbient"));
+			textures.push_back(this->LoadTexture("Textures/default/default_ambient.png", "TextureAmbient"));
 		if (specularMaps.size() == 0)
-			textures.push_back(this->LoadTexture("Textures/default_specular.png", "TextureSpecular"));
+			textures.push_back(this->LoadTexture("Textures/default/default_specular.png", "TextureSpecular"));
 		if (normalMaps.size() == 0)
-			textures.push_back(this->LoadTexture("Textures/default_normal.png", "TextureNormal"));
+			textures.push_back(this->LoadTexture("Textures/default/default_normal.png", "TextureNormal"));
 		if (heightMaps.size() == 0)
-			textures.push_back(this->LoadTexture("Textures/default_height.png", "TextureHeight"));
+			textures.push_back(this->LoadTexture("Textures/default/default_height.png", "TextureHeight"));
 
 		// Combine them
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
@@ -177,11 +177,11 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 	else
 	{
 		// Add default textures to it
-		textures.push_back(this->LoadTexture("Textures/default_diffuse.png", "TextureDiffuse"));
-		textures.push_back(this->LoadTexture("Textures/default_normal.png", "TextureNormal"));
-		textures.push_back(this->LoadTexture("Textures/default_specular.png", "TextureSpecular"));
-		textures.push_back(this->LoadTexture("Textures/default_ambient.png", "TextureAmbient"));
-		textures.push_back(this->LoadTexture("Textures/default_height.png", "TextureHeight"));
+		textures.push_back(this->LoadTexture("Textures/default/default_diffuse.png", "TextureDiffuse"));
+		textures.push_back(this->LoadTexture("Textures/default/default_normal.png", "TextureNormal"));
+		textures.push_back(this->LoadTexture("Textures/default/default_specular.png", "TextureSpecular"));
+		textures.push_back(this->LoadTexture("Textures/default/default_ambient.png", "TextureAmbient"));
+		textures.push_back(this->LoadTexture("Textures/default/default_height.png", "TextureHeight"));
 	}
 
 	Mesh* temp = new Mesh(vertices, indices, textures, mat);

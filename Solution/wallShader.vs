@@ -19,8 +19,8 @@ void main()
     j -= 0; //this->GetTransform()->GetPos().z;
 
     // The maze can be scaled
-    i /= 1; //this->GetTransform()->GetScale().x;
-    j /= 1; //this->GetTransform()->GetScale().z;
+    i /= 2; //this->GetTransform()->GetScale().x;
+    j /= 2; //this->GetTransform()->GetScale().z;
 
     i += width / 2;
     j += height / 2;

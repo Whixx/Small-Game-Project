@@ -50,40 +50,6 @@ Maze::~Maze()
 	glDeleteBuffers(1, &this->wallVbo);
 	glDeleteVertexArrays(1, &this->wallVao);
 }
-/*
-Maze::Maze(const Maze& other)
-{
-	this->path = other.path;
-	this->width = other.width;
-	this->height = other.height;
-	this->numComponents = other.numComponents;
-
-	this->texture = 0;
-
-	this->wallTbo = 0;
-	this->wallVbo = 0;
-	this->wallVao = 0;
-
-	this->LoadMaze(other.path);
-}
-
-Maze & Maze::operator=(const Maze & other)
-{
-	this->path = other.path;
-	this->width = other.width;
-	this->height = other.height;
-	this->numComponents = other.numComponents;
-
-	this->texture = 0;
-
-	this->wallTbo = 0;
-	this->wallVbo = 0;
-	this->wallVao = 0;
-
-	this->LoadMaze(other.path);
-
-	return *this;
-}*/
 
 int Maze::GetMazeHeight()
 {
@@ -271,6 +237,9 @@ void Maze::BindWallMaterial(Shader* shader)
 	shader->SendInt("TextureNormal", 1);
 	this->wallTextures[1]->Bind(1);
 
+	shader->SendInt("TextureAmbient", 2);
+	this->wallTextures[2]->Bind(2);
+
 	// Add shininess
 }
 
@@ -281,6 +250,9 @@ void Maze::BindFloorMaterial(Shader* shader)
 
 	shader->SendInt("TextureNormal", 1);
 	this->floorTextures[1]->Bind(1);
+
+	shader->SendInt("TextureAmbient", 2);
+	this->floorTextures[2]->Bind(2);
 
 	// Add shininess
 }
@@ -399,11 +371,13 @@ void Maze::GenerateDrawOrder()
 
 void Maze::LoadTextures()
 {
-	Texture* wallDiffuse = new Texture("Textures/brickwall.jpg");
-	Texture* wallNormal = new Texture("Textures/brickwall_normal.jpg", "TextureNormal");
+	Texture* wallDiffuse = new Texture("Textures/wall0/wall0_diffuse.png");
+	Texture* wallNormal = new Texture("Textures/wall0/wall0_normal.png", "TextureNormal");
+	Texture* wallAmbient = new Texture("Textures/wall0/wall0_ambient.png", "TextureNormal");
 
-	Texture* floorDiffuse = new Texture("Textures/ground.png");
-	Texture* floorNormal = new Texture("Textures/ground_normal.png", "TextureNormal");
+	Texture* floorDiffuse = new Texture("Textures/floor0/floor0_diffuse.png");
+	Texture* floorNormal = new Texture("Textures/floor0/floor0_normal.png", "TextureNormal");
+	Texture* floorAmbient = new Texture("Textures/floor0/floor0_ambient.png", "TextureAmbient");
 
 	// Add Ambient
 	// Add Height
@@ -415,9 +389,11 @@ void Maze::LoadTextures()
 
 	wallTextures.push_back(wallDiffuse);
 	wallTextures.push_back(wallNormal);
+	wallTextures.push_back(wallAmbient);
 
 	floorTextures.push_back(floorDiffuse);
 	floorTextures.push_back(floorNormal);
+	floorTextures.push_back(floorAmbient);
 }
 
 // Returns a vector with the rgb value of a pixel

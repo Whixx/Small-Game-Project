@@ -84,7 +84,8 @@ void main()
 	float distancePixelToLight;
 
 	// Ambient
-	vec3 ambient = ambientColor;
+	vec3 ambient = ambientColor.r * materialColor.rgb;
+	//ambient = vec3(0);
 	
 	// Diffuse
 	vec3 lightDir;
@@ -99,20 +100,24 @@ void main()
 
 	for(int i = 0; i < NR_OF_POINT_LIGHTS; i++)
 	{
-		// Diffuse
-		lightDir = normalize(PointLights[i].position.xyz - pixelPos.xyz);
-		alpha = dot(normal.xyz,lightDir);
-		diffuse += vec4(materialColor.rgb,1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * max(alpha, 0);
-
-		// Specular (Blinn-Phong) 
-		vecToCam = normalize(vec3(cameraPos.xyz - pixelPos.xyz));	
-        halfwayDir = normalize(lightDir + vecToCam);
-		float spec = pow(max(dot(normal, halfwayDir), 0.0), ceil(shininess));
-        finalSpecular += specular * vec4(materialColor.rgb, 1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * spec;
-
-		// attenuation
 		distancePixelToLight = length(PointLights[i].position - pixelPos);
-		attenuation = 1.0f / (1.0f + (0.1 * distancePixelToLight)+ (0.01 * pow(distancePixelToLight, 2)));
+		if(distancePixelToLight <= 7.0)
+		{
+			// Diffuse
+			lightDir = normalize(PointLights[i].position.xyz - pixelPos.xyz);
+			alpha = dot(normal.xyz,lightDir);
+			diffuse += vec4(materialColor.rgb,1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * max(alpha, 0);
+
+			// Specular (Blinn-Phong) 
+			vecToCam = normalize(vec3(cameraPos.xyz - pixelPos.xyz));	
+			halfwayDir = normalize(lightDir + vecToCam);
+			float spec = pow(max(dot(normal, halfwayDir), 0.0), ceil(shininess));
+			finalSpecular += specular * vec4(materialColor.rgb, 1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * spec;
+
+			// attenuation // TODO: FIX good attenuation
+			float lightAttenuation = 0.2;
+			attenuation = 1.0f / (1.0 + (lightAttenuation * pow(distancePixelToLight, 2)));
+		}
 	}
 
 	float shadow = calculateShadows(pixelPos, cameraPos, normal);
