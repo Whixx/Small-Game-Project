@@ -2,7 +2,10 @@
 
 uniform int width;
 uniform int height;
-uniform vec2 drawOrder[512];
+uniform vec2 translation;
+uniform int scaleUVXZ;
+
+uniform vec2 drawOrder[256];
 uniform vec3 cameraPos;
 
 void main()
@@ -15,12 +18,12 @@ void main()
     int j = int(drawOrder[gl_VertexID].y) + int(cameraPos.z);
 
     // The maze can be translated
-    i -= 0; // this->GetTransform()->GetPos().x;
-    j -= 0; //this->GetTransform()->GetPos().z;
+    i -= int(translation.x);
+    j -= int(translation.y);
 
     // The maze can be scaled
-    i /= 2; //this->GetTransform()->GetScale().x;
-    j /= 2; //this->GetTransform()->GetScale().z;
+    i /= scaleUVXZ;
+    j /= scaleUVXZ;
 
     i += width / 2;
     j += height / 2;
