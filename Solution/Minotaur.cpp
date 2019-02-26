@@ -13,22 +13,45 @@ Minotaur::~Minotaur()
 {
 }
 
-void Minotaur::Update()
+void Minotaur::Update(glm::vec3 playerPos)
 {
-	// Move along path
-
-		// If a path is not available
-
-			// Choose a location in the player-area at random
-
-			// Generate path between current location and goal location
-
-			// Play growl sound
+	// If a path is not available
+	if (path.empty())
+	{
+		// Choose a location in the player-area at random
+		glm::vec2 randomPos =
+			glm::vec2(	playerPos.x + rand() % (this->searchArea * 2) - this->searchArea,
+						playerPos.y + rand() % (this->searchArea * 2) - this->searchArea);
+		// Generate path between current location and goal location
 		
+			// this->path = GeneratePath(glm::vec2(this->transform.GetPos()), randomPos);
+		
+		// Play growl sound
+		growlSound.Play();
+	}
+	
+	// Set the destination to the next tile on the path
+	if (this->destination == glm::vec2(this->transform.GetPos()))
+	{
+		this->destination = path[path.size()];
+		path.pop_back();
+	}
+		
+	// Move towards the current destination
+	this->move();
 
-		// Calculate move direction
+	// Play step sound
+}
 
-		// Move in specified direction until pos is at next tile
+void Minotaur::move()
+{
+	// Identify the current position direction
+	glm::vec2* currentPos = &glm::vec2(this->transform.GetPos());
+	glm::vec2 direction = this->destination - *currentPos;
 
-		// Play step sound
+	// If we are not walking past the destination
+	if (glm::length(direction) > glm::length(this->movementSpeed*glm::normalize(direction)))
+		*currentPos += this->movementSpeed*glm::normalize(direction);
+	else	// Else we are about to walk past the destination, which means that we have arrived
+		*currentPos = this->destination;
 }
