@@ -1,19 +1,16 @@
 #include "Torch.h"
 
-Torch::Torch(Transform transform, Mesh * mesh, Texture * texture, glm::vec3 lightColor, irrklang::ISoundEngine* engine, PointLightHandler* PLH)
-	:torchSound("Sounds/torch.wav", true, engine),
-	particleTexture("Textures/particle.png", "NormalMaps/flat_normal.jpg")
+Torch::Torch(Transform transform, glm::vec3 lightColor, irrklang::ISoundEngine* engine, PointLightHandler* PLH, float torchSize)
+	:torchSound("Sounds/torch.wav", true, engine), 
+	model("Models/Torch/torch.obj"),
+	particle(torchSize, "Textures/particle.png")
 {
-	this->texture = texture;
-	this->mesh = mesh;
-	this->mesh->CreateMesh("ObjectFiles/torch.obj");
+	this->size = torchSize;
 	this->transform = transform;
-	this->transform.SetScale(glm::vec3(0.02f, 0.02f, 0.02f));
+	this->transform.SetScale(glm::vec3(this->size, this->size, this->size));
 	this->transform.GetRot().x = 0;
 	this->transform.GetRot().y = -transform.GetRot().y;
 	this->transform.GetRot().z = 0;
-
-	this->particle.SetTexture(&this->particleTexture);
 
 
 	// Calculate the position of the torchLight
@@ -35,7 +32,7 @@ Torch::Torch(Transform transform, Mesh * mesh, Texture * texture, glm::vec3 ligh
 	rotationZMatrix = glm::rotate(0.0f,						glm::vec3(0, 0, 1));
 	rotationMatrix = rotationZMatrix * rotationYMatrix * rotationXMatrix;
 
-	this->torchSound.SetVolume(0.4);
+	this->torchSound.SetVolume(0.6);
 }
 
 Torch::~Torch()
@@ -82,9 +79,14 @@ Transform Torch::GetTransform()
 	return this->transform;
 }
 
-Particle & Torch::GetParticle()
+Model * Torch::GetModel()
 {
-	return this->particle;
+	return &this->model;
+}
+
+Particle * Torch::GetParticle()
+{
+	return &this->particle;
 }
 
 glm::vec3 Torch::GetFirePos()
@@ -92,27 +94,22 @@ glm::vec3 Torch::GetFirePos()
 	return this->lightPos;
 }
 
-void Torch::BindTexture()
+void Torch::Draw(Shader* shader)
 {
-	this->texture->Bind(0);
+	this->model.Draw(shader);
 }
 
-void Torch::Draw()
+void Torch::Update(double dt, Camera camera, glm::vec3 camForward, float distFromPlayer)
 {
-	this->mesh->Draw();
-}
-
-void Torch::Update(double dt, Transform transform, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camRight, glm::vec3 camUp, float distFromPlayer)
-{
-	this->transform.GetRot().y = -transform.GetRot().y;
-	torchSound.Play();
-
+	// Updating the torch's rotation
+	this->transform.GetRot().y = -glm::vec3(glm::radians(camera.GetPitch()), glm::radians(camera.GetYaw()), 0).y;
+	
 	// Update the torch so that it is located in front of the player
-	this->GetPos() = camPos
+	this->GetPos() = camera.GetCameraPosition()
 		+ camForward * distFromPlayer
-		+ camRight * 0.075f
-		+ camUp * -0.11f;
-
+		+ camera.GetRightVector() * 0.075f
+		+ camera.GetUpVector() * -0.11f;
+	
 	// Update the lights position (Should be in the correct spot on the torch)
 	glm::mat4 scaleMatrix = glm::scale(glm::vec3(0, this->transform.GetScale().y, 0));
 
@@ -126,4 +123,10 @@ void Torch::Update(double dt, Transform transform, glm::vec3 camPos, glm::vec3 c
 	this->lightPos = this->transform.GetPos() + glm::vec3(scaleRotMatrix * this->lightStartingPos);
 	
 	this->torchLight->GetPos() = this->lightPos;
+
+	// Update particles
+	this->particle.Update(dt, camera.GetCameraPosition(), this->lightPos);
+
+	// Updating the sound
+	torchSound.Play();
 }

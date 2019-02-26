@@ -7,20 +7,24 @@ Maze::Maze()
 	this->width = 0;
 	this->height = 0;
 	this->numComponents = 0;
-	this->texture = 0;
+	this->mazeTexture = 0;
 
-	this->wallTbo = 0;
-	this->wallVbo = 0;
-	this->wallVao = 0;
+	this->mazeTbo = 0;
+	this->mazeVbo = 0;
+	this->mazeVao = 0;
 
-	this->floorTbo = 0;
-	this->floorVbo = 0;
-	this->floorVao = 0;
 
 	// Set maze position, rotation and scale
 	this->transform.SetPos(glm::vec3(0, 0, 0));
 	this->transform.SetRot(glm::vec3(0, 0, 0));
 	this->transform.SetScale(glm::vec3(scaleXZ, scaleY, scaleXZ));
+
+	// Load wall & floor texture
+	this->LoadTextures();
+
+	this->LoadMaze("MazePNG/mazeColorCoded.png");
+
+	this->InitiateMazeBuffers();
 
 	this->GenerateDrawOrder();
 }
@@ -29,44 +33,10 @@ Maze::~Maze()
 {
 	stbi_image_free(imageData);
 
-	glDeleteBuffers(1, &this->wallTbo);
-	glDeleteBuffers(1, &this->wallVbo);
-	glDeleteVertexArrays(1, &this->wallVao);
+	glDeleteBuffers(1, &this->mazeTbo);
+	glDeleteBuffers(1, &this->mazeVbo);
+	glDeleteVertexArrays(1, &this->mazeVao);
 }
-/*
-Maze::Maze(const Maze& other)
-{
-	this->path = other.path;
-	this->width = other.width;
-	this->height = other.height;
-	this->numComponents = other.numComponents;
-
-	this->texture = 0;
-
-	this->wallTbo = 0;
-	this->wallVbo = 0;
-	this->wallVao = 0;
-
-	this->LoadMaze(other.path);
-}
-
-Maze & Maze::operator=(const Maze & other)
-{
-	this->path = other.path;
-	this->width = other.width;
-	this->height = other.height;
-	this->numComponents = other.numComponents;
-
-	this->texture = 0;
-
-	this->wallTbo = 0;
-	this->wallVbo = 0;
-	this->wallVao = 0;
-
-	this->LoadMaze(other.path);
-
-	return *this;
-}*/
 
 int Maze::GetMazeHeight()
 {
@@ -88,6 +58,32 @@ glm::vec2 * Maze::GetDrawOrder()
 	return this->drawOrder;
 }
 
+glm::vec3 Maze::TransformToWorldCoords(glm::vec3 pos)
+{
+	float newX = pos.x;
+	float newZ = pos.z;
+
+	// NOT NEEDED Transform world coords to texture coords. ( 1 pixel on texture corresponds to 1.0, origo is (0, 0) for both spaces
+
+	// The maze can be translated
+	newX -= this->GetTransform()->GetPos().x;
+	newZ -= this->GetTransform()->GetPos().z;
+
+	// The maze can be scaled
+	newX /= this->GetTransform()->GetScale().x;
+	newZ /= this->GetTransform()->GetScale().z;
+
+	// The walls have a offset, while the maze's center is in the origin (0,0)
+	float wallOffset = 0.5f;
+	newX += (this->GetMazeWidth() / 2) + wallOffset;
+	newZ += (this->GetMazeHeight() / 2) + wallOffset;
+
+	pos.x = newX;
+	pos.z = newZ;
+
+	return pos;
+}
+
 unsigned int Maze::GetTileCount()
 {
 	return (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE);
@@ -96,26 +92,10 @@ unsigned int Maze::GetTileCount()
 bool Maze::IsWallAtWorld(float x, float y)
 {
 	bool isAWall = true;
-	float newX = x;
-	float newY = y;
 
-	// NOT NEEDED Transform world coords to texture coords. ( 1 pixel on texture corresponds to 1.0, origo is (0, 0) for both spaces
-
-	// The maze can be translated
-	newX -= this->GetTransform()->GetPos().x;
-	newY -= this->GetTransform()->GetPos().z;
-
-	// The maze can be scaled
-	newX /= this->GetTransform()->GetScale().x;
-	newY /= this->GetTransform()->GetScale().z;
-
-	// The walls have a offset, while the maze's center is in the origin (0,0)
-	float wallOffset = 0.5f;
-	newX += (this->GetMazeWidth() / 2) + wallOffset;
-	newY += (this->GetMazeHeight() / 2) + wallOffset;
-
-	glm::vec3 pixel = readPixel(newX, newY);
-
+	glm::vec3 transformed = this->TransformToWorldCoords(glm::vec3(x, 0.0f, y));
+	glm::vec3 pixel = readPixel(transformed.x, transformed.z);
+	
 	if (pixel == glm::vec3(0.0f, 0.0f, 0.0f))
 	{
 		isAWall = false;
@@ -130,21 +110,12 @@ void Maze::BindTexture(unsigned int textureUnit)
 	if (textureUnit >= 0 && textureUnit <= 31)
 	{
 		glActiveTexture(GL_TEXTURE0 + textureUnit);
-		glBindTexture(GL_TEXTURE_2D, this->texture);
+		glBindTexture(GL_TEXTURE_2D, this->mazeTexture);
 	}
 	else
 	{
 		std::cout << "[ERROR] Texture could not be bound. Unit not in range[0-31]" << std::endl;
 	}
-}
-
-void Maze::InitiateBuffers()
-{
-	// Wall Buffers
-	initiateWallBuffers();
-
-	// Floor Buffers
-	initiateFloorBuffers();
 }
 
 void Maze::LoadMaze(const std::string & fileName)
@@ -156,8 +127,8 @@ void Maze::LoadMaze(const std::string & fileName)
 	if (this->imageData == NULL)
 		std::cerr << "Loading failed for texture: " << fileName << std::endl;
 
-	glGenTextures(1, &this->texture);
-	glBindTexture(GL_TEXTURE_2D, this->texture);
+	glGenTextures(1, &this->mazeTexture);
+	glBindTexture(GL_TEXTURE_2D, this->mazeTexture);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -169,14 +140,14 @@ void Maze::LoadMaze(const std::string & fileName)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, this->imageData);
 }
 
-void Maze::DrawWallsToBuffer()
+void Maze::DrawMazeToBuffer()
 {
 	// Skip the fragment shader
 	glEnable(GL_RASTERIZER_DISCARD);
 
-	glBindVertexArray(this->wallVao);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->wallTbo);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->wallVbo);
+	glBindVertexArray(this->mazeVao);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->mazeTbo);
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->mazeVbo);
 
 	// Perform transform feedback
 	glBeginTransformFeedback(GL_TRIANGLES);
@@ -190,82 +161,50 @@ void Maze::DrawWallsToBuffer()
 	glFlush();
 
 	// Memory barrier
-	glBindVertexArray(0);
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
-}
-
-void Maze::DrawFloorToBuffer()
-{
-	// Skip the fragment shader
-	glEnable(GL_RASTERIZER_DISCARD);
-
-	glBindVertexArray(this->floorVao);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->floorTbo);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->floorVbo);
-
-
-	// Perform transform feedback
-	glBeginTransformFeedback(GL_TRIANGLES);
-	glDrawArrays(GL_POINTS, 0, (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE));
-	glEndTransformFeedback();
-
-	// Enable the fragment shader again
-	glDisable(GL_RASTERIZER_DISCARD);
-
-	// Something ...
-	glFlush();
-
-	// Memory barrier
 	glBindVertexArray(0);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
 }
 
-void Maze::DrawWalls()
+void Maze::DrawMaze()
 {
-	glBindVertexArray(this->wallVao);
+	glBindVertexArray(this->mazeVao);
 	
-	glDrawTransformFeedback(GL_TRIANGLES, this->wallTbo);
+	glDrawTransformFeedback(GL_TRIANGLES, this->mazeTbo);
 
 	// Memory barrier
-	glBindVertexArray(0);
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
-}
-
-void Maze::DrawFloor()
-{
-	glBindVertexArray(this->floorVao);
-
-	glDrawTransformFeedback(GL_TRIANGLES, this->floorTbo);
-
-	// Memory barrier
 	glBindVertexArray(0);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
 }
 
-void Maze::initiateWallBuffers()
+void Maze::BindMaterial(Shader* shader)
 {
-	// Three walls can be drawn with the same point
+	this->floor0Mat->BindMaterialArray(shader, 0);
+	this->wall1Mat->BindMaterialArray(shader, 1);
+}
+
+void Maze::InitiateMazeBuffers()
+{
+	// Three walls can be drawn with the same point, hence 18 vertices and not 6
 	GLint maxNrOfVertices = 18;
 
-	// wallVao to draw points
-	glGenVertexArrays(1, &this->wallVao);
-	glBindVertexArray(this->wallVao);
+	// mazeVao to draw points
+	glGenVertexArrays(1, &this->mazeVao);
+	glBindVertexArray(this->mazeVao);
 
-	// create a buffer to hold the results of the transform feedback process.
-	glGenBuffers(1, &this->wallVbo);
-	glBindBuffer(GL_ARRAY_BUFFER, this->wallVbo);
+	// Create a buffer to hold the results of the transform feedback process.
+	glGenBuffers(1, &this->mazeVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, this->mazeVbo);
 
-	// allocate space (no data)
+	// Allocate space (no data)
 	glBufferData(
 		GL_ARRAY_BUFFER,
-		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Position
-		sizeof(glm::vec2) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Texcoords
-		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Normals
-		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE),	// Tangents
+		sizeof(glm::vec3)	 * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Position
+		sizeof(glm::vec2)	 * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Texcoords
+		sizeof(glm::vec3)	 * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Normals
+		sizeof(glm::vec3)	 * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Tangents
+		sizeof(float)		 * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE),	// Type
 		NULL,							// no data passed
 		GL_DYNAMIC_COPY);
 
@@ -274,56 +213,17 @@ void Maze::initiateWallBuffers()
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), 0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3)));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3		 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 3		 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(sizeof(glm::vec3)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3		 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3		 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, 3		 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(3 * sizeof(glm::vec3) + sizeof(glm::vec2)));
 
-	// create and bind transform feedback object and buffer to write to.
-	glGenTransformFeedbacks(1, &this->wallTbo);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->wallTbo);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->wallVbo);
-
-	glBindVertexArray(0);
-}
-
-void Maze::initiateFloorBuffers()
-{
-	// Only one floor for each point
-	GLint maxNrOfVertices = 6;
-
-	// wallVao to draw points
-	glGenVertexArrays(1, &this->floorVao);
-	glBindVertexArray(this->floorVao);
-
-	// create a buffer to hold the results of the transform feedback process.
-	glGenBuffers(1, &this->floorVbo);
-	glBindBuffer(GL_ARRAY_BUFFER, this->floorVbo);
-
-	// allocate space (no data)
-	glBufferData(
-		GL_ARRAY_BUFFER,
-		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Position
-		sizeof(glm::vec2) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Texcoords
-		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Normals
-		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE),	// Tangents
-		NULL,							// no data passed
-		GL_DYNAMIC_COPY);
-
-	// Set the output Layout
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), 0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3)));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2), (const GLvoid*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2)));
-
-	// create and bind transform feedback object and buffer to write to.
-	glGenTransformFeedbacks(1, &this->floorTbo);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->floorTbo);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->floorVbo);
+	// Create and bind transform feedback object and buffer to write to.
+	glGenTransformFeedbacks(1, &this->mazeTbo);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->mazeTbo);
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->mazeVbo);
 
 	glBindVertexArray(0);
 }
@@ -356,6 +256,31 @@ void Maze::GenerateDrawOrder()
 		}
 		layer++;
 	}
+}
+
+void Maze::LoadTextures()
+{
+	Texture* wallDiffuse = new Texture("Textures/wall0/wall0_diffuse.png");
+	Texture* wallNormal = new Texture("Textures/wall0/wall0_normal.png", "TextureNormal");
+	Texture* wallAmbient = new Texture("Textures/wall0/wall0_ambient.png", "TextureAmbient");
+	Texture* wallSpecular = new Texture("Textures/wall0/wall0_specular.png", "TextureSpecular");
+	Texture* wallHeight = new Texture("Textures/wall0/wall0_height.png", "TextureHeight");
+	float wallShininess = 16.0;
+
+	Texture* floorDiffuse = new Texture("Textures/floor0/floor0_diffuse.png");
+	Texture* floorNormal = new Texture("Textures/floor0/floor0_normal.png", "TextureNormal");
+	Texture* floorAmbient = new Texture("Textures/floor0/floor0_ambient.png", "TextureAmbient");
+	Texture* floorSpecular = new Texture("Textures/floor0/floor0_specular.png", "TextureSpecular");
+	Texture* floorHeight = new Texture("Textures/floor0/floor0_height.png", "TextureHeight");
+	float floorShininess = 16.0;
+
+	MaterialHandler& MH = MaterialHandler::GetInstance();
+
+	// Wall0
+	this->wall1Mat = MH.AddMaterial(wallDiffuse, wallAmbient, wallSpecular, wallNormal, wallHeight, wallShininess, "wall1");
+
+	// Floor0
+	this->floor0Mat = MH.AddMaterial(floorDiffuse, floorAmbient, floorSpecular, floorNormal, floorHeight, floorShininess, "floor0");
 }
 
 // Returns a vector with the rgb value of a pixel

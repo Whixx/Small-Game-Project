@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BLUR_H
+#define BLUR_H
 
 #include <glew\glew.h>
 #include <iostream>
@@ -28,3 +29,4 @@ private:
 	unsigned int height;
 };
 
+#endif

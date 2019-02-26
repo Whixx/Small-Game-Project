@@ -1,77 +1,78 @@
-#include "Texture.h"
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#include <cassert>
-#include <iostream>
 
-Texture::Texture(const std::string& textureName, const std::string& normalMapName)
-{
-	Create(textureName, 0);
-	Create(normalMapName, 1);
-}
+#include "Texture.h"
 
-Texture::Texture(const Texture & other)
+Texture::Texture(const string & path, const string & type, bool gammaCorrection)
+	: path(path), type(type), gammaCorrection(gammaCorrection), width(0), height(0), BPP(0), texture(0)
 {
-	this->texture = other.texture;
-	this->normalMap = other.normalMap;
-}
-
-void Texture::operator=(const Texture & other)
-{
-	this->texture = other.texture;
-	this->normalMap = other.normalMap;
+	// Load image
+	this->LoadTexture();
 }
 
 Texture::~Texture()
 {
 	glDeleteTextures(1, &this->texture);
-	glDeleteTextures(1, &this->normalMap);
 }
 
-void Texture::Create(const std::string & fileName, bool nMap)
+void Texture::Bind(unsigned int slot) const
 {
-	int width, height, numComponents;
-	unsigned char* imageData = stbi_load(fileName.c_str(), &width, &height, &numComponents, 4);
-
-	if (imageData == NULL)
+	if (slot >= 0 && slot <= 31)
 	{
-		std::cerr << "Loading failed for texture: " << fileName << std::endl;
-	}
-
-	if (nMap == false)
-	{
-		glGenTextures(1, &this->texture);
+		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, this->texture);
-	}
-	else
-	{
-		glGenTextures(1, &this->normalMap);
-		glBindTexture(GL_TEXTURE_2D, this->normalMap);
-	}
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	// Skickar texturen till GPU'n
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
-
-	stbi_image_free(imageData);
-}
-
-void Texture::Bind(unsigned int unit)
-{
-	if (unit * 2 >= 0 && unit * 2 <= 31)
-	{
-		glActiveTexture(GL_TEXTURE0 + unit * 2);
-		glBindTexture(GL_TEXTURE_2D, this->texture);
-
-		glActiveTexture(GL_TEXTURE0 + unit * 2 + 1);
-		glBindTexture(GL_TEXTURE_2D, this->normalMap);
 	}
 	else
 	{
 		std::cout << "[ERROR] Texture could not be bound. Unit not in range[0-31]" << std::endl;
+	}
+}
+
+void Texture::LoadTexture()
+{
+	//stbi_set_flip_vertically_on_load(1); // Assimp flips the uvs instead
+
+	unsigned char* data = stbi_load(path.c_str(), &width, &height, &BPP, 0);
+
+	if (data)
+	{
+		GLenum dataformat;
+		GLenum internalformat;
+		if (BPP == 1)
+		{
+			dataformat = GL_RED;
+			internalformat = GL_RED;
+		}
+		else if (BPP == 3)
+		{
+			dataformat = GL_RGB;
+			internalformat = gammaCorrection ? GL_SRGB : GL_RGB;
+		}
+		else if (BPP == 4)
+		{
+			dataformat = GL_RGBA;
+			internalformat = gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
+		}
+
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, dataformat, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		// How OpenGL Should apply the texture
+		//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		stbi_image_free(data);
+	}
+	else
+	{
+		std::cout << "[ERROR] Failed loading texture " << path << std::endl;
 	}
 }

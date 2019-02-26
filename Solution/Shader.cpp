@@ -34,19 +34,19 @@ void Shader::InitiateShaders(bool color)
 	else
 	{
 		glBindAttribLocation(this->program, 1, "texCoord");
-	}	
+	}
 
 	glLinkProgram(this->program);
 	CheckShaderError(this->program, GL_LINK_STATUS, true, "Error: Program linking failed: ");
 }
 
-void Shader::initiateMazeShader()
+void Shader::InitiateMazeGenerationShader()
 {
 	for (unsigned int i = 0; i < NUM_OF_SHADERS; i++)
 		glAttachShader(program, shaders[i]);
 
-	const GLchar * feedbackVarying[] = { "outPosition", "outTexCoords", "outNormal", "outTangent" };
-	glTransformFeedbackVaryings(this->program, 4, feedbackVarying, GL_INTERLEAVED_ATTRIBS);
+	const GLchar * feedbackVarying[] = { "outPosition", "outTexCoords", "outNormal", "outTangent", "outType" };
+	glTransformFeedbackVaryings(this->program, 5, feedbackVarying, GL_INTERLEAVED_ATTRIBS);
 
 	glLinkProgram(program);
 	CheckShaderError(program, GL_LINK_STATUS, true, "Error: Program linking failed: ");

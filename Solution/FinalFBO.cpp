@@ -80,7 +80,11 @@ bool FinalFBO::Init()
 
 void FinalFBO::BindForWriting()
 {
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->fbo);
+	GLint drawFboId = 0;
+	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);
+
+	if(drawFboId != this->fbo)
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->fbo);
 }
 
 void FinalFBO::BindForReading(GLuint textureUnit)
@@ -106,6 +110,8 @@ void FinalFBO::CopyDepth(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT, GL
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->fbo);
 
 	glBlitFramebuffer(0, 0, SCREENWIDTH, SCREENHEIGHT, 0, 0, SCREENWIDTH, SCREENHEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 GLuint FinalFBO::GetFBO()

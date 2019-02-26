@@ -5,16 +5,14 @@
 #include "Transform.h"
 #include "Mesh.h"
 #include "Texture.h"
+#include "Model.h"
 
 using namespace std;
 
 class Object
 {
 public:
-	Object(Mesh *mesh, Texture *texture);
-	Object(Mesh *mesh, Texture *texture, unsigned int id);
-	// Default constructor
-	Object();
+	Object(string path = "Models/Cube/cube.obj");
 	virtual ~Object();
 
 	glm::mat4 GetWorldMatrix() const;
@@ -24,17 +22,12 @@ public:
 	glm::vec3& GetScale();
 
 	virtual void Update(double dt);
-	virtual void Draw();
+	virtual void Draw(Shader* shader);
 
-	void BindTexture();
-
+	Model* GetModel() const;
 private:
-	Mesh *mesh;
+	Model* model;
 	Transform transform;
-	Texture *texture;
-
-	unsigned int id;
-
 };
 
 #endif //DISPLAY_H

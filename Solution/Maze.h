@@ -8,10 +8,13 @@
 #include <glew\glew.h>
 #include <vector>
 #include "Transform.h"
+#include "Texture.h"
+#include "Shader.h"
+#include "MaterialHandler.h"
 
 using namespace std;
 
-const unsigned int DRAWDISTANCE = 6;
+const unsigned int DRAWDISTANCE = 7;
 
 class Maze
 {
@@ -23,17 +26,16 @@ public:
 	int GetMazeWidth();
 	Transform *GetTransform();
 	glm::vec2* GetDrawOrder();
+	glm::vec3 TransformToWorldCoords(glm::vec3 pos);
 	unsigned int GetTileCount();
 
-	void InitiateBuffers();
-
 	// Draw to transform feedback buffer
-	void DrawWallsToBuffer();
-	void DrawFloorToBuffer();
+	void DrawMazeToBuffer();
 
 	// Draw from transform feedback buffer
-	void DrawWalls();
-	void DrawFloor();
+	void DrawMaze();
+
+	void BindMaterial(Shader* shader);
 
 	void LoadMaze(const std::string& fileName);
 
@@ -47,25 +49,26 @@ private:
 	int width;
 	int height;
 	int numComponents;
-	GLuint texture;
+	GLuint mazeTexture;
 	glm::vec2 drawOrder[(1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE)];
 
 	Transform transform;
 
-	GLuint wallTbo;
-	GLuint wallVbo;
-	GLuint wallVao;
+	Material* wall1Mat;
+	Material* floor0Mat;
 
-	GLuint floorTbo;
-	GLuint floorVbo;
-	GLuint floorVao;
+	GLuint mazeTbo;
+	GLuint mazeVbo;
+	GLuint mazeVao;
 
-	const int scaleXZ = 1;
-	const int scaleY  = 1;
+	const int scaleXZ = 2;
+	const int scaleY  = 2;
 
 	// Private functions
-	void initiateWallBuffers();
-	void initiateFloorBuffers();
+	void LoadTextures();
+
+	void InitiateMazeBuffers();
+
 	// When generating the maze outwards from the player
 	void GenerateDrawOrder();
 	glm::vec3 readPixel(unsigned int x, unsigned int y);

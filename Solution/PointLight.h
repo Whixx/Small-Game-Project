@@ -9,20 +9,18 @@
 #include "Transform.h"
 #include "Shader.h"
 
-#include <glm\glm.hpp>
 #include <string>
 
 using namespace std;
 
 const int MAX_NUMBER_OF_LIGHTS = 256;
-const int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+const int SHADOW_WIDTH = 512, SHADOW_HEIGHT = 512;
 const float NEAR_PLANE = 0.1f, FAR_PLANE = 100;
 
 class PointLight
 {
 public:
 	PointLight();
-	Mesh& GetMesh();
 
 	glm::vec3& GetPos();
 	glm::vec3& GetScale();
@@ -36,11 +34,9 @@ public:
 	void CreateShadowTransforms();
 	void ResetShadowTransforms();
 
-	void Draw();
 	virtual ~PointLight();
 
 private:
-	Mesh mesh;
 	Transform transform;
 	glm::mat4 shadowProj;
 	vector<glm::mat4> shadowTransforms;
@@ -58,8 +54,7 @@ public:
 
 	void SendLightsToShader(Shader* shader);
 	void UpdateShadowTransform(GLuint cameraIndex);
-	void Draw(int index);
-	
+
 	vector<glm::mat4> GetShadowTransform(int index);
 
 	GLuint GetNrOfLights();

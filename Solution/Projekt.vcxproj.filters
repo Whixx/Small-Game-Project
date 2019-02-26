@@ -52,9 +52,6 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stb_image.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="InputHandler.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
@@ -77,6 +74,15 @@
       <Filter>Class cpp Files</Filter>
     </ClCompile>
     <ClCompile Include="Maze.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialHandler.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -162,6 +168,15 @@
     <ClInclude Include="SoundHandler.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialHandler.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="blurShader.fs">
@@ -186,9 +201,6 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="geometryPass.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="geometryPass.gs">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="lightPass.fs">
@@ -218,22 +230,19 @@
     <None Include="shadowShader.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="wallShader.vs">
+    <None Include="mazeGenerationShader.fs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="wallShader.gs">
+    <None Include="mazeGenerationShader.gs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="wallShader.fs">
+    <None Include="mazeGenerationShader.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="floorShader.vs">
+    <None Include="mazeGeometryPass.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="floorShader.gs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="floorShader.fs">
+    <None Include="mazeGeometryPass.fs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

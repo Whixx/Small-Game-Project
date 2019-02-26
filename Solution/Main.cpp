@@ -1,12 +1,19 @@
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#define STBI_MSC_SECURE_CRT
+﻿
+
+// Finns en main funktion i GLEW, d�rmed m�ste vi undefinera den innan vi kan anv�nda v�ran main
+#include <glew\glew.h>
+#undef main
+
+// Uses stb_image
 
 #include "MainFunctions.h"
+
 
 int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CRT_SECURE_NO_WARNINGS;
+	glEnable(GL_NORMALIZE);
 
 	Display display;
 
@@ -14,24 +21,19 @@ int main()
 	glfwSetKeyCallback(display.GetWindow(), InputHandler::Key_callback);
 
 	InputHandler IH;
+	MaterialHandler& MH = MaterialHandler::GetInstance(); // Singleton
 
 	// height and width must be odd numbers else the resulting maze will be off
 	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
 	GenerateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
 
 	Maze maze;
-	maze.LoadMaze("MazePNG/mazeColorCoded.png");
 
 	//=========================== Creating Shaders ====================================//
-	Shader wallShader;
-	wallShader.CreateShader(".\\wallShader.vs", GL_VERTEX_SHADER);
-	wallShader.CreateShader(".\\wallShader.gs", GL_GEOMETRY_SHADER);
-	wallShader.CreateShader(".\\wallShader.fs", GL_FRAGMENT_SHADER);
-
-	Shader floorShader;
-	floorShader.CreateShader(".\\floorShader.vs", GL_VERTEX_SHADER);
-	floorShader.CreateShader(".\\floorShader.gs", GL_GEOMETRY_SHADER);
-	floorShader.CreateShader(".\\floorShader.fs", GL_FRAGMENT_SHADER);
+	Shader mazeGenerationShader;
+	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.vs", GL_VERTEX_SHADER);
+	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.gs", GL_GEOMETRY_SHADER);
+	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.fs", GL_FRAGMENT_SHADER);
 	
 	Shader shadowShader;
 	shadowShader.CreateShader(".\\shadowShader.vs", GL_VERTEX_SHADER);
@@ -40,8 +42,11 @@ int main()
 
 	Shader geometryPass;
 	geometryPass.CreateShader(".\\geometryPass.vs", GL_VERTEX_SHADER);
-	geometryPass.CreateShader(".\\geometryPass.gs", GL_GEOMETRY_SHADER);
 	geometryPass.CreateShader(".\\geometryPass.fs", GL_FRAGMENT_SHADER);
+
+	Shader mazeGeometryPass;
+	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.vs", GL_VERTEX_SHADER);
+	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.fs", GL_FRAGMENT_SHADER);
 	
 	Shader lightPass;
 	lightPass.CreateShader(".\\lightPass.vs", GL_VERTEX_SHADER);
@@ -51,9 +56,9 @@ int main()
 	particleShader.CreateShader(".\\particleShader.vs", GL_VERTEX_SHADER);
 	particleShader.CreateShader(".\\particleShader.fs", GL_FRAGMENT_SHADER);
 
-	Shader pointLightPass;
-	pointLightPass.CreateShader(".\\pointLightShader.vs", GL_VERTEX_SHADER);
-	pointLightPass.CreateShader(".\\pointLightShader.fs", GL_FRAGMENT_SHADER);
+	//Shader pointLightPass;
+	//pointLightPass.CreateShader(".\\pointLightShader.vs", GL_VERTEX_SHADER);
+	//pointLightPass.CreateShader(".\\pointLightShader.fs", GL_FRAGMENT_SHADER);
 
 	Shader blurShader;
 	blurShader.CreateShader(".\\blurShader.vs", GL_VERTEX_SHADER);
@@ -67,13 +72,13 @@ int main()
 	finalShader.CreateShader(".\\finalShader.vs", GL_VERTEX_SHADER);
 	finalShader.CreateShader(".\\finalShader.fs", GL_FRAGMENT_SHADER);
 
-	InitWallShader(&wallShader, &maze);
-	InitFloorShader(&floorShader, &maze);
+	InitMazeGenerationShader(&mazeGenerationShader, &maze);
 	InitShadowShader(&shadowShader);
 	InitGeometryPass(&geometryPass);
+	InitMazeGeometryPass(&mazeGeometryPass);
 	InitLightPass(&lightPass);
 	InitParticleShader(&particleShader);
-	InitPointLightPass(&pointLightPass);
+	//InitPointLightPass(&pointLightPass);
 	InitBlurShader(&blurShader);
 	InitFinalBloomShader(&finalBloomShader);
 	InitFinalShader(&finalShader);
@@ -81,23 +86,18 @@ int main()
 	//=================================================================================//
 
 	//=========================== Buffers ====================================//
-	ShadowMap shadowMap(SHADOWMAPWIDTH, SHADOWMAPHEIGHT);
-	GBuffer gBuffer(SCREENWIDTH, SCREENHEIGHT);
-	BloomBuffer bloomBuffer(SCREENWIDTH, SCREENHEIGHT);
-	BlurBuffer blurBuffers(SCREENWIDTH, SCREENHEIGHT);
-	FinalFBO finalFBO(SCREENWIDTH, SCREENHEIGHT);
+	ShadowMap shadowMap(SHADOW_WIDTH, SHADOW_HEIGHT);
+	GBuffer gBuffer(SCREEN_WIDTH, SCREEN_HEIGHT);
+	BloomBuffer bloomBuffer(SCREEN_WIDTH, SCREEN_HEIGHT);
+	BlurBuffer blurBuffers(SCREEN_WIDTH, SCREEN_HEIGHT);
+	FinalFBO finalFBO(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	//=========================== Creating Objects ====================================//
 
-	// Temp texture for the mazeWalls
-	Texture brickTexture("Textures/brickwall.jpg", "NormalMaps/brickwall_normal.jpg");
+
 
 	// Create Lights
 	PointLightHandler lights;	// use .CreateLight()
-
-	Mesh groundMesh;
-	Mesh torchMesh;
-	Texture torchTexture("Textures/torch.png", "NormalMaps/torch_normal.png");
 
 
 	// Sound engine that plays all the sounds, pass reference to classes that will use sound with enginePtr
@@ -113,25 +113,18 @@ int main()
 
 
 	float playerHeight = 1.8f;
-	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &torchMesh, &torchTexture, &maze, enginePtr, &lights);
+	float torchSize = 0.02f;
+	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize);
 	player.SetPlayerSpeed(2.0f);
 	player.CenterPlayer(); //Space to return to origin
 
-	Texture groundTexture("Textures/ground.png", "NormalMaps/ground_normal.png");
-
+	
 	ObjectHandler OH;
 
 	//TODO: Byta ground.png till floor.png
 	
-	// https://rauwendaal.net/2014/06/14/rendering-a-screen-covering-triangle-in-opengl/
-	Vertex fullScreenVerticesTriangle[] =
-	{ 
-		Vertex(glm::vec3(-1, 3, 0), glm::vec2(0.0,2.0)),
-		Vertex(glm::vec3(-1, -1, 0), glm::vec2(0.0,0.0)),
-		Vertex(glm::vec3(3, -1, 0), glm::vec2(2.0,0.0)),
-	};
-
-	Mesh fullScreenTriangle(fullScreenVerticesTriangle, (sizeof(fullScreenVerticesTriangle) / sizeof(fullScreenVerticesTriangle[0])));
+	Model lightSphereModel("Models/Ball/ball.obj");
+	GLuint screenQuad = CreateScreenQuad();
 
 	// Initiate timer
 	double currentTime = 0;
@@ -139,13 +132,7 @@ int main()
 	double deltaTime = 0;
 	double constLastTime = 0;
 	int nrOfFrames = 0;
-
-	//Particle particle;
-	//Texture particleTexture("Textures/particle.png", "NormalMaps/flat_normal.jpg");
-	//particle.SetTexture(&particleTexture);
-
-	maze.InitiateBuffers();
-
+	
 	while (!display.IsWindowClosed())
 	{
 		// Calculate DeltaTime
@@ -175,10 +162,9 @@ int main()
 		player.Update(deltaTime);
 
 		OH.UpdateAllObjects(deltaTime);
-
-		//lights.GetTransform(0)->GetPos() = glm::vec3(player.GetTorch()->GetPos().x, player.GetTorch()->GetPos().y + 1.5f, player.GetTorch()->GetPos().z);
 		lights.UpdateShadowTransform(0);
 
+		
 
 		// update sound engine with position and view direction
 		soundEngine.Update(player.GetCamera()->GetCameraPosition(), player.GetCamera()->GetForwardVector());
@@ -194,53 +180,50 @@ int main()
 
 		// ================== DRAW ==================
 
-		// Here the walls are created and stored in a buffer with transform feedback
-		WallPass(&wallShader, &maze, &player);
-
-		// Here the floor is created and stored in a buffer with transform feedback
-		FloorPass(&floorShader, &maze, &player);
+		// Here the mazes is created and stored in a buffer with transform feedback
+		MazeGenerationPass(&mazeGenerationShader, &maze, &player);
 
 		// Here a cube map is calculated and stored in the shadowMap FBO
 		ShadowPass(&shadowShader, &OH, &lights, &shadowMap, &player, &maze);
 		
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, &geometryPass, &player, &OH, &maze, &brickTexture, &groundTexture);
+		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &player, &OH, &maze);
 		
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
-		DRLightPass(&gBuffer, &bloomBuffer, &fullScreenTriangle, lightPass.GetProgram(), &lightPass, &shadowMap, &lights, player.GetCamera());
-		
+		DRLightPass(&gBuffer, &bloomBuffer, &screenQuad, &lightPass, &shadowMap, &lights, player.GetCamera());
+
 		// Copy the depth from the gBuffer to the bloomBuffer
-		bloomBuffer.CopyDepth(SCREENWIDTH, SCREENHEIGHT, gBuffer.GetFBO());
-		
+		bloomBuffer.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, gBuffer.GetFBO());
+
 		// Draw lightSpheres
-		#ifdef DEBUG
-			LightSpherePass(&pointLightPass, &bloomBuffer, &lights, player.GetCamera());
-		#endif
+		//#ifdef DEBUG
+		//	LightSpherePass(&pointLightPass, &bloomBuffer, &lights, player.GetCamera(), &lightSphereModel);
+		//#endif
 			
 		// Blur the bright texture
-		BlurPass(&blurShader, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
-		
+		BlurPass(&blurShader, &bloomBuffer, &blurBuffers, &screenQuad);
+
 		// Combine the bright texture and the scene and store the Result in FinalFBO.
-		FinalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &fullScreenTriangle);
-		
+		FinalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &screenQuad);
+
 		// Copy the depth from the bloomBuffer to the finalFBO
-		finalFBO.CopyDepth(SCREENWIDTH, SCREENHEIGHT, bloomBuffer.GetFBO());
-		
-		// Draw particles to the FinalFBO
-		//ParticlePass(&finalFBO, &player.GetTorch()->GetParticle(), player.GetCamera(), &particleShader, deltaTime, player.GetTorch()->GetFirePos());
+		finalFBO.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, bloomBuffer.GetFBO());
+
+		ParticlePass(&finalFBO, player.GetTorch()->GetParticle(), player.GetCamera(), &particleShader);
 
 		// Render everything
-		FinalPass(&finalFBO, &finalShader, &fullScreenTriangle);
+		FinalPass(&finalFBO, &finalShader, &screenQuad);
 
 
 
 		// ================== POST DRAW ==================
-		display.SwapBuffers(SCREENWIDTH, SCREENHEIGHT);
+		display.SwapBuffers(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 		constLastTime = currentTime;
 	}
+
 	glfwTerminate();
 	return 0;
 }

@@ -1,5 +1,5 @@
 #ifndef SOUNDENGINE_H
-#define SOUNDENGINE
+#define SOUNDENGINE_H
 #include <iostream>
 #include <glm/glm.hpp>
 #include "irrKlang/irrKlang.h"

@@ -3,6 +3,7 @@
 
 #include <glew\glew.h>
 #include <iostream>
+#include <vector>
 
 /*
 Detta sker i två steg: Geometry pass och lightning pass.
@@ -15,6 +16,8 @@ public:
 		GBUFFER_TEXTURE_TYPE_POSITION,
 		GBUFFER_TEXTURE_TYPE_DIFFUSE,
 		GBUFFER_TEXTURE_TYPE_NORMAL,
+		GBUFFER_TEXTURE_TYPE_SPECULAR_SHININESS_HEIGHT,
+		GBUFFER_TEXTURE_TYPE_AMBIENT,
 		GBUFFER_NUM_TEXTURES
 	};
 
