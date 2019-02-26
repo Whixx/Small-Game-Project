@@ -11,6 +11,8 @@ public:
 	Minotaur(Transform transform, irrklang::ISoundEngine* engine);
 	virtual ~Minotaur();
 
+	void Update();
+
 private:
 	Model model;
 	SoundHandler stepSound;
