@@ -153,7 +153,7 @@ void MazeGeneratePNG::Draw_png()
 			a.push_back(image[y][x][2]);
 		}
 	}
-	/*
+	
 	if (!stbi_write_png("MazePNG/mazeColorCoded.png", this->width+1, this->height+1, 3, a.data(), 3 * (width+1)))
 	{
 		std::cout << "ERROR mazeColorCoded.png not written" << std::endl;
@@ -185,7 +185,6 @@ void MazeGeneratePNG::Draw_png()
 	{
 		std::cout << "mazeBlackWhite.png written to MazePNG-folder" << std::endl;
 	}
-	*/
 }
 
 void MazeGeneratePNG::SetupColorDataForColor()
