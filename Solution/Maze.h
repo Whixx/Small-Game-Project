@@ -14,7 +14,7 @@
 
 using namespace std;
 
-const unsigned int DRAWDISTANCE = 6;
+const unsigned int DRAWDISTANCE = 7;
 
 class Maze
 {
@@ -53,9 +53,6 @@ private:
 	glm::vec2 drawOrder[(1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE)];
 
 	Transform transform;
-
-	std::vector<Texture*> wallTextures;
-	std::vector<Texture*> floorTextures;
 
 	Material* wall1Mat;
 	Material* floor0Mat;

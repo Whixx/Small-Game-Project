@@ -18,10 +18,6 @@ public:
 	Material* AddMaterial(Texture* tex_diffuse, Texture* tex_ambient, Texture* tex_specular, Texture* tex_normal, Texture* tex_height, float shininess = 16, const char* name = "default");
 	Material* GetMaterial(string name);
 
-	void DeleteAllMaterials();
-
-	
-
 private:
 	MaterialHandler() {}
 	std::unordered_map<std::string, Material> materials;

@@ -31,16 +31,6 @@ Maze::Maze()
 
 Maze::~Maze()
 {
-	for (Texture* t : this->wallTextures)
-	{
-		delete t;
-	}
-
-	for (Texture* t : this->floorTextures)
-	{
-		delete t;
-	}
-
 	stbi_image_free(imageData);
 
 	glDeleteBuffers(1, &this->mazeTbo);
