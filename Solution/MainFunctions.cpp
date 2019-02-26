@@ -229,10 +229,14 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 
 	// Same world matrix for walls and floor
 	glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
-
+	
 	// Draw Maze
-	mazeGeometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * mazeWorldMatrix);
 	mazeGeometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
+	mazeGeometryPass->SendVec3("EyeWorldPos",
+		player->GetCamera()->GetCameraPosition().x,
+		player->GetCamera()->GetCameraPosition().y,
+		player->GetCamera()->GetCameraPosition().z);
+	mazeGeometryPass->SendMat4("VP", player->GetCamera()->GetViewProjection());
 	maze->BindMaterial(mazeGeometryPass);
 	maze->DrawMaze();
 
@@ -431,4 +435,12 @@ GLuint CreateScreenQuad()
 	glBindVertexArray(0);
 
 	return screenQuad;
+}
+
+void SetMaxPatchVertices()
+{
+	GLint MaxPatchVertices = 0;
+	glGetIntegerv(GL_MAX_PATCH_VERTICES, &MaxPatchVertices);
+	printf("Max supported patch vertices %d\n", MaxPatchVertices);
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
 }

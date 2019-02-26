@@ -206,9 +206,6 @@
     <None Include="lightPass.fs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="lightPass.vs">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="particleShader.fs">
       <Filter>Shader Files</Filter>
     </None>
@@ -245,6 +242,14 @@
     <None Include="mazeGeometryPass.fs">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="mazeGeometryPass.es">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeGeometryPass.cs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeGeometryPass.gs" />
+    <None Include="lightPass.vs" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

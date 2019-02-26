@@ -52,6 +52,7 @@ void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint *fullScreenTria
 void GenerateMazeBitmaps(int height, int width);
 
 GLuint CreateScreenQuad();
+void SetMaxPatchVertices();
 
 
 #endif

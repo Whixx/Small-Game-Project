@@ -20,6 +20,9 @@ int main()
 	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetKeyCallback(display.GetWindow(), InputHandler::Key_callback);
 
+	// MaxVertices supported by the hardware
+	SetMaxPatchVertices();
+
 	InputHandler IH;
 	MaterialHandler& MH = MaterialHandler::GetInstance(); // Singleton
 
@@ -46,6 +49,8 @@ int main()
 
 	Shader mazeGeometryPass;
 	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.vs", GL_VERTEX_SHADER);
+	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.cs", GL_TESS_CONTROL_SHADER);
+	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.es", GL_TESS_EVALUATION_SHADER);
 	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.fs", GL_FRAGMENT_SHADER);
 	
 	Shader lightPass;
