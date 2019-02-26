@@ -27,7 +27,6 @@ public:
 	void DrawMeshes(Shader* shader);
 
 private:
-	std::vector<Texture*> loadedTextures;
 	bool gammaCorrection;
 	std::vector<Mesh*> meshes;
 	std::string directoryPath;
@@ -38,8 +37,6 @@ private:
 	Mesh* ProcessMesh(aiMesh *mesh, const aiScene *scene);
 	std::vector<Texture*> LoadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 	std::vector<Texture*> LoadNormalMap(std::string path, std::string type);
-
-	Texture* LoadTexture(const char* path, std::string type);
 };
 
 #endif //MODEL_H
