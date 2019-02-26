@@ -41,12 +41,10 @@ int main()
 
 	Shader geometryPass;
 	geometryPass.CreateShader(".\\geometryPass.vs", GL_VERTEX_SHADER);
-	geometryPass.CreateShader(".\\geometryPass.gs", GL_GEOMETRY_SHADER);
 	geometryPass.CreateShader(".\\geometryPass.fs", GL_FRAGMENT_SHADER);
 
 	Shader mazeGeometryPass;
 	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.vs", GL_VERTEX_SHADER);
-	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.gs", GL_GEOMETRY_SHADER);
 	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.fs", GL_FRAGMENT_SHADER);
 	
 	Shader lightPass;
@@ -121,7 +119,6 @@ int main()
 
 	
 	ObjectHandler OH;
-	
 
 	//TODO: Byta ground.png till floor.png
 	
@@ -225,6 +222,9 @@ int main()
 
 		constLastTime = currentTime;
 	}
+	
+	MH.DeleteAllMaterials();
+
 	glfwTerminate();
 	return 0;
 }

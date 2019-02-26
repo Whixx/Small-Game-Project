@@ -1,8 +1,8 @@
 #version 440
 
-in vec2 texCoords;
-in vec3 posWorld1;
-in mat3 TBN;
+in vec2 texCoord0;
+in vec3 posWorld0;
+in mat3 TBN0;
 
 out vec3 WorldPosOut;
 out vec3 TextureRGBOut;
@@ -20,19 +20,18 @@ uniform float shininess;
 void main()
 {	
 	// Deferred rendering Geometry pass
-	WorldPosOut = posWorld1.xyz;
-	TextureRGBOut = texture2D(TextureDiffuse,texCoords).xyz;
+	WorldPosOut = posWorld0.xyz;
+	TextureRGBOut = texture2D(TextureDiffuse,texCoord0).xyz;
 
 	// Sample the normalMap
-	WorldNormalOut = texture2D(TextureNormal, texCoords).xyz;
+	WorldNormalOut = texture2D(TextureNormal, texCoord0).xyz;
 	// Adjust the values to the range [-1,1], (range is originally [0,1])
 	WorldNormalOut = normalize((WorldNormalOut * 2.0) - 1.0);
 	// Transform the normal from tangent space to world space
-	WorldNormalOut = normalize(TBN * WorldNormalOut);
+	WorldNormalOut = normalize(TBN0 * WorldNormalOut);
 
-	TextureSpecularAndHeightOut.rgb = texture2D(TextureSpecular, texCoords).rgb;
+	TextureSpecularAndHeightOut.r = texture2D(TextureSpecular, texCoord0).r;
 	TextureSpecularAndHeightOut.g = shininess;
-	TextureSpecularAndHeightOut.b = 0;
 
-	AmbientOut = texture2D(TextureAmbient, texCoords).rgb;
+	AmbientOut = texture2D(TextureAmbient, texCoord0).rgb;
 }

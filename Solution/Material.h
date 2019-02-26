@@ -12,9 +12,13 @@ class Material
 {
 public:
 	Material(Texture* tex_diffuse, Texture* tex_ambient, Texture* tex_specular, Texture* tex_normal, Texture* tex_height, float shininess, const char* name);
+	Material() {}
+	//Material(const Material &other);
+	//Material& operator=(const Material &other);
 	~Material();
 
 	void BindMaterial(Shader* shader);
+	void BindMaterialArray(Shader* shader, unsigned int type);
 
 	inline string GetMaterialName() const { return this->name; };
 

@@ -10,6 +10,7 @@ out vec2 texCoord0;
 out vec3 posWorld0;
 
 uniform mat4 WorldMatrix;
+uniform mat4 transformationMatrix;
 
 void main()
 {
@@ -28,5 +29,5 @@ void main()
 
 	posWorld0 = (WorldMatrix * vec4(position, 1.0)).xyz;
 	texCoord0 = texCoord;
-	gl_Position = vec4(position,1.0);
+	gl_Position = transformationMatrix * vec4(position,1.0);
 }

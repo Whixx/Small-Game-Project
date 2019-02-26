@@ -10,6 +10,7 @@
 #include "Transform.h"
 #include "Texture.h"
 #include "Shader.h"
+#include "MaterialHandler.h"
 
 using namespace std;
 
@@ -34,8 +35,7 @@ public:
 	// Draw from transform feedback buffer
 	void DrawMaze();
 
-	void BindWallMaterial(Shader* shader);
-	void BindFloorMaterial(Shader* shader);
+	void BindMaterial(Shader* shader);
 
 	void LoadMaze(const std::string& fileName);
 
@@ -56,6 +56,9 @@ private:
 
 	std::vector<Texture*> wallTextures;
 	std::vector<Texture*> floorTextures;
+
+	Material* wall1Mat;
+	Material* floor0Mat;
 
 	GLuint mazeTbo;
 	GLuint mazeVbo;

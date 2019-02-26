@@ -171,9 +171,9 @@ void Maze::DrawMazeToBuffer()
 	glFlush();
 
 	// Memory barrier
-	glBindVertexArray(0);
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
+	glBindVertexArray(0);
 }
 
 void Maze::DrawMaze()
@@ -183,39 +183,15 @@ void Maze::DrawMaze()
 	glDrawTransformFeedback(GL_TRIANGLES, this->mazeTbo);
 
 	// Memory barrier
-	glBindVertexArray(0);
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
+	glBindVertexArray(0);
 }
 
-void Maze::BindWallMaterial(Shader* shader)
+void Maze::BindMaterial(Shader* shader)
 {
-	//  ================= FILIP SKA ÄNDRA DETTA  ======================
-	shader->SendInt("TextureDiffuse[1]", 1);
-	this->wallTextures[0]->Bind(1);
-
-	shader->SendInt("TextureNormal[1]", 3);
-	this->wallTextures[1]->Bind(3);
-
-	shader->SendInt("TextureAmbient[1]", 5);
-	this->wallTextures[2]->Bind(5);
-	//  ================= FILIP SKA ÄNDRA DETTA  ======================
-	// Add shininess
-}
-
-void Maze::BindFloorMaterial(Shader* shader)
-{
-	//  ================= FILIP SKA ÄNDRA DETTA  ======================
-	shader->SendInt("TextureDiffuse[0]", 0);
-	this->floorTextures[0]->Bind(0);
-
-	shader->SendInt("TextureNormal[0]", 2);
-	this->floorTextures[1]->Bind(2);
-
-	shader->SendInt("TextureAmbient[0]", 4);
-	this->floorTextures[2]->Bind(4);
-	//  ================= FILIP SKA ÄNDRA DETTA  ======================
-	// Add shininess
+	this->floor0Mat->BindMaterialArray(shader, 0);
+	this->wall1Mat->BindMaterialArray(shader, 1);
 }
 
 void Maze::InitiateMazeBuffers()
@@ -234,11 +210,11 @@ void Maze::InitiateMazeBuffers()
 	// Allocate space (no data)
 	glBufferData(
 		GL_ARRAY_BUFFER,
-		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Position
-		sizeof(glm::vec2) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Texcoords
-		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Normals
-		sizeof(glm::vec3) * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Tangents
-		sizeof(float)     * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE),	// Type
+		sizeof(glm::vec3)	 * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Position
+		sizeof(glm::vec2)	 * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Texcoords
+		sizeof(glm::vec3)	 * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Normals
+		sizeof(glm::vec3)	 * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE) +	// Tangents
+		sizeof(float)		 * maxNrOfVertices * (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE),	// Type
 		NULL,							// no data passed
 		GL_DYNAMIC_COPY);
 
@@ -248,11 +224,11 @@ void Maze::InitiateMazeBuffers()
 	glEnableVertexAttribArray(2);
 	glEnableVertexAttribArray(3);
 	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), 0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(sizeof(glm::vec3)));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2)));
-	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(3 * sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3		 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 3		 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(sizeof(glm::vec3)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3		 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3		 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, 3		 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(3 * sizeof(glm::vec3) + sizeof(glm::vec2)));
 
 	// Create and bind transform feedback object and buffer to write to.
 	glGenTransformFeedbacks(1, &this->mazeTbo);
@@ -297,26 +273,24 @@ void Maze::LoadTextures()
 	Texture* wallDiffuse = new Texture("Textures/wall0/wall0_diffuse.png");
 	Texture* wallNormal = new Texture("Textures/wall0/wall0_normal.png", "TextureNormal");
 	Texture* wallAmbient = new Texture("Textures/wall0/wall0_ambient.png", "TextureAmbient");
+	Texture* wallSpecular = new Texture("Textures/wall0/wall0_specular.png", "TextureSpecular");
+	Texture* wallHeight = new Texture("Textures/wall0/wall0_height.png", "TextureHeight");
+	float wallShininess = 16.0;
 
 	Texture* floorDiffuse = new Texture("Textures/floor0/floor0_diffuse.png");
 	Texture* floorNormal = new Texture("Textures/floor0/floor0_normal.png", "TextureNormal");
 	Texture* floorAmbient = new Texture("Textures/floor0/floor0_ambient.png", "TextureAmbient");
+	Texture* floorSpecular = new Texture("Textures/floor0/floor0_specular.png", "TextureSpecular");
+	Texture* floorHeight = new Texture("Textures/floor0/floor0_height.png", "TextureHeight");
+	float floorShininess = 16.0;
 
-	// Add Ambient
-	// Add Height
-	// Add Specular
-	// Add Shininess
-	// Add Ambient
+	MaterialHandler& MH = MaterialHandler::GetInstance();
 
+	// Wall0
+	this->wall1Mat = MH.AddMaterial(wallDiffuse, wallAmbient, wallSpecular, wallNormal, wallHeight, wallShininess, "wall1");
 
-
-	wallTextures.push_back(wallDiffuse);
-	wallTextures.push_back(wallNormal);
-	wallTextures.push_back(wallAmbient);
-
-	floorTextures.push_back(floorDiffuse);
-	floorTextures.push_back(floorNormal);
-	floorTextures.push_back(floorAmbient);
+	// Floor0
+	this->floor0Mat = MH.AddMaterial(floorDiffuse, floorAmbient, floorSpecular, floorNormal, floorHeight, floorShininess, "floor0");
 }
 
 // Returns a vector with the rgb value of a pixel

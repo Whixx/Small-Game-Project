@@ -14,17 +14,38 @@ Material::Material(Texture * tex_diffuse, Texture * tex_ambient, Texture * tex_s
 
 Material::~Material()
 {
-	delete this->diffuse;
-	delete this->ambient;
-	delete this->specular;
-	delete this->normal;
-	delete this->height;
+	
 }
 
 void Material::BindMaterial(Shader * shader)
 {
 	this->SendMaterial(shader);
 	this->BindTextures(shader);
+}
+
+void Material::BindMaterialArray(Shader* shader, unsigned int type)
+{
+	// 5 Textures before next type
+	unsigned int stride = 5;
+
+	// Textures
+	shader->SendInt((this->diffuse->GetType() + '[' + to_string(type) + ']').c_str(), type * stride);
+	this->diffuse->Bind(type * stride);
+
+	shader->SendInt((this->ambient->GetType() + '[' + to_string(type) + ']').c_str(), type * stride + 1);
+	this->ambient->Bind(type * stride + 1);
+
+	shader->SendInt((this->specular->GetType() + '[' + to_string(type) + ']').c_str(), type * stride + 2);
+	this->specular->Bind(type * stride + 2);
+
+	shader->SendInt((this->normal->GetType() + '[' + to_string(type) + ']').c_str(), type * stride + 3);
+	this->normal->Bind(type * stride + 3);
+
+	shader->SendInt((this->height->GetType() + '[' + to_string(type) + ']').c_str(), type * stride + 4);
+	this->height->Bind(type * stride + 4);
+
+	// Attributes
+	shader->SendFloat((string("shininess") + '[' + to_string(type) + ']').c_str(), this->shininess);
 }
 
 void Material::SendMaterial(Shader * shader)
