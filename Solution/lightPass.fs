@@ -13,31 +13,57 @@ struct PointLight
 
 uniform int NR_OF_POINT_LIGHTS;   
 
-uniform vec3 cameraPosLP;
+uniform vec3 cameraPos;
 uniform PointLight PointLights[256];
 
 // Gbuffer variables
 uniform sampler2D gPosition;
 uniform sampler2D gDiffuse;
 uniform sampler2D gNormal;
+uniform sampler2D gSpecularShininessHeight;
+uniform sampler2D gAmbient;
 
 // ShadowBuffer variables
 uniform samplerCube shadowMap;
 uniform float farPlane;
 
-float calculateShadows(vec3 objPos)
+float calculateShadows(vec3 objPos, vec3 camPos, vec3 normal)
 {
 	vec3 lightToObj = objPos - PointLights[0].position.xyz;
-	float depthValue = texture(shadowMap, lightToObj).x;
-	depthValue *= farPlane;
+    float viewDist = length(camPos - objPos);
 	float currDepth = length(lightToObj);
-	float bias = 0.15f; // Avoids "Shadow Acne"
 
-	float shadow;
-	if(currDepth - bias > depthValue)
-		shadow = 1.0f;
-	else
-		shadow = 0.0f;
+    // Avoids "Shadow Acne"
+    normal = normalize(normal);
+	float bias = max(0.05 * (1 - dot(normal, lightToObj)), 0.005);
+    
+    // PCF (Percentage-closer filtering)
+    // Change these two to optimize the look of the shadow
+    int smoothness = 100; // Higher value will make the overall shadow "more compact"
+    int samples = 20; // Higher value will lower the performance but make the smoothness' stages translate better
+
+    float diskRadius = (1.0 + (viewDist / farPlane)) / smoothness; // Sharper the closer the camera is
+    vec3 sampleOffsetDirections[20] = vec3[]
+    (
+        vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
+        vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
+        vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
+        vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
+        vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+    ); 
+
+    // Calculate shadow
+	float shadow = 0.0f;
+    for (int i = 0; i < samples; i++)
+    {
+        float closestDepth = texture(shadowMap, lightToObj + sampleOffsetDirections[i] * diskRadius).r;
+        closestDepth *= farPlane;
+        if(currDepth - bias > closestDepth) 
+        {
+            shadow += 1.0f;
+        }
+    }
+    shadow /= float(samples);
 
 	return shadow;
 }
@@ -48,13 +74,22 @@ void main()
 	vec3 pixelPos = texture2D(gPosition, texCoord0).xyz;
 	vec3 materialColor = texture2D(gDiffuse, texCoord0).rgb;
 	vec3 normal = texture2D(gNormal, texCoord0).xyz;
+	vec3 ambientColor = texture2D(gAmbient, texCoord0).rgb;
+	float specular = texture2D(gSpecularShininessHeight, texCoord0).r;
+	float shininess = texture2D(gSpecularShininessHeight, texCoord0).g;
+	
 
 	// Attenuation
+	float radius = 6;
+	float a = 0;
+	float b = 0;
+	float minLight = 0.001f;
 	float attenuation;
 	float distancePixelToLight;
 
 	// Ambient
-	vec4 ambient = vec4(0.1f,0.1f,0.1,1.0f) * vec4(materialColor.rgb, 1.0f);
+	vec3 ambient = ambientColor.r * materialColor.rgb;
+	//ambient = vec3(0);
 	
 	// Diffuse
 	vec3 lightDir;
@@ -64,30 +99,35 @@ void main()
 	// Specular
 	vec3 vecToCam;
 	vec4 reflection;
-	vec4 specular;
-	float shininess = 30;
+	vec4 finalSpecular;
+    vec3 halfwayDir;
 
 	for(int i = 0; i < NR_OF_POINT_LIGHTS; i++)
 	{
-		// Diffuse
-		lightDir = normalize(PointLights[i].position.xyz - pixelPos.xyz);
-		alpha = dot(normal.xyz,lightDir);
-		diffuse += vec4(materialColor.rgb,1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * max(alpha, 0);
-
-		// Specular
-		vecToCam = normalize(vec3(cameraPosLP.xyz - pixelPos.xyz));	
-		// Source: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/reflect.xhtml
-		reflection = reflect(vec4(-lightDir.xyz, 0.0f), vec4(normal.xyz,1.0f));
-		specular += vec4(materialColor.rgb,1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * pow(max(dot(reflection.xyz, vecToCam.xyz),0), shininess);
-
-		// attenuation
 		distancePixelToLight = length(PointLights[i].position - pixelPos);
-		attenuation = 1.0f / (1.0f + (0.1 * distancePixelToLight)+ (0.01 * pow(distancePixelToLight, 2)));
+
+		if(distancePixelToLight < radius)
+		{
+			// Diffuse
+			lightDir = normalize(PointLights[i].position.xyz - pixelPos.xyz);
+			alpha = dot(normal.xyz,lightDir);
+			diffuse += vec4(materialColor.rgb,1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * max(alpha, 0);
+
+			// Specular (Blinn-Phong) 
+			vecToCam = normalize(vec3(cameraPos.xyz - pixelPos.xyz));	
+			halfwayDir = normalize(lightDir + vecToCam);
+			float spec = pow(max(dot(normal, halfwayDir), 0.0), ceil(shininess));
+			finalSpecular += specular * vec4(materialColor.rgb, 1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * spec;
+
+			// attenuation
+			b = 1.0f/(radius*radius*minLight);
+			attenuation = 1.0f / (1.0f + (a * distancePixelToLight) + (b/800 * pow(distancePixelToLight, 4.5f)));
+		}
 	}
 
-	float shadow = calculateShadows(pixelPos);
+	float shadow = calculateShadows(pixelPos, cameraPos, normal);
 
-	vec4 finalColor = ambient + ((1 - shadow) * attenuation*(diffuse + specular));
+	vec4 finalColor = ambient + ((1 - shadow) * attenuation*(diffuse + finalSpecular));
 	finalColor = min(vec4(1.0f,1.0f,1.0f,1.0f), finalColor);
 
 	fragment_color = vec4(finalColor.xyz, 1.0f);

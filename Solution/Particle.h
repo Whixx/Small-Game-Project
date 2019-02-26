@@ -8,8 +8,9 @@
 // algorithm for usage of std::sort()
 #include <algorithm>
 #include "Texture.h"
+#include "Camera.h"
 
-#define maxParticles 1000
+#define maxParticles 500
 
 struct ParticleStruct
 {
@@ -30,20 +31,21 @@ struct ParticleStruct
 class Particle
 {
 public:
-	Particle();
+	Particle(float torchSize, std::string path = "Textures/default/default_diffuse.png");
 	~Particle();
 
-	void generateParticles(float deltaTime, glm::vec3 particlePos);
-	void simulateParticles(glm::vec3 cameraPosition, float deltaTime);
-	void update();
-	void bind();
-	void draw();
-	void bindTexture();
-	void setTexture(Texture* texture);
+	void GenerateParticles(float deltaTime, glm::vec3 particlePos);
+	void SimulateParticles(glm::vec3 cameraPosition, float deltaTime);
+	void Update(double deltaTime, glm::vec3 camPos, glm::vec3 position);
+	void Bind();
+	void Draw();
+	Texture* GetTexture() const;
+	void SetTexture(Texture* texture);
 private:
-	GLuint billboard_vertex_buffer;
-	GLuint particles_position_buffer;
-	GLuint particles_color_buffer;
+	GLuint VA;
+	GLuint billboardVertexBuffer;
+	GLuint particlesPositionBuffer;
+	GLuint particlesColorBuffer;
 
 	ParticleStruct particleArray[maxParticles];
 	GLfloat* particlePosSizeBuffer;
@@ -55,6 +57,7 @@ private:
 	int findDeadParticle();
 
 	int nrOfActiveParticles;
+	float torchSize;
 
 	void sort();
 };

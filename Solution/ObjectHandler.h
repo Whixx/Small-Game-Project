@@ -6,6 +6,8 @@
 #include <vector>
 #include <iostream>
 #include <stdio.h>
+#include "MaterialHandler.h"
+
 using namespace std;
 
 class ObjectHandler
@@ -14,17 +16,19 @@ public:
 	ObjectHandler();
 	~ObjectHandler();
 
-	int CreateObject(Mesh *mesh, Texture *texture);
-	int CreateObject(const char* filePath, Mesh *mesh, Texture *texture);
+	// Currently the create object doesn't fill empty spots, only appends to the back of the vector
+	int CreateObject(const char* filePath);
 
-	unsigned int getNrOfObjects();
-	Object* getObject(int index);
+	void UpdateAllObjects(double dt);
+
+	unsigned int GetNrOfObjects();
+	Object* GetObject(int index);
 
 private:
-	unsigned int numberOfObjects;
-	Object allObjects[256];
+	std::vector<Object*> allObjects;
 
-	
+	MaterialHandler* MH;
+
 };
 
 #endif

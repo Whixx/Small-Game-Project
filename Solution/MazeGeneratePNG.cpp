@@ -1,12 +1,15 @@
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 #include "MazeGeneratePNG.h"
 
 MazeGeneratePNG::MazeGeneratePNG(int height, int width)
 {
-	//// height and width must be odd numbers for the maze to be "correct"
-	//if ((!(height % 2)) || (!(width % 2)))
-	//{
-	//	throw std::invalid_argument("Height and width must be odd numbers!");
-	//}
+	// height and width must be odd numbers for the maze to be "correct"
+	if ((!(height % 2)) || (!(width % 2)))
+	{
+		throw std::invalid_argument("Height and width must be odd numbers!");
+	}
 
 	this->height = height;
 	this->width = width;
@@ -27,13 +30,13 @@ MazeGeneratePNG::~MazeGeneratePNG()
 {
 }
 
-void MazeGeneratePNG::set_cell(int y, int x, int value)
+void MazeGeneratePNG::Set_cell(int y, int x, int value)
 {
 	if (((int)grid.size() <= y) || ((int)grid[y].size() <= x))
 	{
 		throw std::invalid_argument("Out of boundary!");
 	}
-	else if ((wall != value) && (path != value))
+	else if ((this->wall != value) && (this->path != value))
 	{
 		throw std::invalid_argument("The input can only contain 0 or 1.");
 	}
@@ -43,14 +46,14 @@ void MazeGeneratePNG::set_cell(int y, int x, int value)
 	}
 }
 
-int MazeGeneratePNG::get_cell(int y, int x)
+int MazeGeneratePNG::Get_cell(int y, int x)
 {
 	return grid[y][x];
 }
 
-void MazeGeneratePNG::generate(void)
+void MazeGeneratePNG::Generate(void)
 {
-	std::mt19937 random_generator(random_device());
+	std::mt19937 random_generator(randomDevice());
 
 	// set up sets
 	sets.resize(grid.size());
@@ -60,7 +63,7 @@ void MazeGeneratePNG::generate(void)
 	}
 
 	// save every y, x coordinate with a possible movement (vertical or horizontal) and fill the sets with different values
-	std::vector<element> elements;
+	std::vector<Element> elements;
 	int i = 1;
 	for (int y = 1; y < ((int)sets.size() - 1); y += 2)
 	{
@@ -135,10 +138,10 @@ void MazeGeneratePNG::replace(int set_to_replace, int sample_set)
 	}
 }
 
-void MazeGeneratePNG::draw_png()
+void MazeGeneratePNG::Draw_png()
 {
 	// Color png
-	setupColorDataForColor();
+	SetupColorDataForColor();
 
 	std::vector<unsigned char> a;
 	for (int y = 0; y < this->height+1; y++)
@@ -150,18 +153,18 @@ void MazeGeneratePNG::draw_png()
 			a.push_back(image[y][x][2]);
 		}
 	}
-
-	if (!stbi_write_png("Bitmap/maze.png", this->width+1, this->height+1, 3, a.data(), 3 * (width+1)))
+	
+	if (!stbi_write_png("MazePNG/mazeColorCoded.png", this->width+1, this->height+1, 3, a.data(), 3 * (width+1)))
 	{
-		std::cout << "THIS SHIT FAILED maze.png not written" << std::endl;
+		std::cout << "ERROR mazeColorCoded.png not written" << std::endl;
 	}
 	else
 	{
-		std::cout << "maze.png written to Bitmap-folder" << std::endl;
+		std::cout << "mazeColorCoded.png written to MazePNG-folder" << std::endl;
 	}
 
 	// Black-White png
-	setupColorData();
+	SetupColorData();
 
 	std::vector<unsigned char> b;
 	for (int y = 0; y < this->height+1; y++)
@@ -174,17 +177,18 @@ void MazeGeneratePNG::draw_png()
 		}
 	}
 
-	if (!stbi_write_png("Bitmap/maze_d.png", this->width+1, this->height+1, 3, b.data(), 3 * (width+1)))
+	if (!stbi_write_png("MazePNG/mazeBlackWhite.png", this->width+1, this->height+1, 3, b.data(), 3 * (this->width+1)))
 	{
-		std::cout << "THIS SHIT FAILED maze_d.png not written" << std::endl;
+		std::cout << "ERROR mazeBlackWhite.png not written" << std::endl;
 	}
 	else
 	{
-		std::cout << "maze_d.png written to Bitmap-folder" << std::endl;
+		std::cout << "mazeBlackWhite.png written to MazePNG-folder" << std::endl;
 	}
+	
 }
 
-void MazeGeneratePNG::setupColorDataForColor()
+void MazeGeneratePNG::SetupColorDataForColor()
 {
 	// set up image vectors to hold color data
 	// added +1 to make the maze 64*64 pixels for use in shaders
@@ -203,23 +207,23 @@ void MazeGeneratePNG::setupColorDataForColor()
 
 	for (int i = 0; i < newWidth; i++)
 	{
-		image[height][i][0] = 0;
-		image[height][i][1] = 0;
-		image[height][i][2] = 0;
+		image[this->height][i][0] = 75;
+		image[this->height][i][1] = 75;
+		image[this->height][i][2] = 75;
 	}
 	for (int i = 0; i < newHeight; i++)
 	{
-		image[width][i][0] = 0;
-		image[width][i][1] = 0;
-		image[width][i][2] = 0;
+		image[i][this->width][0] = 75;
+		image[i][this->width][1] = 75;
+		image[i][this->width][2] = 75;
 	}
 
 	// sets colors, white for walls, black for path
-	for (int y = 0; y < height; y++)
+	for (int y = 0; y < this->height; y++)
 	{
-		for (int x = 0; x < width; x++)
+		for (int x = 0; x < this->width; x++)
 		{
-			if (get_cell(y, x) == wall)
+			if (Get_cell(y, x) == wall)
 			{
 				bool closeby[4]; // false for floor
 				// Read closeby pixels
@@ -237,31 +241,31 @@ void MazeGeneratePNG::setupColorDataForColor()
 
 				// If at the edge, keep the assumption else check if there is a floor or wall
 				if (y == 0)
-					closeby[2] = get_cell(y + 1, x);
-				else if (y == height - 1)
-					closeby[0] = get_cell(y - 1, x);
+					closeby[2] = Get_cell(y + 1, x);
+				else if (y == this->height - 1)
+					closeby[0] = Get_cell(y - 1, x);
 				else
 				{
-					closeby[0] = get_cell(y - 1, x);
-					closeby[2] = get_cell(y + 1, x);
+					closeby[0] = Get_cell(y - 1, x);
+					closeby[2] = Get_cell(y + 1, x);
 				}
 
 				if (x == 0)
-					closeby[1] = get_cell(y, x + 1);
-				else if (x == width - 1)
-					closeby[3] = get_cell(y, x - 1);
+					closeby[1] = Get_cell(y, x + 1);
+				else if (x == this->width - 1)
+					closeby[3] = Get_cell(y, x - 1);
 				else
 				{
-					closeby[1] = get_cell(y, x + 1);
-					closeby[3] = get_cell(y, x - 1);
+					closeby[1] = Get_cell(y, x + 1);
+					closeby[3] = Get_cell(y, x - 1);
 				}
 
 				// Check which wall type it is based on closeby
 				if (closeby[0] && closeby[1] && closeby[2] && closeby[3]) // 0. Empty
 				{
-					image[y][x][0] = 0;
-					image[y][x][1] = 0;
-					image[y][x][2] = 0;
+					image[y][x][0] = 75;
+					image[y][x][1] = 75;
+					image[y][x][2] = 75;
 				}
 				else if (!closeby[0] && closeby[1] && closeby[2] && closeby[3]) // 1. Single wall closeby
 				{
@@ -347,8 +351,14 @@ void MazeGeneratePNG::setupColorDataForColor()
 					image[y][x][1] = 255;
 					image[y][x][2] = 255;
 				}
+				else if (!closeby[0] && !closeby[1] && !closeby[2] && !closeby[3]) // 14. Nothing should never occur
+				{
+					image[y][x][0] = 177;
+					image[y][x][1] = 177;
+					image[y][x][2] = 177;
+				}
 			}
-			else if (get_cell(y, x) == path)
+			else if (Get_cell(y, x) == path)
 			{
 				for (int i = 0; i < 3; i++)
 				{
@@ -359,7 +369,7 @@ void MazeGeneratePNG::setupColorDataForColor()
 	}
 }
 
-void MazeGeneratePNG::setupColorData()
+void MazeGeneratePNG::SetupColorData()
 {
 	// set up image vectors to hold color data
 	// added +1 to make the maze 64*64 pixels for use in shaders
@@ -378,30 +388,30 @@ void MazeGeneratePNG::setupColorData()
 
 	for (int i = 0; i < newWidth; i++)
 	{
-		image[height][i][0] = 0;
-		image[height][i][1] = 0;
-		image[height][i][2] = 0;
+		image[this->height][i][0] = 0;
+		image[this->height][i][1] = 0;
+		image[this->height][i][2] = 0;
 	}
 	for (int i = 0; i < newHeight; i++)
 	{
-		image[width][i][0] = 0;
-		image[width][i][1] = 0;
-		image[width][i][2] = 0;
+		image[i][this->width][0] = 0;
+		image[i][this->width][1] = 0;
+		image[i][this->width][2] = 0;
 	}
 
 	// sets colors, white for walls, black for path
-	for (int y = 0; y < height; y++)
+	for (int y = 0; y < this->height; y++)
 	{
-		for (int x = 0; x < width; x++)
+		for (int x = 0; x < this->width; x++)
 		{
-			if (get_cell(y, x) == wall)
+			if (Get_cell(y, x) == wall)
 			{
 				for(int i = 0; i < 3; i++)
 				{
 					image[y][x][i] = 255;
 				}
 			}
-			else if (get_cell(y, x) == path)
+			else if (Get_cell(y, x) == path)
 			{
 				for (int i = 0; i < 3; i++)
 				{

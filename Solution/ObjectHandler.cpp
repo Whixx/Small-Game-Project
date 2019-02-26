@@ -2,51 +2,38 @@
 
 ObjectHandler::ObjectHandler()
 {
-	this->numberOfObjects = 0;
 }
 
 ObjectHandler::~ObjectHandler()
 {
-
-}
-
-int ObjectHandler::CreateObject(Mesh *mesh,  Texture *texture)
-{
-	this->allObjects[this->numberOfObjects] = Object(mesh, texture, this->numberOfObjects);
-
-	return this->numberOfObjects++;
-}
-
-int ObjectHandler::CreateObject(const char* filePath, Mesh *mesh, Texture *texture)
-{
-	bool loaded = false;
-	loaded = mesh->createMesh(filePath);
-
-	if (loaded == true)
+	for (int i = 0; i < this->allObjects.size(); i++)
 	{
-#if DEBUG
-		std::cout << "The object has been loaded correctly!" << std::endl;
-#endif // DEBUG
+		delete this->allObjects[i];
 	}
-	else
+}
+
+int ObjectHandler::CreateObject(const char* filePath)
+{
+	Object* temp = new Object(filePath);
+	this->allObjects.push_back(temp);
+
+	return this->allObjects.size() - 1;
+}
+
+void ObjectHandler::UpdateAllObjects(double dt)
+{
+	for (int i = 0; i < this->allObjects.size(); i++)
 	{
-#if DEBUG
-		std::cout << "Bad things happened during the attempt to load the object!" << std::endl;
-#endif // DEBUG
+		allObjects[i]->Update(dt);
 	}
-
-	this->allObjects[this->numberOfObjects] = Object(mesh, texture, this->numberOfObjects);
-
-	return this->numberOfObjects++;
 }
 
-
-unsigned int ObjectHandler::getNrOfObjects()
+unsigned int ObjectHandler::GetNrOfObjects()
 {
-	return this->numberOfObjects;
+	return this->allObjects.size();
 }
 
-Object* ObjectHandler::getObject(int index)
+Object* ObjectHandler::GetObject(int index)
 {
-	return &this->allObjects[index];
+	return this->allObjects[index];
 }

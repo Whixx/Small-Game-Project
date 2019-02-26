@@ -15,7 +15,6 @@ public:
 	bool CheckPlayerCollision(Player *player);
 	bool CheckCoinCollision();
 
-
 private:
 	Maze* maze;
 

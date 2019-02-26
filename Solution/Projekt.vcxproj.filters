@@ -52,20 +52,38 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stb_image.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="InputHandler.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
-    <ClCompile Include="Maze.cpp">
+    <ClCompile Include="MainFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CollisionHandler.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Torch.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundEngine.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundHandler.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Maze.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialHandler.cpp">
+      <Filter>Class cpp Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -126,17 +144,38 @@
     <ClInclude Include="stb_image_write.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="timer.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="Maze.h">
+    <ClInclude Include="MainFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
     <ClInclude Include="CollisionHandler.h">
-      <Filter>Header Files</Filter>
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Torch.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundEngine.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Maze.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundHandler.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialHandler.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Class h Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -164,9 +203,6 @@
     <None Include="geometryPass.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="geometryPass.gs">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="lightPass.fs">
       <Filter>Shader Files</Filter>
     </None>
@@ -192,6 +228,21 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="shadowShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeGenerationShader.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeGenerationShader.gs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeGenerationShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeGeometryPass.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeGeometryPass.fs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

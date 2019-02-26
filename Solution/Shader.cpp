@@ -6,59 +6,57 @@ static std::string LoadShader(const std::string fileName);
 
 Shader::Shader()
 {
-	program = glCreateProgram();
+	this->program = glCreateProgram();
 	this->NUM_OF_SHADERS = 0;
 }
 
 void Shader::Bind()
 {
-	glUseProgram(program);
+	glUseProgram(this->program);
 }
 
-void Shader::unBind()
+void Shader::UnBind()
 {
 	glUseProgram(0);
 }
 
-void Shader::Update(const Transform & transform, const Camera& camera)
+void Shader::InitiateShaders(bool color)
 {
-	glm::mat4 modelT = camera.getViewProjection() * transform.getWorldMatrix();
-	glm::mat4 modelW = transform.getWorldMatrix();
+	for (unsigned int i = 0; i < NUM_OF_SHADERS; i++)
+		glAttachShader(this->program, this->shaders[i]);
 
+	glBindAttribLocation(this->program, 0, "position");
 
-	// Skicka matriserna till GPU'n
-	glUniformMatrix4fv(uniforms[TRANSFORM_U], 1, GL_FALSE, &modelT[0][0]);
-	glUniformMatrix4fv(uniforms[WORLD_U], 1, GL_FALSE, &modelW[0][0]);
+	if (color == true)
+	{
+		glBindAttribLocation(this->program, 1, "color");
+	}
+	else
+	{
+		glBindAttribLocation(this->program, 1, "texCoord");
+	}
+
+	glLinkProgram(this->program);
+	CheckShaderError(this->program, GL_LINK_STATUS, true, "Error: Program linking failed: ");
 }
 
-void Shader::initiateShaders(bool color)
+void Shader::InitiateMazeGenerationShader()
 {
 	for (unsigned int i = 0; i < NUM_OF_SHADERS; i++)
 		glAttachShader(program, shaders[i]);
 
-	glBindAttribLocation(program, 0, "position");
-
-	if (color == true)
-	{
-		glBindAttribLocation(program, 1, "color");
-	}
-	else
-	{
-		glBindAttribLocation(program, 1, "texCoord");
-	}	
+	const GLchar * feedbackVarying[] = { "outPosition", "outTexCoords", "outNormal", "outTangent", "outType" };
+	glTransformFeedbackVaryings(this->program, 5, feedbackVarying, GL_INTERLEAVED_ATTRIBS);
 
 	glLinkProgram(program);
 	CheckShaderError(program, GL_LINK_STATUS, true, "Error: Program linking failed: ");
-
-	// Berättar för GPU'n vad namnet på inkommande variabel är.
-	uniforms[TRANSFORM_U] = glGetUniformLocation(program, "transformationMatrix");
-	uniforms[WORLD_U] = glGetUniformLocation(program, "WorldMatrix");
+	glUseProgram(this->program);
 }
 
-void Shader::validateShaders()
+void Shader::ValidateShaders()
 {
-	glValidateProgram(program);
-	CheckShaderError(program, GL_VALIDATE_STATUS, true, "Error: Program is invalid: ");
+	glValidateProgram(this->program);
+	CheckShaderError(this->program, GL_VALIDATE_STATUS, true, "Error: Program is invalid: ");
 }
 
 
@@ -66,35 +64,54 @@ Shader::~Shader()
 {
 	for (unsigned int i = 0; i < NUM_OF_SHADERS; i++)
 	{
-		glDetachShader(program, shaders[i]);
-		glDeleteShader(shaders[i]);
+		glDetachShader(this->program, this->shaders[i]);
+		glDeleteShader(this->shaders[i]);
 	}
 
 	glDeleteProgram(program);
 }
 
-void Shader::sendInt(const char *name, int value)
+int Shader::GetUniformLocation(const std::string & name)
 {
-	glUniform1i(glGetUniformLocation(program, name), value);
+	if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
+		return m_UniformLocationCache[name];
+	int location = glGetUniformLocation(this->program, name.c_str());
+	if (location == -1)
+	{
+		std::cout << "Uniform " << name << " was not found" << std::endl;
+	}
+	m_UniformLocationCache[name] = location;
+	return location;
 }
 
-void Shader::sendFloat(const char * name, float value)
+void Shader::SendInt(const char *name, int value)
 {
-	glUniform1f(glGetUniformLocation(this->program, name), value);
+	glUniform1i(this->GetUniformLocation(name), value);
 }
 
-void Shader::sendVec3(const char * name, float x, float y, float z)
+void Shader::SendFloat(const char * name, float value)
 {
-	glUniform3f(glGetUniformLocation(this->program, name), x, y, z);
+	glUniform1f(this->GetUniformLocation(name), value);
 }
-/*
-void Shader::sendMat4(const char *name, const glm::mat4 &mat)
+
+void Shader::SendVec2(const char * name, float x, float y)
 {
-	glUniformMatrix4fv(glGetUniformLocation(this->program, name), 1, GL_FALSE, &mat[0][0]);
-}*/
-void Shader::setMat4(const std::string &name, const glm::mat4 &mat)
+	glUniform2f(this->GetUniformLocation(name), x, y);
+}
+
+void Shader::SendVec3(const char * name, float x, float y, float z)
 {
-	glUniformMatrix4fv(glGetUniformLocation(this->program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+	glUniform3f(this->GetUniformLocation(name), x, y, z);
+}
+
+void Shader::SendMat4(const char * name, const glm::mat4 & mat)
+{
+	glUniformMatrix4fv(this->GetUniformLocation(name), 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::SendCameraLocation(Camera * camera)
+{
+	glUniform3f(this->GetUniformLocation("cameraPos"), camera->GetCameraPosition().x, camera->GetCameraPosition().y, camera->GetCameraPosition().z);
 }
 
 void CheckShaderError(GLuint shader, GLuint flag, bool isProgram, const std::string & errorMessage)
@@ -168,7 +185,7 @@ GLuint Shader::CreateShader(const std::string & fileName, GLenum shaderType)
 	return shader;
 }
 
-GLuint *Shader::getProgram()
+GLuint *Shader::GetProgram()
 {
 	return &this->program;
 }

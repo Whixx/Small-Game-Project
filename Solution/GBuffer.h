@@ -3,6 +3,7 @@
 
 #include <glew\glew.h>
 #include <iostream>
+#include <vector>
 
 /*
 Detta sker i två steg: Geometry pass och lightning pass.
@@ -10,19 +11,20 @@ Detta sker i två steg: Geometry pass och lightning pass.
 class GBuffer
 {
 public:
-
 	enum GBUFFER_TEXTURE_TYPE
 	{
 		GBUFFER_TEXTURE_TYPE_POSITION,
 		GBUFFER_TEXTURE_TYPE_DIFFUSE,
 		GBUFFER_TEXTURE_TYPE_NORMAL,
+		GBUFFER_TEXTURE_TYPE_SPECULAR_SHININESS_HEIGHT,
+		GBUFFER_TEXTURE_TYPE_AMBIENT,
 		GBUFFER_NUM_TEXTURES
 	};
 
-	GBuffer();
+	GBuffer(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT);
 	~GBuffer();
 
-	bool Init(unsigned int SCREENWIDTH, unsigned int SCREENHEIGHT);
+	bool Init();
 
 	// Binds the texture as a target during the geometry pass
 	void BindForWriting();
@@ -30,11 +32,14 @@ public:
 	// A FBO is a container for textures and an optional depth buffer
 	void BindForReading();
 
-	GLuint getFBO();
+	GLuint GetFBO();
+
 private:
-	
-	GLuint m_fbo;
-	GLuint m_textures[GBUFFER_NUM_TEXTURES];
-	GLuint m_depthTexture;
+	GLuint fbo;
+	GLuint textures[GBUFFER_NUM_TEXTURES];
+	GLuint depthTexture;
+
+	unsigned int width;
+	unsigned int height;
 };
 #endif

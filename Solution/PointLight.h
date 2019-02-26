@@ -7,68 +7,64 @@
 #include <stdio.h>
 #include "Mesh.h"
 #include "Transform.h"
+#include "Shader.h"
 
-#include <glm\glm.hpp>
 #include <string>
 
 using namespace std;
 
 const int MAX_NUMBER_OF_LIGHTS = 256;
-const int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
-const int NEAR_PLANE = 1, FAR_PLANE = 100;
+const int SHADOW_WIDTH = 512, SHADOW_HEIGHT = 512;
+const float NEAR_PLANE = 0.1f, FAR_PLANE = 100;
 
 class PointLight
 {
+public:
+	PointLight();
+
+	glm::vec3& GetPos();
+	glm::vec3& GetScale();
+	glm::vec3& GetRot();
+	glm::vec3& GetColor();
+	float& GetIntensity();
+	
+	Transform *GetTransform();
+	vector<glm::mat4> &GetShadowTransforms();
+
+	void CreateShadowTransforms();
+	void ResetShadowTransforms();
+
+	virtual ~PointLight();
+
 private:
-	Mesh mesh;
 	Transform transform;
 	glm::mat4 shadowProj;
 	vector<glm::mat4> shadowTransforms;
 	glm::vec3 color;
-public:
-	PointLight();
-	Mesh& GetMesh();
-
-	glm::vec3& GetPos();
-	glm::vec3& GetScale();
-	glm::vec3& GetColor();
-	
-	Transform *getTransform();
-	vector<glm::mat4> &GetShadowTransforms();
-
-	void createShadowTransforms();
-	void resetShadowTransforms();
-
-	void Draw();
-	virtual ~PointLight();
+	float intensity;
 };
 
 class PointLightHandler
 {
-private:
-	PointLight lightArray[MAX_NUMBER_OF_LIGHTS];
-	GLuint nrOfLights;
-
-	GLuint loc_position[MAX_NUMBER_OF_LIGHTS];
-	GLuint loc_color[MAX_NUMBER_OF_LIGHTS];
-	GLuint loc_NrOfLights;
 public:
 	PointLightHandler();
 
 	// location, pos, color
-	void createLight(glm::vec3 position, glm::vec3 color);
+	PointLight* CreateLight(glm::vec3 position, glm::vec3 color, float intensity);
 
-	void sendToShader();
-	void initiateLights(GLuint *program);
-	void updateShadowTransform(GLuint cameraIndex);
-	void Draw(int index);
-	
-	vector<glm::mat4> getShadowTransform(int index);
+	void SendLightsToShader(Shader* shader);
+	void UpdateShadowTransform(GLuint cameraIndex);
 
-	GLuint getNrOfLights();
-	Transform *getTransform(int index);
+	vector<glm::mat4> GetShadowTransform(int index);
+
+	GLuint GetNrOfLights();
+	Transform *GetTransform(int index);
 
 	virtual ~PointLightHandler();
+
+private:
+	PointLight lightArray[MAX_NUMBER_OF_LIGHTS];
+	GLuint nrOfLights;
 };
 
 #endif

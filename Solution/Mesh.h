@@ -5,55 +5,41 @@
 #include <glew\glew.h>
 #include <iostream>
 #include <vector>
+#include "Texture.h"
+#include "Shader.h"
+#include "Material.h"
 
 using namespace std;
 
-class Vertex
-{
-public:
-	Vertex(const glm::vec3& pos, const glm::vec2& texCoord)
-	{
-		this->pos = pos;
-		this->texCoord = texCoord;
-	}
-
-	inline glm::vec3* GetPos() { return &pos; }
-	inline glm::vec2* GetTexCoord() { return &texCoord; }
-private:
-	glm::vec3 pos;
-	glm::vec2 texCoord;
+struct Vertex {
+	glm::vec3 Position;
+	glm::vec2 UVCoords;
+	glm::vec3 Normal;
+	glm::vec3 Tangent;
 };
 
 class Mesh
 {
-public:
-	Mesh(Vertex* vertices, unsigned int numOfVertices);
-	//Mesh(std::vector<glm::vec3> vertices, std::vector<glm::vec2> uvCoords);
-	Mesh(const char * meshPath);
-	Mesh(const char * meshPath, glm::vec3 color);
-	Mesh() {}
-	void Draw();
-	unsigned int GetDrawCount();
-
-	void operator=(const Mesh& other) {}
-
-	virtual ~Mesh();
-	bool createMesh(const char * meshPath);
-	void createMesh(std::vector<glm::vec3> vertices, std::vector<glm::vec2> uvCoords);
-	bool createMesh(const char * meshPath, glm::vec3 color);
-	bool loadMesh(const char * objectPath, vector<glm::vec3>& vertices, vector<glm::vec2>& uvs, vector<glm::vec3>& normals);
 private:
-	enum
-	{
-		POSITION_VB,
-		TEXCOORD_VB,
-
-		NUM_OF_BUFFERS
-	};
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+	Material* material;
 
 	GLuint vertexArrayObject;
-	GLuint vertexArrayBuffers[NUM_OF_BUFFERS];
-	unsigned int drawCount;
-};
+	GLuint vertexArrayBuffer;
+	GLuint vertexIndexBuffer;
 
+	void SetupMesh();
+
+public:
+	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material* mat);
+	virtual ~Mesh();
+
+	void Bind();
+	void BindMaterial(Shader* shader);
+	void Draw();
+
+	inline void SetMaterial(Material* newMat) { this->material = newMat; }
+	inline Material* GetMaterial() const { return this->material; }
+};
 #endif //MESH_H

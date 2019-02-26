@@ -1,16 +1,22 @@
 #include "Player.h"
 #include <iostream> // TODO: Remove after testing
 
-Player::Player(float height, float fov, float near, float far, glm::vec3 walkingVector)
-	:playerCamera(glm::vec3(0, height, 0), fov, (float)SCREENWIDTH / (float)SCREENHEIGHT, near, far, walkingVector)
+Player::Player(float height, float fov, float near, float far, Maze * maze, irrklang::ISoundEngine * engine, PointLightHandler * PLH, float torchSize)
+	: playerCamera(glm::vec3(0, height, 0), fov, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)),
+	playerTorch(this->transform, glm::vec3(0.5f, 0.15f, 0.15f), engine, PLH, torchSize),
+	footStep("Sounds/playerfootstep.ogg", false, engine)
 {
+	this->playerHeight = height;
 	this->playerSpeed = 0;
-	this->walkingVector = walkingVector;
-	//this->maze = maze;
+	this->walkingVector = glm::vec3(0.0f, 0.0f, 1.0f);
+	this->maze = maze;
+
+	this->footStep.SetVolume(0.2);
 }
 
 Player::~Player()
 {
+
 }
 
 float Player::GetPlayerSpeed()
@@ -30,7 +36,12 @@ glm::vec3 Player::GetWalkingVector()
 
 Camera * Player::GetCamera()
 {
-	return &playerCamera;
+	return &this->playerCamera;
+}
+
+Torch* Player::GetTorch()
+{
+	return &this->playerTorch;
 }
 
 void Player::SetPlayerHeight(float height)
@@ -43,89 +54,337 @@ void Player::SetPlayerSpeed(float speed)
 	this->playerSpeed = speed;
 }
 
-void Player::moveForward(float elapsedTime)
+void Player::MoveDiagonalRightUp(float elapsedTime)
 {
-	glm::vec3 newPos = playerCamera.getCameraPosition() + this->playerSpeed * this->walkingVector * elapsedTime;
-	playerCamera.setCameraPosition(newPos);
+	// Getting diagonal vector
+	glm::vec3 diagonal = (this->walkingVector + this->GetCamera()->GetRightVector()) * 0.8f;
+
+	// Getting the positions
+	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
+	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
+	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * diagonal * elapsedTime;
+
+	// Looking for collision
+	newPos = this->DetectCollision(newPos, oldPos);
+
+	// Update the new position
+	this->transform.SetPos(newPos);
+
+	footStep.Play();
 }
 
-void Player::moveBackward(float elapsedTime)
+void Player::MoveDiagonalLeftUp(float elapsedTime)
 {
-	glm::vec3 newPos = playerCamera.getCameraPosition() - this->playerSpeed * this->walkingVector * elapsedTime;
-	playerCamera.setCameraPosition(newPos);
+	// Getting diagonal vector
+	glm::vec3 diagonal = (this->walkingVector - this->GetCamera()->GetRightVector()) * 0.8f;
+
+	// Getting the positions
+	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
+	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
+	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * diagonal * elapsedTime;
+
+	// Looking for collision
+	newPos = this->DetectCollision(newPos, oldPos);
+
+	// Update the new position
+	this->transform.SetPos(newPos);
+
+	footStep.Play();
 }
 
-void Player::moveRight(float elapsedTime)
+void Player::MoveDiagonalRightDown(float elapsedTime)
 {
-	glm::vec3 newPos = playerCamera.getCameraPosition() + this->playerSpeed * playerCamera.getRotateAround() * elapsedTime;
-	playerCamera.setCameraPosition(newPos);
+	// Getting diagonal vector
+	glm::vec3 diagonal = (this->walkingVector - this->GetCamera()->GetRightVector()) * 0.8f;
+
+	// Getting the positions
+	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
+	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
+	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * diagonal * elapsedTime;
+
+	// Looking for collision
+	newPos = this->DetectCollision(newPos, oldPos);
+
+	// Update the new position
+	this->transform.SetPos(newPos);
+
+	footStep.Play();
 }
 
-void Player::moveLeft(float elapsedTime)
+void Player::MoveDiagonalLeftDown(float elapsedTime)
 {
-	glm::vec3 newPos = playerCamera.getCameraPosition() - this->playerSpeed * playerCamera.getRotateAround() * elapsedTime;
-	playerCamera.setCameraPosition(newPos);
+	// Getting diagonal vector
+	glm::vec3 diagonal = (this->walkingVector + this->GetCamera()->GetRightVector()) * 0.8f;
+
+	// Getting the positions
+	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
+	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
+	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * diagonal * elapsedTime;
+
+	// Looking for collision
+	newPos = this->DetectCollision(newPos, oldPos);
+
+	// Update the new position
+	this->transform.SetPos(newPos);
+
+	footStep.Play();
 }
 
-void Player::moveUp(float elapsedTime)
+void Player::MoveForward(float elapsedTime)
 {
-	glm::vec3 newPos = playerCamera.getCameraPosition() + this->playerSpeed * playerCamera.getUpVector() * elapsedTime;
-	playerCamera.setCameraPosition(newPos);
+	// Getting the positions
+	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
+	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
+	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * this->walkingVector * elapsedTime;
+	
+	// Looking for collision
+	newPos = this->DetectCollision(newPos, oldPos);
+
+	// Update the new position
+	this->transform.SetPos(newPos);
+	
+	footStep.Play();
 }
 
-void Player::moveDown(float elapsedTime)
+void Player::MoveBackward(float elapsedTime)
 {
-	glm::vec3 newPos = playerCamera.getCameraPosition() - this->playerSpeed * playerCamera.getUpVector() * elapsedTime;
-	playerCamera.setCameraPosition(newPos);
+	// Getting the positions
+	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
+	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
+	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * this->walkingVector * elapsedTime;
+	
+	// Looking for collision
+	newPos = this->DetectCollision(newPos, oldPos);
+
+	// Update the new position
+	this->transform.SetPos(newPos);
+
+	footStep.Play();
 }
 
-void Player::updateMouse(const glm::vec2& newMousePosition, float elapsedTime)
+void Player::MoveRight(float elapsedTime)
 {
-	// Get mouse delta vector, how much the mouse has moved
-	playerCamera.setMouseDelta(newMousePosition - playerCamera.getOldMousePosition());
+	// Getting the positions
+	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
+	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
+	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * playerCamera.GetRightVector() * elapsedTime;
+	
+	// Looking for collision
+	newPos = this->DetectCollision(newPos, oldPos);
 
-	// if the mouseDelta is to far away, the camera will jump to unpredicted areas.
-	if (glm::length(playerCamera.getMouseDelta()) < 50.0f)
+	// Update the new position
+	this->transform.SetPos(newPos);
+
+	footStep.Play();
+}
+
+void Player::MoveLeft(float elapsedTime)
+{
+	// Getting the positions
+	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
+	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
+	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * playerCamera.GetRightVector() * elapsedTime;
+
+	// Looking for collision
+	newPos = this->DetectCollision(newPos, oldPos);
+
+	// Update the new position
+	this->transform.SetPos(newPos);
+
+	footStep.Play();
+}
+
+void Player::MoveUp(float elapsedTime)
+{
+	// Getting the positions
+	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
+	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
+	glm::vec3 newPos = playerCamera.GetCameraPosition() + this->playerSpeed * playerCamera.GetUpVector() * elapsedTime;
+
+	// Looking for collision
+	newPos = this->DetectCollision(newPos, oldPos);
+
+	// Update the new position
+	this->transform.SetPos(newPos);
+	this->playerHeight = newPos.y;
+}
+
+void Player::MoveDown(float elapsedTime)
+{
+	// Getting the positions
+	this->playerCamera.SetOldCameraPosition(this->playerCamera.GetCameraPosition());
+	glm::vec3 oldPos = this->playerCamera.GetOldCameraPosition();
+	glm::vec3 newPos = playerCamera.GetCameraPosition() - this->playerSpeed * playerCamera.GetUpVector() * elapsedTime;
+
+	// Looking for collision
+	newPos = this->DetectCollision(newPos, oldPos);
+
+	// Update the new position
+	this->transform.SetPos(newPos);
+	this->playerHeight = newPos.y;
+}
+
+glm::vec3 Player::DetectCollision(glm::vec3 newPos, glm::vec3 oldPos)
+{
+	// Recieving components
+	float height = this->maze->GetMazeHeight();
+	float width = this->maze->GetMazeWidth();
+
+	// The player needs an offset to not be able to clip the walls
+	float playerOffset = 0.1f;
+
+	// The offset is the offset for the whole bounding box which includes the player's torch
+	float offset = this->boundingBoxHalfSize + playerOffset;
+
+	// Check collision if player is on ground level
+	if (this->playerHeight < 2.0f)
 	{
-		//Update the horizontal view
-		playerCamera.setForwardVector(glm::mat3(glm::rotate(-playerCamera.getMouseDelta().x * playerCamera.getRotationalSpeed() * elapsedTime, playerCamera.getUpVector())) * playerCamera.getForwardVector());
-		this->walkingVector = glm::mat3(glm::rotate(-playerCamera.getMouseDelta().x * playerCamera.getRotationalSpeed() * elapsedTime, playerCamera.getUpVector())) * this->walkingVector;
+		// Flat walls
+		// Check right
+		if (this->maze->IsWallAtWorld(newPos.x + offset, newPos.z) == true && (newPos.x > oldPos.x)) 
+		{
+			newPos.x = oldPos.x;
+		}
+		// Check left
+		if (this->maze->IsWallAtWorld(newPos.x - offset, newPos.z) == true && (newPos.x < oldPos.x)) 
+		{
+			newPos.x = oldPos.x;
+		}
+		// Check up
+		if (this->maze->IsWallAtWorld(newPos.x, newPos.z + offset) == true && (newPos.z > oldPos.z)) 
+		{
+			newPos.z = oldPos.z;
+		}
+		// Check down
+		if (this->maze->IsWallAtWorld(newPos.x, newPos.z - offset) == true && (newPos.z < oldPos.z))
+		{
+			newPos.z = oldPos.z;
+		}
 
-		//Update the vertical view limited to 45 degrees
-		playerCamera.setRotateAround(glm::cross(playerCamera.getForwardVector(), playerCamera.getUpVector()));
-		//if (glm::dot(glm::normalize(playerCamera.getForwardVector()), glm::normalize(this->walkingVector)) > 0.45f)
-		//{
-			playerCamera.setForwardVector(glm::mat3(glm::rotate(-playerCamera.getMouseDelta().y * playerCamera.getRotationalSpeed() * elapsedTime, playerCamera.getRotateAround())) * playerCamera.getForwardVector());
-		//}
-		//else
-		//{
-		//	playerCamera.setForwardVector(glm::mat3(glm::rotate(playerCamera.getMouseDelta().y * playerCamera.getRotationalSpeed() * elapsedTime, playerCamera.getRotateAround())) * playerCamera.getForwardVector());
-		//}
+		// Corners
+		// Check right-down corner
+		if (this->maze->IsWallAtWorld(newPos.x + offset, newPos.z + offset) == true) 
+		{
+			if (newPos.x > oldPos.x) 
+			{
+				newPos.x = oldPos.x;
+			}
+			if (newPos.z > oldPos.z) 
+			{
+				newPos.z = oldPos.z;
+			}
+		}
+		// Check left-up corner
+		if (this->maze->IsWallAtWorld(newPos.x - offset, newPos.z - offset) == true) 
+		{
+			if (newPos.x < oldPos.x) 
+			{
+				newPos.x = oldPos.x;
+			}
+			if (newPos.z < oldPos.z) 
+			{
+				newPos.z = oldPos.z;
+			}
+		}
+		// Check right-up corner
+		if (this->maze->IsWallAtWorld(newPos.x + offset, newPos.z - offset) == true) 
+		{
+			if (newPos.x > oldPos.x) 
+			{
+				newPos.x = oldPos.x;
+			}
+			if (newPos.z < oldPos.z) 
+			{
+				newPos.z = oldPos.z;
+			}
+		}
+		// Check left-down corner
+		if (this->maze->IsWallAtWorld(newPos.x - offset, newPos.z + offset) == true) 
+		{
+			if (newPos.x < oldPos.x) 
+			{
+				newPos.x = oldPos.x;
+			}
+			if (newPos.z > oldPos.z) 
+			{
+				newPos.z = oldPos.z;
+			}
+		}
 	}
 
-	playerCamera.setOldMousePosition(newMousePosition);
+	return newPos;
+}
+
+void Player::CenterPlayer()
+{
+	float x = 0.0f;
+	float y = 0.0f;
+
+	// NOT NEEDED Transform world coords to texture coords. ( 1 pixel on texture corresponds to 1.0, origo is (0, 0) for both spaces
+
+	bool pingpong = false;
+	while (this->maze->IsWallAtWorld(x, y) == true) 
+	{
+		//If wall, move start position
+		if (pingpong = false)
+		{
+			x += 1.5f;
+			pingpong = true;
+		}
+		else
+		{
+			y += 1.5f;
+			pingpong = false;
+		}
+	}
+
+	this->transform.SetPos(glm::vec3(x, this->playerHeight + this->maze->GetTransform()->GetPos().y, y));
+}
+
+void Player::UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime)
+{
+	// Get mouse delta vector, how much the mouse has moved, update rotatearound vector
+	this->playerCamera.SetMouseDelta(newMousePosition - this->playerCamera.GetOldMousePosition());
+	this->playerCamera.SetRotateAround(glm::cross(this->playerCamera.GetForwardVector(), this->playerCamera.GetUpVector()));
+
+	// Rotate forwardVector
+	this->playerCamera.UpdateRotation();
+
+	glm::vec3 forwardVector = this->playerCamera.GetForwardVector();
+	float walkingX = forwardVector.x;
+	float walkingY = 0.0f;
+	float walkingZ = forwardVector.z;
+
+	this->walkingVector = glm::vec3(walkingX, walkingY, walkingZ);
+	this->walkingVector = glm::normalize(this->walkingVector);
+
+	this->playerCamera.SetOldMousePosition(newMousePosition);
 }
 
 void Player::Update(double dt)
 {
-	// Set player position to the cameras position
-	transform.SetPos(playerCamera.getCameraPosition());
+	// Update playerCamera
+	this->playerCamera.SetCameraPosition(this->transform.GetPos());
+	this->playerCamera.UpdateViewMatrix();
 
-	// Test variables
-	double x = 0.0;
-	double y = 0.0;
+	// Update the torch
+	this->playerTorch.Update(dt,
+		this->playerCamera,
+		this->walkingVector, 
+		this->boundingBoxHalfSize);
 
-	// Move player
-	x = 3.0;
-	y = 0.0;
+#ifdef DEBUG
+	//if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
+	//{
+	//	//printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+	//
+	//	std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
+	//	std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;
+	//	std::cout << "Forward Vector! Z: " << this->playerCamera.GetForwardVector().z << std::endl;
+	//}
+	
+#endif
 
-	/*
-	// Check collision
-	if (maze->IsWallAtWorld(x, y))
-	{
-		// Don't move
-		cout << "V�GGGGG" << endl; // TODO: Remove after testing
-	}
-	*/
-
+	// Update sound positions
+	footStep.SetPosition(this->GetCamera()->GetCameraPosition());
 }
