@@ -187,7 +187,7 @@ int main()
 
 		// Here the mazes is created and stored in a buffer with transform feedback
 		MazeGenerationPass(&mazeGenerationShader, &maze, &player);
-
+		
 		// Here a cube map is calculated and stored in the shadowMap FBO
 		ShadowPass(&shadowShader, &OH, &lights, &shadowMap, &player, &maze);
 		

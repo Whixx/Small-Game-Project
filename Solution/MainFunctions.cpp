@@ -186,7 +186,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
 		// Draw maze
 		shadowShader->SendMat4("WorldMatrix", mazeWorldMatrix);
-		maze->DrawMaze();
+		maze->DrawShadows();
 	}
 
 	shadowShader->UnBind();
@@ -232,10 +232,6 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	
 	// Draw Maze
 	mazeGeometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
-	mazeGeometryPass->SendVec3("EyeWorldPos",
-		player->GetCamera()->GetCameraPosition().x,
-		player->GetCamera()->GetCameraPosition().y,
-		player->GetCamera()->GetCameraPosition().z);
 	mazeGeometryPass->SendMat4("VP", player->GetCamera()->GetViewProjection());
 	maze->BindMaterial(mazeGeometryPass);
 	maze->DrawMaze();

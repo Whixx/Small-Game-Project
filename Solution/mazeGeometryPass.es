@@ -2,9 +2,6 @@
 
 layout(triangles, equal_spacing, ccw) in;
 
-uniform mat4 VP;
-uniform sampler2D TextureHeight[2];
-
 in vec3 normal_ES_in[];
 in vec3 tangent_ES_in[];
 in vec2 texCoord0_ES_in[];
@@ -15,6 +12,9 @@ out mat3 TBN0_FS_in;
 out vec2 texCoord0_FS_in;
 out vec3 posWorld0_FS_in;
 out float type0_FS_in;
+
+uniform mat4 VP;
+uniform sampler2D TextureHeight[2];
 
 vec2 interpolate2D(vec2 v0, vec2 v1, vec2 v2)
 {
@@ -29,7 +29,7 @@ vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
 void main()
 {
     // Set displacementfactor
-    float dispFactor = 0.04f;
+    float dispFactor = 0.2f;
 
    	// Interpolate the attributes of the output vertex using the barycentric coordinates
    	texCoord0_FS_in = interpolate2D(texCoord0_ES_in[0], texCoord0_ES_in[1], texCoord0_ES_in[2]);
@@ -51,7 +51,7 @@ void main()
 	TBN0_FS_in = mat3(tangent, bitangent, normal);
 
     // Displace the vertex along the normal
-   	float displacement = texture(TextureHeight[type], texCoord0_FS_in.xy).x;
+   	float displacement = texture(TextureHeight[type], texCoord0_FS_in.xy).r;
    	posWorld0_FS_in += normal * displacement * dispFactor;
    	gl_Position = VP * vec4(posWorld0_FS_in, 1.0);
 }

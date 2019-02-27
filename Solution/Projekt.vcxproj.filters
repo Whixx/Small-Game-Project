@@ -248,8 +248,12 @@
     <None Include="mazeGeometryPass.cs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="mazeGeometryPass.gs" />
-    <None Include="lightPass.vs" />
+    <None Include="lightPass.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeGeometryPass.gs">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

@@ -1,6 +1,4 @@
-#version 440
-precision highp int;
-
+#version 440 
 in vec2 texCoord0_FS_in;
 in vec3 posWorld0_FS_in;
 in mat3 TBN0_FS_in;
