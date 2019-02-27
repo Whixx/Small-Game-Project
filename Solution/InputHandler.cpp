@@ -1,5 +1,7 @@
 #include "InputHandler.h"
 
+#include "EventHandler.h"
+
 InputHandler::InputHandler()
 {
 }
@@ -96,6 +98,7 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	if (D == GLFW_PRESS && doubleKeys == false)
 	{
 		player->MoveRight(elapsedTime);
+		EventHandler::GetInstance().AddEvent(EVENT_TEST);
 	}
 	if (A == GLFW_PRESS && doubleKeys == false)
 	{

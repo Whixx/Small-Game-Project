@@ -432,3 +432,16 @@ GLuint CreateScreenQuad()
 
 	return screenQuad;
 }
+
+void HandleEvents(Player* player)
+{
+	EventHandler& EH = EventHandler::GetInstance();
+	while (!EH.IsEmpty())
+	{
+		Event event = EH.GetEvent();
+		if (event == EVENT_TEST)
+		{
+			cout << "Event Test" << endl;
+		}
+	}
+}
