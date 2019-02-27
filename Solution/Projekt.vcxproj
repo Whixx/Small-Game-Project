@@ -157,13 +157,16 @@
     <None Include="finalShader.fs" />
     <None Include="finalShader.vs" />
     <None Include="lightPass.fs" />
-    <None Include="lightPass.vs" />
     <None Include="geometryPass.fs" />
     <None Include="geometryPass.vs" />
+    <None Include="lightPass.vs" />
     <None Include="mazeGenerationShader.fs" />
     <None Include="mazeGenerationShader.gs" />
     <None Include="mazeGenerationShader.vs" />
+    <None Include="mazeGeometryPass.cs" />
+    <None Include="mazeGeometryPass.es" />
     <None Include="mazeGeometryPass.fs" />
+    <None Include="mazeGeometryPass.gs" />
     <None Include="mazeGeometryPass.vs" />
     <None Include="particleShader.fs" />
     <None Include="particleShader.vs" />

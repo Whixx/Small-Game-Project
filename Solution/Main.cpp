@@ -31,6 +31,10 @@ int main()
 	Maze maze;
 
 	//=========================== Creating Shaders ====================================//
+
+	// MaxVertices supported by the hardware
+	SetMaxPatchVertices();
+
 	Shader mazeGenerationShader;
 	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.vs", GL_VERTEX_SHADER);
 	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.gs", GL_GEOMETRY_SHADER);
@@ -47,6 +51,8 @@ int main()
 
 	Shader mazeGeometryPass;
 	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.vs", GL_VERTEX_SHADER);
+	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.cs", GL_TESS_CONTROL_SHADER);
+	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.es", GL_TESS_EVALUATION_SHADER);
 	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.fs", GL_FRAGMENT_SHADER);
 	
 	Shader lightPass;
@@ -187,7 +193,7 @@ int main()
 
 		// Here the mazes is created and stored in a buffer with transform feedback
 		MazeGenerationPass(&mazeGenerationShader, &maze, &player);
-
+		
 		// Here a cube map is calculated and stored in the shadowMap FBO
 		ShadowPass(&shadowShader, &OH, &lights, &shadowMap, &player, &maze);
 		

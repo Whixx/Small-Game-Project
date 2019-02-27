@@ -170,6 +170,18 @@ void Maze::DrawMaze()
 {
 	glBindVertexArray(this->mazeVao);
 	
+	glDrawTransformFeedback(GL_PATCHES, this->mazeTbo);
+	
+	// Memory barrier
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
+	glBindVertexArray(0);
+}
+
+void Maze::DrawShadows()
+{
+	glBindVertexArray(this->mazeVao);
+
 	glDrawTransformFeedback(GL_TRIANGLES, this->mazeTbo);
 
 	// Memory barrier
