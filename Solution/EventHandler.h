@@ -9,7 +9,7 @@ using namespace std;
 enum Event
 {
 	EVENT_NULL,
-	EVENT_TEST
+
 };
 
 class EventHandler

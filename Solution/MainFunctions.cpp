@@ -439,9 +439,10 @@ void HandleEvents(Player* player)
 	while (!EH.IsEmpty())
 	{
 		Event event = EH.GetEvent();
-		if (event == EVENT_TEST)
-		{
-			cout << "Event Test" << endl;
-		}
+
+		//if (event == EVENT_TEST)
+		//{
+		//	cout << "Event Test" << endl;
+		//}
 	}
 }
