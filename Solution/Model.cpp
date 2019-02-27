@@ -10,12 +10,6 @@ Model::Model(std::string path, bool gammaCorrection) : gammaCorrection(gammaCorr
 
 Model::~Model()
 {
-	// Delete loaded textures
-	for (Texture* t : this->loadedTextures)
-	{
-		delete t;
-	}
-
 	// Delete all the meshes
 	for (Mesh* m : this->meshes)
 	{
@@ -138,6 +132,7 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 
 	aiString matName;
 	float matShininess;
+	MaterialHandler& MH = MaterialHandler::GetInstance();
 	std::vector<Texture*> diffuseMaps;
 	std::vector<Texture*> ambientMaps;
 	std::vector<Texture*> specularMaps;
@@ -172,26 +167,26 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 
 		// Add default textures if nothing was loaded
 		if (diffuseMaps.size() == 0)
-			diffuseMaps.push_back(this->LoadTexture("Textures/default/default_diffuse.png", "TextureDiffuse"));
+			diffuseMaps.push_back(MH.LoadTexture("Textures/default/default_diffuse.png", "TextureDiffuse"));
 		if (ambientMaps.size() == 0)
-			ambientMaps.push_back(this->LoadTexture("Textures/default/default_ambient.png", "TextureAmbient"));
+			ambientMaps.push_back(MH.LoadTexture("Textures/default/default_ambient.png", "TextureAmbient"));
 		if (specularMaps.size() == 0)
-			specularMaps.push_back(this->LoadTexture("Textures/default/default_specular.png", "TextureSpecular"));
+			specularMaps.push_back(MH.LoadTexture("Textures/default/default_specular.png", "TextureSpecular"));
 		if (normalMaps.size() == 0)
-			normalMaps.push_back(this->LoadTexture("Textures/default/default_normal.png", "TextureNormal"));
+			normalMaps.push_back(MH.LoadTexture("Textures/default/default_normal.png", "TextureNormal"));
 		if (heightMaps.size() == 0)
-			heightMaps.push_back(this->LoadTexture("Textures/default/default_height.png", "TextureHeight"));
+			heightMaps.push_back(MH.LoadTexture("Textures/default/default_height.png", "TextureHeight"));
 	}
 	else
 	{
-		diffuseMaps.push_back(this->LoadTexture("Textures/default/default_diffuse.png", "TextureDiffuse"));
-		ambientMaps.push_back(this->LoadTexture("Textures/default/default_ambient.png", "TextureAmbient"));
-		specularMaps.push_back(this->LoadTexture("Textures/default/default_specular.png", "TextureSpecular"));
-		normalMaps .push_back(this->LoadTexture("Textures/default/default_normal.png", "TextureNormal"));
-		heightMaps .push_back(this->LoadTexture("Textures/default/default_height.png", "TextureHeight"));
+		diffuseMaps.push_back(MH.LoadTexture("Textures/default/default_diffuse.png", "TextureDiffuse"));
+		ambientMaps.push_back(MH.LoadTexture("Textures/default/default_ambient.png", "TextureAmbient"));
+		specularMaps.push_back(MH.LoadTexture("Textures/default/default_specular.png", "TextureSpecular"));
+		normalMaps .push_back(MH.LoadTexture("Textures/default/default_normal.png", "TextureNormal"));
+		heightMaps .push_back(MH.LoadTexture("Textures/default/default_height.png", "TextureHeight"));
 	}
 
-	Material* mat = MaterialHandler::GetInstance().AddMaterial(diffuseMaps[0], ambientMaps[0], specularMaps[0], normalMaps[0], heightMaps[0], matShininess, matName.C_Str());
+	Material* mat = MH.AddMaterial(diffuseMaps[0], ambientMaps[0], specularMaps[0], normalMaps[0], heightMaps[0], matShininess, matName.C_Str());
 	Mesh* temp = new Mesh(vertices, indices, mat);
 	return temp;
 }
@@ -203,7 +198,7 @@ std::vector<Texture*> Model::LoadMaterialTextures(aiMaterial * mat, aiTextureTyp
 	{
 		aiString str;
 		mat->GetTexture(type, i, &str); // Get texture name
-		textures.push_back(this->LoadTexture((this->directoryPath + '/' + str.C_Str()).c_str(), typeName));
+		textures.push_back(MaterialHandler::GetInstance().LoadTexture((this->directoryPath + '/' + str.C_Str()).c_str(), typeName));
 	}
 	return textures;
 }
@@ -211,27 +206,7 @@ std::vector<Texture*> Model::LoadMaterialTextures(aiMaterial * mat, aiTextureTyp
 std::vector<Texture*> Model::LoadNormalMap(std::string path, std::string type)
 {
 	std::vector<Texture*> normalMaps;
-	normalMaps.push_back(this->LoadTexture(path.c_str(), type));
+	normalMaps.push_back(MaterialHandler::GetInstance().LoadTexture(path.c_str(), type));
 
 	return normalMaps;
-}
-
-Texture* Model::LoadTexture(const char* path, std::string type)
-{
-	// Check if loaded already
-	for (unsigned int j = 0; j < this->loadedTextures.size(); j++)
-	{
-		// Remove the directory path of the texture
-		std::string loadedTexturePath = this->loadedTextures[j]->GetPath();
-		// Check if texture is already loaded
-		if (std::strcmp(loadedTexturePath.data(), path) == 0)
-		{
-			// Push the loaded texture in to the meshs texture
-			return this->loadedTextures[j];
-		}
-	}
-	// If texture hasn't been loaded already, load it
-	Texture* texture = new Texture(path, type, this->gammaCorrection);
-	this->loadedTextures.push_back(texture); // Add to loaded textures
-	return texture;
 }

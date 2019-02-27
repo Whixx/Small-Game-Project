@@ -92,6 +92,7 @@
     <ClCompile Include="Coin.cpp" />
     <ClCompile Include="CollisionHandler.cpp" />
     <ClCompile Include="Display.cpp" />
+    <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="FinalFBO.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="InputHandler.cpp" />
@@ -123,6 +124,7 @@
     <ClInclude Include="Coin.h" />
     <ClInclude Include="CollisionHandler.h" />
     <ClInclude Include="Display.h" />
+    <ClInclude Include="EventHandler.h" />
     <ClInclude Include="FinalFBO.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="MainFunctions.h" />

@@ -20,6 +20,7 @@ int main()
 	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetKeyCallback(display.GetWindow(), InputHandler::Key_callback);
 
+	EventHandler& EH = EventHandler::GetInstance();
 	InputHandler IH;
 	MaterialHandler& MH = MaterialHandler::GetInstance(); // Singleton
 
@@ -155,7 +156,11 @@ int main()
 
 		// ================== EVENTS ==================
 
-		// Update movement 
+		glfwPollEvents();
+
+		HandleEvents(&player);
+
+		// Update movement
 		IH.MouseControls(&display, &player, deltaTime);
 		IH.KeyboardControls(&display, &player, deltaTime);
 
