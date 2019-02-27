@@ -12,5 +12,5 @@ newmtl 12961_White_TailedDeer
 	Kd 1.0000 1.0000 1.0000
 	Ks 0.0900 0.0900 0.0900
 	Ke 0.0000 0.0000 0.0000
-	map_Ka 12961_White-TailedDeer_diffuse.jpg
-	map_Kd 12961_White-TailedDeer_diffuse.jpg
+	map_Ka deer.jpg
+	map_Kd deer.jpg

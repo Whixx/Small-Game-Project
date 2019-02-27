@@ -9,10 +9,12 @@
 class Minotaur
 {
 public:
-	Minotaur(Transform transform, irrklang::ISoundEngine* engine);
+	Minotaur(irrklang::ISoundEngine* engine);
 	virtual ~Minotaur();
+	Transform GetTransform();
 
 	void Update(glm::vec3 playerPos);
+	void Draw(Shader* shader);
 
 private:
 	Model model;
@@ -24,7 +26,7 @@ private:
 	glm::vec2 destination;
 	std::vector<glm::vec2> path;
 
-	void move();
+	void Move();
 };
 
 #endif
