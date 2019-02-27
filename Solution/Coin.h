@@ -9,7 +9,6 @@ class Coin
 {
 public:
 	Coin();
-	//Coin& operator=(const Coin &other);
 	~Coin();
 
 	Transform *GetTransform();

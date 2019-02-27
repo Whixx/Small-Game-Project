@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include "Display.h"
 #include "Player.h"
+#include "EventHandler.h"
 
 class InputHandler
 {

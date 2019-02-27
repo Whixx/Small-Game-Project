@@ -21,7 +21,7 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 
 	// Add startingCoins for the player
 	for (int i = 0; i < MaxNrOfCoins; i++)
-		this->AddCoin();	// Incrementing nrOfInventoryCoins
+		this->AddCoinToInventory();	// Incrementing nrOfInventoryCoins
 }
 
 Player::~Player()
@@ -61,7 +61,7 @@ Coin * Player::GetInventoryCoin(unsigned int index)
 
 Coin * Player::GetWorldCoin(unsigned int index)
 {
-	return nullptr;
+	return &this->worldCoins[index];
 }
 
 unsigned int Player::GetNrOfInventoryCoins()
@@ -419,7 +419,7 @@ void Player::Update(double dt)
 	footStep.SetPosition(this->GetCamera()->GetCameraPosition());
 }
 
-void Player::AddCoin()
+void Player::AddCoinToInventory()
 {
 	// Check if bag is full
 	if (this->nrOfInventoryCoins == 10)
@@ -436,7 +436,7 @@ void Player::AddCoin()
 	this->nrOfInventoryCoins++;
 }
 
-void Player::RemoveCoin()
+void Player::RemoveCoinFromInventory()
 {
 	if (this->nrOfInventoryCoins == 0)
 	{
@@ -447,12 +447,7 @@ void Player::RemoveCoin()
 	this->nrOfInventoryCoins--;
 }
 
-void Player::DrawCoin(unsigned int index, Shader * shader)
-{
-	this->inventoryCoins[index].Draw(&this->coinModel, shader);
-}
-
-void Player::LayCoin()
+void Player::DropCoin()
 {
 	// Check if the player got coins to throw
 	if (this->nrOfInventoryCoins == 0)
@@ -466,10 +461,15 @@ void Player::LayCoin()
 		return;
 	}
 
-	// Set new variables for the coin
+	// Set the starting position of the coin to be on the player
 	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetPos(this->transform.GetPos());
 	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
 
 	this->nrOfWorldCoins++;
 	this->nrOfInventoryCoins--;
+}
+
+void Player::DrawCoin(unsigned int index, Shader * shader)
+{
+	this->worldCoins[index].Draw(&this->coinModel, shader);
 }

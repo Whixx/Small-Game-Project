@@ -51,13 +51,14 @@ public:
 
 	// AddCoin and RemoveCoin adds/removes on the last index in the coinArray
 	// To be used when throwing and laying coins
-	void AddCoin();
-	void RemoveCoin();
-	void DrawCoin(unsigned int index, Shader * shader);
+	void AddCoinToInventory();
+	void RemoveCoinFromInventory();
 
 	// Coin mechanics
-	void LayCoin();
+	void DropCoin();
 	
+	void DrawCoin(unsigned int index, Shader * shader);
+
 private:
 	Camera playerCamera;
 	Transform transform;

@@ -4,11 +4,6 @@ Coin::Coin()
 {
 }
 
-//Coin & Coin::operator=(const Coin & other)
-//{
-//	// TODO: insert return statement here
-//}
-
 Coin::~Coin()
 {
 }

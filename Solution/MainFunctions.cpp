@@ -220,9 +220,7 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	// Draw coins
 	for (int i = 0; i < player->GetNrOfWorldCoins(); i++)
 	{
-		std::cout << "i:   " << i << std::endl;
-		//player->GetWorldCoin(i)->GetTransform()->SetPos()
-		worldMatrix = player->GetInventoryCoin(i)->GetTransform()->GetWorldMatrix();
+		worldMatrix = player->GetWorldCoin(i)->GetTransform()->GetWorldMatrix();
 		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection()  * worldMatrix);
 		geometryPass->SendMat4("WorldMatrix", worldMatrix);
 		player->DrawCoin(i, geometryPass);
@@ -452,9 +450,9 @@ void HandleEvents(Player* player)
 	{
 		Event event = EH.GetEvent();
 
-		//if (event == EVENT_TEST)
-		//{
-		//	cout << "Event Test" << endl;
-		//}
+		if (event == EVENT_PLAYER_DROPCOIN)
+		{
+			player->DropCoin();
+		}
 	}
 }
