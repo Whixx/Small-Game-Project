@@ -30,7 +30,7 @@ MazeGeneratePNG::~MazeGeneratePNG()
 {
 }
 
-void MazeGeneratePNG::Set_cell(int y, int x, int value)
+void MazeGeneratePNG::SetCell(int y, int x, int value)
 {
 	if (((int)grid.size() <= y) || ((int)grid[y].size() <= x))
 	{
@@ -46,7 +46,7 @@ void MazeGeneratePNG::Set_cell(int y, int x, int value)
 	}
 }
 
-int MazeGeneratePNG::Get_cell(int y, int x)
+int MazeGeneratePNG::GetCell(int y, int x)
 {
 	return grid[y][x];
 }
@@ -98,7 +98,7 @@ void MazeGeneratePNG::Generate(void)
 			// if the two sets are different, join them and carve a passage
 			if (sets[y][x + 2] != sets[y][x])
 			{
-				replace(sets[y][x + 2], sets[y][x]);
+				Replace(sets[y][x + 2], sets[y][x]);
 				for (int j = 0; j < 3; j++)
 				{
 					grid[y][x + j] = path;
@@ -110,7 +110,7 @@ void MazeGeneratePNG::Generate(void)
 			// if the two sets are different, join them and carve a passage
 			if (sets[y + 2][x] != sets[y][x])
 			{
-				replace(sets[y + 2][x], sets[y][x]);
+				Replace(sets[y + 2][x], sets[y][x]);
 				for (int j = 0; j < 3; j++)
 				{
 					grid[y + j][x] = path;
@@ -124,21 +124,21 @@ void MazeGeneratePNG::Generate(void)
 	}
 }
 
-void MazeGeneratePNG::replace(int set_to_replace, int sample_set)
+void MazeGeneratePNG::Replace(int setToReplace, int sampleSet)
 {
 	for (int search_y = 1; search_y < ((int)sets.size() - 1); search_y += 2)
 	{
 		for (int search_x = 1; search_x < ((int)sets[0].size() - 1); search_x += 2)
 		{
-			if (sets[search_y][search_x] == set_to_replace)
+			if (sets[search_y][search_x] == setToReplace)
 			{
-				sets[search_y][search_x] = sample_set;
+				sets[search_y][search_x] = sampleSet;
 			}
 		}
 	}
 }
 
-void MazeGeneratePNG::Draw_png()
+void MazeGeneratePNG::DrawPNG()
 {
 	// Color png
 	SetupColorDataForColor();
@@ -192,7 +192,7 @@ std::vector<std::vector<int>> MazeGeneratePNG::GetGrid()
 	return this->grid;
 }
 
-void MazeGeneratePNG::dijkstra(int startY, int startX, int destinationY, int destinationX)
+void MazeGeneratePNG::GeneratePath(int startY, int startX, int destinationY, int destinationX)
 {
 	// make a copy of grid to write the path in a new image
 	this->redPath = this->grid;
@@ -340,7 +340,7 @@ void MazeGeneratePNG::SetupColorDataForColor()
 	{
 		for (int x = 0; x < this->width; x++)
 		{
-			if (Get_cell(y, x) == wall)
+			if (GetCell(y, x) == wall)
 			{
 				bool closeby[4]; // false for floor
 				// Read closeby pixels
@@ -358,23 +358,23 @@ void MazeGeneratePNG::SetupColorDataForColor()
 
 				// If at the edge, keep the assumption else check if there is a floor or wall
 				if (y == 0)
-					closeby[2] = Get_cell(y + 1, x);
+					closeby[2] = GetCell(y + 1, x);
 				else if (y == this->height - 1)
-					closeby[0] = Get_cell(y - 1, x);
+					closeby[0] = GetCell(y - 1, x);
 				else
 				{
-					closeby[0] = Get_cell(y - 1, x);
-					closeby[2] = Get_cell(y + 1, x);
+					closeby[0] = GetCell(y - 1, x);
+					closeby[2] = GetCell(y + 1, x);
 				}
 
 				if (x == 0)
-					closeby[1] = Get_cell(y, x + 1);
+					closeby[1] = GetCell(y, x + 1);
 				else if (x == this->width - 1)
-					closeby[3] = Get_cell(y, x - 1);
+					closeby[3] = GetCell(y, x - 1);
 				else
 				{
-					closeby[1] = Get_cell(y, x + 1);
-					closeby[3] = Get_cell(y, x - 1);
+					closeby[1] = GetCell(y, x + 1);
+					closeby[3] = GetCell(y, x - 1);
 				}
 
 				// Check which wall type it is based on closeby
@@ -475,7 +475,7 @@ void MazeGeneratePNG::SetupColorDataForColor()
 					image[y][x][2] = 177;
 				}
 			}
-			else if (Get_cell(y, x) == path)
+			else if (GetCell(y, x) == path)
 			{
 				for (int i = 0; i < 3; i++)
 				{
@@ -521,14 +521,14 @@ void MazeGeneratePNG::SetupColorData()
 	{
 		for (int x = 0; x < this->width; x++)
 		{
-			if (Get_cell(y, x) == wall)
+			if (GetCell(y, x) == wall)
 			{
 				for(int i = 0; i < 3; i++)
 				{
 					image[y][x][i] = 255;
 				}
 			}
-			else if (Get_cell(y, x) == path)
+			else if (GetCell(y, x) == path)
 			{
 				for (int i = 0; i < 3; i++)
 				{
@@ -555,9 +555,9 @@ void MazeGeneratePNG::SetupPathData()
 	}
 }
 
-void MazeGeneratePNG::Draw_RedPath()
+void MazeGeneratePNG::DrawRedPath()
 {
-	// Red path for solution / pathfinding
+	// Red path for solution/pathfinding
 	SetupPathData();
 
 	std::vector<unsigned char> c;

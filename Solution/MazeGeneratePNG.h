@@ -4,8 +4,6 @@
 #include <iostream>
 #include <vector>
 #include <random>
-//#include <algorithm>
-//#include <stdexcept>
 #include <glm/vec2.hpp>
 
 
@@ -15,22 +13,22 @@ public:
 	MazeGeneratePNG(int height, int width);
 	~MazeGeneratePNG();
 
-	int wall = 1;
 	int path = 0;
-	void Set_cell(int y, int x, int value); // can be used to set exit points on the maze (or other stuff)
-	int Get_cell(int y, int x);
+	int wall = 1;
+	void SetCell(int y, int x, int value); // can be used to set exit points on the maze (or other stuff)
+	int GetCell(int y, int x);
 	void Generate(void);
 	void SetupColorData();
 	void SetupColorDataForColor();
-	void Draw_png();
+	void DrawPNG();
 	std::vector<std::vector<int>> GetGrid();
 
 
 	// pathfinding
-	void dijkstra(int startY, int startX, int destinationY, int destinationX);
 	int solution = 2;
+	void GeneratePath(int startY, int startX, int destinationY, int destinationX);
 	void SetupPathData();
-	void Draw_RedPath();
+	void DrawRedPath();
 
 private:
 	std::random_device randomDevice;
@@ -52,7 +50,7 @@ private:
 		int orientation;
 	};
 	std::vector<std::vector<int>> sets;
-	void replace(int set_to_replace, int sample_set);
+	void Replace(int setToReplace, int sampleSet);
 
 	// color data for image
 	std::vector<std::vector<std::vector<unsigned char>>> image;
