@@ -5,7 +5,7 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	: playerCamera(glm::vec3(0, height, 0), fov, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)),
 	playerTorch(this->transform, glm::vec3(0.5f, 0.15f, 0.15f), engine, PLH, torchSize),
 	footStep("Sounds/playerfootstep.ogg", false, engine),
-	coinModel()
+	coinModel("Models/Coin/coin.obj")
 {
 	this->playerHeight = height;
 	this->playerSpeed = 0;
@@ -430,7 +430,7 @@ void Player::AddCoinToInventory()
 
 	// Add a coin
 	this->inventoryCoins[this->nrOfInventoryCoins].GetTransform()->SetPos(this->transform.GetPos());
-	this->inventoryCoins[this->nrOfInventoryCoins].GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
+	this->inventoryCoins[this->nrOfInventoryCoins].GetTransform()->SetScale(glm::vec3(0.025f));
 
 	// Increment NrOfCoins
 	this->nrOfInventoryCoins++;
@@ -463,7 +463,7 @@ void Player::DropCoin()
 
 	// Set the starting position of the coin to be on the player
 	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetPos(this->transform.GetPos());
-	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
+	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetScale(glm::vec3(0.025f));
 
 	this->nrOfWorldCoins++;
 	this->nrOfInventoryCoins--;
