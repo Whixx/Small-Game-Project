@@ -85,6 +85,7 @@
     <ClCompile Include="MaterialHandler.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
+    <ClCompile Include="Coin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloom.h">
@@ -177,6 +178,7 @@
     <ClInclude Include="Material.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
+    <ClInclude Include="Coin.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="blurShader.fs">

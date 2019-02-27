@@ -8,8 +8,10 @@
 #include "Torch.h"
 #include "SoundHandler.h"
 #include "Maze.h"
+#include "Coin.h"
 
 #define PI 3.1415926535
+const unsigned int MaxNrOfCoins = 10;
 
 using namespace std;
 
@@ -26,6 +28,8 @@ public:
 	glm::vec3 DetectCollision(glm::vec3 newPos, glm::vec3 oldPos);
 	Camera* GetCamera();
 	Torch* GetTorch();
+	Coin * GetCoin(unsigned int ID);
+	unsigned int GetNrOfCoins();
 
 	void SetPlayerHeight(float height);
 	void SetPlayerSpeed(float speed);
@@ -42,11 +46,23 @@ public:
 	void CenterPlayer();
 	void UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime);
 	void Update(double dt);
+
+	// AddCoin and RemoveCoin adds/removes on the last index in the coinArray
+	// To be used when throwing and laying coins
+	void AddCoin();
+	void RemoveCoin();
+	void DrawCoin(unsigned int index, Shader * shader);
 	
 private:
 	Camera playerCamera;
 	Transform transform;
 	Torch playerTorch;
+
+	Model coinModel;
+	Coin coins[MaxNrOfCoins];
+
+	unsigned int currentNrOfCoins;
+
 	
 	Maze* maze;
 	float playerSpeed;
@@ -55,7 +71,6 @@ private:
 	glm::vec3 walkingVector;
 
 	SoundHandler footStep;
-
 };
 
 #endif //DISPLAY_H

@@ -19,6 +19,8 @@
 #include "InputHandler.h"
 #include "MaterialHandler.h"
 
+#include "Coin.h"
+
 
 
 
