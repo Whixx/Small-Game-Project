@@ -187,6 +187,11 @@ void MazeGeneratePNG::Draw_png()
 	}
 }
 
+std::vector<std::vector<int>> MazeGeneratePNG::GetGrid()
+{
+	return this->grid;
+}
+
 void MazeGeneratePNG::dijkstra(int startY, int startX, int destinationY, int destinationX)
 {
 	// make a copy of grid to write the path in a new image

@@ -25,7 +25,8 @@ int main()
 
 	// height and width must be odd numbers else the resulting maze will be off
 	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
-	GenerateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
+	//GenerateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
+	std::vector<std::vector<int>> mazeGrid = GenerateMazePNG(63, 63);
 
 	Maze maze;
 

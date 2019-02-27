@@ -23,6 +23,7 @@ public:
 	void SetupColorData();
 	void SetupColorDataForColor();
 	void Draw_png();
+	std::vector<std::vector<int>> GetGrid();
 
 
 	// pathfinding

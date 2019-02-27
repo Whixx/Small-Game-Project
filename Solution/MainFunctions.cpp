@@ -408,6 +408,25 @@ void GenerateMazeBitmaps(int height, int width)
 	mazeGen.Draw_RedPath();
 }
 
+std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
+{
+	MazeGeneratePNG mazeGen(height, width);
+
+	// Set_cell can be used to set "entrance and exit" etc
+	mazeGen.Set_cell(0, 1, mazeGen.path);
+	mazeGen.Set_cell(height - 1, width - 2, mazeGen.path);
+
+	mazeGen.Generate();
+
+	//mazeGen.dijkstra(0, 1, height - 1, width - 2);
+	//mazeGen.dijkstra(height / 2, width / 2, height - 1, width - 2);
+
+	mazeGen.Draw_png();
+
+	
+	return mazeGen.GetGrid();
+}
+
 GLuint CreateScreenQuad()
 {
 	// https://rauwendaal.net/2014/06/14/rendering-a-screen-covering-triangle-in-opengl/
