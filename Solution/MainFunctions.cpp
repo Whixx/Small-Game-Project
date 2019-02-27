@@ -428,7 +428,7 @@ GLuint CreateScreenQuad()
 	return screenQuad;
 }
 
-void HandleEvents(Player* player)
+void HandleEvents(Player* player, SoundHandler *winSound)
 {
 	EventHandler& EH = EventHandler::GetInstance();
 	while (!EH.IsEmpty())
@@ -438,6 +438,8 @@ void HandleEvents(Player* player)
 		if (event == EVENT_PLAYER_WIN)
 		{
 			player->CenterPlayer();
+			//winSound->SetPosition();
+			winSound->Play();
 		}
 	}
 }
