@@ -391,11 +391,6 @@ void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint * fullScreenTri
 void GenerateMazeBitmaps(int height, int width)
 {
 	MazeGeneratePNG mazeGen(height, width);
-
-	// Set_cell can be used to set "entrance and exit" etc
-	mazeGen.Set_cell(0, 1, mazeGen.path);
-	mazeGen.Set_cell(height - 1, width - 2, mazeGen.path);
-
 	mazeGen.Generate();
 	mazeGen.Draw_png();
 }
@@ -440,9 +435,9 @@ void HandleEvents(Player* player)
 	{
 		Event event = EH.GetEvent();
 
-		//if (event == EVENT_TEST)
-		//{
-		//	cout << "Event Test" << endl;
-		//}
+		if (event == EVENT_PLAYER_WIN)
+		{
+			player->CenterPlayer();
+		}
 	}
 }

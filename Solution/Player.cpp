@@ -376,7 +376,7 @@ void Player::Update(double dt)
 #ifdef DEBUG
 	//if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
 	//{
-	//	//printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+		printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
 	//
 	//	std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
 	//	std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;
@@ -387,4 +387,19 @@ void Player::Update(double dt)
 
 	// Update sound positions
 	footStep.SetPosition(this->GetCamera()->GetCameraPosition());
+
+
+	// Get a vector with only x and z values
+	glm::vec2 p2d = glm::vec2(this->transform.GetPos().x, this->transform.GetPos().z);
+	glm::vec2 m2d = glm::vec2(this->maze->GetExitWorldPos().x, this->maze->GetExitWorldPos().z);
+
+	glm::vec2 dist2d = glm::abs(p2d - m2d);
+	float wallRadius = maze->GetTransform()->GetScale().x / 2.0;
+
+	// Check if player is at exit
+	if (dist2d.x <= wallRadius && dist2d.y <= wallRadius)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+		EH.AddEvent(EVENT_PLAYER_WIN);
+	}
 }
