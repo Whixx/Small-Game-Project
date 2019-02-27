@@ -119,6 +119,7 @@ int main()
 	player.SetPlayerSpeed(2.0f);
 	player.CenterPlayer(); //Space to return to origin
 
+	Minotaur minotaur(enginePtr);
 	
 	ObjectHandler OH;
 
@@ -161,6 +162,7 @@ int main()
 
 		// Update player
 		player.Update(deltaTime);
+		minotaur.Update(player.GetCamera()->GetCameraPosition());
 
 		OH.UpdateAllObjects(deltaTime);
 		lights.UpdateShadowTransform(0);
@@ -189,7 +191,7 @@ int main()
 		
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &player, &OH, &maze);
+		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &player, &OH, &maze, &minotaur);
 		
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU

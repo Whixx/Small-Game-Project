@@ -194,7 +194,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze * maze)
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze * maze, Minotaur * minotaur)
 {
 	geometryPass->Bind();
 
@@ -206,18 +206,26 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 
 	glEnable(GL_DEPTH_TEST);
 
+	glm::mat4 worldMatrix;
+
 	// Update and Draw all objects
 	for (unsigned int i = 0; i < OH->GetNrOfObjects(); i++)
 	{
-		glm::mat4 worldMatrix = OH->GetObject(i)->GetTransform().GetWorldMatrix();
+		worldMatrix = OH->GetObject(i)->GetTransform().GetWorldMatrix();
 		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 		geometryPass->SendMat4("WorldMatrix", worldMatrix);
 
 		OH->GetObject(i)->Draw(geometryPass);
 	}
 
+	// Draw minotaur
+	worldMatrix = minotaur->GetTransform().GetWorldMatrix();
+	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+	geometryPass->SendMat4("WorldMatrix", worldMatrix);
+	minotaur->Draw(geometryPass);
+
 	// Draw player torch
-	glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
+	worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 	geometryPass->SendMat4("WorldMatrix", worldMatrix);
 	player->GetTorch()->Draw(geometryPass);

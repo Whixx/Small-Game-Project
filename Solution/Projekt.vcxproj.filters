@@ -85,6 +85,9 @@
     <ClCompile Include="MaterialHandler.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
+    <ClCompile Include="Minotaur.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloom.h">
@@ -175,6 +178,9 @@
       <Filter>Class h Files</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minotaur.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -101,6 +101,7 @@
     <ClCompile Include="Maze.cpp" />
     <ClCompile Include="MazeGeneratePNG.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Minotaur.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
@@ -130,6 +131,7 @@
     <ClInclude Include="Maze.h" />
     <ClInclude Include="MazeGeneratePNG.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Minotaur.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectHandler.h" />
