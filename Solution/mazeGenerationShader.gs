@@ -252,7 +252,7 @@ void DrawSW_n(float i, float j)
 																  
 	//Right Top Vertex											  
 	outPosition = vec3(i + 0.5f, 1, j - 0.5);
-	outTexCoords = vec2(scaleUVXZ, -scaleUVY);
+	outTexCoords = vec2(-scaleUVXZ, -scaleUVY);
 	outNormal  = vec3(0.0f, 0.0f, -1.0f);
 	outTangent = vec3(-1.0f, 0.0f, 0.0f);
 	outType = 1;
@@ -273,7 +273,7 @@ void DrawSW_n(float i, float j)
 				
 	// Right Top vertex
 	outPosition = vec3(i + 0.5f, 1, j - 0.5);
-	outTexCoords = vec2(scaleUVXZ, -scaleUVY);
+	outTexCoords = vec2(-scaleUVXZ, -scaleUVY);
 	outNormal  = vec3(0.0f, 0.0f, -1.0f);
 	outTangent = vec3(-1.0f, 0.0f, 0.0f);
 	outType = 1;
@@ -281,7 +281,7 @@ void DrawSW_n(float i, float j)
 				
 	// Right Bottom vertex
 	outPosition = vec3(i + 0.5f, 0, j - 0.5);
-	outTexCoords = vec2(scaleUVXZ, 0);
+	outTexCoords = vec2(-scaleUVXZ, 0);
 	outNormal  = vec3(0.0f, 0.0f, -1.0f);
 	outTangent = vec3(-1.0f, 0.0f, 0.0f);
 	outType = 1;
@@ -370,7 +370,7 @@ void DrawSW_e(float i, float j)
 
 	//Right Top Vertex
 	outPosition = vec3(i + 0.5, 1, j + 0.5);
-	outTexCoords = vec2(scaleUVXZ, -scaleUVY);
+	outTexCoords = vec2(-scaleUVXZ, -scaleUVY);
 	outNormal  = vec3(1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, -1.0f);
 	outType = 1;
@@ -391,7 +391,7 @@ void DrawSW_e(float i, float j)
 	
 	// Right Top vertex
 	outPosition = vec3(i + 0.5, 1, j + 0.5);
-	outTexCoords = vec2(scaleUVXZ, -scaleUVY);
+	outTexCoords = vec2(-scaleUVXZ, -scaleUVY);
 	outNormal  = vec3(1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, -1.0f);
 	outType = 1;
@@ -399,7 +399,7 @@ void DrawSW_e(float i, float j)
 
 	// Right Bottom vertex
 	outPosition = vec3(i + 0.5, 0, j + 0.5);
-	outTexCoords = vec2(scaleUVXZ, 0);
+	outTexCoords = vec2(-scaleUVXZ, 0);
 	outNormal  = vec3(1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, -1.0f);
 	outType = 1;
@@ -429,7 +429,7 @@ void DrawSW_w(float i, float j)
 
 	//Right Top Vertex
 	outPosition = vec3(i - 0.5, 1, j - 0.5);
-	outTexCoords = vec2(scaleUVXZ, -scaleUVY);
+	outTexCoords = vec2(-scaleUVXZ, -scaleUVY);
 	outNormal  = vec3(-1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, 1.0f);
 	outType = 1;
@@ -450,7 +450,7 @@ void DrawSW_w(float i, float j)
 	
 	// Right Top vertex
 	outPosition = vec3(i - 0.5, 1, j - 0.5);
-	outTexCoords = vec2(scaleUVXZ, -scaleUVY);
+	outTexCoords = vec2(-scaleUVXZ, -scaleUVY);
 	outNormal  = vec3(-1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, 1.0f);
 	outType = 1;
@@ -458,7 +458,7 @@ void DrawSW_w(float i, float j)
 
 	// Right Bottom vertex
 	outPosition = vec3(i - 0.5, 0, j - 0.5);
-	outTexCoords = vec2(scaleUVXZ, 0);
+	outTexCoords = vec2(-scaleUVXZ, 0);
 	outNormal  = vec3(-1.0f, 0.0f, 0.0f);
 	outTangent = vec3(0.0f, 0.0f, 1.0f);
 	outType = 1;
