@@ -18,6 +18,7 @@
 #include "Particle.h"
 #include "InputHandler.h"
 #include "MaterialHandler.h"
+#include "EventHandler.h"
 
 
 
@@ -36,9 +37,8 @@ void InitBlurShader(Shader *shader);
 void InitFinalBloomShader(Shader *shader);
 void InitFinalShader(Shader *shader);
 
-void MazeGenerationPass(Shader * mazeGenerationShader, Maze * maze, Player * player);
-
 // Shader pass functions
+void MazeGenerationPass(Shader * mazeGenerationShader, Maze * maze, Player * player);
 void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Maze* maze);
 void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze* maze);
 void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenQuad, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera);
@@ -52,6 +52,8 @@ void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint *fullScreenTria
 void GenerateMazeBitmaps(int height, int width);
 
 GLuint CreateScreenQuad();
+
+void HandleEvents(Player* player);
 
 
 #endif

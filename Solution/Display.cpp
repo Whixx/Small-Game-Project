@@ -102,7 +102,6 @@ void Display::SwapBuffers(int width, int height)
 	glfwGetFramebufferSize(window, &width, &height);
 
 	glfwSwapBuffers(window);
-	glfwPollEvents();
 }
 
 bool Display::IsWindowClosed()
