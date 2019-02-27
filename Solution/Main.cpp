@@ -20,9 +20,6 @@ int main()
 	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetKeyCallback(display.GetWindow(), InputHandler::Key_callback);
 
-	// MaxVertices supported by the hardware
-	SetMaxPatchVertices();
-
 	InputHandler IH;
 	MaterialHandler& MH = MaterialHandler::GetInstance(); // Singleton
 
@@ -33,6 +30,10 @@ int main()
 	Maze maze;
 
 	//=========================== Creating Shaders ====================================//
+
+	// MaxVertices supported by the hardware
+	SetMaxPatchVertices();
+
 	Shader mazeGenerationShader;
 	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.vs", GL_VERTEX_SHADER);
 	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.gs", GL_GEOMETRY_SHADER);

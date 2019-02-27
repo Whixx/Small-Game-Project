@@ -233,6 +233,7 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	// Draw Maze
 	mazeGeometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
 	mazeGeometryPass->SendMat4("VP", player->GetCamera()->GetViewProjection());
+	mazeGeometryPass->SendFloat("Scale", maze->GetTransform()->GetScale().x);
 	maze->BindMaterial(mazeGeometryPass);
 	maze->DrawMaze();
 

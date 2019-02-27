@@ -15,6 +15,7 @@ out float type0_FS_in;
 
 uniform mat4 VP;
 uniform sampler2D TextureHeight[2];
+uniform float Scale;
 
 vec2 interpolate2D(vec2 v0, vec2 v1, vec2 v2)
 {
@@ -28,9 +29,9 @@ vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
 
 void main()
 {
-    // Set displacementfactor
-    float dispFactor = 0.2f;
-
+	// Setting displacement factor
+	float dispFactor = Scale * 0.08;
+	
    	// Interpolate the attributes of the output vertex using the barycentric coordinates
    	texCoord0_FS_in = interpolate2D(texCoord0_ES_in[0], texCoord0_ES_in[1], texCoord0_ES_in[2]);
    	posWorld0_FS_in = interpolate3D(posWorld0_ES_in[0], posWorld0_ES_in[1], posWorld0_ES_in[2]);
