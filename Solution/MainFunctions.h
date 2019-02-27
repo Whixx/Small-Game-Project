@@ -53,7 +53,7 @@ void GenerateMazeBitmaps(int height, int width);
 
 GLuint CreateScreenQuad();
 
-void HandleEvents(Player* player, SoundHandler* winSound);
+void HandleEvents(Player* player, SoundHandler* winSound, SoundHandler* deathSound);
 
 
 #endif

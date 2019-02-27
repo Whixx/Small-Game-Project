@@ -402,4 +402,15 @@ void Player::Update(double dt)
 		EventHandler& EH = EventHandler::GetInstance();
 		EH.AddEvent(EVENT_PLAYER_WIN);
 	}
+
+	// temp until we get the minotaur
+	glm::vec3 minoPos = glm::vec3(0, 4, 3);
+
+	// Check if player dies
+	if ((minoPos.x <= this->transform.GetPos().x + this->boundingBoxHalfSize && minoPos.x >= this->transform.GetPos().x - this->boundingBoxHalfSize) || 
+		(minoPos.z <= this->transform.GetPos().z + this->boundingBoxHalfSize && minoPos.z >= this->transform.GetPos().z - this->boundingBoxHalfSize))
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+		EH.AddEvent(EVENT_PLAYER_LOSE);
+	}
 }

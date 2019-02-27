@@ -106,6 +106,8 @@ int main()
 	irrklang::ISoundEngine* enginePtr = soundEngine.GetEngine();
 
 	SoundHandler winSound("Sounds/winSound.mp3", false, enginePtr);
+	SoundHandler deathSound("Sounds/death.mp3", false, enginePtr);
+
 	// minotaur sound test stuff
 	glm::vec3 newPosition;
 	newPosition.y = 0.0;
@@ -157,7 +159,7 @@ int main()
 
 		glfwPollEvents();
 
-		HandleEvents(&player, &winSound);
+		HandleEvents(&player, &winSound, &deathSound);
 
 		// Update movement
 		IH.MouseControls(&display, &player, deltaTime);
