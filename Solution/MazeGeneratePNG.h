@@ -4,8 +4,9 @@
 #include <iostream>
 #include <vector>
 #include <random>
-#include <algorithm>
-#include <stdexcept>
+//#include <algorithm>
+//#include <stdexcept>
+#include <glm/vec2.hpp>
 
 
 class MazeGeneratePNG
@@ -22,6 +23,13 @@ public:
 	void SetupColorData();
 	void SetupColorDataForColor();
 	void Draw_png();
+
+
+	// pathfinding
+	void dijkstra(int startY, int startX, int destinationY, int destinationX);
+	int solution = 2;
+	void SetupPathData();
+	void Draw_RedPath();
 
 private:
 	std::random_device randomDevice;
@@ -47,6 +55,17 @@ private:
 
 	// color data for image
 	std::vector<std::vector<std::vector<unsigned char>>> image;
+
+	// pathfinding
+	// for dijkstras alg
+	struct distance {
+		int y;
+		int x;
+	};
+	std::vector<std::vector<int>> redPath;
+
+	//vector of coordinates for the minotaur to use
+	std::vector<glm::vec2> generatedPath;
 };
 
 #endif /* MAZEGENERATEPNG_H */

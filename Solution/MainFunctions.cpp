@@ -397,7 +397,15 @@ void GenerateMazeBitmaps(int height, int width)
 	mazeGen.Set_cell(height - 1, width - 2, mazeGen.path);
 
 	mazeGen.Generate();
+
+
+	mazeGen.dijkstra(0, 1, height - 1, width - 2);
+	//mazeGen.dijkstra(height / 2, width / 2, height - 1, width - 2);
+
+
 	mazeGen.Draw_png();
+	// redpath must be drawn after the black/white maze is drawn
+	mazeGen.Draw_RedPath();
 }
 
 GLuint CreateScreenQuad()

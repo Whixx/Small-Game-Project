@@ -185,7 +185,119 @@ void MazeGeneratePNG::Draw_png()
 	{
 		std::cout << "mazeBlackWhite.png written to MazePNG-folder" << std::endl;
 	}
-	
+}
+
+void MazeGeneratePNG::dijkstra(int startY, int startX, int destinationY, int destinationX)
+{
+	// make a copy of grid to write the path in a new image
+	this->redPath = this->grid;
+
+	std::vector<distance> distances;
+	// distance starts with 3, because the grid is already filled with 0, 1 for paths/walls and 2 is reserved to mark solution path
+	int distanceCount = 3;
+	distances.push_back({ startY, startX });
+	bool newDistance = true;
+	int y = 0;
+	int x = 0;
+
+	// go to "frontier" and save distance (steps) from start
+	while (newDistance)
+	{
+		newDistance = false;
+		int distanceMax = distances.size();
+		distanceCount++;
+
+		for (int i = 0; i < distanceMax; i++)
+		{
+			y = distances[0].y;
+			x = distances[0].x;
+
+			this->redPath[y][x] = distanceCount;
+
+			// save if north is path
+			if ((y > 0) && (path == this->redPath[y - 1][x]))
+			{
+				distances.push_back({ y - 1, x });
+				newDistance = true;
+			}
+			// save if south is path
+			if (((y + 1) < this->redPath.size()) && (path == this->redPath[y + 1][x]))
+			{
+				distances.push_back({ y + 1, x });
+				newDistance = true;
+			}
+			// save if west is path
+			if ((x > 0) && (path == this->redPath[y][x - 1]))
+			{
+				distances.push_back({ y, x - 1 });
+				newDistance = true;
+			}
+			// save if east is path
+			if (((x + 1) < this->redPath[0].size()) && (path == this->redPath[y][x + 1]))
+			{
+				distances.push_back({ y, x + 1 });
+				newDistance = true;
+			}
+
+			// stop at destination
+			if ((y == destinationY) && (x == destinationX))
+			{
+				newDistance = false;
+				break;
+			}
+			distances.erase(distances.begin());
+		}
+	}
+
+	// backtrack to the start
+	y = destinationY;
+	x = destinationX;
+	distanceCount = this->redPath[y][x];
+	generatedPath.push_back(glm::vec2(x, y));
+
+	while (distanceCount != 3)
+	{
+		// mark the path back as solution and send coordinates to path variable to be used by the minotaur
+		this->redPath[y][x] = solution;
+
+		distanceCount--;
+		if ((y > 0) && (distanceCount == this->redPath[y - 1][x]))
+		{
+			y--;
+			generatedPath.push_back(glm::vec2(x, y));
+		}
+		else if (((y + 1) < this->redPath.size()) && (distanceCount == this->redPath[y + 1][x]))
+		{
+			y++;
+			generatedPath.push_back(glm::vec2(x, y));
+		}
+		else if ((x > 0) && (distanceCount == this->redPath[y][x - 1]))
+		{
+			x--;
+			generatedPath.push_back(glm::vec2(x, y));
+		}
+		else if (((x + 1) < this->redPath[0].size()) && (distanceCount == this->redPath[y][x + 1]))
+		{
+			x++;
+			generatedPath.push_back(glm::vec2(x, y));
+		}
+		else
+		{
+			// nothing
+		}
+	}
+
+	//// clear path of unused distance numbers
+	//for (int y = 0; y < this->redPath.size(); y++)
+	//{
+	//	for (int x = 0; x < this->redPath[y].size(); x++)
+	//	{
+	//		if ((wall != this->redPath[y][x]) && (solution != this->redPath[y][x]))
+	//		{
+	//			this->redPath[y][x] = path;
+	//		}
+	//	}
+	//}
 }
 
 void MazeGeneratePNG::SetupColorDataForColor()
@@ -419,5 +531,47 @@ void MazeGeneratePNG::SetupColorData()
 				}
 			}
 		}
+	}
+}
+
+void MazeGeneratePNG::SetupPathData()
+{
+	for (int y = 0; y < this->height; y++)
+	{
+		for (int x = 0; x < this->width; x++)
+		{
+			if (this->redPath[y][x] == solution)
+			{
+				image[y][x][0] = 255;
+				image[y][x][1] = 0;
+				image[y][x][2] = 0;
+			}
+		}
+	}
+}
+
+void MazeGeneratePNG::Draw_RedPath()
+{
+	// Red path for solution / pathfinding
+	SetupPathData();
+
+	std::vector<unsigned char> c;
+	for (int y = 0; y < this->height + 1; y++)
+	{
+		for (int x = 0; x < this->width + 1; x++)
+		{
+			c.push_back(image[y][x][0]);
+			c.push_back(image[y][x][1]);
+			c.push_back(image[y][x][2]);
+		}
+	}
+
+	if (!stbi_write_png("MazePNG/mazeRedPath.png", this->width + 1, this->height + 1, 3, c.data(), 3 * (this->width + 1)))
+	{
+		std::cout << "ERROR mazeRedPath.png not written" << std::endl;
+	}
+	else
+	{
+		std::cout << "mazeRedPath.png written to MazePNG-folder" << std::endl;
 	}
 }
