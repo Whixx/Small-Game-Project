@@ -116,9 +116,12 @@ int main()
 	float torchSize = 0.02f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize);
 	player.SetPlayerSpeed(2.0f);
-	player.CenterPlayer(); //Space to return to origin
 
-	
+	// TODO SPRINT 3: Ska senare kunna hända i event klassen när man plockar upp mynt.
+	// Men nu så skapas 10 "startMynt" i playerKonstruktorn
+	//unsigned int coin1 = player.AddCoin();
+	//unsigned int coin2 = player.AddCoin();
+
 	ObjectHandler OH;
 
 	//TODO: Byta ground.png till floor.png
@@ -132,7 +135,7 @@ int main()
 	double deltaTime = 0;
 	double constLastTime = 0;
 	int nrOfFrames = 0;
-	
+
 	while (!display.IsWindowClosed())
 	{
 		// Calculate DeltaTime

@@ -4,7 +4,8 @@
 Player::Player(float height, float fov, float near, float far, Maze * maze, irrklang::ISoundEngine * engine, PointLightHandler * PLH, float torchSize)
 	: playerCamera(glm::vec3(0, height, 0), fov, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)),
 	playerTorch(this->transform, glm::vec3(0.5f, 0.15f, 0.15f), engine, PLH, torchSize),
-	footStep("Sounds/playerfootstep.ogg", false, engine)
+	footStep("Sounds/playerfootstep.ogg", false, engine),
+	coinModel()
 {
 	this->playerHeight = height;
 	this->playerSpeed = 0;
@@ -12,6 +13,13 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	this->maze = maze;
 
 	this->footStep.SetVolume(0.2);
+
+	CenterPlayer(); //Space to return to origin
+
+	this->currentNrOfCoins = 0;
+	// Add startingCoins for the player
+	for (int i = 0; i < MaxNrOfCoins; i++)
+		this->AddCoin();
 }
 
 Player::~Player()
@@ -42,6 +50,16 @@ Camera * Player::GetCamera()
 Torch* Player::GetTorch()
 {
 	return &this->playerTorch;
+}
+
+Coin * Player::GetCoin(unsigned int ID)
+{
+	return &this->coins[ID];
+}
+
+unsigned int Player::GetNrOfCoins()
+{
+	return this->currentNrOfCoins;
 }
 
 void Player::SetPlayerHeight(float height)
@@ -374,17 +392,50 @@ void Player::Update(double dt)
 		this->boundingBoxHalfSize);
 
 #ifdef DEBUG
-	//if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
-	//{
-	//	//printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
-	//
-	//	std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
-	//	std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;
-	//	std::cout << "Forward Vector! Z: " << this->playerCamera.GetForwardVector().z << std::endl;
-	//}
+	if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
+	{
+		//printf("Map position: X:%.2f, Z:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+	
+		//std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
+		//std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;
+		//std::cout << "Forward Vector! Z: " << this->playerCamera.GetForwardVector().z << std::endl;
+	}
 	
 #endif
 
 	// Update sound positions
 	footStep.SetPosition(this->GetCamera()->GetCameraPosition());
+}
+
+void Player::AddCoin()
+{
+	// Check if bag is full
+	if (this->currentNrOfCoins == 10)
+	{
+		// No more coins can be added
+		return;
+	}
+
+	// Add a coin
+	this->coins[this->currentNrOfCoins].GetTransform()->SetPos(this->transform.GetPos());
+	this->coins[this->currentNrOfCoins].GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
+
+	// Increment NrOfCoins
+	this->currentNrOfCoins++;
+}
+
+void Player::RemoveCoin()
+{
+	if (this->currentNrOfCoins == 0)
+	{
+		return;
+	}
+		
+	// Removes the last coin in the array
+	this->currentNrOfCoins--;
+}
+
+void Player::DrawCoin(unsigned int index, Shader * shader)
+{
+	this->coins[index].Draw(&this->coinModel, shader);
 }

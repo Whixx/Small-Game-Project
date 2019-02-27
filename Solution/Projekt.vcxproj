@@ -89,6 +89,7 @@
     <ClCompile Include="Bloom.cpp" />
     <ClCompile Include="Blur.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Coin.cpp" />
     <ClCompile Include="CollisionHandler.cpp" />
     <ClCompile Include="Display.cpp" />
     <ClCompile Include="FinalFBO.cpp" />
@@ -119,6 +120,7 @@
     <ClInclude Include="Bloom.h" />
     <ClInclude Include="Blur.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Coin.h" />
     <ClInclude Include="CollisionHandler.h" />
     <ClInclude Include="Display.h" />
     <ClInclude Include="FinalFBO.h" />

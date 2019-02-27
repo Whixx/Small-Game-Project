@@ -83,7 +83,7 @@ void main()
 	float radius = 6;
 	float a = 0;
 	float b = 0;
-	float minLight = 0.001f;
+	float minLight = 0.01f;
 	float attenuation;
 	float distancePixelToLight;
 
