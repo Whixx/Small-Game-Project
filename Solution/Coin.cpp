@@ -2,26 +2,20 @@
 
 Coin::Coin()
 {
-	this->isInBag = true;
 }
+
+//Coin & Coin::operator=(const Coin & other)
+//{
+//	// TODO: insert return statement here
+//}
 
 Coin::~Coin()
 {
 }
 
-void Coin::SetIsInBag(bool isInBag)
-{
-	this->isInBag = isInBag;
-}
-
 Transform * Coin::GetTransform()
 {
 	return &this->transform;
-}
-
-bool Coin::IsInBag()
-{
-	return this->isInBag;
 }
 
 void Coin::Draw(Model * coinModel, Shader * shader)

@@ -218,16 +218,14 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	}
 
 	// Draw coins
-	for (int i = 0; i < player->GetNrOfCoins(); i++)
+	for (int i = 0; i < player->GetNrOfWorldCoins(); i++)
 	{
-		// Check if coin is in world or in "bag"
-		if (player->GetCoin(i)->IsInBag() == false)
-		{
-			worldMatrix = player->GetCoin(i)->GetTransform()->GetWorldMatrix();
-			geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection()  * worldMatrix);
-			geometryPass->SendMat4("WorldMatrix", worldMatrix);
-			player->DrawCoin(i, geometryPass);
-		}
+		std::cout << "i:   " << i << std::endl;
+		//player->GetWorldCoin(i)->GetTransform()->SetPos()
+		worldMatrix = player->GetInventoryCoin(i)->GetTransform()->GetWorldMatrix();
+		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection()  * worldMatrix);
+		geometryPass->SendMat4("WorldMatrix", worldMatrix);
+		player->DrawCoin(i, geometryPass);
 	}
 
 	// Draw player torch

@@ -9,17 +9,14 @@ class Coin
 {
 public:
 	Coin();
+	//Coin& operator=(const Coin &other);
 	~Coin();
 
-	void SetIsInBag(bool isInBag);
-
 	Transform *GetTransform();
-	bool IsInBag();
 
 	void Draw(Model * coinModel, Shader * shader);
 private:
 	Transform transform;
-	bool isInBag;
 };
 
 #endif

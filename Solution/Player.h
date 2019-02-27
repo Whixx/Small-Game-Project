@@ -28,8 +28,10 @@ public:
 	glm::vec3 DetectCollision(glm::vec3 newPos, glm::vec3 oldPos);
 	Camera* GetCamera();
 	Torch* GetTorch();
-	Coin * GetCoin(unsigned int ID);
-	unsigned int GetNrOfCoins();
+	Coin * GetInventoryCoin(unsigned int index);
+	Coin * GetWorldCoin(unsigned int index);
+	unsigned int GetNrOfInventoryCoins();
+	unsigned int GetNrOfWorldCoins();
 
 	void SetPlayerHeight(float height);
 	void SetPlayerSpeed(float speed);
@@ -52,6 +54,9 @@ public:
 	void AddCoin();
 	void RemoveCoin();
 	void DrawCoin(unsigned int index, Shader * shader);
+
+	// Coin mechanics
+	void LayCoin();
 	
 private:
 	Camera playerCamera;
@@ -59,9 +64,11 @@ private:
 	Torch playerTorch;
 
 	Model coinModel;
-	Coin coins[MaxNrOfCoins];
+	Coin inventoryCoins[MaxNrOfCoins];	// Coins in the players inventory
+	Coin worldCoins[256];				// Coins on the ground in the world // DYNAMIC FIX
 
-	unsigned int currentNrOfCoins;
+	unsigned int nrOfInventoryCoins;
+	unsigned int nrOfWorldCoins;
 
 	
 	Maze* maze;

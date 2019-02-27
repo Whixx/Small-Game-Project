@@ -16,10 +16,12 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 
 	CenterPlayer(); //Space to return to origin
 
-	this->currentNrOfCoins = 0;
+	this->nrOfInventoryCoins = 0;
+	this->nrOfWorldCoins = 0;
+
 	// Add startingCoins for the player
 	for (int i = 0; i < MaxNrOfCoins; i++)
-		this->AddCoin();
+		this->AddCoin();	// Incrementing nrOfInventoryCoins
 }
 
 Player::~Player()
@@ -52,14 +54,24 @@ Torch* Player::GetTorch()
 	return &this->playerTorch;
 }
 
-Coin * Player::GetCoin(unsigned int ID)
+Coin * Player::GetInventoryCoin(unsigned int index)
 {
-	return &this->coins[ID];
+	return &this->inventoryCoins[index];
 }
 
-unsigned int Player::GetNrOfCoins()
+Coin * Player::GetWorldCoin(unsigned int index)
 {
-	return this->currentNrOfCoins;
+	return nullptr;
+}
+
+unsigned int Player::GetNrOfInventoryCoins()
+{
+	return this->nrOfInventoryCoins;
+}
+
+unsigned int Player::GetNrOfWorldCoins()
+{
+	return this->nrOfWorldCoins;
 }
 
 void Player::SetPlayerHeight(float height)
@@ -410,32 +422,54 @@ void Player::Update(double dt)
 void Player::AddCoin()
 {
 	// Check if bag is full
-	if (this->currentNrOfCoins == 10)
+	if (this->nrOfInventoryCoins == 10)
 	{
 		// No more coins can be added
 		return;
 	}
 
 	// Add a coin
-	this->coins[this->currentNrOfCoins].GetTransform()->SetPos(this->transform.GetPos());
-	this->coins[this->currentNrOfCoins].GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
+	this->inventoryCoins[this->nrOfInventoryCoins].GetTransform()->SetPos(this->transform.GetPos());
+	this->inventoryCoins[this->nrOfInventoryCoins].GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
 
 	// Increment NrOfCoins
-	this->currentNrOfCoins++;
+	this->nrOfInventoryCoins++;
 }
 
 void Player::RemoveCoin()
 {
-	if (this->currentNrOfCoins == 0)
+	if (this->nrOfInventoryCoins == 0)
 	{
 		return;
 	}
 		
 	// Removes the last coin in the array
-	this->currentNrOfCoins--;
+	this->nrOfInventoryCoins--;
 }
 
 void Player::DrawCoin(unsigned int index, Shader * shader)
 {
-	this->coins[index].Draw(&this->coinModel, shader);
+	this->inventoryCoins[index].Draw(&this->coinModel, shader);
+}
+
+void Player::LayCoin()
+{
+	// Check if the player got coins to throw
+	if (this->nrOfInventoryCoins == 0)
+	{
+		return;
+	}
+
+	// Check if world can have more coins // DYNAMIC FIX
+	if (this->nrOfWorldCoins == 256)
+	{
+		return;
+	}
+
+	// Set new variables for the coin
+	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetPos(this->transform.GetPos());
+	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
+
+	this->nrOfWorldCoins++;
+	this->nrOfInventoryCoins--;
 }
