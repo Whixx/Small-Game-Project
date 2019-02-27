@@ -292,7 +292,7 @@ void Maze::LoadTextures()
 	
 
 	// Wall0
-	this->wall1Mat = MH.AddMaterial(wallDiffuse, wallAmbient, wallSpecular, floorNormal, wallHeight, wallShininess, "wall1");
+	this->wall1Mat = MH.AddMaterial(wallDiffuse, wallAmbient, wallSpecular, wallNormal, wallHeight, wallShininess, "wall1");
 
 	// Floor0
 	this->floor0Mat = MH.AddMaterial(floorDiffuse, floorAmbient, floorSpecular, floorNormal, floorHeight, floorShininess, "floor0");
