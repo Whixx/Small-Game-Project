@@ -32,17 +32,22 @@ void Minotaur::Update(glm::vec3 playerPos)
 	// If a path is not available
 	if (generatedPath.empty())
 	{
+		// Calculate the starting position of the path in the maze
+		glm::vec3 startPos = this->maze->MapToWorld(this->transform.GetPos());
+
 		// Choose a location in the player-area at random
-		glm::vec2 randomPos =
+		glm::vec2 endPos =
 			glm::vec2(	playerPos.x + rand() % (this->searchArea * 2) - this->searchArea,
 						playerPos.y + rand() % (this->searchArea * 2) - this->searchArea);
+
 		// Generate path between current location and goal location
-		
-		GeneratePath(this->transform.GetPos().z, this->transform.GetPos().x, 0, 1);
+		GeneratePath(startPos.z, startPos.x, 0, 1);
 
 		// Play growl sound
 		growlSound.Play();
 	}
+
+	//glm::vec3 = maze->TransformToWorldCoords(this->transform.GetPos());
 	
 	// Set the destination to the next tile on the path
 	if (this->destination.x == this->transform.GetPos().x && this->destination.y == this->transform.GetPos().z)
@@ -179,7 +184,7 @@ void Minotaur::Move()
 	glm::vec2 direction = glm::vec2(
 		this->destination.x - this->transform.GetPos().x,
 		this->destination.y - this->transform.GetPos().z);
-	//glm::vec3 = maze->TransformToWorldCoords(this->transform.GetPos());
+
 	// If we are not walking past the destination
 	if (glm::length(direction) > glm::length(this->movementSpeed*glm::normalize(direction)))
 	{

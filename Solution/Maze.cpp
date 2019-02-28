@@ -58,7 +58,7 @@ glm::vec2 * Maze::GetDrawOrder()
 	return this->drawOrder;
 }
 
-glm::vec3 Maze::TransformToWorldCoords(glm::vec3 pos)
+glm::vec3 Maze::MapToWorld(glm::vec3 pos)
 {
 	float newX = pos.x;
 	float newZ = pos.z;
@@ -93,7 +93,7 @@ bool Maze::IsWallAtWorld(float x, float y)
 {
 	bool isAWall = true;
 
-	glm::vec3 transformed = this->TransformToWorldCoords(glm::vec3(x, 0.0f, y));
+	glm::vec3 transformed = this->MapToWorld(glm::vec3(x, 0.0f, y));
 	glm::vec3 pixel = readPixel(transformed.x, transformed.z);
 	
 	if (pixel == glm::vec3(0.0f, 0.0f, 0.0f))
