@@ -8,6 +8,7 @@
 #include "Torch.h"
 #include "SoundHandler.h"
 #include "Maze.h"
+#include "EventHandler.h"
 
 #define PI 3.1415926535
 

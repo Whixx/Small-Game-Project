@@ -122,6 +122,9 @@ void MazeGeneratePNG::Generate(void)
 			// do nothing
 		}
 	}
+
+	// Set exit at (0,1)
+	this->SetCell(0, 1, this->path);
 }
 
 void MazeGeneratePNG::Replace(int setToReplace, int sampleSet)
@@ -477,9 +480,19 @@ void MazeGeneratePNG::SetupColorDataForColor()
 			}
 			else if (GetCell(y, x) == path)
 			{
-				for (int i = 0; i < 3; i++)
+				// Exit
+				if (x == 1 && y == 0)
 				{
-					image[y][x][i] = 0;
+					image[y][x][0] = 255;
+					image[y][x][1] = 15;
+					image[y][x][2] = 15;
+				}
+				else
+				{
+					for (int i = 0; i < 3; i++)
+					{
+						image[y][x][i] = 0;
+					}
 				}
 			}
 		}

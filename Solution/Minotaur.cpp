@@ -33,7 +33,7 @@ void Minotaur::Update(glm::vec3 playerPos)
 	if (generatedPath.empty())
 	{
 		// Calculate the starting position of the path in the maze
-		glm::vec3 startPos = this->maze->MapToWorld(this->transform.GetPos());
+		glm::vec3 startPos = this->maze->TransformToMazeCoords(this->transform.GetPos());
 
 		// Choose a location in the player-area at random
 		glm::vec2 endPos =
@@ -52,7 +52,7 @@ void Minotaur::Update(glm::vec3 playerPos)
 	// Set the destination to the next tile on the path
 	if (this->destination.x == this->transform.GetPos().x && this->destination.y == this->transform.GetPos().z)
 	{
-		this->destination = generatedPath.back();
+		this->destination = this->maze->TransformToWorldCoords(glm::vec3(generatedPath.back().x, 0, generatedPath.back().y));
 		generatedPath.pop_back();
 	}
 		

@@ -24,6 +24,10 @@ Maze::Maze()
 
 	this->LoadMaze("MazePNG/mazeColorCoded.png");
 
+	// Find the exit
+	this->exitPos = this->FindExit();
+	this->exitWorldPos = this->TransformToWorldCoords(glm::vec3(exitPos.x, 0, exitPos.y));
+
 	this->InitiateMazeBuffers();
 
 	this->GenerateDrawOrder();
@@ -48,6 +52,16 @@ int Maze::GetMazeWidth()
 	return this->width;
 }
 
+glm::vec2 Maze::GetExitPos() const
+{
+	return this->exitPos;
+}
+
+glm::vec3 Maze::GetExitWorldPos() const
+{
+	return this->exitWorldPos;
+}
+
 Transform * Maze::GetTransform()
 {
 	return &this->transform;
@@ -58,7 +72,7 @@ glm::vec2 * Maze::GetDrawOrder()
 	return this->drawOrder;
 }
 
-glm::vec3 Maze::MapToWorld(glm::vec3 pos)
+glm::vec3 Maze::TransformToMazeCoords(glm::vec3 pos)
 {
 	float newX = pos.x;
 	float newZ = pos.z;
@@ -74,10 +88,35 @@ glm::vec3 Maze::MapToWorld(glm::vec3 pos)
 	newZ /= this->GetTransform()->GetScale().z;
 
 	// The walls have a offset, while the maze's center is in the origin (0,0)
-	float wallOffset = 0.5f;
-	newX += (this->GetMazeWidth() / 2) + wallOffset;
-	newZ += (this->GetMazeHeight() / 2) + wallOffset;
+	float pixelOffset = 0.5;
+	newX += (this->GetMazeWidth() / 2) + pixelOffset;
+	newZ += (this->GetMazeHeight() / 2) + pixelOffset;
 
+	pos.x = newX;
+	pos.z = newZ;
+
+	return pos;
+}
+
+glm::vec3 Maze::TransformToWorldCoords(glm::vec3 pos)
+{
+	float newX = pos.x;
+	float newZ = pos.z;
+
+	// NOT NEEDED Transform world coords to texture coords. ( 1 pixel on texture corresponds to 1.0, origo is (0, 0) for both spaces
+
+	// The walls have a offset, while the maze's center is in the origin (0,0)
+	newX -= (this->GetMazeWidth() / 2);
+	newZ -= (this->GetMazeHeight() / 2);
+
+	// The maze can be scaled
+	newX *= this->GetTransform()->GetScale().x;
+	newZ *= this->GetTransform()->GetScale().z;
+
+	// The maze can be translated
+	newX += this->GetTransform()->GetPos().x;
+	newZ += this->GetTransform()->GetPos().z;
+	
 	pos.x = newX;
 	pos.z = newZ;
 
@@ -93,10 +132,10 @@ bool Maze::IsWallAtWorld(float x, float y)
 {
 	bool isAWall = true;
 
-	glm::vec3 transformed = this->MapToWorld(glm::vec3(x, 0.0f, y));
+	glm::vec3 transformed = this->TransformToMazeCoords(glm::vec3(x, 0.0f, y));
 	glm::vec3 pixel = readPixel(transformed.x, transformed.z);
 	
-	if (pixel == glm::vec3(0.0f, 0.0f, 0.0f))
+	if (pixel == glm::vec3(0.0f, 0.0f, 0.0f) || pixel == glm::vec3(255, 15, 15)) // pixel == glm::vec3(255, 15, 15) is EXIT
 	{
 		isAWall = false;
 	}
@@ -310,4 +349,22 @@ glm::vec3 Maze::readPixel(unsigned int x, unsigned int y)
 	}
 
 	return glm::vec3(pixel[0], pixel[1], pixel[2]);
+}
+
+glm::vec2 Maze::FindExit()
+{
+	// Loop through whole map
+	for (int x = 0; x < this->width; x++)
+	{
+		for (int y = 0; y < this->height; y++)
+		{
+			if (this->readPixel(x, y) == glm::vec3(255, 15, 15))
+			{
+				return glm::vec2(x, y);
+			}
+		}
+	}
+
+	// Didn't find exit
+	return glm::vec2(-1, -1);
 }

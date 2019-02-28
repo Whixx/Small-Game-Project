@@ -24,9 +24,12 @@ public:
 
 	int GetMazeHeight();
 	int GetMazeWidth();
+	glm::vec2 GetExitPos() const;
+	glm::vec3 GetExitWorldPos() const;
 	Transform *GetTransform();
 	glm::vec2* GetDrawOrder();
-	glm::vec3 MapToWorld(glm::vec3 pos);
+	glm::vec3 TransformToMazeCoords(glm::vec3 pos);
+	glm::vec3 TransformToWorldCoords(glm::vec3 pos);
 	unsigned int GetTileCount();
 
 	// Draw to transform feedback buffer
@@ -52,6 +55,8 @@ private:
 	int numComponents;
 	GLuint mazeTexture;
 	glm::vec2 drawOrder[(1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE)];
+	glm::vec2 exitPos;
+	glm::vec3 exitWorldPos;
 
 	Transform transform;
 
@@ -73,5 +78,6 @@ private:
 	// When generating the maze outwards from the player
 	void GenerateDrawOrder();
 	glm::vec3 readPixel(unsigned int x, unsigned int y);
+	glm::vec2 FindExit();
 };
 #endif

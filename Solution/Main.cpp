@@ -112,10 +112,12 @@ int main()
 	SoundEngine soundEngine;
 	irrklang::ISoundEngine* enginePtr = soundEngine.GetEngine();
 
+	SoundHandler winSound("Sounds/winSound.mp3", false, enginePtr);
+	SoundHandler deathSound("Sounds/death.mp3", false, enginePtr);
 	float playerHeight = 1.8f;
 	float torchSize = 0.02f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize);
-	player.SetPlayerSpeed(2.0f);
+	player.SetPlayerSpeed(10.0f);
 	player.CenterPlayer(); //Space to return to origin
 
 	Minotaur minotaur(enginePtr, mazeGrid, &maze);
@@ -156,7 +158,7 @@ int main()
 
 		glfwPollEvents();
 
-		HandleEvents(&player);
+		HandleEvents(&player, &winSound, &deathSound);
 
 		// Update movement
 		IH.MouseControls(&display, &player, deltaTime);
