@@ -170,6 +170,18 @@ void Maze::DrawMaze()
 {
 	glBindVertexArray(this->mazeVao);
 	
+	glDrawTransformFeedback(GL_PATCHES, this->mazeTbo);
+	
+	// Memory barrier
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
+	glBindVertexArray(0);
+}
+
+void Maze::DrawShadows()
+{
+	glBindVertexArray(this->mazeVao);
+
 	glDrawTransformFeedback(GL_TRIANGLES, this->mazeTbo);
 
 	// Memory barrier
@@ -280,7 +292,7 @@ void Maze::LoadTextures()
 	
 
 	// Wall0
-	this->wall1Mat = MH.AddMaterial(wallDiffuse, wallAmbient, wallSpecular, floorNormal, wallHeight, wallShininess, "wall1");
+	this->wall1Mat = MH.AddMaterial(wallDiffuse, wallAmbient, wallSpecular, wallNormal, wallHeight, wallShininess, "wall1");
 
 	// Floor0
 	this->floor0Mat = MH.AddMaterial(floorDiffuse, floorAmbient, floorSpecular, floorNormal, floorHeight, floorShininess, "floor0");

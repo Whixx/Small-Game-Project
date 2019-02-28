@@ -186,7 +186,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
 		// Draw maze
 		shadowShader->SendMat4("WorldMatrix", mazeWorldMatrix);
-		maze->DrawMaze();
+		maze->DrawShadows();
 	}
 
 	shadowShader->UnBind();
@@ -237,10 +237,11 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 
 	// Same world matrix for walls and floor
 	glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
-
+	
 	// Draw Maze
-	mazeGeometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * mazeWorldMatrix);
 	mazeGeometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
+	mazeGeometryPass->SendMat4("VP", player->GetCamera()->GetViewProjection());
+	mazeGeometryPass->SendFloat("Scale", maze->GetTransform()->GetScale().x);
 	maze->BindMaterial(mazeGeometryPass);
 	maze->DrawMaze();
 
@@ -467,4 +468,26 @@ GLuint CreateScreenQuad()
 	glBindVertexArray(0);
 
 	return screenQuad;
+}
+
+void HandleEvents(Player* player)
+{
+	EventHandler& EH = EventHandler::GetInstance();
+	while (!EH.IsEmpty())
+	{
+		Event event = EH.GetEvent();
+
+		//if (event == EVENT_TEST)
+		//{
+		//	cout << "Event Test" << endl;
+		//}
+	}
+}
+
+void SetMaxPatchVertices()
+{
+	GLint MaxPatchVertices = 0;
+	glGetIntegerv(GL_MAX_PATCH_VERTICES, &MaxPatchVertices);
+	printf("Max supported patch vertices %d\n", MaxPatchVertices);
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
 }

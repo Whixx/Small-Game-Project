@@ -34,6 +34,7 @@ public:
 
 	// Draw from transform feedback buffer
 	void DrawMaze();
+	void DrawShadows();
 
 	void BindMaterial(Shader* shader);
 

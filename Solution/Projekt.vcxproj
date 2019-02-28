@@ -91,6 +91,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CollisionHandler.cpp" />
     <ClCompile Include="Display.cpp" />
+    <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="FinalFBO.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="InputHandler.cpp" />
@@ -122,6 +123,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CollisionHandler.h" />
     <ClInclude Include="Display.h" />
+    <ClInclude Include="EventHandler.h" />
     <ClInclude Include="FinalFBO.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="MainFunctions.h" />
@@ -157,13 +159,16 @@
     <None Include="finalShader.fs" />
     <None Include="finalShader.vs" />
     <None Include="lightPass.fs" />
-    <None Include="lightPass.vs" />
     <None Include="geometryPass.fs" />
     <None Include="geometryPass.vs" />
+    <None Include="lightPass.vs" />
     <None Include="mazeGenerationShader.fs" />
     <None Include="mazeGenerationShader.gs" />
     <None Include="mazeGenerationShader.vs" />
+    <None Include="mazeGeometryPass.cs" />
+    <None Include="mazeGeometryPass.es" />
     <None Include="mazeGeometryPass.fs" />
+    <None Include="mazeGeometryPass.gs" />
     <None Include="mazeGeometryPass.vs" />
     <None Include="particleShader.fs" />
     <None Include="particleShader.vs" />
