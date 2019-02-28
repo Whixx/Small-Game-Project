@@ -403,6 +403,8 @@ void Player::Update(double dt)
 		this->walkingVector, 
 		this->boundingBoxHalfSize);
 
+	this->UpdateCoins(dt);
+	
 #ifdef DEBUG
 	if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
 	{
@@ -449,7 +451,23 @@ void Player::RemoveCoinFromInventory()
 
 void Player::DropCoin()
 {
-	// Check if the player got coins to throw
+	this->AddCoinToWorld(COIN_DROP);
+}
+
+void Player::TossCoin()
+{
+	this->AddCoinToWorld(COIN_TOSS);
+}
+
+void Player::DrawCoin(unsigned int index, Shader * shader)
+{
+	this->worldCoins[index].Draw(&this->coinModel, shader);
+}
+
+
+void Player::AddCoinToWorld(unsigned int state)
+{
+	// Check if the player got coins to drop/toss
 	if (this->nrOfInventoryCoins == 0)
 	{
 		return;
@@ -461,15 +479,40 @@ void Player::DropCoin()
 		return;
 	}
 
-	// Set the starting position of the coin to be on the player
-	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetPos(this->transform.GetPos());
-	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetScale(glm::vec3(0.025f));
+	// Set the starting position of the coin to be on the player and set the scale
+	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetPos(this->transform.GetPos() + this->GetCamera()->GetForwardVector() / 1.5f);
+	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetScale(this->inventoryCoins[this->nrOfInventoryCoins - 1].GetTransform()->GetScale());
+	// Set the state (if coin is tossed or dropped)
+	this->worldCoins[this->nrOfWorldCoins].SetCoinState(state);
 
 	this->nrOfWorldCoins++;
 	this->nrOfInventoryCoins--;
 }
 
-void Player::DrawCoin(unsigned int index, Shader * shader)
+void Player::UpdateCoins(double dt)
 {
-	this->worldCoins[index].Draw(&this->coinModel, shader);
+	// Loop through all worldCoins
+	for (int i = 0; i < this->nrOfWorldCoins; i++)
+	{
+		// Check if the coin should be updated 
+		if (this->worldCoins[i].IsOnGround() == false)
+		{
+			// Check the type of update for the coin
+			switch (this->worldCoins[i].GetCoinState())
+			{
+			case COIN_DROP:
+				this->worldCoins[i].UpdateDropCoin(dt);
+				break;
+
+			case COIN_TOSS:
+				break;
+
+			default:
+				#ifdef DEBUG
+				std::cout << "Invalid State for coin" << std::endl;
+				#endif
+				break;
+			}
+		}
+	}
 }

@@ -56,6 +56,7 @@ public:
 
 	// Coin mechanics
 	void DropCoin();
+	void TossCoin();
 	
 	void DrawCoin(unsigned int index, Shader * shader);
 
@@ -79,6 +80,10 @@ private:
 	glm::vec3 walkingVector;
 
 	SoundHandler footStep;
+
+	// Private Functions
+	void AddCoinToWorld(unsigned int state);
+	void UpdateCoins(double dt);
 };
 
 #endif //DISPLAY_H
