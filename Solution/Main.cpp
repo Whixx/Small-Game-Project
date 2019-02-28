@@ -105,22 +105,15 @@ int main()
 	SoundEngine soundEngine;
 	irrklang::ISoundEngine* enginePtr = soundEngine.GetEngine();
 
-	// minotaur sound test stuff
-	glm::vec3 newPosition;
-	newPosition.y = 0.0;
-	SoundHandler minotaurGrowl("Sounds/minotaurgrowl.wav", false, enginePtr);
-	SoundHandler minotaurFootStep("Sounds/minotaurstep.ogg", false, enginePtr);
-	minotaurGrowl.SetMinDistance(0.5);
-
-
 	float playerHeight = 1.8f;
 	float torchSize = 0.02f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize);
 	player.SetPlayerSpeed(2.0f);
 	player.CenterPlayer(); //Space to return to origin
 
-	Minotaur minotaur(enginePtr);
-	
+	Minotaur minotaur(enginePtr, mazeGrid, &maze);
+	minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();
+
 	ObjectHandler OH;
 
 	//TODO: Byta ground.png till floor.png
@@ -167,18 +160,8 @@ int main()
 		OH.UpdateAllObjects(deltaTime);
 		lights.UpdateShadowTransform(0);
 
-		
-
 		// update sound engine with position and view direction
 		soundEngine.Update(player.GetCamera()->GetCameraPosition(), player.GetCamera()->GetForwardVector());
-
-		//// moving minotaur sound test
-		//newPosition.x = sinf(glfwGetTime() * 0.2 * 3.15) * 5.0f;
-		//newPosition.z = cosf(glfwGetTime() * 0.2 * 3.15) * 5.0f;
-		//minotaurGrowl.SetPosition(newPosition);
-		//minotaurGrowl.Play();
-		//minotaurFootStep.SetPosition(newPosition);
-		//minotaurFootStep.Play();
 
 
 		// ================== DRAW ==================
