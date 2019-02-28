@@ -47,13 +47,14 @@ void Minotaur::Update(glm::vec3 playerPos)
 	// Set the destination to the next tile on the path
 	if (this->destination.x == this->transform.GetPos().x && this->destination.y == this->transform.GetPos().z)
 	{
-		this->destination = generatedPath.at(generatedPath.size() - 1);
+		this->destination = generatedPath.back();
 		generatedPath.pop_back();
 	}
 		
 	// Move towards the current destination
 	Move();
 	// Play step sound
+	this->stepSound.Play();
 }
 
 void Minotaur::GeneratePath(int startY, int startX, int destinationY, int destinationX)
