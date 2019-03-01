@@ -9,7 +9,8 @@ using namespace std;
 enum Event
 {
 	EVENT_NULL,
-
+	EVENT_PLAYER_DROPCOIN,
+	EVENT_PLAYER_TOSSCOIN,
 };
 
 class EventHandler

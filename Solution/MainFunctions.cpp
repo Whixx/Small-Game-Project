@@ -206,18 +206,28 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 
 	glEnable(GL_DEPTH_TEST);
 
+	glm::mat4 worldMatrix = glm::mat4();
 	// Update and Draw all objects
 	for (unsigned int i = 0; i < OH->GetNrOfObjects(); i++)
 	{
-		glm::mat4 worldMatrix = OH->GetObject(i)->GetTransform().GetWorldMatrix();
+		worldMatrix = OH->GetObject(i)->GetTransform().GetWorldMatrix();
 		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 		geometryPass->SendMat4("WorldMatrix", worldMatrix);
 
 		OH->GetObject(i)->Draw(geometryPass);
 	}
 
+	// Draw coins
+	for (int i = 0; i < player->GetNrOfWorldCoins(); i++)
+	{
+		worldMatrix = player->GetWorldCoin(i)->GetTransform()->GetWorldMatrix();
+		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection()  * worldMatrix);
+		geometryPass->SendMat4("WorldMatrix", worldMatrix);
+		player->DrawCoin(i, geometryPass);
+	}
+
 	// Draw player torch
-	glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
+	worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 	geometryPass->SendMat4("WorldMatrix", worldMatrix);
 	player->GetTorch()->Draw(geometryPass);
@@ -441,10 +451,14 @@ void HandleEvents(Player* player)
 	{
 		Event event = EH.GetEvent();
 
-		//if (event == EVENT_TEST)
-		//{
-		//	cout << "Event Test" << endl;
-		//}
+		if (event == EVENT_PLAYER_DROPCOIN)
+		{
+			player->DropCoin();
+		}
+		else if (event == EVENT_PLAYER_TOSSCOIN)
+		{
+			player->TossCoin();
+		}
 	}
 }
 

@@ -20,6 +20,8 @@
 #include "MaterialHandler.h"
 #include "EventHandler.h"
 
+#include "Coin.h"
+
 
 
 

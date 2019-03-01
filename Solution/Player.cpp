@@ -4,7 +4,8 @@
 Player::Player(float height, float fov, float near, float far, Maze * maze, irrklang::ISoundEngine * engine, PointLightHandler * PLH, float torchSize)
 	: playerCamera(glm::vec3(0, height, 0), fov, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)),
 	playerTorch(this->transform, glm::vec3(0.5f, 0.15f, 0.15f), engine, PLH, torchSize),
-	footStep("Sounds/playerfootstep.ogg", false, engine)
+	footStep("Sounds/playerfootstep.ogg", false, engine),
+	coinModel("Models/Coin/coin.obj")
 {
 	this->playerHeight = height;
 	this->playerSpeed = 0;
@@ -12,6 +13,15 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	this->maze = maze;
 
 	this->footStep.SetVolume(0.2);
+
+	CenterPlayer(); //Space to return to origin
+
+	this->nrOfInventoryCoins = 0;
+	this->nrOfWorldCoins = 0;
+
+	// Add startingCoins for the player
+	for (int i = 0; i < MAX_NR_OF_COINS; i++)
+		this->AddCoinToInventory();	// Incrementing nrOfInventoryCoins
 }
 
 Player::~Player()
@@ -42,6 +52,26 @@ Camera * Player::GetCamera()
 Torch* Player::GetTorch()
 {
 	return &this->playerTorch;
+}
+
+Coin * Player::GetInventoryCoin(unsigned int index)
+{
+	return &this->inventoryCoins[index];
+}
+
+Coin * Player::GetWorldCoin(unsigned int index)
+{
+	return &this->worldCoins[index];
+}
+
+unsigned int Player::GetNrOfInventoryCoins()
+{
+	return this->nrOfInventoryCoins;
+}
+
+unsigned int Player::GetNrOfWorldCoins()
+{
+	return this->nrOfWorldCoins;
 }
 
 void Player::SetPlayerHeight(float height)
@@ -373,18 +403,125 @@ void Player::Update(double dt)
 		this->walkingVector, 
 		this->boundingBoxHalfSize);
 
+	this->UpdateCoins(dt);
+	
 #ifdef DEBUG
-	//if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
-	//{
-	//	//printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
-	//
-	//	std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
-	//	std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;
-	//	std::cout << "Forward Vector! Z: " << this->playerCamera.GetForwardVector().z << std::endl;
-	//}
+	if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
+	{
+		//printf("Map position: X:%.2f, Z:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+	
+		//std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
+		//std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;
+		//std::cout << "Forward Vector! Z: " << this->playerCamera.GetForwardVector().z << std::endl;
+	}
 	
 #endif
 
 	// Update sound positions
 	footStep.SetPosition(this->GetCamera()->GetCameraPosition());
+}
+
+void Player::AddCoinToInventory()
+{
+	// Check if bag is full
+	if (this->nrOfInventoryCoins == MAX_NR_OF_COINS)
+	{
+		// No more coins can be added
+		return;
+	}
+
+	// Add a coin
+	this->inventoryCoins[this->nrOfInventoryCoins].GetTransform()->SetPos(this->transform.GetPos());
+	this->inventoryCoins[this->nrOfInventoryCoins].GetTransform()->SetScale(glm::vec3(0.025f));
+
+	// Increment NrOfCoins
+	this->nrOfInventoryCoins++;
+}
+
+void Player::RemoveCoinFromInventory()
+{
+	if (this->nrOfInventoryCoins == 0)
+	{
+		return;
+	}
+		
+	// Removes the last coin in the array
+	this->nrOfInventoryCoins--;
+}
+
+void Player::DropCoin()
+{
+	this->AddCoinToWorld(COIN_DROP);
+}
+
+void Player::TossCoin()
+{
+	this->AddCoinToWorld(COIN_TOSS);
+}
+
+void Player::DrawCoin(unsigned int index, Shader * shader)
+{
+	this->worldCoins[index].Draw(&this->coinModel, shader);
+}
+
+
+void Player::AddCoinToWorld(unsigned int state)
+{
+	// Check if the player got coins to drop/toss
+	if (this->nrOfInventoryCoins == 0)
+	{
+		return;
+	}
+
+	// Check if world can have more coins // DYNAMIC FIX
+	if (this->nrOfWorldCoins == 256)
+	{
+		return;
+	}
+
+	// Update the torch so that it is located in front of the player
+	glm::vec3 throwPos = this->playerCamera.GetCameraPosition()
+		- this->playerCamera.GetRightVector() * 0.075f
+		+ this->playerCamera.GetUpVector() * -0.11f;
+
+	// Set the starting position of the coin to be on the player and set the scale
+	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetPos(throwPos); //+ this->GetCamera()->GetForwardVector() * this->boundingBoxHalfSize);
+	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetScale(this->inventoryCoins[this->nrOfInventoryCoins - 1].GetTransform()->GetScale());
+	// Set the state (if coin is tossed or dropped)
+	this->worldCoins[this->nrOfWorldCoins].SetCoinState(state);
+
+	// Give coins the initThrowDir
+	this->worldCoins[this->nrOfWorldCoins].SetVelocity(this->GetCamera()->GetForwardVector());
+
+	this->nrOfWorldCoins++;
+	this->nrOfInventoryCoins--;
+}
+
+void Player::UpdateCoins(double dt)
+{
+	// Loop through all worldCoins
+	for (int i = 0; i < this->nrOfWorldCoins; i++)
+	{
+		// Check if the coin should be updated 
+		if (this->worldCoins[i].IsOnGround() == false)
+		{
+			// Check the type of update for the coin
+			switch (this->worldCoins[i].GetCoinState())
+			{
+			case COIN_DROP:
+				this->worldCoins[i].UpdateDropCoin(dt);
+				break;
+
+			case COIN_TOSS:
+				this->worldCoins[i].UpdateTossCoin(dt);
+				break;
+
+			default:
+				#ifdef DEBUG
+				std::cout << "Invalid State for coin" << std::endl;
+				#endif
+				break;
+			}
+		}
+	}
 }

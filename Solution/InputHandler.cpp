@@ -18,6 +18,18 @@ void InputHandler::Key_callback(GLFWwindow * window, int key, int scancode, int 
 		else
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
+
+	if (key == GLFW_KEY_G && action == GLFW_PRESS)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+		EH.AddEvent(EVENT_PLAYER_DROPCOIN);
+	}
+
+	if (key == GLFW_KEY_C && action == GLFW_PRESS)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+		EH.AddEvent(EVENT_PLAYER_TOSSCOIN);
+	}
 }
 
 void InputHandler::MouseControls(Display * display, Player * player, float elapsedTime)
