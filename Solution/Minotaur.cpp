@@ -69,7 +69,25 @@ void Minotaur::Update(glm::vec3 playerPos)
 	}
 		
 	// Move towards the current destination
-	Move();
+	glm::vec3 worldDestination = glm::vec3(this->destination.x, 0, this->destination.y);
+
+	// Identify the current direction
+	glm::vec2 direction = glm::vec2(
+		worldDestination.x - this->transform.GetPos().x,
+		worldDestination.z - this->transform.GetPos().z);
+
+	// If we are not walking past the destination
+	if (glm::length(direction) > glm::length(this->movementSpeed*glm::normalize(direction)))
+	{
+		this->transform.GetPos().x += this->movementSpeed*glm::normalize(direction).x;
+		this->transform.GetPos().z += this->movementSpeed*glm::normalize(direction).y;
+	}
+	else	// Else we are about to walk past the destination, which means that we have arrived
+	{
+		this->transform.GetPos().x = worldDestination.x;
+		this->transform.GetPos().z = worldDestination.y;
+	}
+
 	// Play step sound
 	this->stepSound.Play();
 }
@@ -195,24 +213,7 @@ void Minotaur::GeneratePath(int startY, int startX, int destinationY, int destin
 
 void Minotaur::Move()
 {
-	glm::vec3 worldDestination = glm::vec3(this->destination.x, 0, this->destination.y);
-
-	// Identify the current direction
-	glm::vec2 direction = glm::vec2(
-		worldDestination.x - this->transform.GetPos().x,
-		worldDestination.z - this->transform.GetPos().z);
-
-	// If we are not walking past the destination
-	if (glm::length(direction) > glm::length(this->movementSpeed*glm::normalize(direction)))
-	{
-		this->transform.GetPos().x += this->movementSpeed*glm::normalize(direction).x;
-		this->transform.GetPos().z += this->movementSpeed*glm::normalize(direction).y;
-	}
-	else	// Else we are about to walk past the destination, which means that we have arrived
-	{
-		this->transform.GetPos().x = worldDestination.x;
-		this->transform.GetPos().z = worldDestination.y;
-	}
+	
 }
 
 glm::vec2 Minotaur::toNearbyFloor(glm::vec2 pos)
@@ -228,15 +229,17 @@ glm::vec2 Minotaur::toNearbyFloor(glm::vec2 pos)
 		//If wall, move start position
 		if (pingpong = false)
 		{
-			x += 1.0f;
+			x += this->maze->GetTransform()->GetScale().x * 1.0f;
 			pingpong = true;
 		}
 		else
 		{
-			y += 1.0f;
+			y += this->maze->GetTransform()->GetScale().z * 1.0f;
 			pingpong = false;
 		}
 	}
+
+	glm::vec3 newPos = this->maze->TransformToWorldCoords(glm::vec3(x, 0.0f, y));
 
 	return glm::vec2(x, y);
 }
