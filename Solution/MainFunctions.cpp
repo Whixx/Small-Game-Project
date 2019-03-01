@@ -454,5 +454,9 @@ void HandleEvents(Player* player)
 		{
 			player->DropCoin();
 		}
+		else if (event == EVENT_PLAYER_TOSSCOIN)
+		{
+			player->TossCoin();
+		}
 	}
 }

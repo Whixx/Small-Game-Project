@@ -4,6 +4,7 @@
 #include <glew\glew.h>
 #include "Transform.h"
 #include "Model.h"
+#include "Maze.h"
 
 enum COIN_STATE
 {
@@ -23,8 +24,10 @@ public:
 	unsigned int GetCoinState();
 
 	void SetCoinState(unsigned int state);
+	void SetVelocity(glm::vec3 initThrowDir);
 
 	bool UpdateDropCoin(double dt);
+	bool UpdateTossCoin(double dt);
 
 	void Draw(Model * coinModel, Shader * shader);
 private:
@@ -32,7 +35,13 @@ private:
 
 	bool isOnGround;
 	unsigned int coinState;
-	glm::vec3 movementSpeed;
+
+	glm::vec3 velocity;
+	double coinSpeed;
+	glm::vec3 gravity;
+	glm::vec3 oldCoinPosition;
+
+	Maze maze;
 };
 
 #endif

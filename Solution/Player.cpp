@@ -20,7 +20,7 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	this->nrOfWorldCoins = 0;
 
 	// Add startingCoins for the player
-	for (int i = 0; i < MaxNrOfCoins; i++)
+	for (int i = 0; i < MAX_NR_OF_COINS; i++)
 		this->AddCoinToInventory();	// Incrementing nrOfInventoryCoins
 }
 
@@ -424,7 +424,7 @@ void Player::Update(double dt)
 void Player::AddCoinToInventory()
 {
 	// Check if bag is full
-	if (this->nrOfInventoryCoins == 10)
+	if (this->nrOfInventoryCoins == MAX_NR_OF_COINS)
 	{
 		// No more coins can be added
 		return;
@@ -479,11 +479,19 @@ void Player::AddCoinToWorld(unsigned int state)
 		return;
 	}
 
+	// Update the torch so that it is located in front of the player
+	glm::vec3 throwPos = this->playerCamera.GetCameraPosition()
+		- this->playerCamera.GetRightVector() * 0.075f
+		+ this->playerCamera.GetUpVector() * -0.11f;
+
 	// Set the starting position of the coin to be on the player and set the scale
-	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetPos(this->transform.GetPos()); //+ this->GetCamera()->GetForwardVector() * this->boundingBoxHalfSize);
+	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetPos(throwPos); //+ this->GetCamera()->GetForwardVector() * this->boundingBoxHalfSize);
 	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetScale(this->inventoryCoins[this->nrOfInventoryCoins - 1].GetTransform()->GetScale());
 	// Set the state (if coin is tossed or dropped)
 	this->worldCoins[this->nrOfWorldCoins].SetCoinState(state);
+
+	// Give coins the initThrowDir
+	this->worldCoins[this->nrOfWorldCoins].SetVelocity(this->GetCamera()->GetForwardVector());
 
 	this->nrOfWorldCoins++;
 	this->nrOfInventoryCoins--;
@@ -505,6 +513,7 @@ void Player::UpdateCoins(double dt)
 				break;
 
 			case COIN_TOSS:
+				this->worldCoins[i].UpdateTossCoin(dt);
 				break;
 
 			default:

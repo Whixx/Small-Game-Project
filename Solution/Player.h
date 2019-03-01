@@ -11,7 +11,7 @@
 #include "Coin.h"
 
 #define PI 3.1415926535
-const unsigned int MaxNrOfCoins = 10;
+const unsigned int MAX_NR_OF_COINS = 100;
 
 using namespace std;
 
@@ -66,7 +66,7 @@ private:
 	Torch playerTorch;
 
 	Model coinModel;
-	Coin inventoryCoins[MaxNrOfCoins];	// Coins in the players inventory
+	Coin inventoryCoins[MAX_NR_OF_COINS];	// Coins in the players inventory
 	Coin worldCoins[256];				// Coins on the ground in the world // DYNAMIC FIX
 
 	unsigned int nrOfInventoryCoins;
