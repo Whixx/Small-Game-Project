@@ -328,15 +328,17 @@ void Player::CenterPlayer()
 		//If wall, move start position
 		if (pingpong = false)
 		{
-			x += 1.5f;
+			x += 1;
 			pingpong = true;
 		}
 		else
 		{
-			y += 1.5f;
+			y += 1;
 			pingpong = false;
 		}
 	}
+
+	glm::vec3 newPos = this->maze->TransformToWorldCoords(glm::vec3(x, 0.0f, y));
 
 	this->transform.SetPos(glm::vec3(x, this->playerHeight + this->maze->GetTransform()->GetPos().y, y));
 }
