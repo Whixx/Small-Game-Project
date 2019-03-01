@@ -38,6 +38,7 @@ void Minotaur::Update(glm::vec3 playerPos)
 	glm::vec3 currentPos = this->maze->TransformToMazeCoords(this->transform.GetPos());
 	glm::vec3 currentPlayerPos = this->maze->TransformToMazeCoords(playerPos);
 
+
 	// If a path is not available
 	if (generatedPath.empty())
 	{
@@ -60,14 +61,24 @@ void Minotaur::Update(glm::vec3 playerPos)
 
 	//glm::vec3 = maze->TransformToWorldCoords(this->transform.GetPos());
 	
+
+
+	
+
 	// Set the destination to the next tile on the path
 	if (this->destination.x == currentPos.x && this->destination.y == currentPos.z)
 	{
-		this->destination = this->maze->TransformToWorldCoords(glm::vec3(generatedPath.back().x, 0, generatedPath.back().y));
+		this->destination = generatedPath.back();
 		generatedPath.pop_back();
 		std::cout << "(" << this->destination.x << "," << this->destination.y << ")" << endl;
 	}
 		
+
+
+
+
+
+
 	// Move towards the current destination
 	glm::vec3 worldDestination = glm::vec3(this->destination.x, 0, this->destination.y);
 
@@ -85,7 +96,7 @@ void Minotaur::Update(glm::vec3 playerPos)
 	else	// Else we are about to walk past the destination, which means that we have arrived
 	{
 		this->transform.GetPos().x = worldDestination.x;
-		this->transform.GetPos().z = worldDestination.y;
+		this->transform.GetPos().z = worldDestination.z;
 	}
 
 	// Play step sound

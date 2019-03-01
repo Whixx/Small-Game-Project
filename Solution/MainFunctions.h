@@ -50,8 +50,7 @@ void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint *fullScreenTriangle);
 
 // height and width must be odd numbers else the resulting maze will be off
-// the function will return a grid with the m
-//void GenerateMazeBitmaps(int height, int width);
+// the function will return a grid with the maze
 std::vector<std::vector<int>> GenerateMazePNG(int height, int width);
 
 GLuint CreateScreenQuad();

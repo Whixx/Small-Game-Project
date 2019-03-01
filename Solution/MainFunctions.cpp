@@ -397,26 +397,6 @@ void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint * fullScreenTri
 	glEnable(GL_DEPTH_TEST);
 }
 
-//void GenerateMazeBitmaps(int height, int width)
-//{
-//	MazeGeneratePNG mazeGen(height, width);
-//
-//	// Set_cell can be used to set "entrance and exit" etc
-//	mazeGen.SetCell(0, 1, mazeGen.path);
-//	mazeGen.SetCell(height - 1, width - 2, mazeGen.path);
-//
-//	mazeGen.Generate();
-//
-//
-//	mazeGen.GeneratePath(0, 1, height - 1, width - 2);
-//	//mazeGen.GeneratePath(height / 2, width / 2, height - 1, width - 2);
-//
-//
-//	mazeGen.DrawPNG();
-//	// redpath must be drawn after the black/white maze is drawn
-//	mazeGen.DrawRedPath();
-//}
-
 std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 {
 	MazeGeneratePNG mazeGen(height, width);
