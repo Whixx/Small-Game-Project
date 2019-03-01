@@ -11,11 +11,17 @@ Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>
 	this->movementSpeed = 1 * this->transform.GetScale().y;
 	this->mazeGrid = mazeGrid;
 	this->maze = maze;
-	this->spawnOnFloor();
 
+	// Adjust spawn position to a floor-tile
+	glm::vec3 currentPos = this->maze->TransformToMazeCoords(this->transform.GetPos());
+	glm::vec2 newPos = this->toNearbyFloor(glm::vec2(currentPos.x, currentPos.z));
+	currentPos = this->maze->TransformToWorldCoords(glm::vec3(newPos.x, this->transform.GetPos().y, newPos.y));
+	this->transform.GetPos() = currentPos;
+
+	// Initiate destination to the current position (It will then set the real destination in Update())
 	this->destination = glm::vec2(
-		this->transform.GetPos().x,
-		this->transform.GetPos().z);
+		this->maze->TransformToMazeCoords(this->transform.GetPos()).x,
+		this->maze->TransformToMazeCoords(this->transform.GetPos()).z);
 }
 
 Minotaur::~Minotaur()
@@ -29,17 +35,21 @@ Transform Minotaur::GetTransform()
 
 void Minotaur::Update(glm::vec3 playerPos)
 {
+	glm::vec3 currentPos = this->maze->TransformToMazeCoords(this->transform.GetPos());
+	glm::vec3 currentPlayerPos = this->maze->TransformToMazeCoords(playerPos);
 
 	// If a path is not available
 	if (generatedPath.empty())
 	{
 		// Calculate the starting position of the path in the maze
-		glm::vec3 startPos = this->maze->TransformToMazeCoords(this->transform.GetPos());
+		glm::vec3 startPos = currentPos;
 
 		// Choose a location in the player-area at random
 		glm::vec2 endPos =
-			glm::vec2(	playerPos.x + rand() % (this->searchArea * 2) - this->searchArea,
-						playerPos.y + rand() % (this->searchArea * 2) - this->searchArea);
+			glm::vec2(	currentPlayerPos.x + rand() % (this->searchArea * 2) - this->searchArea,
+						currentPlayerPos.z + rand() % (this->searchArea * 2) - this->searchArea);
+		// Adjust spawn position to a floor-tile
+		endPos = this->toNearbyFloor(glm::vec2(endPos.x, endPos.y));
 
 		// Generate path between current location and goal location
 		GeneratePath(startPos.z, startPos.x, 39, 39);
@@ -51,10 +61,11 @@ void Minotaur::Update(glm::vec3 playerPos)
 	//glm::vec3 = maze->TransformToWorldCoords(this->transform.GetPos());
 	
 	// Set the destination to the next tile on the path
-	if (this->destination.x == this->transform.GetPos().x && this->destination.y == this->transform.GetPos().z)
+	if (this->destination.x == currentPos.x && this->destination.y == currentPos.z)
 	{
 		this->destination = this->maze->TransformToWorldCoords(glm::vec3(generatedPath.back().x, 0, generatedPath.back().y));
 		generatedPath.pop_back();
+		std::cout << "(" << this->destination.x << "," << this->destination.y << ")" << endl;
 	}
 		
 	// Move towards the current destination
@@ -201,10 +212,10 @@ void Minotaur::Move()
 	}
 }
 
-void Minotaur::spawnOnFloor()
+glm::vec2 Minotaur::toNearbyFloor(glm::vec2 pos)
 {
-	float x = 0.0f;
-	float y = 0.0f;
+	float x = pos.x;
+	float y = pos.y;
 
 	// NOT NEEDED Transform world coords to texture coords. ( 1 pixel on texture corresponds to 1.0, origo is (0, 0) for both spaces
 
@@ -214,17 +225,17 @@ void Minotaur::spawnOnFloor()
 		//If wall, move start position
 		if (pingpong = false)
 		{
-			x += 1.5f;
+			x += 1.0f;
 			pingpong = true;
 		}
 		else
 		{
-			y += 1.5f;
+			y += 1.0f;
 			pingpong = false;
 		}
 	}
 
-	this->transform.SetPos(glm::vec3(x, 1, y));
+	return glm::vec2(x, y);
 }
 
 void Minotaur::Draw(Shader * shader)

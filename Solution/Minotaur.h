@@ -40,7 +40,7 @@ private:
 
 	void GeneratePath(int startY, int startX, int destinationY, int destinationX);
 	void Move();
-	void spawnOnFloor();
+	glm::vec2 toNearbyFloor(glm::vec2 pos);
 
 	// TEST
 	// color data for image
