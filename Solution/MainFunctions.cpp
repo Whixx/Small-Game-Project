@@ -450,15 +450,17 @@ void HandleEvents(Player* player, SoundHandler *winSound, SoundHandler * deathSo
 		{
 			player->CenterPlayer();
 			//winSound->SetPosition();
-			winSound->Play();
-		}
 
-		if (event == EVENT_PLAYER_LOSE)
+			// IRRITERANDE LJUD
+			//winSound->Play();
+		}
+		else if (event == EVENT_PLAYER_LOSE)
 		{
 			player->CenterPlayer();
-			deathSound->Play();
+			// IRRITERANDE LJUD
+			//deathSound->Play();
 		}
-		if (event == EVENT_PLAYER_DROPCOIN)
+		else if (event == EVENT_PLAYER_DROPCOIN)
 		{
 			player->DropCoin();
 		}
