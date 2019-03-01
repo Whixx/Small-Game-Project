@@ -402,11 +402,6 @@ void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint * fullScreenTri
 void GenerateMazeBitmaps(int height, int width)
 {
 	MazeGeneratePNG mazeGen(height, width);
-
-	// Set_cell can be used to set "entrance and exit" etc
-	mazeGen.Set_cell(0, 1, mazeGen.path);
-	mazeGen.Set_cell(height - 1, width - 2, mazeGen.path);
-
 	mazeGen.Generate();
 	mazeGen.Draw_png();
 }
@@ -444,13 +439,25 @@ GLuint CreateScreenQuad()
 	return screenQuad;
 }
 
-void HandleEvents(Player* player)
+void HandleEvents(Player* player, SoundHandler *winSound, SoundHandler * deathSound)
 {
 	EventHandler& EH = EventHandler::GetInstance();
 	while (!EH.IsEmpty())
 	{
 		Event event = EH.GetEvent();
 
+		if (event == EVENT_PLAYER_WIN)
+		{
+			player->CenterPlayer();
+			//winSound->SetPosition();
+			winSound->Play();
+		}
+
+		if (event == EVENT_PLAYER_LOSE)
+		{
+			player->CenterPlayer();
+			deathSound->Play();
+		}
 		if (event == EVENT_PLAYER_DROPCOIN)
 		{
 			player->DropCoin();

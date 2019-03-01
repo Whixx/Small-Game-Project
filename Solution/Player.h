@@ -9,6 +9,7 @@
 #include "SoundHandler.h"
 #include "Maze.h"
 #include "Coin.h"
+#include "EventHandler.h"
 
 #define PI 3.1415926535
 const unsigned int MAX_NR_OF_COINS = 100;

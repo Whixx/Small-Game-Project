@@ -419,6 +419,32 @@ void Player::Update(double dt)
 
 	// Update sound positions
 	footStep.SetPosition(this->GetCamera()->GetCameraPosition());
+
+
+	// Get a vector with only x and z values
+	glm::vec2 p2d = glm::vec2(this->transform.GetPos().x, this->transform.GetPos().z);
+	glm::vec2 m2d = glm::vec2(this->maze->GetExitWorldPos().x, this->maze->GetExitWorldPos().z);
+
+	glm::vec2 dist2d = glm::abs(p2d - m2d);
+	float wallRadius = maze->GetTransform()->GetScale().x / 2.0;
+
+	// Check if player is at exit
+	if (dist2d.x <= wallRadius && dist2d.y <= wallRadius)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+		EH.AddEvent(EVENT_PLAYER_WIN);
+	}
+
+	// temp until we get the minotaur
+	glm::vec3 minoPos = glm::vec3(0, 4, 3);
+
+	// Check if player dies
+	if ((minoPos.x <= this->transform.GetPos().x + this->boundingBoxHalfSize && minoPos.x >= this->transform.GetPos().x - this->boundingBoxHalfSize) || 
+		(minoPos.z <= this->transform.GetPos().z + this->boundingBoxHalfSize && minoPos.z >= this->transform.GetPos().z - this->boundingBoxHalfSize))
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+		EH.AddEvent(EVENT_PLAYER_LOSE);
+	}
 }
 
 void Player::AddCoinToInventory()

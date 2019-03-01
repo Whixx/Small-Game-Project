@@ -93,6 +93,9 @@ void main()
 	vec3 DW_v = vec3(50, 0, 0);
 	vec3 DW_h = vec3(50, 255, 255);
 
+	// Exit
+	vec3 EXIT = vec3(255, 15, 15);
+
 	// Find i and j depending on the vertex ID (outputs from the vertex shader and stored in gl_Position)
 	vec4 pointPosition = gl_in[0].gl_Position;
 	int i = int(pointPosition.x);
@@ -170,6 +173,10 @@ void main()
 	else if(pixelValue == DW_h)
 	{
 		DrawDW_h(i, j);
+	}
+	else if(pixelValue == EXIT)
+	{
+		DrawFloor(i, j);
 	}
 }
 
