@@ -6,6 +6,7 @@ Particle::Particle(float torchSize, std::string path)
 {
 	this->texture = new Texture(path, "TextureDiffuse");
 	this->torchSize = torchSize;
+	this->particleLife = 1.0f;
 	
 	// Preparing for the find function
 	this->lastUsedParticle = 0;
@@ -136,21 +137,20 @@ void Particle::GenerateParticles(float deltaTime, glm::vec3 particlePos)
 
 		// Set the start values of the new particle
 		// Life (Length in seconds which describes how long the particle should be alive)
-		this->particleArray[index].life = 1.0f;
+		this->particleArray[index].life = this->particleLife;
 
 		// Position
-		float randomPosX = ((rand() % 100) - 50) / 90.0f;
-		float randomPosZ = ((rand() % 100) - 50) / 90.0f;
+		this->particleArray[index].randomX = ((rand() % 100) - 50) / 80.0f;
+		this->particleArray[index].randomZ = ((rand() % 100) - 50) / 80.0f;
 		float randomHeight = (rand() % 20) / 10.0f;
-		randomPosX *= this->torchSize;
-		randomPosZ *= this->torchSize;
+		this->particleArray[index].randomX *= this->torchSize;
+		this->particleArray[index].randomZ *= this->torchSize;
 		randomHeight *= this->torchSize;
-		this->particleArray[index].pos.x = particlePos.x + randomPosX;
+
 		this->particleArray[index].pos.y = particlePos.y + randomHeight - this->torchSize;
-		this->particleArray[index].pos.z = particlePos.z + randomPosZ;
 
 		// Speed
-		float speed = 10.0f;
+		float speed = 6.0f;
 		speed *= this->torchSize;
 
 		glm::vec3 mainDir = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -169,11 +169,11 @@ void Particle::GenerateParticles(float deltaTime, glm::vec3 particlePos)
 		this->particleArray[index].a = 150;
 
 		// Size
-		this->particleArray[index].size = 2.5f * this->torchSize;
+		this->particleArray[index].size = 2.0f * this->torchSize;
 	}
 }
 
-void Particle::SimulateParticles(glm::vec3 cameraPosition, float deltaTime)
+void Particle::SimulateParticles(glm::vec3 cameraPosition, float deltaTime, glm::vec3 torchPos)
 {
 	this->nrOfActiveParticles = 0;
 
@@ -193,19 +193,21 @@ void Particle::SimulateParticles(glm::vec3 cameraPosition, float deltaTime)
 			{
 				// Update the attributes of the particle
 				// Speed
-				tempParticle.speed += deltaTime * this->torchSize * 0.5;
+				tempParticle.speed += deltaTime * this->torchSize;
 
 				// Position
-				tempParticle.pos += tempParticle.speed * deltaTime;
+				tempParticle.pos.x = torchPos.x + tempParticle.randomX;
+				tempParticle.pos.z = torchPos.z + tempParticle.randomZ;
+				tempParticle.pos.y += tempParticle.speed.y * deltaTime;
 
-				if (tempParticle.life >= 0.8f)
+				if (tempParticle.life >= 0.7f)
 				{
 					// Changing color (white -> red)
-					tempParticle.b = (tempParticle.life / 1.5) * 255.0f;
-					tempParticle.g = (tempParticle.life / 1.5) * 255.0f;
+					tempParticle.b = (tempParticle.life / this->particleLife) * 255.0f;
+					tempParticle.g = (tempParticle.life / this->particleLife) * 255.0f;
 
 					// Fading out
-					tempParticle.a = (tempParticle.life / 1.5) * 150.0f;
+					tempParticle.a = (tempParticle.life / this->particleLife) * 150.0f;
 				}
 				else
 				{
@@ -215,7 +217,7 @@ void Particle::SimulateParticles(glm::vec3 cameraPosition, float deltaTime)
 					tempParticle.b = 50;
 
 					// Fading out
-					tempParticle.a = (tempParticle.life / 1.0) * 150.0f;
+					tempParticle.a = (tempParticle.life / this->particleLife) * 150.0f;
 				}
 				
 				// CameraDistance
@@ -252,7 +254,7 @@ void Particle::Update(double deltaTime, glm::vec3 camPos, glm::vec3 position)
 	this->GenerateParticles(deltaTime, position);
 
 	// Simulate all the particles
-	this->SimulateParticles(camPos, deltaTime);
+	this->SimulateParticles(camPos, deltaTime, position);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->particlesPositionBuffer);
 	glBufferData(GL_ARRAY_BUFFER, maxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);

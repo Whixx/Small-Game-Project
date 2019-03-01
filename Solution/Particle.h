@@ -19,6 +19,7 @@ struct ParticleStruct
 	float size, angle, weight;
 	float life; // Remaining life of the particle. if <0 : dead and unused.
 	float cameradistance; // *Squared* distance to the camera. if dead : -1.0f
+	float randomX, randomZ;
 
 	// We need to declare the operator< to be able to use std::sort.
 	bool operator<(const ParticleStruct& that) const
@@ -35,7 +36,7 @@ public:
 	~Particle();
 
 	void GenerateParticles(float deltaTime, glm::vec3 particlePos);
-	void SimulateParticles(glm::vec3 cameraPosition, float deltaTime);
+	void SimulateParticles(glm::vec3 cameraPosition, float deltaTime, glm::vec3 torchPos);
 	void Update(double deltaTime, glm::vec3 camPos, glm::vec3 position);
 	void Bind();
 	void Draw();
@@ -58,6 +59,7 @@ private:
 
 	int nrOfActiveParticles;
 	float torchSize;
+	float particleLife;
 
 	void sort();
 };
