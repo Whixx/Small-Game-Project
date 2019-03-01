@@ -1,4 +1,5 @@
 #include "Minotaur.h"
+#include "stb_image_write.h"
 
 Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>> mazeGrid, Maze* maze)
 	:model("Models/Deer/deer.obj"),
@@ -41,7 +42,7 @@ void Minotaur::Update(glm::vec3 playerPos)
 						playerPos.y + rand() % (this->searchArea * 2) - this->searchArea);
 
 		// Generate path between current location and goal location
-		GeneratePath(startPos.z, startPos.x, 0, 1);
+		GeneratePath(startPos.z, startPos.x, 39, 39);
 
 		// Play growl sound
 		growlSound.Play();
@@ -136,7 +137,7 @@ void Minotaur::GeneratePath(int startY, int startX, int destinationY, int destin
 	while (distanceCount != 3)
 	{
 		// mark the path back as solution and send coordinates to path variable to be used by the minotaur
-		newGrid[y][x] = solution;
+		this->mazeGrid[y][x] = solution;
 
 		distanceCount--;
 		if ((y > 0) && (distanceCount == newGrid[y - 1][x]))
@@ -176,6 +177,8 @@ void Minotaur::GeneratePath(int startY, int startX, int destinationY, int destin
 	//		}
 	//	}
 	//}
+
+	this->drawPath();
 }
 
 void Minotaur::Move()
@@ -227,4 +230,88 @@ void Minotaur::spawnOnFloor()
 void Minotaur::Draw(Shader * shader)
 {
 	this->model.Draw(shader);
+}
+
+void Minotaur::setupColorData()
+{
+	// set up image vectors to hold color data
+// added +1 to make the maze 64*64 pixels for use in shaders
+	int newHeight = 64;
+	int newWidth = 64;
+
+	image.resize(newHeight);
+	for (int y = 0; y < newHeight; y++)
+	{
+		image[y].resize(newWidth);
+		for (int x = 0; x < newWidth; x++)
+		{
+			image[y][x].resize(3);
+		}
+	}
+
+	for (int i = 0; i < newWidth; i++)
+	{
+		image[63][i][0] = 0;
+		image[63][i][1] = 0;
+		image[63][i][2] = 0;
+	}
+	for (int i = 0; i < newHeight; i++)
+	{
+		image[i][63][0] = 0;
+		image[i][63][1] = 0;
+		image[i][63][2] = 0;
+	}
+
+	// sets colors, white for walls, black for path
+	for (int y = 0; y < 63; y++)
+	{
+		for (int x = 0; x < 63; x++)
+		{
+			if (mazeGrid[y][x] == 1)
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					image[y][x][i] = 255;
+				}
+			}
+			else if (mazeGrid[y][x] == 0)
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					image[y][x][i] = 0;
+				}
+			}
+			else if (mazeGrid[y][x] == 2)
+			{
+				image[y][x][0] = 255;
+				image[y][x][1] = 0;
+				image[y][x][2] = 0;
+			}
+		}
+	}
+}
+
+void Minotaur::drawPath()
+{
+	setupColorData();
+	
+	std::vector<unsigned char> c;
+	for (int y = 0; y < 63 + 1; y++)
+	{
+		for (int x = 0; x < 63 + 1; x++)
+		{
+			c.push_back(image[y][x][0]);
+			c.push_back(image[y][x][1]);
+			c.push_back(image[y][x][2]);
+		}
+	}
+	
+	if (!stbi_write_png("MazePNG/MINOTAURPATH.png", 64, 64, 3, c.data(), 3 * (64)))
+	{
+		std::cout << "ERROR MINOTAURPATH NOT WRITTEN" << std::endl;
+	}
+	else
+	{
+		std::cout << "MINOTAURPATH WRITTEN" << std::endl;
+	}
 }

@@ -17,6 +17,10 @@ public:
 	void Update(glm::vec3 playerPos);
 	void Draw(Shader* shader);
 
+	// TEST
+	void setupColorData();
+	void drawPath();
+
 private:
 	Model model;
 	SoundHandler stepSound;
@@ -37,6 +41,10 @@ private:
 	void GeneratePath(int startY, int startX, int destinationY, int destinationX);
 	void Move();
 	void spawnOnFloor();
+
+	// TEST
+	// color data for image
+	std::vector<std::vector<std::vector<unsigned char>>> image;
 };
 
 #endif

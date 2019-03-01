@@ -24,11 +24,11 @@ public:
 	std::vector<std::vector<int>> GetGrid();
 
 
-	// pathfinding
-	int solution = 2;
-	void GeneratePath(int startY, int startX, int destinationY, int destinationX);
-	void SetupPathData();
-	void DrawRedPath();
+	//// pathfinding
+	//int solution = 2;
+	//void GeneratePath(int startY, int startX, int destinationY, int destinationX);
+	//void SetupPathData();
+	//void DrawRedPath();
 
 private:
 	std::random_device randomDevice;
@@ -55,13 +55,13 @@ private:
 	// color data for image
 	std::vector<std::vector<std::vector<unsigned char>>> image;
 
-	// pathfinding
-	// for dijkstras alg
-	struct distance {
-		int y;
-		int x;
-	};
-	std::vector<std::vector<int>> redPath;
+	//// pathfinding
+	//// for dijkstras alg
+	//struct distance {
+	//	int y;
+	//	int x;
+	//};
+	//std::vector<std::vector<int>> redPath;
 
 	//vector of coordinates for the minotaur to use
 	std::vector<glm::vec2> generatedPath;

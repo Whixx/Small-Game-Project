@@ -376,7 +376,7 @@ void Player::Update(double dt)
 #ifdef DEBUG
 	//if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
 	//{
-		printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+		//printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
 	//
 	//	std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
 	//	std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;
@@ -404,7 +404,7 @@ void Player::Update(double dt)
 	}
 
 	// temp until we get the minotaur
-	glm::vec3 minoPos = glm::vec3(0, 4, 3);
+	glm::vec3 minoPos = glm::vec3(1000, 4, 3);
 
 	// Check if player dies
 	if ((minoPos.x <= this->transform.GetPos().x + this->boundingBoxHalfSize && minoPos.x >= this->transform.GetPos().x - this->boundingBoxHalfSize) || 

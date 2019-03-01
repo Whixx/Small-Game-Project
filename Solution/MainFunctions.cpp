@@ -427,12 +427,12 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 
 	mazeGen.Generate();
 
-	mazeGen.GeneratePath(0, 1, height - 1, width - 2);
+	//mazeGen.GeneratePath(0, 1, height - 1, width - 2);
 	//mazeGen.GeneratePath(height / 2, width / 2, height - 1, width - 2);
 
 	mazeGen.DrawPNG();
 	// redpath must be drawn after the black/white maze is drawn
-	mazeGen.DrawRedPath();
+	//mazeGen.DrawRedPath();
 	
 	return mazeGen.GetGrid();
 }
