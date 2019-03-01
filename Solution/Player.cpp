@@ -328,12 +328,12 @@ void Player::CenterPlayer()
 		//If wall, move start position
 		if (pingpong = false)
 		{
-			x += 1.5f;
+			x += 1.0f;
 			pingpong = true;
 		}
 		else
 		{
-			y += 1.5f;
+			y += 1.0f;
 			pingpong = false;
 		}
 	}
