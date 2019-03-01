@@ -480,7 +480,7 @@ void Player::AddCoinToWorld(unsigned int state)
 	}
 
 	// Set the starting position of the coin to be on the player and set the scale
-	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetPos(this->transform.GetPos() + this->GetCamera()->GetForwardVector() / 1.5f);
+	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetPos(this->transform.GetPos()); //+ this->GetCamera()->GetForwardVector() * this->boundingBoxHalfSize);
 	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetScale(this->inventoryCoins[this->nrOfInventoryCoins - 1].GetTransform()->GetScale());
 	// Set the state (if coin is tossed or dropped)
 	this->worldCoins[this->nrOfWorldCoins].SetCoinState(state);

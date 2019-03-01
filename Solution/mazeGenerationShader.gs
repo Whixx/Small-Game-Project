@@ -53,7 +53,7 @@ void main()
 	vec3 pixelValue;
 	
 	// Black pixels represent floor in the texture
-	vec3 floor = vec3(0.0f, 0.0f, 0.0f);
+	vec3 floorColor = vec3(0.0f, 0.0f, 0.0f);
 
 	// CW = Corner Wall
 	// SW = Single Wall
@@ -111,7 +111,7 @@ void main()
 	j -= (height / 2);
 
 	// Draw the maze depending on the color of each pixel
-	if(pixelValue == floor)
+	if(pixelValue == floorColor)
 	{
 		DrawFloor(i, j);
 	}
