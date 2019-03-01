@@ -177,19 +177,20 @@ void Minotaur::GeneratePath(int startY, int startX, int destinationY, int destin
 		}
 	}
 
-	//// clear path of unused distance numbers
-	//for (int y = 0; y < this->redPath.size(); y++)
-	//{
-	//	for (int x = 0; x < this->redPath[y].size(); x++)
-	//	{
-	//		if ((wall != this->redPath[y][x]) && (solution != this->redPath[y][x]))
-	//		{
-	//			this->redPath[y][x] = path;
-	//		}
-	//	}
-	//}
-
 	this->drawPath();
+
+	// clear grid of solution path
+	for (int y = 0; y < this->mazeGrid.size(); y++)
+	{
+		for (int x = 0; x < this->mazeGrid[y].size(); x++)
+		{
+			if ((wall != this->mazeGrid[y][x])/* && (solution != this->mazeGrid[y][x])*/)
+			{
+				this->mazeGrid[y][x] = path;
+			}
+		}
+	}
+
 }
 
 void Minotaur::Move()
