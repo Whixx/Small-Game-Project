@@ -52,7 +52,7 @@ void Minotaur::Update(glm::vec3 playerPos)
 		endPos = this->toNearbyFloor(glm::vec2(endPos.x, endPos.y));
 
 		// Generate path between current location and goal location
-		GeneratePath(startPos.z, startPos.x, 39, 39);
+		GeneratePath(startPos.z, startPos.x, 0, 1);
 
 		// Play growl sound
 		growlSound.Play();
@@ -194,10 +194,12 @@ void Minotaur::GeneratePath(int startY, int startX, int destinationY, int destin
 
 void Minotaur::Move()
 {
-	// Identify the current position direction
+	glm::vec3 worldDestination = glm::vec3(this->destination.x, 0, this->destination.y);
+
+	// Identify the current direction
 	glm::vec2 direction = glm::vec2(
-		this->destination.x - this->transform.GetPos().x,
-		this->destination.y - this->transform.GetPos().z);
+		worldDestination.x - this->transform.GetPos().x,
+		worldDestination.z - this->transform.GetPos().z);
 
 	// If we are not walking past the destination
 	if (glm::length(direction) > glm::length(this->movementSpeed*glm::normalize(direction)))
@@ -207,8 +209,8 @@ void Minotaur::Move()
 	}
 	else	// Else we are about to walk past the destination, which means that we have arrived
 	{
-		this->transform.GetPos().x = this->destination.x;
-		this->transform.GetPos().z = this->destination.y;
+		this->transform.GetPos().x = worldDestination.x;
+		this->transform.GetPos().z = worldDestination.y;
 	}
 }
 

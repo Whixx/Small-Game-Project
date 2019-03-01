@@ -473,7 +473,7 @@ GLuint CreateScreenQuad()
 void HandleEvents(Player* player, SoundHandler *winSound, SoundHandler * deathSound)
 {
 	EventHandler& EH = EventHandler::GetInstance();
-	while (!EH.IsEmpty())
+	while (false)//!EH.IsEmpty())
 	{
 		Event event = EH.GetEvent();
 
