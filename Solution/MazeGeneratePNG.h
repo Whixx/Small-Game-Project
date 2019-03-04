@@ -23,13 +23,6 @@ public:
 	void DrawPNG();
 	std::vector<std::vector<int>> GetGrid();
 
-
-	//// pathfinding
-	//int solution = 2;
-	//void GeneratePath(int startY, int startX, int destinationY, int destinationX);
-	//void SetupPathData();
-	//void DrawRedPath();
-
 private:
 	std::random_device randomDevice;
 	int vertical = 0;
@@ -55,16 +48,6 @@ private:
 	// color data for image
 	std::vector<std::vector<std::vector<unsigned char>>> image;
 
-	//// pathfinding
-	//// for dijkstras alg
-	//struct distance {
-	//	int y;
-	//	int x;
-	//};
-	//std::vector<std::vector<int>> redPath;
-
-	//vector of coordinates for the minotaur to use
-	std::vector<glm::vec2> generatedPath;
 };
 
 #endif /* MAZEGENERATEPNG_H */
