@@ -448,11 +448,11 @@ void HandleEvents(Player* player, SoundHandler *winSound, SoundHandler * deathSo
 
 		if (event == EVENT_PLAYER_WIN)
 		{
-			player->CenterPlayer();
-			//winSound->SetPosition();
+			//player->CenterPlayer();
 
 			// IRRITERANDE LJUD
-			//winSound->Play();
+			winSound->SetPosition(player->GetPos());
+			winSound->Play();
 		}
 		else if (event == EVENT_PLAYER_LOSE)
 		{

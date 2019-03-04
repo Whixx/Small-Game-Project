@@ -39,6 +39,11 @@ float Player::GetPlayerHeight()
 	return this->playerHeight;
 }
 
+glm::vec3 Player::GetPos()
+{
+	return this->transform.GetPos();
+}
+
 glm::vec3 Player::GetWalkingVector()
 {
 	return this->walkingVector;

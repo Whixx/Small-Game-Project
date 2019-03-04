@@ -25,7 +25,7 @@ Maze::Maze()
 	this->LoadMaze("MazePNG/mazeColorCoded.png");
 
 	// Find the exit
-	this->exitPos = this->FindExit();
+	glm::vec2 exitPos = this->FindExit();
 	this->exitWorldPos = this->TransformToWorldCoords(glm::vec3(exitPos.x, 0, exitPos.y));
 
 
@@ -70,11 +70,6 @@ int Maze::GetMazeHeight()
 int Maze::GetMazeWidth()
 {
 	return this->width;
-}
-
-glm::vec2 Maze::GetExitPos() const
-{
-	return this->exitPos;
 }
 
 glm::vec3 Maze::GetExitWorldPos() const
@@ -155,7 +150,7 @@ bool Maze::IsWallAtWorld(float x, float y)
 	glm::vec3 transformed = this->TransformToMazeCoords(glm::vec3(x, 0.0f, y));
 	glm::vec3 pixel = readPixel(transformed.x, transformed.z);
 	
-	if (pixel == glm::vec3(0.0f, 0.0f, 0.0f) || pixel == glm::vec3(255, 15, 15)) // pixel == glm::vec3(255, 15, 15) is EXIT
+	if (pixel == glm::vec3(0.0f, 0.0f, 0.0f))
 	{
 		isAWall = false;
 	}
@@ -373,20 +368,36 @@ glm::vec3 Maze::readPixel(unsigned int x, unsigned int y)
 
 glm::vec2 Maze::FindExit()
 {
-	// Loop through whole map
-	for (int x = 0; x < this->width; x++)
+	// Didn't find exit
+	glm::vec2 exitPos = glm::vec2(-1, -1);
+
+	// Loop through whole map sides
+	for (int i = 0; i < this->width; i++)
 	{
-		for (int y = 0; y < this->height; y++)
+		// --->
+		if (this->readPixel(i, 0) == glm::vec3(0, 0, 0))
 		{
-			if (this->readPixel(x, y) == glm::vec3(255, 15, 15))
-			{
-				return glm::vec2(x, y);
-			}
+			exitPos = glm::vec2(i, 0);
+		}
+		// |
+		// v
+		else if (this->readPixel(0, i) == glm::vec3(0, 0, 0))
+		{
+			exitPos = glm::vec2(i, 0);
+		}
+		// ---> below
+		else if (this->readPixel(i, this->width - 1) == glm::vec3(0, 0, 0))
+		{
+			exitPos = glm::vec2(i, 0);
+		}
+		// v below
+		else if (this->readPixel(this->width - 1, i) == glm::vec3(0, 0, 0))
+		{
+			exitPos = glm::vec2(i, 0);
 		}
 	}
 
-	// Didn't find exit
-	return glm::vec2(-1, -1);
+	return exitPos;
 }
 
 glm::vec3 Maze::CreateCubePosition()

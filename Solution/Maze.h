@@ -57,10 +57,8 @@ private:
 	int numComponents;
 	GLuint mazeTexture;
 	glm::vec2 drawOrder[(1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE)];
-	glm::vec2 exitPos;
 	glm::vec3 exitWorldPos;
 
-	//std::vector<glm::vec3> cubePositionsWorld;
 	Keystone * keystones;
 	int keystonesCapacity;
 	int nrOfKeystones;
@@ -84,10 +82,13 @@ private:
 
 	// When generating the maze outwards from the player
 	void GenerateDrawOrder();
+
+	// Returns the color of the pixel
 	glm::vec3 readPixel(unsigned int x, unsigned int y);
 	glm::vec2 FindExit();
-	glm::vec3 CreateCubePosition();
 
+	// Keystone functions
+	glm::vec3 CreateCubePosition();
 	void AddKeystone();
 };
 #endif
