@@ -106,8 +106,8 @@ void main()
 	{
 		distancePixelToLight = length(PointLights[i].position - pixelPos);
 
-		if(distancePixelToLight < radius)
-		{
+		//if(distancePixelToLight < radius)
+		//{
 			// Diffuse
 			lightDir = normalize(PointLights[i].position.xyz - pixelPos.xyz);
 			alpha = dot(normal.xyz,lightDir);
@@ -122,7 +122,7 @@ void main()
 			// attenuation
 			b = 1.0f/(radius*radius*minLight);
 			attenuation = 1.0f / (1.0f + (a * distancePixelToLight) + (b/800 * pow(distancePixelToLight, 4.5f)));
-		}
+		//}
 	}
 
 	float shadow = calculateShadows(pixelPos, cameraPos, normal);
