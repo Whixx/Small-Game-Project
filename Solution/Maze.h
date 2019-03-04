@@ -55,7 +55,6 @@ private:
 	int numComponents;
 	GLuint mazeTexture;
 	glm::vec2 drawOrder[(1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE)];
-	glm::vec2 exitPos;
 	glm::vec3 exitWorldPos;
 
 	Transform transform;

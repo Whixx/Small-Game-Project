@@ -39,6 +39,11 @@ float Player::GetPlayerHeight()
 	return this->playerHeight;
 }
 
+glm::vec3 Player::GetPos()
+{
+	return this->transform.GetPos();
+}
+
 glm::vec3 Player::GetWalkingVector()
 {
 	return this->walkingVector;
@@ -408,7 +413,7 @@ void Player::Update(double dt)
 #ifdef DEBUG
 	if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
 	{
-		//printf("Map position: X:%.2f, Z:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+		printf("Map position: X:%.2f, Z:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
 	
 		//std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
 		//std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;

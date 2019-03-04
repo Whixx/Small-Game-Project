@@ -363,19 +363,9 @@ void MazeGeneratePNG::SetupColorDataForColor()
 			}
 			else if (Get_cell(y, x) == path)
 			{
-				// Exit
-				if (x == 1 && y == 0)
+				for (int i = 0; i < 3; i++)
 				{
-					image[y][x][0] = 255;
-					image[y][x][1] = 15;
-					image[y][x][2] = 15;
-				}
-				else
-				{
-					for (int i = 0; i < 3; i++)
-					{
-						image[y][x][i] = 0;
-					}
+					image[y][x][i] = 0;
 				}
 			}
 		}

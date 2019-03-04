@@ -23,6 +23,7 @@ public:
 	Player(float height, float fov, float near, float far, Maze * maze, irrklang::ISoundEngine* engine, PointLightHandler* PLH, float torchSize);
 	virtual ~Player();
 	
+	glm::vec3 GetPos();
 	float GetPlayerSpeed();
 	float GetPlayerHeight();
 	glm::vec3 GetWalkingVector();
