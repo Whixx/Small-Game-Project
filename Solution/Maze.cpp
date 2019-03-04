@@ -28,6 +28,24 @@ Maze::Maze()
 	this->exitPos = this->FindExit();
 	this->exitWorldPos = this->TransformToWorldCoords(glm::vec3(exitPos.x, 0, exitPos.y));
 
+
+	this->nrOfKeystones = 0;
+	this->keystonesCapacity = 3; // Initvalue of the number of keystones
+	this->keystones = new Keystone[this->keystonesCapacity];
+
+	// Create 3 cubes. Each on a separate floor in the maze
+	for (int i = 0; i < 3; i++)
+		this->AddKeystone();
+
+	// TEST PRINT
+	//for (int i = 0; i < this->nrOfKeystones; i++)
+	//{
+	//	std::cout << "X: " << this->keystones[i].GetWorldPosition().x << std::endl;
+	//	std::cout << "Z: " << this->keystones[i].GetWorldPosition().z << std::endl;
+	//}
+		
+
+
 	this->InitiateMazeBuffers();
 
 	this->GenerateDrawOrder();
@@ -40,6 +58,8 @@ Maze::~Maze()
 	glDeleteBuffers(1, &this->mazeTbo);
 	glDeleteBuffers(1, &this->mazeVbo);
 	glDeleteVertexArrays(1, &this->mazeVao);
+
+	delete[] this->keystones;
 }
 
 int Maze::GetMazeHeight()
@@ -217,7 +237,7 @@ void Maze::DrawMaze()
 	glBindVertexArray(0);
 }
 
-void Maze::DrawShadows()
+void Maze::DrawMazeShadows()
 {
 	glBindVertexArray(this->mazeVao);
 
@@ -367,4 +387,63 @@ glm::vec2 Maze::FindExit()
 
 	// Didn't find exit
 	return glm::vec2(-1, -1);
+}
+
+glm::vec3 Maze::CreateCubePosition()
+{
+	while (true)
+	{
+		srand(time(NULL));
+		int randomWidth = rand() % this->width;
+		int randomHeight = rand() % this->height;	
+
+		glm::vec3 randomPosWorld = this->TransformToWorldCoords(glm::vec3(randomWidth, 0, randomHeight));
+
+		// Check distance between other cubes (if there is any)
+		for (int i = 0; i < this->nrOfKeystones; i++)
+		{
+			if (abs(randomPosWorld.x - this->keystones[i].GetWorldPosition().x) < 5 &&
+				abs(randomPosWorld.z - this->keystones[i].GetWorldPosition().z) < 5)
+			{
+				// The points are to close to eachother, we need to find a new position
+				randomWidth = rand() % 64 + 1;
+				randomHeight = rand() % 64 + 1;
+		
+				randomPosWorld = this->TransformToWorldCoords(glm::vec3(randomWidth, 0, randomHeight));
+		
+				// Restart loop
+				i = 0;
+			}
+		}
+
+		glm::vec3 floorColor = glm::vec3(0.0f, 0.0f, 0.0f);
+		glm::vec3 pixelColor = this->readPixel(randomWidth, randomHeight);
+		if (pixelColor == floorColor)
+		{
+			return this->TransformToWorldCoords(glm::vec3(randomWidth, 0, randomHeight));
+		}
+	}
+}
+
+void Maze::AddKeystone()
+{
+	// Check for room
+	if (this->nrOfKeystones >= this->keystonesCapacity)
+	{
+		// Expand the array
+		this->keystonesCapacity += 10;
+		Keystone * tmp = new Keystone[this->keystonesCapacity];
+
+		for (int i = 0; i < this->nrOfKeystones; i++)
+		{
+			tmp[i] = this->keystones[i];
+		}
+
+		delete[] this->keystones;
+		this->keystones = tmp;
+	}
+
+	// Add a keystone
+	this->keystones[this->nrOfKeystones] = Keystone(this->CreateCubePosition());
+	this->nrOfKeystones++;
 }

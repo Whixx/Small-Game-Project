@@ -96,6 +96,7 @@
     <ClCompile Include="FinalFBO.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="InputHandler.cpp" />
+    <ClCompile Include="Keystone.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainFunctions.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -127,6 +128,7 @@
     <ClInclude Include="EventHandler.h" />
     <ClInclude Include="FinalFBO.h" />
     <ClInclude Include="GBuffer.h" />
+    <ClInclude Include="Keystone.h" />
     <ClInclude Include="MainFunctions.h" />
     <ClInclude Include="InputHandler.h" />
     <ClInclude Include="Material.h" />

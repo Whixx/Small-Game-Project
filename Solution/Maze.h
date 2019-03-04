@@ -12,6 +12,8 @@
 #include "Shader.h"
 #include "MaterialHandler.h"
 
+#include "Keystone.h"
+#include <time.h>
 using namespace std;
 
 const unsigned int DRAWDISTANCE = 7;
@@ -37,7 +39,7 @@ public:
 
 	// Draw from transform feedback buffer
 	void DrawMaze();
-	void DrawShadows();
+	void DrawMazeShadows();
 
 	void BindMaterial(Shader* shader);
 
@@ -57,6 +59,11 @@ private:
 	glm::vec2 drawOrder[(1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE)];
 	glm::vec2 exitPos;
 	glm::vec3 exitWorldPos;
+
+	//std::vector<glm::vec3> cubePositionsWorld;
+	Keystone * keystones;
+	int keystonesCapacity;
+	int nrOfKeystones;
 
 	Transform transform;
 
@@ -79,5 +86,8 @@ private:
 	void GenerateDrawOrder();
 	glm::vec3 readPixel(unsigned int x, unsigned int y);
 	glm::vec2 FindExit();
+	glm::vec3 CreateCubePosition();
+
+	void AddKeystone();
 };
 #endif
