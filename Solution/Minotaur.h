@@ -13,6 +13,8 @@ public:
 	Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>> mazeGrid, Maze* maze);
 	virtual ~Minotaur();
 	Transform GetTransform();
+	void increaseAgressionLevel();
+	void reactToSound(glm::vec3 soundPos);
 
 	void Update(glm::vec3 playerPos);
 	void Draw(Shader* shader);
@@ -27,7 +29,9 @@ private:
 	SoundHandler growlSound;
 	Transform transform;
 	float movementSpeed;
-	int searchArea = 8;
+	int alerted = 0;
+	glm::vec3 lastSoundHeardPos;
+	int searchArea;
 	glm::vec2 destination;
 	Maze* maze;
 	std::vector<glm::vec2> generatedPath;

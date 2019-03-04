@@ -7,7 +7,7 @@ Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>
 	growlSound("Sounds/minotaurgrowl.wav", false, engine)
 {
 	this->transform.GetScale() = glm::vec3(0.01f, 0.01f, 0.01f);
-	this->transform.GetPos() = glm::vec3(0.0f, 2.0f, 0.0f);
+	this->transform.GetPos() = glm::vec3(0.0f, 1.0f, 0.0f);
 	this->movementSpeed = 1 * this->transform.GetScale().y;
 	this->mazeGrid = mazeGrid;
 	this->maze = maze;
@@ -33,6 +33,25 @@ Transform Minotaur::GetTransform()
 	return this->transform;
 }
 
+void Minotaur::increaseAgressionLevel()
+{
+	this->searchArea--;
+}
+
+void Minotaur::reactToSound(glm::vec3 soundMapPos)
+{
+	this->alerted = 3;
+
+	this->lastSoundHeardPos = soundMapPos;
+
+	while (!this->generatedPath.empty())
+		this->generatedPath.pop_back();
+
+	glm::vec3 currentPos = this->maze->TransformToMazeCoords(this->transform.GetPos());
+
+	GeneratePath(currentPos.z, currentPos.x, soundMapPos.z, soundMapPos.x);
+}
+
 void Minotaur::Update(glm::vec3 playerPos)
 {
 	glm::vec3 currentPos = this->transform.GetPos();
@@ -44,14 +63,33 @@ void Minotaur::Update(glm::vec3 playerPos)
 	{
 		// Calculate the starting position of the path in the maze
 		glm::vec3 startPos = this->maze->TransformToMazeCoords(currentPos);
+		glm::vec2 endPos;
+		glm::vec3 trueEndPos;
 
-		// Choose a location in the player-area at random
-		glm::vec2 endPos =
-			glm::vec2(	currentPlayerPos.x + rand() % (this->searchArea * 2) - this->searchArea,
-						currentPlayerPos.z + rand() % (this->searchArea * 2) - this->searchArea);
-		// Adjust spawn position to a floor-tile
-		endPos = this->toNearbyFloor(glm::vec2(endPos.x, endPos.y));
-		glm::vec3 trueEndPos(this->maze->TransformToMazeCoords(glm::vec3(endPos.x, 0.0f, endPos.y)));
+		if (this->alerted == 0)
+		{
+			this->searchArea = 8;
+
+			// Choose a location in the player-area at random
+			endPos = glm::vec2(	currentPlayerPos.x + rand() % (this->searchArea * 2) - this->searchArea,
+								currentPlayerPos.z + rand() % (this->searchArea * 2) - this->searchArea);
+			// Adjust spawn position to a floor-tile
+			endPos = this->toNearbyFloor(glm::vec2(endPos.x, endPos.y));
+			trueEndPos = this->maze->TransformToMazeCoords(glm::vec3(endPos.x, 0.0f, endPos.y));
+		}
+		else if (this->alerted > 0)
+		{
+			this->searchArea = 4;
+			this->alerted--;
+
+			// Choose a location in the sound-area at random
+			endPos = glm::vec2(	this->lastSoundHeardPos.x + rand() % (this->searchArea * 2) - this->searchArea,
+								this->lastSoundHeardPos.z + rand() % (this->searchArea * 2) - this->searchArea);
+			// Adjust spawn position to a floor-tile
+			endPos = this->toNearbyFloor(glm::vec2(endPos.x, endPos.y));
+			trueEndPos = this->maze->TransformToMazeCoords(glm::vec3(endPos.x, 0.0f, endPos.y));
+		}
+
 
 		// Generate path between current location and goal location
 		GeneratePath(startPos.z, startPos.x, trueEndPos.z, trueEndPos.x);
