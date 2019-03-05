@@ -13,6 +13,8 @@ int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CRT_SECURE_NO_WARNINGS;
+
+	srand(time(NULL));
 	glEnable(GL_NORMALIZE);
 
 	Display display;
@@ -26,11 +28,16 @@ int main()
 
 	// height and width must be odd numbers else the resulting maze will be off
 	// inside the maze class the image will be made in to an even power of two number (ATM hardcoded 64) for use in shaders
-	GenerateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
+	//GenerateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
+	std::vector<std::vector<int>> mazeGrid = GenerateMazePNG(63, 63);
 
 	Maze maze;
 
 	//=========================== Creating Shaders ====================================//
+
+	// MaxVertices supported by the hardware
+	SetMaxPatchVertices();
+
 	Shader mazeGenerationShader;
 	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.vs", GL_VERTEX_SHADER);
 	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.gs", GL_GEOMETRY_SHADER);
@@ -47,6 +54,8 @@ int main()
 
 	Shader mazeGeometryPass;
 	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.vs", GL_VERTEX_SHADER);
+	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.cs", GL_TESS_CONTROL_SHADER);
+	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.es", GL_TESS_EVALUATION_SHADER);
 	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.fs", GL_FRAGMENT_SHADER);
 	
 	Shader lightPass;
@@ -105,21 +114,19 @@ int main()
 	SoundEngine soundEngine;
 	irrklang::ISoundEngine* enginePtr = soundEngine.GetEngine();
 
-	// minotaur sound test stuff
-	glm::vec3 newPosition;
-	newPosition.y = 0.0;
-	SoundHandler minotaurGrowl("Sounds/minotaurgrowl.wav", false, enginePtr);
-	SoundHandler minotaurFootStep("Sounds/minotaurstep.ogg", false, enginePtr);
-	minotaurGrowl.SetMinDistance(0.5);
-
+	SoundHandler winSound("Sounds/winSound.mp3", false, enginePtr);
+	SoundHandler deathSound("Sounds/death.mp3", false, enginePtr);
+	SoundHandler minotaurGrowlSound("Sounds/minotaurgrowl.wav", false, enginePtr);
 
 	float playerHeight = 1.8f;
 	float torchSize = 0.02f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize);
-	player.SetPlayerSpeed(2.0f);
+	player.SetPlayerSpeed(10.0f);
 	player.CenterPlayer(); //Space to return to origin
 
-	
+	Minotaur minotaur(enginePtr, mazeGrid, &maze);
+	minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();
+
 	ObjectHandler OH;
 
 	//TODO: Byta ground.png till floor.png
@@ -133,7 +140,7 @@ int main()
 	double deltaTime = 0;
 	double constLastTime = 0;
 	int nrOfFrames = 0;
-	
+
 	while (!display.IsWindowClosed())
 	{
 		// Calculate DeltaTime
@@ -155,7 +162,7 @@ int main()
 
 		glfwPollEvents();
 
-		HandleEvents(&player);
+		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound);
 
 		// Update movement
 		IH.MouseControls(&display, &player, deltaTime);
@@ -165,35 +172,26 @@ int main()
 
 		// Update player
 		player.Update(deltaTime);
+		minotaur.Update(player.GetCamera()->GetCameraPosition());
 
 		OH.UpdateAllObjects(deltaTime);
 		lights.UpdateShadowTransform(0);
 
-		
-
 		// update sound engine with position and view direction
 		soundEngine.Update(player.GetCamera()->GetCameraPosition(), player.GetCamera()->GetForwardVector());
-
-		//// moving minotaur sound test
-		//newPosition.x = sinf(glfwGetTime() * 0.2 * 3.15) * 5.0f;
-		//newPosition.z = cosf(glfwGetTime() * 0.2 * 3.15) * 5.0f;
-		//minotaurGrowl.SetPosition(newPosition);
-		//minotaurGrowl.Play();
-		//minotaurFootStep.SetPosition(newPosition);
-		//minotaurFootStep.Play();
 
 
 		// ================== DRAW ==================
 
 		// Here the mazes is created and stored in a buffer with transform feedback
 		MazeGenerationPass(&mazeGenerationShader, &maze, &player);
-
+		
 		// Here a cube map is calculated and stored in the shadowMap FBO
 		ShadowPass(&shadowShader, &OH, &lights, &shadowMap, &player, &maze);
 		
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &player, &OH, &maze);
+		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &player, &OH, &maze, &minotaur);
 		
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU

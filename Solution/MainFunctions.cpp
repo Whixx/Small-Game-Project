@@ -186,7 +186,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
 		// Draw maze
 		shadowShader->SendMat4("WorldMatrix", mazeWorldMatrix);
-		maze->DrawMaze();
+		maze->DrawMazeShadows();
 	}
 
 	shadowShader->UnBind();
@@ -194,7 +194,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze * maze)
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze * maze, Minotaur * minotaur)
 {
 	geometryPass->Bind();
 
@@ -206,21 +206,49 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 
 	glEnable(GL_DEPTH_TEST);
 
+	glm::mat4 worldMatrix;
+
 	// Update and Draw all objects
 	for (unsigned int i = 0; i < OH->GetNrOfObjects(); i++)
 	{
-		glm::mat4 worldMatrix = OH->GetObject(i)->GetTransform().GetWorldMatrix();
+		worldMatrix = OH->GetObject(i)->GetTransform().GetWorldMatrix();
 		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 		geometryPass->SendMat4("WorldMatrix", worldMatrix);
 
 		OH->GetObject(i)->Draw(geometryPass);
 	}
 
+	// Draw coins
+	for (int i = 0; i < player->GetNrOfWorldCoins(); i++)
+	{
+		worldMatrix = player->GetWorldCoin(i)->GetTransform()->GetWorldMatrix();
+		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection()  * worldMatrix);
+		geometryPass->SendMat4("WorldMatrix", worldMatrix);
+		player->DrawCoin(i, geometryPass);
+	}
+
+	// Draw minotaur
+	worldMatrix = minotaur->GetTransform().GetWorldMatrix();
+	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+	geometryPass->SendMat4("WorldMatrix", worldMatrix);
+	minotaur->Draw(geometryPass);
+
 	// Draw player torch
-	glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
+	worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 	geometryPass->SendMat4("WorldMatrix", worldMatrix);
 	player->GetTorch()->Draw(geometryPass);
+
+	// Draw keystones
+	for (int i = 0; i < maze->GetNrOfKeystones(); i++)
+	{
+		worldMatrix = maze->GetKeystoneTransform(i)->GetWorldMatrix();
+		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+		geometryPass->SendMat4("WorldMatrix", worldMatrix);
+		maze->DrawKeystone(i, geometryPass);
+	}
+
+
 
 	geometryPass->UnBind();
 
@@ -229,10 +257,11 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 
 	// Same world matrix for walls and floor
 	glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
-
+	
 	// Draw Maze
-	mazeGeometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * mazeWorldMatrix);
 	mazeGeometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
+	mazeGeometryPass->SendMat4("VP", player->GetCamera()->GetViewProjection());
+	mazeGeometryPass->SendFloat("Scale", maze->GetTransform()->GetScale().x);
 	maze->BindMaterial(mazeGeometryPass);
 	maze->DrawMaze();
 
@@ -388,16 +417,19 @@ void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint * fullScreenTri
 	glEnable(GL_DEPTH_TEST);
 }
 
-void GenerateMazeBitmaps(int height, int width)
+std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 {
 	MazeGeneratePNG mazeGen(height, width);
 
 	// Set_cell can be used to set "entrance and exit" etc
-	mazeGen.Set_cell(0, 1, mazeGen.path);
-	mazeGen.Set_cell(height - 1, width - 2, mazeGen.path);
+	//mazeGen.SetCell(0, 1, mazeGen.path);
+	//mazeGen.SetCell(height - 1, width - 2, mazeGen.path);
 
 	mazeGen.Generate();
-	mazeGen.Draw_png();
+	mazeGen.GenerateExit();
+	mazeGen.DrawPNG();
+
+	return mazeGen.GetGrid();
 }
 
 GLuint CreateScreenQuad()
@@ -433,16 +465,47 @@ GLuint CreateScreenQuad()
 	return screenQuad;
 }
 
-void HandleEvents(Player* player)
+void HandleEvents(Player* player, Maze * maze, SoundHandler *winSound, SoundHandler * deathSound, SoundHandler * minotaurGrowlSound)
 {
 	EventHandler& EH = EventHandler::GetInstance();
 	while (!EH.IsEmpty())
 	{
 		Event event = EH.GetEvent();
 
-		//if (event == EVENT_TEST)
-		//{
-		//	cout << "Event Test" << endl;
-		//}
+		if (event == EVENT_PLAYER_WIN)
+		{
+			//player->CenterPlayer();
+
+			// IRRITERANDE LJUD
+			winSound->SetPosition(player->GetPos());
+			winSound->Play();
+		}
+		else if (event == EVENT_PLAYER_LOSE)
+		{
+			player->CenterPlayer();
+			// IRRITERANDE LJUD
+			//deathSound->Play();
+		}
+		else if (event == EVENT_PLAYER_DROPCOIN)
+		{
+			player->DropCoin();
+		}
+		else if (event == EVENT_PLAYER_TOSSCOIN)
+		{
+			player->TossCoin();
+		}
+		else if (event == EVENT_MAZE_KEYSTONE_PRESSED)
+		{
+			// The function will check with keystone that was pressed
+			maze->ActivateKeystone(player->GetPos(), minotaurGrowlSound);
+		}
 	}
+}
+
+void SetMaxPatchVertices()
+{
+	GLint MaxPatchVertices = 0;
+	glGetIntegerv(GL_MAX_PATCH_VERTICES, &MaxPatchVertices);
+	printf("Max supported patch vertices %d\n", MaxPatchVertices);
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
 }

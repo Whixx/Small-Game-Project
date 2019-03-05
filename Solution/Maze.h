@@ -12,6 +12,11 @@
 #include "Shader.h"
 #include "MaterialHandler.h"
 
+#include "Model.h"
+#include "Keystone.h"
+#include "SoundHandler.h"
+
+#include <time.h>
 using namespace std;
 
 const unsigned int DRAWDISTANCE = 7;
@@ -24,16 +29,27 @@ public:
 
 	int GetMazeHeight();
 	int GetMazeWidth();
+	glm::vec3 GetExitWorldPos() const;
 	Transform *GetTransform();
 	glm::vec2* GetDrawOrder();
+	glm::vec3 TransformToMazeCoords(glm::vec3 pos);
 	glm::vec3 TransformToWorldCoords(glm::vec3 pos);
 	unsigned int GetTileCount();
+	Transform * GetKeystoneTransform(unsigned int index);
+	int GetNrOfKeystones();
+	bool IsExitOpen();
 
 	// Draw to transform feedback buffer
 	void DrawMazeToBuffer();
 
 	// Draw from transform feedback buffer
 	void DrawMaze();
+	void DrawMazeShadows();
+
+	// Draw Keystones
+	void DrawKeystone(unsigned int index, Shader * shader);
+
+	bool ActivateKeystone(glm::vec3 playerPos, SoundHandler * minotaurGrowlSound);
 
 	void BindMaterial(Shader* shader);
 
@@ -51,6 +67,13 @@ private:
 	int numComponents;
 	GLuint mazeTexture;
 	glm::vec2 drawOrder[(1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE)];
+	glm::vec3 exitWorldPos;
+	glm::vec2 exitPos;
+
+	Keystone * keystones;
+	int keystonesCapacity;
+	int nrOfKeystones;
+	Model keyStoneModel;
 
 	Transform transform;
 
@@ -61,7 +84,7 @@ private:
 	GLuint mazeVbo;
 	GLuint mazeVao;
 
-	const int scaleXZ = 2;
+	const int scaleXZ = 1;
 	const int scaleY  = 2;
 
 	// Private functions
@@ -71,6 +94,13 @@ private:
 
 	// When generating the maze outwards from the player
 	void GenerateDrawOrder();
+
+	// Returns the color of the pixel
 	glm::vec3 readPixel(unsigned int x, unsigned int y);
+	glm::vec2 FindExit();
+
+	// Keystone functions
+	glm::vec3 CreateCubePosition();
+	void AddKeystone();
 };
 #endif

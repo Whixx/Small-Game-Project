@@ -9,7 +9,11 @@ using namespace std;
 enum Event
 {
 	EVENT_NULL,
-
+	EVENT_PLAYER_WIN,
+	EVENT_PLAYER_LOSE,
+	EVENT_PLAYER_DROPCOIN,
+	EVENT_PLAYER_TOSSCOIN,
+	EVENT_MAZE_KEYSTONE_PRESSED
 };
 
 class EventHandler

@@ -83,7 +83,7 @@ void main()
 	float radius = 6;
 	float a = 0;
 	float b = 0;
-	float minLight = 0.001f;
+	float minLight = 0.1f;
 	float attenuation;
 	float distancePixelToLight;
 
@@ -106,8 +106,8 @@ void main()
 	{
 		distancePixelToLight = length(PointLights[i].position - pixelPos);
 
-		if(distancePixelToLight < radius)
-		{
+		//if(distancePixelToLight < radius)
+		//{
 			// Diffuse
 			lightDir = normalize(PointLights[i].position.xyz - pixelPos.xyz);
 			alpha = dot(normal.xyz,lightDir);
@@ -122,12 +122,12 @@ void main()
 			// attenuation
 			b = 1.0f/(radius*radius*minLight);
 			attenuation = 1.0f / (1.0f + (a * distancePixelToLight) + (b/800 * pow(distancePixelToLight, 4.5f)));
-		}
+		//}
 	}
 
 	float shadow = calculateShadows(pixelPos, cameraPos, normal);
 
-	vec4 finalColor = ambient + ((1 - shadow) * attenuation*(diffuse + finalSpecular));
+	vec4 finalColor = vec4(ambient, 1.0f) + ((1 - shadow) * attenuation*(diffuse + finalSpecular));
 	finalColor = min(vec4(1.0f,1.0f,1.0f,1.0f), finalColor);
 
 	fragment_color = vec4(finalColor.xyz, 1.0f);

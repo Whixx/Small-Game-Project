@@ -85,9 +85,16 @@
     <ClCompile Include="MaterialHandler.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
+    <ClCompile Include="Minotaur.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
     <ClCompile Include="EventHandler.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
+    <ClCompile Include="Coin.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Keystone.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloom.h">
@@ -183,6 +190,13 @@
     <ClInclude Include="EventHandler.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
+    <ClInclude Include="Minotaur.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Coin.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Keystone.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="blurShader.fs">
@@ -210,9 +224,6 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="lightPass.fs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="lightPass.vs">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="particleShader.fs">
@@ -250,6 +261,18 @@
     </None>
     <None Include="mazeGeometryPass.fs">
       <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeGeometryPass.es">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeGeometryPass.cs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="lightPass.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeGeometryPass.gs">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -12,7 +12,6 @@ Torch::Torch(Transform transform, glm::vec3 lightColor, irrklang::ISoundEngine* 
 	this->transform.GetRot().y = -transform.GetRot().y;
 	this->transform.GetRot().z = 0;
 
-
 	// Calculate the position of the torchLight
 	glm::mat4 scaleMatrix = glm::scale(glm::vec3(0, this->transform.GetScale().y, 0));
 
