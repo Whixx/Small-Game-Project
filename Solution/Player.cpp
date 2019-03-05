@@ -21,7 +21,12 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 
 	// Add startingCoins for the player
 	for (int i = 0; i < MAX_NR_OF_COINS; i++)
+	{
 		this->AddCoinToInventory();	// Incrementing nrOfInventoryCoins
+		this->inventoryCoins[i].SetMaze(maze);
+		this->worldCoins[i].SetMaze(maze);
+	}
+		
 }
 
 Player::~Player()
@@ -515,6 +520,7 @@ void Player::AddCoinToWorld(unsigned int state)
 	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetScale(this->inventoryCoins[this->nrOfInventoryCoins - 1].GetTransform()->GetScale());
 	// Set the state (if coin is tossed or dropped)
 	this->worldCoins[this->nrOfWorldCoins].SetCoinState(state);
+
 
 	// Give coins the initThrowDir
 	this->worldCoins[this->nrOfWorldCoins].SetVelocity(this->GetCamera()->GetForwardVector());

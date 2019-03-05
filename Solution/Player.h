@@ -67,12 +67,12 @@ private:
 	Torch playerTorch;
 
 	Model coinModel;
+	
 	Coin inventoryCoins[MAX_NR_OF_COINS];	// Coins in the players inventory
 	Coin worldCoins[256];				// Coins on the ground in the world // DYNAMIC FIX
 
 	unsigned int nrOfInventoryCoins;
 	unsigned int nrOfWorldCoins;
-
 	
 	Maze* maze;
 	float playerSpeed;

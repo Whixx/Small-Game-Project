@@ -25,6 +25,7 @@ public:
 
 	void SetCoinState(unsigned int state);
 	void SetVelocity(glm::vec3 initThrowDir);
+	void SetMaze(Maze* maze);
 
 	bool UpdateDropCoin(double dt);
 	bool UpdateTossCoin(double dt);
@@ -41,7 +42,7 @@ private:
 	glm::vec3 gravity;
 	glm::vec3 oldCoinPosition;
 
-	Maze maze;
+	Maze * maze;
 };
 
 #endif
