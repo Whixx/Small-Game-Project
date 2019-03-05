@@ -173,7 +173,11 @@ bool Maze::IsWallAtWorld(float x, float y)
 	glm::vec3 transformed = this->TransformToMazeCoords(glm::vec3(x, 0.0f, y));
 	glm::vec3 pixel = readPixel(transformed.x, transformed.z);
 	
-	if (pixel == glm::vec3(0.0f, 0.0f, 0.0f))
+	if (!this->IsExitOpen() && x == this->exitWorldPos.x && y == this->exitWorldPos.y)
+	{
+		isAWall = true;
+	}
+	else if (pixel == glm::vec3(0.0f, 0.0f, 0.0f))
 	{
 		isAWall = false;
 	}
