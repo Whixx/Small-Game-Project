@@ -404,6 +404,9 @@ void Player::Update(double dt)
 	this->playerCamera.SetCameraPosition(this->transform.GetPos());
 	this->playerCamera.UpdateViewMatrix();
 
+	// Update sound positions
+	footStep.SetPosition(this->GetCamera()->GetCameraPosition());
+
 	// Update the torch
 	this->playerTorch.Update(dt,
 		this->playerCamera,
@@ -411,41 +414,8 @@ void Player::Update(double dt)
 		this->boundingBoxHalfSize);
 
 	this->UpdateCoins(dt);
-	
-#ifdef DEBUG
-	if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
-	{
-		printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
-	//
-	//	std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
-	//	std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;
-	//	std::cout << "Forward Vector! Z: " << this->playerCamera.GetForwardVector().z << std::endl;
-	//}
-	
-		//std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
-		//std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;
-		//std::cout << "Forward Vector! Z: " << this->playerCamera.GetForwardVector().z << std::endl;
-	}
-	
-#endif
 
-	// Update sound positions
-	footStep.SetPosition(this->GetCamera()->GetCameraPosition());
-
-
-	// Get a vector with only x and z values
-	glm::vec2 p2d = glm::vec2(this->transform.GetPos().x, this->transform.GetPos().z);
-	glm::vec2 m2d = glm::vec2(this->maze->GetExitWorldPos().x, this->maze->GetExitWorldPos().z);
-
-	glm::vec2 dist2d = glm::abs(p2d - m2d);
-	float wallRadius = maze->GetTransform()->GetScale().x / 2.0;
-
-	// Check if player is at exit
-	if (dist2d.x <= wallRadius && dist2d.y <= wallRadius && maze->IsExitOpen())
-	{
-		EventHandler& EH = EventHandler::GetInstance();
-		EH.AddEvent(EVENT_PLAYER_WIN);
-	}
+	this->CheckIfWin();
 
 	// temp until we get the minotaur
 	glm::vec3 minoPos = glm::vec3(1000, 4, 3);
@@ -457,6 +427,23 @@ void Player::Update(double dt)
 		EventHandler& EH = EventHandler::GetInstance();
 		EH.AddEvent(EVENT_PLAYER_LOSE);
 	}
+
+#ifdef DEBUG
+	//if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
+	//{
+	//	printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+	//
+	//	std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
+	//	std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;
+	//	std::cout << "Forward Vector! Z: " << this->playerCamera.GetForwardVector().z << std::endl;
+	//}
+
+		//std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
+		//std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;
+		//std::cout << "Forward Vector! Z: " << this->playerCamera.GetForwardVector().z << std::endl;
+	//}
+
+#endif
 }
 
 void Player::AddCoinToInventory()
@@ -561,5 +548,22 @@ void Player::UpdateCoins(double dt)
 				break;
 			}
 		}
+	}
+}
+
+void Player::CheckIfWin()
+{
+	// Get a vector with only x and z values
+	glm::vec2 p2d = glm::vec2(this->transform.GetPos().x, this->transform.GetPos().z);
+	glm::vec2 m2d = glm::vec2(this->maze->GetExitWorldPos().x, this->maze->GetExitWorldPos().z);
+
+	glm::vec2 dist2d = glm::abs(p2d - m2d);
+	float wallRadius = maze->GetTransform()->GetScale().x / 2.0;
+
+	// Check if player is at exit
+	if (dist2d.x <= wallRadius && dist2d.y <= wallRadius && maze->IsExitOpen())
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+		EH.AddEvent(EVENT_PLAYER_WIN);
 	}
 }
