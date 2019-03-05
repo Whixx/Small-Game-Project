@@ -36,6 +36,7 @@ public:
 	unsigned int GetTileCount();
 	Transform * GetKeystoneTransform(unsigned int index);
 	int GetNrOfKeystones();
+	bool IsExitOpen();
 
 	// Draw to transform feedback buffer
 	void DrawMazeToBuffer();
@@ -46,6 +47,8 @@ public:
 
 	// Draw Keystones
 	void DrawKeystone(unsigned int index, Shader * shader);
+
+	bool ActivateKeystone(glm::vec3 playerPos);
 
 	void BindMaterial(Shader* shader);
 
@@ -68,7 +71,6 @@ private:
 	Keystone * keystones;
 	int keystonesCapacity;
 	int nrOfKeystones;
-
 	Model keyStoneModel;
 
 	Transform transform;

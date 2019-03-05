@@ -10,6 +10,7 @@ Keystone::Keystone(glm::vec3 worldPosition)
 {
 	this->worldPosition = worldPosition;
 	this->transform.GetScale() = glm::vec3(5.0, 5.0, 5.0);
+	this->transform.SetPos(this->worldPosition);
 	this->isActive = false;
 }
 

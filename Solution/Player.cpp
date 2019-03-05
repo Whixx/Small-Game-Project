@@ -434,7 +434,7 @@ void Player::Update(double dt)
 	float wallRadius = maze->GetTransform()->GetScale().x / 2.0;
 
 	// Check if player is at exit
-	if (dist2d.x <= wallRadius && dist2d.y <= wallRadius)
+	if (dist2d.x <= wallRadius && dist2d.y <= wallRadius && maze->IsExitOpen())
 	{
 		EventHandler& EH = EventHandler::GetInstance();
 		EH.AddEvent(EVENT_PLAYER_WIN);

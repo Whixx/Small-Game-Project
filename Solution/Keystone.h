@@ -13,21 +13,18 @@ public:
 	Keystone(glm::vec3 worldPosition);
 	~Keystone();
 
+	// Get functions
+	bool IsActive();
 	glm::vec3 GetWorldPosition();
 	Transform * GetTransform();
 
 	void Draw(Model* keyStoneModel, Shader* shader);
 
 	void ActivateKeystone();
-
-	// Get functions
-	bool IsActive();
 private:
-	glm::vec3 worldPosition;
-
-	Transform transform;
-
 	bool isActive;
+	glm::vec3 worldPosition;
+	Transform transform;
 };
 
 #endif

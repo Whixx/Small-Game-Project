@@ -153,6 +153,19 @@ int Maze::GetNrOfKeystones()
 	return this->nrOfKeystones;
 }
 
+bool Maze::IsExitOpen()
+{
+	for (int i = 0; i < this->nrOfKeystones; i++)
+	{
+		// if a keystone isn't active. We stop looping and return false
+		if (this->keystones[i].IsActive() == false)	
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 bool Maze::IsWallAtWorld(float x, float y)
 {
 	bool isAWall = true;
@@ -257,6 +270,43 @@ void Maze::DrawMazeShadows()
 void Maze::DrawKeystone(unsigned int index, Shader * shader)
 {
 	this->keystones[index].Draw(&this->keyStoneModel, shader);
+}
+
+bool Maze::ActivateKeystone(glm::vec3 playerPos)
+{
+	bool activated = false;
+
+	// These vectors are used to calculated the distance between the keystone and the player
+	glm::vec2 tempPlayerPos;
+	tempPlayerPos.x = playerPos.x;
+	tempPlayerPos.y = playerPos.z;
+	glm::vec2 tempKeystonePos;
+
+	float distance = 0;
+
+	// Find which keystone was pressed
+	for (int i = 0; (i < this->nrOfKeystones) && (activated == false); i++)
+	{
+		// Fill the tempKeystonePos with the keystone position
+		tempKeystonePos.x = this->keystones[i].GetWorldPosition().x;
+		tempKeystonePos.y = this->keystones[i].GetWorldPosition().z;
+
+		distance = length(tempPlayerPos - tempKeystonePos);
+
+		// If the keystone is inactive (It hasn't been pressed before)
+		if (this->keystones[i].IsActive() == false)
+		{
+			// Check if the player is close enough to be able to press the keystone
+			if (distance < 1.0)
+			{
+				this->keystones[i].ActivateKeystone();
+				activated = true;
+				std::cout << "Keystone " << i << " Activated!" << std::endl;
+			}
+		}	
+	}
+
+	return activated;
 }
 
 void Maze::BindMaterial(Shader* shader)

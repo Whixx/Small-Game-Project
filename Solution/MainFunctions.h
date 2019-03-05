@@ -56,7 +56,7 @@ void GenerateMazeBitmaps(int height, int width);
 GLuint CreateScreenQuad();
 void SetMaxPatchVertices();
 
-void HandleEvents(Player* player, SoundHandler* winSound, SoundHandler* deathSound);
+void HandleEvents(Player* player, Maze* maze, SoundHandler* winSound, SoundHandler* deathSound);
 
 
 #endif
