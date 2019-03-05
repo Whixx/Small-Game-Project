@@ -6,10 +6,12 @@ Keystone::Keystone()
 {
 }
 
-Keystone::Keystone(glm::vec3 worldPosition)
+Keystone::Keystone(KeystonePosDir keystonePosDir)
 {
-	this->worldPosition = worldPosition;
-	this->transform.GetScale() = glm::vec3(5.0, 5.0, 5.0);
+	this->worldPosition = keystonePosDir.position;
+	this->direction = keystonePosDir.direction;
+
+	this->transform.GetScale() = glm::vec3(0.10f);
 	this->transform.SetPos(this->worldPosition);
 	this->isActive = false;
 }

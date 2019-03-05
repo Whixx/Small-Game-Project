@@ -1,7 +1,7 @@
 #include "Maze.h"
 
 Maze::Maze()
-	:keyStoneModel("Models/Torch/torch.obj")
+	:keyStoneModel("Models/Cube/cube.obj")
 {
 	this->imageData = nullptr;
 	this->path = "";
@@ -166,6 +166,7 @@ bool Maze::IsExitOpen()
 	return true;
 }
 
+// Input in world coords
 bool Maze::IsWallAtWorld(float x, float y)
 {
 	bool isAWall = true;
@@ -423,6 +424,12 @@ void Maze::LoadTextures()
 // Returns a vector with the rgb value of a pixel
 glm::vec3 Maze::readPixel(unsigned int x, unsigned int y)
 {
+	// Check if pixel is outside of the texture
+	if (x > this->width - 1 || y > this->height - 1)
+	{
+		return glm::vec3(-1.0f);
+	}
+
 	unsigned char* pixelOffset = this->imageData + (x + this->width * y) * this->numComponents;
 
 	vector<unsigned char> pixel;
@@ -468,13 +475,13 @@ glm::vec2 Maze::FindExit()
 	return exitPos;
 }
 
-glm::vec3 Maze::CreateCubePosition()
+KeystonePosDir Maze::CreateCubePosition()
 {
 	while (true)
 	{
 		srand(time(NULL));
-		int randomWidth = rand() % this->width;
-		int randomHeight = rand() % this->height;	
+		int randomWidth = rand() % this->width -1;
+		int randomHeight = rand() % this->height -1;	
 
 		glm::vec3 randomPosWorld = this->TransformToWorldCoords(glm::vec3(randomWidth, 0, randomHeight));
 
@@ -485,8 +492,8 @@ glm::vec3 Maze::CreateCubePosition()
 				abs(randomPosWorld.z - this->keystones[i].GetWorldPosition().z) < 5)
 			{
 				// The points are to close to eachother, we need to find a new position
-				randomWidth = rand() % 64 + 1;
-				randomHeight = rand() % 64 + 1;
+				randomWidth = rand() % this->width;
+				randomHeight = rand() % this->height;
 		
 				randomPosWorld = this->TransformToWorldCoords(glm::vec3(randomWidth, 0, randomHeight));
 		
@@ -497,11 +504,112 @@ glm::vec3 Maze::CreateCubePosition()
 
 		glm::vec3 floorColor = glm::vec3(0.0f, 0.0f, 0.0f);
 		glm::vec3 pixelColor = this->readPixel(randomWidth, randomHeight);
-		if (pixelColor == floorColor)
+		
+		glm::vec3 nearbyFloorPos;
+		if (pixelColor != floorColor)
 		{
-			return this->TransformToWorldCoords(glm::vec3(randomWidth, 0, randomHeight));
+			// Find nearby floor, This is used to place the keystone towards the floor
+			nearbyFloorPos = this->FindNearbyFloor(glm::vec2(randomWidth, randomHeight));
+
+			// Transform to world coords
+			nearbyFloorPos = this->TransformToWorldCoords(nearbyFloorPos);
+			glm::vec3 wallPos = this->TransformToWorldCoords(glm::vec3(randomWidth, 0.5f, randomHeight));
+#ifdef DEBUG
+			std::cout << "nearbyFloor X: " << nearbyFloorPos.x << std::endl;
+			std::cout << "nearbyFloor Z: " << nearbyFloorPos.z << std::endl;
+			
+			std::cout << "keystone X: " << wallPos.x << std::endl;
+			std::cout << "keystone Z: " << wallPos.z << std::endl;
+#endif
+			glm::vec3 direction = normalize(nearbyFloorPos - wallPos);
+			//std::cout << "direction.x: " << direction.x << std::endl;
+			//std::cout << "direction.y: " << direction.y << std::endl;
+			//std::cout << "direction.z: " << direction.z << std::endl;
+			
+			// Translate the cube so that its location is in the middle of a wall and a floor
+			glm::vec3 finalPosition = wallPos + direction / 2.0f;
+
+			KeystonePosDir keystonePosDir = { finalPosition, direction };
+
+			return keystonePosDir;
 		}
 	}
+}
+
+// This functions takes a position in mazeCoords, and returns a nearby floor in world coords
+glm::vec3 Maze::FindNearbyFloor(glm::vec2 wallPos)
+{
+	glm::vec3 floorPixel;
+
+	// Read NEARby pixels
+	// 
+	//    _0_
+	// 3 | . | 1
+	//   |___|
+	//	   2
+
+	glm::vec3 wallPosAtWorld;
+
+	// Read 0 (up)
+	floorPixel = this->readPixel(wallPos.x, wallPos.y + 1);	
+	if (floorPixel != glm::vec3(-1.0f))
+	{
+		wallPosAtWorld = this->TransformToWorldCoords(glm::vec3(wallPos.x, 0.0f, wallPos.y + 1));
+
+		if (this->IsWallAtWorld(wallPosAtWorld.x, wallPosAtWorld.z) == false)
+		{
+			if (floorPixel == glm::vec3(0.0f, 0.0f, 0.0f))
+			{
+				return glm::vec3(wallPos.x, 0.5f, wallPos.y + 1);
+			}
+		}
+	}
+	
+
+	// Read 2 (down)
+	floorPixel = this->readPixel(wallPos.x, wallPos.y - 1);
+	if (floorPixel != glm::vec3(-1.0f))
+	{
+		wallPosAtWorld = this->TransformToWorldCoords(glm::vec3(wallPos.x, 0.0f, wallPos.y - 1));
+		if (this->IsWallAtWorld(wallPosAtWorld.x, wallPosAtWorld.z) == false)
+		{
+			if (floorPixel == glm::vec3(0.0f, 0.0f, 0.0f))
+			{
+				return glm::vec3(wallPos.x, 0.5f, wallPos.y - 1);
+			}
+		}
+	}
+
+	// Read 1 (right)
+	floorPixel = this->readPixel(wallPos.x + 1, wallPos.y);
+	if (floorPixel != glm::vec3(-1.0f))
+	{
+		wallPosAtWorld = this->TransformToWorldCoords(glm::vec3(wallPos.x + 1, 0.0f, wallPos.y));
+		if (this->IsWallAtWorld(wallPosAtWorld.x, wallPosAtWorld.z) == false)
+		{
+			if (floorPixel == glm::vec3(0.0f, 0.0f, 0.0f))
+			{
+				return glm::vec3(wallPos.x + 1, 0.5f, wallPos.y);
+			}
+		}
+	}
+
+	// Read 3 (left)
+	floorPixel = this->readPixel(wallPos.x -1, wallPos.y);
+	if (floorPixel != glm::vec3(-1.0f))
+	{
+		wallPosAtWorld = this->TransformToWorldCoords(glm::vec3(wallPos.x - 1, 0.0f, wallPos.y));
+		if (this->IsWallAtWorld(wallPosAtWorld.x, wallPosAtWorld.z) == false)
+		{
+			if (floorPixel == glm::vec3(0.0f, 0.0f, 0.0f))
+			{
+				return glm::vec3(wallPos.x - 1, 0.5f, wallPos.y);
+			}
+		}
+	}
+	
+	// If a nearbyFloor wasn't found
+	return glm::vec3(-1.0f);
 }
 
 void Maze::AddKeystone()

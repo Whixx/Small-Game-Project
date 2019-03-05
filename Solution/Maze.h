@@ -100,7 +100,8 @@ private:
 	glm::vec2 FindExit();
 
 	// Keystone functions
-	glm::vec3 CreateCubePosition();
+	KeystonePosDir CreateCubePosition();
+	glm::vec3 FindNearbyFloor(glm::vec2 wallPos);
 	void AddKeystone();
 };
 #endif
