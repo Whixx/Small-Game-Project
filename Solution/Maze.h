@@ -12,6 +12,7 @@
 #include "Shader.h"
 #include "MaterialHandler.h"
 
+#include "Model.h"
 #include "Keystone.h"
 #include <time.h>
 using namespace std;
@@ -33,6 +34,8 @@ public:
 	glm::vec3 TransformToMazeCoords(glm::vec3 pos);
 	glm::vec3 TransformToWorldCoords(glm::vec3 pos);
 	unsigned int GetTileCount();
+	Transform * GetKeystoneTransform(unsigned int index);
+	int GetNrOfKeystones();
 
 	// Draw to transform feedback buffer
 	void DrawMazeToBuffer();
@@ -40,6 +43,9 @@ public:
 	// Draw from transform feedback buffer
 	void DrawMaze();
 	void DrawMazeShadows();
+
+	// Draw Keystones
+	void DrawKeystone(unsigned int index, Shader * shader);
 
 	void BindMaterial(Shader* shader);
 
@@ -62,6 +68,8 @@ private:
 	Keystone * keystones;
 	int keystonesCapacity;
 	int nrOfKeystones;
+
+	Model keyStoneModel;
 
 	Transform transform;
 

@@ -232,6 +232,17 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	geometryPass->SendMat4("WorldMatrix", worldMatrix);
 	player->GetTorch()->Draw(geometryPass);
 
+	// Draw keystones
+	for (int i = 0; i < maze->GetNrOfKeystones(); i++)
+	{
+		worldMatrix = maze->GetKeystoneTransform(i)->GetWorldMatrix();
+		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+		geometryPass->SendMat4("WorldMatrix", worldMatrix);
+		maze->DrawKeystone(i, geometryPass);
+	}
+
+
+
 	geometryPass->UnBind();
 
 	// Different geometry pass for the maze

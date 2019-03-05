@@ -1,6 +1,7 @@
 #include "Maze.h"
 
 Maze::Maze()
+	:keyStoneModel("Models/Torch/torch.obj")
 {
 	this->imageData = nullptr;
 	this->path = "";
@@ -38,12 +39,11 @@ Maze::Maze()
 		this->AddKeystone();
 
 	// TEST PRINT
-	//for (int i = 0; i < this->nrOfKeystones; i++)
-	//{
-	//	std::cout << "X: " << this->keystones[i].GetWorldPosition().x << std::endl;
-	//	std::cout << "Z: " << this->keystones[i].GetWorldPosition().z << std::endl;
-	//}
-		
+	for (int i = 0; i < this->nrOfKeystones; i++)
+	{
+		std::cout << "X: " << this->keystones[i].GetWorldPosition().x << std::endl;
+		std::cout << "Z: " << this->keystones[i].GetWorldPosition().z << std::endl;
+	}
 
 
 	this->InitiateMazeBuffers();
@@ -141,6 +141,16 @@ glm::vec3 Maze::TransformToWorldCoords(glm::vec3 pos)
 unsigned int Maze::GetTileCount()
 {
 	return (1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE);
+}
+
+Transform * Maze::GetKeystoneTransform(unsigned int index)
+{
+	return this->keystones[index].GetTransform();
+}
+
+int Maze::GetNrOfKeystones()
+{
+	return this->nrOfKeystones;
 }
 
 bool Maze::IsWallAtWorld(float x, float y)
@@ -242,6 +252,11 @@ void Maze::DrawMazeShadows()
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
 	glBindVertexArray(0);
+}
+
+void Maze::DrawKeystone(unsigned int index, Shader * shader)
+{
+	this->keystones[index].Draw(&this->keyStoneModel, shader);
 }
 
 void Maze::BindMaterial(Shader* shader)
