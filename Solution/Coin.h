@@ -23,6 +23,8 @@ public:
 	bool IsOnGround();
 	unsigned int GetCoinState();
 
+	glm::vec3 DetectWalls(glm::vec3 pos);
+
 	void SetCoinState(unsigned int state);
 	void SetVelocity(glm::vec3 initThrowDir);
 	void SetMaze(Maze* maze);

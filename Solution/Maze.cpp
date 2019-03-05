@@ -148,20 +148,20 @@ Wall Maze::GetWallType(float x, float y)
 	Wall type = NO_WALL;
 	glm::vec3 transformed = this->TransformToMazeCoords(glm::vec3(x, 0.0f, y));
 	glm::vec3 pixel = readPixel(transformed.x, transformed.z);
-	
+
 	if (pixel == glm::vec3(100.0f, 0.0f, 255.0f))
-	{
-		type = WALL_DOWN;
-	}
-	else if (pixel == glm::vec3(100.0f, 255.0f, 0.0f))
 	{
 		type = WALL_UP;
 	}
-	else if (pixel == glm::vec3(100.0f, 255.0f, 255.0f))
+	else if (pixel == glm::vec3(100.0f, 255.0f, 0.0f))
+	{
+		type = WALL_DOWN;
+	}
+	else if (pixel == glm::vec3(100.0f, 0.0f, 0.0f))
 	{
 		type = WALL_LEFT;
 	}
-	else if (pixel == glm::vec3(100.0f, 0.0f, 0.0f))
+	else if (pixel == glm::vec3(100.0f, 255.0f, 255.0f))
 	{
 		type = WALL_RIGHT;
 	}
@@ -175,11 +175,11 @@ Wall Maze::GetWallType(float x, float y)
 	}
 	else if (pixel == glm::vec3(200.0f, 0.0f, 0.0f))
 	{
-		type = WALL_CORNER_RIGHT_DOWN;
+		type = WALL_CORNER_LEFT_DOWN;
 	}
 	else if (pixel == glm::vec3(200.0f, 255.0f, 255.0f))
 	{
-		type = WALL_END_UP;
+		type = WALL_CORNER_RIGHT_DOWN;
 	}
 	else if (pixel == glm::vec3(255.0f, 0.0f, 255.0f))
 	{
@@ -199,11 +199,11 @@ Wall Maze::GetWallType(float x, float y)
 	}
 	else if (pixel == glm::vec3(50.0f, 0.0f, 0.0f))
 	{
-		type = WALL_HORIZONTAL;
+		type = WALL_VERTICAL;
 	}
 	else if (pixel == glm::vec3(50.0f, 255.0f, 255.0f))
 	{
-		type = WALL_VERTICAL;
+		type = WALL_HORIZONTAL;
 	}
 
 	return type;
