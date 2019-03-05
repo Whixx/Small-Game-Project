@@ -26,7 +26,7 @@ Maze::Maze()
 	this->LoadMaze("MazePNG/mazeColorCoded.png");
 
 	// Find the exit
-	glm::vec2 exitPos = this->FindExit();
+	this->exitPos = this->FindExit();
 	this->exitWorldPos = this->TransformToWorldCoords(glm::vec3(exitPos.x, 0, exitPos.y));
 
 
@@ -171,17 +171,20 @@ bool Maze::IsWallAtWorld(float x, float y)
 	bool isAWall = true;
 
 	glm::vec3 transformed = this->TransformToMazeCoords(glm::vec3(x, 0.0f, y));
+
+	float a = this->exitPos.x;
+	float b = this->exitPos.y;
+
+	if (!this->IsExitOpen() && transformed.x == this->exitPos.x && transformed.z == this->exitPos.y)
+		return true;
+
 	glm::vec3 pixel = readPixel(transformed.x, transformed.z);
 	
-	if (!this->IsExitOpen() && x == this->exitWorldPos.x && y == this->exitWorldPos.y)
-	{
-		isAWall = true;
-	}
-	else if (pixel == glm::vec3(0.0f, 0.0f, 0.0f))
+	if (pixel == glm::vec3(0.0f, 0.0f, 0.0f))
 	{
 		isAWall = false;
 	}
-
+	
 	return isAWall;
 }
 

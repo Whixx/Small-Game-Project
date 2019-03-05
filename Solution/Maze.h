@@ -29,7 +29,6 @@ public:
 
 	int GetMazeHeight();
 	int GetMazeWidth();
-	glm::vec2 GetExitPos() const;
 	glm::vec3 GetExitWorldPos() const;
 	Transform *GetTransform();
 	glm::vec2* GetDrawOrder();
@@ -69,6 +68,7 @@ private:
 	GLuint mazeTexture;
 	glm::vec2 drawOrder[(1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE)];
 	glm::vec3 exitWorldPos;
+	glm::vec2 exitPos;
 
 	Keystone * keystones;
 	int keystonesCapacity;
