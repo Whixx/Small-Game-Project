@@ -11,8 +11,13 @@ public:
 	~Keystone();
 
 	glm::vec3 GetWorldPosition();
+	void ActivateKeystone();
+
+	// Get functions
+	bool IsActive();
 private:
 	glm::vec3 worldPosition;
+	bool isActive;
 };
 
 #endif
