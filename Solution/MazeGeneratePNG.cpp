@@ -124,6 +124,58 @@ void MazeGeneratePNG::Generate(void)
 	}
 }
 
+void MazeGeneratePNG::GenerateExit()
+{
+	bool foundExit = false;
+	glm::vec2 exitPos(-1);
+
+	while (!foundExit)
+	{
+		// Randomize exitPos
+		bool horizontal = rand() % 2;
+		bool below = rand() % 2;
+		int random = rand() % (this->width - 1);
+
+		if (horizontal && !below)
+			exitPos = glm::vec2(random, 0);
+		else if (horizontal && below)
+			exitPos = glm::vec2(random, this->height - 1);
+		else if (!horizontal && !below)
+			exitPos = glm::vec2(0, random);
+		else if (!horizontal && below)
+			exitPos = glm::vec2(this->width - 1, random);
+
+		// Check if horizontal exit
+
+		// if below, need to make sure we dont read outside of the texture
+		if (!below)
+		{
+			if (this->grid[exitPos.y + horizontal][exitPos.x + !horizontal] == this->path)
+			{
+				foundExit = true;
+				break;
+			}
+
+		}
+		else if (below)
+		{
+			if (this->grid[exitPos.y - horizontal][exitPos.x - !horizontal] == this->path)
+			{
+				foundExit = true;
+				break;
+			}
+		}
+		else //(this->grid[exitPos.y + horizontal][exitPos.x + !horizontal] == this->path && this->grid[exitPos.y - horizontal][exitPos.x - !horizontal] == this->path)
+		{
+			foundExit = true;
+			break;
+		}
+	}
+
+	// Set exit to floor
+	this->grid[exitPos.y][exitPos.x] = this->path;
+}
+
 void MazeGeneratePNG::Replace(int setToReplace, int sampleSet)
 {
 	for (int search_y = 1; search_y < ((int)sets.size() - 1); search_y += 2)
@@ -193,8 +245,7 @@ std::vector<std::vector<int>> MazeGeneratePNG::GetGrid()
 }
 
 void MazeGeneratePNG::SetupColorDataForColor()
-{
-	// set up image vectors to hold color data
+{// set up image vectors to hold color data
 	// added +1 to make the maze 64*64 pixels for use in shaders
 	int newHeight = this->height + 1;
 	int newWidth = this->width + 1;
@@ -211,16 +262,17 @@ void MazeGeneratePNG::SetupColorDataForColor()
 
 	for (int i = 0; i < newWidth; i++)
 	{
-		image[this->height][i][0] = 75;
-		image[this->height][i][1] = 75;
-		image[this->height][i][2] = 75;
+		image[this->height][i][0] = 0;
+		image[this->height][i][1] = 0;
+		image[this->height][i][2] = 0;
 	}
 	for (int i = 0; i < newHeight; i++)
 	{
-		image[i][this->width][0] = 75;
-		image[i][this->width][1] = 75;
-		image[i][this->width][2] = 75;
+		image[i][this->width][0] = 0;
+		image[i][this->width][1] = 0;
+		image[i][this->width][2] = 0;
 	}
+
 
 	// sets colors, white for walls, black for path
 	for (int y = 0; y < this->height; y++)

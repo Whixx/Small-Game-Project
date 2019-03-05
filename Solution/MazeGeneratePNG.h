@@ -18,6 +18,7 @@ public:
 	void SetCell(int y, int x, int value); // can be used to set exit points on the maze (or other stuff)
 	int GetCell(int y, int x);
 	void Generate(void);
+	void GenerateExit();
 	void SetupColorData();
 	void SetupColorDataForColor();
 	void DrawPNG();

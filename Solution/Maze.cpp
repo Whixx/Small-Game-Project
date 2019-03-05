@@ -436,34 +436,44 @@ glm::vec3 Maze::readPixel(unsigned int x, unsigned int y)
 
 glm::vec2 Maze::FindExit()
 {
-	// Didn't find exit
-	glm::vec2 exitPos = glm::vec2(-1, -1);
+	glm::vec2 exitPos(-1.0);
 
-	// Loop through whole map sides
-	for (int i = 0; i < this->width; i++)
+	// Find exit
+	for (int x= 0; x < this->width; x++)
 	{
 		// --->
-		if (this->readPixel(i, 0) == glm::vec3(0, 0, 0))
+		if (this->readPixel(x, 0) == glm::vec3(0.0))
 		{
-			exitPos = glm::vec2(i, 0);
+			exitPos = glm::vec2(x, 0);
+			break;
 		}
+
 		// |
-		// v
-		else if (this->readPixel(0, i) == glm::vec3(0, 0, 0))
+		// V
+		if (this->readPixel(0, x) == glm::vec3(0.0))
 		{
-			exitPos = glm::vec2(i, 0);
+			exitPos = glm::vec2(0, x);
+			break;
 		}
-		// ---> below
-		else if (this->readPixel(i, this->width - 1) == glm::vec3(0, 0, 0))
+
+		// ---> mirror
+		if (this->readPixel(x, this->height - 2) == glm::vec3(0.0))
 		{
-			exitPos = glm::vec2(i, 0);
+			exitPos = glm::vec2(x, this->height - 2);
+			break;
 		}
-		// v below
-		else if (this->readPixel(this->width - 1, i) == glm::vec3(0, 0, 0))
+
+		// |
+		// V mirror
+		if (this->readPixel(this->width - 2, x) == glm::vec3(0.0))
 		{
-			exitPos = glm::vec2(i, 0);
+			exitPos = glm::vec2(this->width - 2, x);
+			break;
 		}
 	}
+
+	cout << "ExitPos:x :" << exitPos.x << endl << "ExitPos:y :" << exitPos.y << endl;
+	
 
 	return exitPos;
 }
