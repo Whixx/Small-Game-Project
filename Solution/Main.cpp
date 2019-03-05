@@ -129,6 +129,12 @@ int main()
 
 	ObjectHandler OH;
 
+
+	// TODO: Put in Maze
+	int exit = OH.CreateObject("Models/Exit/exit.obj");
+	Object* oExit = OH.GetObject(exit);
+	oExit->GetPos() = maze.GetExitWorldPos();
+
 	//TODO: Byta ground.png till floor.png
 	
 	Model lightSphereModel("Models/Ball/ball.obj");
@@ -191,7 +197,7 @@ int main()
 		
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &player, &OH, &maze, &minotaur);
+		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &player, &OH, &maze, &minotaur, exit);
 		
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU

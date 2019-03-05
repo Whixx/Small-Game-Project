@@ -194,7 +194,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze * maze, Minotaur * minotaur)
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze * maze, Minotaur * minotaur, int exit)
 {
 	geometryPass->Bind();
 
@@ -247,6 +247,13 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 		geometryPass->SendMat4("WorldMatrix", worldMatrix);
 		maze->DrawKeystone(i, geometryPass);
 	}
+
+	// Draw exit
+	Object* oExit = OH->GetObject(exit);
+	worldMatrix = oExit->GetWorldMatrix();
+	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+	geometryPass->SendMat4("WorldMatrix", worldMatrix);
+	oExit->Draw(geometryPass);
 
 
 
