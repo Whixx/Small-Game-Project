@@ -172,9 +172,6 @@ bool Maze::IsWallAtWorld(float x, float y)
 
 	glm::vec3 transformed = this->TransformToMazeCoords(glm::vec3(x, 0.0f, y));
 
-	float a = this->exitPos.x;
-	float b = this->exitPos.y;
-
 	if (!this->IsExitOpen() && transformed.x == this->exitPos.x && transformed.z == this->exitPos.y)
 		return true;
 

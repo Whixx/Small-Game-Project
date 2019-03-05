@@ -86,6 +86,7 @@ private:
 	// Private Functions
 	void AddCoinToWorld(unsigned int state);
 	void UpdateCoins(double dt);
+	void CheckIfWin();
 };
 
 #endif //DISPLAY_H
