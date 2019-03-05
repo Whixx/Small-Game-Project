@@ -194,7 +194,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze * maze)
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze * maze, Minotaur * minotaur)
 {
 	geometryPass->Bind();
 
@@ -206,7 +206,8 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 
 	glEnable(GL_DEPTH_TEST);
 
-	glm::mat4 worldMatrix = glm::mat4();
+	glm::mat4 worldMatrix;
+
 	// Update and Draw all objects
 	for (unsigned int i = 0; i < OH->GetNrOfObjects(); i++)
 	{
@@ -225,6 +226,12 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 		geometryPass->SendMat4("WorldMatrix", worldMatrix);
 		player->DrawCoin(i, geometryPass);
 	}
+
+	// Draw minotaur
+	worldMatrix = minotaur->GetTransform().GetWorldMatrix();
+	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+	geometryPass->SendMat4("WorldMatrix", worldMatrix);
+	minotaur->Draw(geometryPass);
 
 	// Draw player torch
 	worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
@@ -410,11 +417,18 @@ void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint * fullScreenTri
 	glEnable(GL_DEPTH_TEST);
 }
 
-void GenerateMazeBitmaps(int height, int width)
+std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 {
 	MazeGeneratePNG mazeGen(height, width);
+
+	// Set_cell can be used to set "entrance and exit" etc
+	mazeGen.SetCell(0, 1, mazeGen.path);
+	mazeGen.SetCell(height - 1, width - 2, mazeGen.path);
+
 	mazeGen.Generate();
-	mazeGen.Draw_png();
+	mazeGen.DrawPNG();
+
+	return mazeGen.GetGrid();
 }
 
 GLuint CreateScreenQuad()
@@ -453,7 +467,7 @@ GLuint CreateScreenQuad()
 void HandleEvents(Player* player, Maze * maze, SoundHandler *winSound, SoundHandler * deathSound)
 {
 	EventHandler& EH = EventHandler::GetInstance();
-	while (!EH.IsEmpty())
+	while (false)//!EH.IsEmpty())
 	{
 		Event event = EH.GetEvent();
 

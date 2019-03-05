@@ -363,15 +363,17 @@ void Player::CenterPlayer()
 		//If wall, move start position
 		if (pingpong = false)
 		{
-			x += 1.5f;
+			x += 1;
 			pingpong = true;
 		}
 		else
 		{
-			y += 1.5f;
+			y += 1;
 			pingpong = false;
 		}
 	}
+
+	glm::vec3 newPos = this->maze->TransformToWorldCoords(glm::vec3(x, 0.0f, y));
 
 	this->transform.SetPos(glm::vec3(x, this->playerHeight + this->maze->GetTransform()->GetPos().y, y));
 }
@@ -411,14 +413,19 @@ void Player::Update(double dt)
 	this->UpdateCoins(dt);
 	
 #ifdef DEBUG
-	if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
-	{
-		//printf("Map position: X:%.2f, Z:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+	//if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
+	//{
+		//printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+	//
+	//	std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
+	//	std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;
+	//	std::cout << "Forward Vector! Z: " << this->playerCamera.GetForwardVector().z << std::endl;
+	//}
 	
 		//std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
 		//std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;
 		//std::cout << "Forward Vector! Z: " << this->playerCamera.GetForwardVector().z << std::endl;
-	}
+	//}
 	
 #endif
 
@@ -441,7 +448,7 @@ void Player::Update(double dt)
 	}
 
 	// temp until we get the minotaur
-	glm::vec3 minoPos = glm::vec3(0, 4, 3);
+	glm::vec3 minoPos = glm::vec3(1000, 4, 3);
 
 	// Check if player dies
 	if ((minoPos.x <= this->transform.GetPos().x + this->boundingBoxHalfSize && minoPos.x >= this->transform.GetPos().x - this->boundingBoxHalfSize) || 

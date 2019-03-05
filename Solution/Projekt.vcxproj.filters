@@ -85,6 +85,9 @@
     <ClCompile Include="MaterialHandler.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
+    <ClCompile Include="Minotaur.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
     <ClCompile Include="EventHandler.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
@@ -185,6 +188,9 @@
       <Filter>Class h Files</Filter>
     </ClInclude>
     <ClInclude Include="EventHandler.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minotaur.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
     <ClInclude Include="Coin.h">
