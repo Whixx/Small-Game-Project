@@ -464,10 +464,10 @@ GLuint CreateScreenQuad()
 	return screenQuad;
 }
 
-void HandleEvents(Player* player, Maze * maze, SoundHandler *winSound, SoundHandler * deathSound)
+void HandleEvents(Player* player, Maze * maze, SoundHandler *winSound, SoundHandler * deathSound, SoundHandler * minotaurGrowlSound)
 {
 	EventHandler& EH = EventHandler::GetInstance();
-	while (false)//!EH.IsEmpty())
+	while (!EH.IsEmpty())
 	{
 		Event event = EH.GetEvent();
 
@@ -496,7 +496,7 @@ void HandleEvents(Player* player, Maze * maze, SoundHandler *winSound, SoundHand
 		else if (event == EVENT_MAZE_KEYSTONE_PRESSED)
 		{
 			// The function will check with keystone that was pressed
-			maze->ActivateKeystone(player->GetPos());
+			maze->ActivateKeystone(player->GetPos(), minotaurGrowlSound);
 		}
 	}
 }

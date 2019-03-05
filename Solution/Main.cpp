@@ -114,6 +114,8 @@ int main()
 
 	SoundHandler winSound("Sounds/winSound.mp3", false, enginePtr);
 	SoundHandler deathSound("Sounds/death.mp3", false, enginePtr);
+	SoundHandler minotaurGrowlSound("Sounds/minotaurgrowl.wav", false, enginePtr);
+
 	float playerHeight = 1.8f;
 	float torchSize = 0.02f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize);
@@ -158,7 +160,7 @@ int main()
 
 		glfwPollEvents();
 
-		HandleEvents(&player, &maze, &winSound, &deathSound);
+		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound);
 
 		// Update movement
 		IH.MouseControls(&display, &player, deltaTime);
