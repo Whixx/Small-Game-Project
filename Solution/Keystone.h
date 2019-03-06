@@ -16,23 +16,36 @@ struct KeystonePosDir
 class Keystone
 {
 public:
-	Keystone();
-	Keystone(KeystonePosDir keystonePosDir);
+	//Keystone();
+	Keystone(KeystonePosDir * keystonePosDir = nullptr, const int ScaleXZ = 1);
 	~Keystone();
 
 	// Get functions
 	bool IsActive();
-	glm::vec3 GetWorldPosition();
+	bool IsTranslatedBack();
+	glm::vec3 GetDirection();
+	float GetTranslationLength();
+	float GetMovementSpeed();
 	Transform * GetTransform();
+
+	// Set functions
+	void SetIsTranslatedBack(bool isTranslatedBack);
+	void UpdateTranslationLength(float lengthMoved);
 
 	void Draw(Model* keyStoneModel, Shader* shader);
 
 	void ActivateKeystone();
 private:
-	bool isActive;
-	glm::vec3 worldPosition;
-	glm::vec3 direction;
+	
 	Transform transform;
+
+	glm::vec3 direction;
+	float TranslationLength;
+
+	bool isActive;
+	bool isTranslatedBack;
+
+	float movementSpeed;
 };
 
 #endif

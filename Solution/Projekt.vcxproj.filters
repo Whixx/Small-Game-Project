@@ -94,7 +94,9 @@
     <ClCompile Include="Coin.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
-    <ClCompile Include="Keystone.cpp" />
+    <ClCompile Include="Keystone.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloom.h">
@@ -196,7 +198,9 @@
     <ClInclude Include="Coin.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
-    <ClInclude Include="Keystone.h" />
+    <ClInclude Include="Keystone.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="blurShader.fs">

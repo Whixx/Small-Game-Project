@@ -446,7 +446,7 @@ void Player::Update(double dt)
 		//std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
 		//std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;
 		//std::cout << "Forward Vector! Z: " << this->playerCamera.GetForwardVector().z << std::endl;
-	//}
+	}
 
 #endif
 }
