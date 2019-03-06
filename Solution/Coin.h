@@ -41,7 +41,7 @@ private:
 	glm::vec3 gravity;
 	glm::vec3 oldCoinPosition;
 
-	Maze maze;
+	//Maze maze;
 };
 
 #endif

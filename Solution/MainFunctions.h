@@ -18,6 +18,7 @@
 #include "Particle.h"
 #include "InputHandler.h"
 #include "MaterialHandler.h"
+#include "Minotaur.h"
 #include "EventHandler.h"
 
 #include "Coin.h"
@@ -42,7 +43,7 @@ void InitFinalShader(Shader *shader);
 // Shader pass functions
 void MazeGenerationPass(Shader * mazeGenerationShader, Maze * maze, Player * player);
 void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Maze* maze);
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze* maze);
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze* maze, Minotaur * minotaur);
 void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenQuad, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera);
 void LightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, Model *renderModel);
 void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, GLuint *fullScreenTriangle);
@@ -51,12 +52,13 @@ void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint *fullScreenTriangle);
 
 // height and width must be odd numbers else the resulting maze will be off
-void GenerateMazeBitmaps(int height, int width);
+// the function will return a grid with the maze
+std::vector<std::vector<int>> GenerateMazePNG(int height, int width);
 
 GLuint CreateScreenQuad();
 void SetMaxPatchVertices();
 
-void HandleEvents(Player* player, SoundHandler* winSound, SoundHandler* deathSound);
+void HandleEvents(Player* player, Maze* maze, SoundHandler* winSound, SoundHandler* deathSound, SoundHandler * minotaurGrowlSound);
 
 
 #endif

@@ -85,12 +85,17 @@
     <ClCompile Include="MaterialHandler.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
+    <ClCompile Include="Minotaur.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
     <ClCompile Include="EventHandler.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
     <ClCompile Include="Coin.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
+    <ClCompile Include="Keystone.cpp" />
+    <ClCompile Include="Exit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloom.h">
@@ -186,7 +191,14 @@
     <ClInclude Include="EventHandler.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
+    <ClInclude Include="Minotaur.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
     <ClInclude Include="Coin.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Keystone.h" />
+    <ClInclude Include="Exit.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
   </ItemGroup>

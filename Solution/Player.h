@@ -23,6 +23,7 @@ public:
 	Player(float height, float fov, float near, float far, Maze * maze, irrklang::ISoundEngine* engine, PointLightHandler* PLH, float torchSize);
 	virtual ~Player();
 	
+	glm::vec3 GetPos();
 	float GetPlayerSpeed();
 	float GetPlayerHeight();
 	glm::vec3 GetWalkingVector();
@@ -68,7 +69,7 @@ private:
 
 	Model coinModel;
 	Coin inventoryCoins[MAX_NR_OF_COINS];	// Coins in the players inventory
-	Coin worldCoins[256];				// Coins on the ground in the world // DYNAMIC FIX
+	Coin worldCoins[256];					// Coins on the ground in the world // DYNAMIC FIX
 
 	unsigned int nrOfInventoryCoins;
 	unsigned int nrOfWorldCoins;
@@ -85,6 +86,7 @@ private:
 	// Private Functions
 	void AddCoinToWorld(unsigned int state);
 	void UpdateCoins(double dt);
+	void CheckIfWin();
 };
 
 #endif //DISPLAY_H

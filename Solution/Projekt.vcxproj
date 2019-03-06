@@ -93,9 +93,11 @@
     <ClCompile Include="CollisionHandler.cpp" />
     <ClCompile Include="Display.cpp" />
     <ClCompile Include="EventHandler.cpp" />
+    <ClCompile Include="Exit.cpp" />
     <ClCompile Include="FinalFBO.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="InputHandler.cpp" />
+    <ClCompile Include="Keystone.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainFunctions.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -103,6 +105,7 @@
     <ClCompile Include="Maze.cpp" />
     <ClCompile Include="MazeGeneratePNG.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Minotaur.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
@@ -125,8 +128,10 @@
     <ClInclude Include="CollisionHandler.h" />
     <ClInclude Include="Display.h" />
     <ClInclude Include="EventHandler.h" />
+    <ClInclude Include="Exit.h" />
     <ClInclude Include="FinalFBO.h" />
     <ClInclude Include="GBuffer.h" />
+    <ClInclude Include="Keystone.h" />
     <ClInclude Include="MainFunctions.h" />
     <ClInclude Include="InputHandler.h" />
     <ClInclude Include="Material.h" />
@@ -134,6 +139,7 @@
     <ClInclude Include="Maze.h" />
     <ClInclude Include="MazeGeneratePNG.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Minotaur.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectHandler.h" />

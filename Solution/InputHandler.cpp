@@ -30,6 +30,12 @@ void InputHandler::Key_callback(GLFWwindow * window, int key, int scancode, int 
 		EventHandler& EH = EventHandler::GetInstance();
 		EH.AddEvent(EVENT_PLAYER_TOSSCOIN);
 	}
+
+	if (key == GLFW_KEY_T && action == GLFW_PRESS)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+		EH.AddEvent(EVENT_MAZE_KEYSTONE_PRESSED);
+	}
 }
 
 void InputHandler::MouseControls(Display * display, Player * player, float elapsedTime)

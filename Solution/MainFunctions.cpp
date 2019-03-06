@@ -186,7 +186,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
 		// Draw maze
 		shadowShader->SendMat4("WorldMatrix", mazeWorldMatrix);
-		maze->DrawShadows();
+		maze->DrawMazeShadows();
 	}
 
 	shadowShader->UnBind();
@@ -194,7 +194,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze * maze)
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze * maze, Minotaur * minotaur)
 {
 	geometryPass->Bind();
 
@@ -206,7 +206,8 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 
 	glEnable(GL_DEPTH_TEST);
 
-	glm::mat4 worldMatrix = glm::mat4();
+	glm::mat4 worldMatrix;
+
 	// Update and Draw all objects
 	for (unsigned int i = 0; i < OH->GetNrOfObjects(); i++)
 	{
@@ -226,11 +227,35 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 		player->DrawCoin(i, geometryPass);
 	}
 
+	// Draw minotaur
+	worldMatrix = minotaur->GetTransform().GetWorldMatrix();
+	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+	geometryPass->SendMat4("WorldMatrix", worldMatrix);
+	minotaur->Draw(geometryPass);
+
 	// Draw player torch
 	worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 	geometryPass->SendMat4("WorldMatrix", worldMatrix);
 	player->GetTorch()->Draw(geometryPass);
+
+	// Draw keystones
+	for (int i = 0; i < maze->GetNrOfKeystones(); i++)
+	{
+		worldMatrix = maze->GetKeystoneTransform(i)->GetWorldMatrix();
+		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+		geometryPass->SendMat4("WorldMatrix", worldMatrix);
+		maze->DrawKeystone(i, geometryPass);
+	}
+
+	// Draw exit
+	Exit* oExit = maze->GetExit();
+	worldMatrix = oExit->GetWorldMatrix();
+	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+	geometryPass->SendMat4("WorldMatrix", worldMatrix);
+	oExit->Draw(geometryPass);
+
+
 
 	geometryPass->UnBind();
 
@@ -399,11 +424,19 @@ void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint * fullScreenTri
 	glEnable(GL_DEPTH_TEST);
 }
 
-void GenerateMazeBitmaps(int height, int width)
+std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 {
 	MazeGeneratePNG mazeGen(height, width);
+
+	// Set_cell can be used to set "entrance and exit" etc
+	//mazeGen.SetCell(0, 1, mazeGen.path);
+	//mazeGen.SetCell(height - 1, width - 2, mazeGen.path);
+
 	mazeGen.Generate();
-	mazeGen.Draw_png();
+	mazeGen.GenerateExit();
+	mazeGen.DrawPNG();
+
+	return mazeGen.GetGrid();
 }
 
 GLuint CreateScreenQuad()
@@ -439,7 +472,7 @@ GLuint CreateScreenQuad()
 	return screenQuad;
 }
 
-void HandleEvents(Player* player, SoundHandler *winSound, SoundHandler * deathSound)
+void HandleEvents(Player* player, Maze * maze, SoundHandler *winSound, SoundHandler * deathSound, SoundHandler * minotaurGrowlSound)
 {
 	EventHandler& EH = EventHandler::GetInstance();
 	while (!EH.IsEmpty())
@@ -448,11 +481,11 @@ void HandleEvents(Player* player, SoundHandler *winSound, SoundHandler * deathSo
 
 		if (event == EVENT_PLAYER_WIN)
 		{
-			player->CenterPlayer();
-			//winSound->SetPosition();
+			//player->CenterPlayer();
 
 			// IRRITERANDE LJUD
-			//winSound->Play();
+			winSound->SetPosition(player->GetPos());
+			winSound->Play();
 		}
 		else if (event == EVENT_PLAYER_LOSE)
 		{
@@ -467,6 +500,11 @@ void HandleEvents(Player* player, SoundHandler *winSound, SoundHandler * deathSo
 		else if (event == EVENT_PLAYER_TOSSCOIN)
 		{
 			player->TossCoin();
+		}
+		else if (event == EVENT_MAZE_KEYSTONE_PRESSED)
+		{
+			// The function will check with keystone that was pressed
+			maze->ActivateKeystone(player->GetPos(), minotaurGrowlSound);
 		}
 	}
 }
