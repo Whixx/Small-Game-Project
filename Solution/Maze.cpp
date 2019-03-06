@@ -231,8 +231,10 @@ Exit Maze::CreateExit()
 	glm::vec3 exitDir = this->TransformToWorldCoords(glm::vec3(a.uvDir.x, 0.0, a.uvDir.y)) - exitWorldPos;
 	exitDir.z *= -1;
 
+	Exit exit = Exit(&this->exitModel, exitWorldPos, exitDir, a.uvPos);
+	exit.GetTransform()->GetScale() = glm::vec3(this->scaleXZ, this->scaleY, this->scaleXZ);
 	// Create exit
-	return Exit(&this->exitModel, exitWorldPos, exitDir, a.uvPos);
+	return exit;
 }
 
 void Maze::DrawMazeToBuffer()
