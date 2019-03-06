@@ -8,6 +8,10 @@ SoundHandler::SoundHandler(const char* filePath, bool loopSound, irrklang::ISoun
 	this->loopSound = loopSound;
 }
 
+SoundHandler::SoundHandler()
+{
+}
+
 SoundHandler::~SoundHandler()
 {
 }

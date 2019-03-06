@@ -5,7 +5,8 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	: playerCamera(glm::vec3(0, height, 0), fov, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)),
 	playerTorch(this->transform, glm::vec3(0.5f, 0.15f, 0.15f), engine, PLH, torchSize),
 	footStep("Sounds/playerfootstep.ogg", false, engine),
-	coinModel("Models/Coin/coin.obj")
+	coinModel("Models/Coin/coin.obj"),
+	coin(engine, maze)
 {
 	this->playerHeight = height;
 	this->playerSpeed = 0;
@@ -23,8 +24,8 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	for (int i = 0; i < MAX_NR_OF_COINS; i++)
 	{
 		this->AddCoinToInventory();	// Incrementing nrOfInventoryCoins
-		this->inventoryCoins[i].SetMaze(maze);
-		this->worldCoins[i].SetMaze(maze);
+		this->worldCoins[i].SetEngine(engine);
+		this->inventoryCoins[i].SetEngine(engine);
 	}
 		
 }

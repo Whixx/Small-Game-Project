@@ -5,6 +5,7 @@
 #include "Transform.h"
 #include "Model.h"
 #include "Maze.h"
+#include "SoundHandler.h"
 
 enum COIN_STATE
 {
@@ -16,6 +17,7 @@ enum COIN_STATE
 class Coin
 {
 public:
+	Coin(irrklang::ISoundEngine* engine, Maze * maze);
 	Coin();
 	~Coin();
 
@@ -25,7 +27,6 @@ public:
 
 	void SetCoinState(unsigned int state);
 	void SetVelocity(glm::vec3 initThrowDir);
-	void SetMaze(Maze* maze);
 
 	bool UpdateDropCoin(double dt);
 	bool UpdateTossCoin(double dt);
@@ -36,6 +37,7 @@ private:
 	Transform transform;
 
 	bool isOnGround;
+	bool tossed;
 	unsigned int coinState;
 
 	glm::vec3 velocity;
@@ -45,6 +47,10 @@ private:
 	glm::vec3 rotation;
 
 	Maze * maze;
+	
+	SoundHandler tossSound;
+	SoundHandler dropSound;
+	SoundHandler collisionSound;
 };
 
 #endif

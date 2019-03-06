@@ -1,11 +1,25 @@
 #include "Coin.h"
 
-Coin::Coin()
+Coin::Coin(irrklang::ISoundEngine * engine, Maze * maze)
+	:tossSound("Sounds/CoinToss.wav", false, engine),
+	dropSound("CoinHitGround/.wav", false, engine),
+	collisionSound("Sounds/CoinHitWall.wav", false, engine)
 {
-	this->coinSpeed = 10.0f;
+	this->tossSound.SetVolume(0.7);
+	this->dropSound.SetVolume(0.3);
+	this->collisionSound.SetVolume(1.0);
+
+	this->maze = maze;
+
+	this->coinSpeed = 8.0f;
 	this->isOnGround = false;
+	this->tossed = false;
 	this->gravity = glm::vec3(0.0, -9.82, 0.0f);
 	this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+}
+
+Coin::Coin()
+{
 }
 
 Coin::~Coin()
@@ -275,9 +289,9 @@ void Coin::SetVelocity(glm::vec3 initThrowDir)
 	}
 }
 
-void Coin::SetMaze(Maze *maze)
+void Coin::SetEngine(irrklang::ISoundEngine * engine)
 {
-	this->maze = maze;
+	this->engine = engine;
 }
 
 bool Coin::UpdateDropCoin(double dt)
@@ -289,6 +303,7 @@ bool Coin::UpdateDropCoin(double dt)
 	{
 		this->transform.SetRot(glm::vec3(0.0f, 0.0f, 0.0f));
 		this->transform.SetPos(glm::vec3(this->oldCoinPosition.x, 0.1f, this->oldCoinPosition.z));
+		this->dropSound.Play();
 		this->isOnGround = true;
 		return this->isOnGround;
 	}
@@ -305,6 +320,12 @@ bool Coin::UpdateDropCoin(double dt)
 
 bool Coin::UpdateTossCoin(double dt)
 {
+	if (tossed == false)
+	{
+		tossSound.Play();
+		tossed = true;
+	}
+
 	// Check if the coin allready is on the ground
 	if (this->transform.GetPos().y < 0.01f)
 	{
@@ -313,6 +334,7 @@ bool Coin::UpdateTossCoin(double dt)
 
 		this->transform.SetRot(glm::vec3(0.0f, 0.0f, 0.0f));
 		this->transform.SetPos(glm::vec3(this->oldCoinPosition.x - offset.x, 0.1f, this->oldCoinPosition.z - offset.z));
+		this->dropSound.Play();
 		this->isOnGround = true;
 		return this->isOnGround;
 	}
@@ -326,7 +348,10 @@ bool Coin::UpdateTossCoin(double dt)
 	glm::vec3 newPos = this->transform.GetPos() + this->velocity * float(dt) + (this->gravity * pow(float(dt), 2.0f) / 2.0f);
 
 	// Detect collision
-	this->DetectWalls(newPos, this->oldCoinPosition, this->velocity);
+	if (this->DetectWalls(newPos, this->oldCoinPosition, this->velocity) == true)
+	{
+		collisionSound.Play();
+	}
 
 	this->transform.SetPos(newPos);
 
