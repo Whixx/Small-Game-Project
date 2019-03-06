@@ -62,6 +62,9 @@ public:
 	
 	void DrawCoin(unsigned int index, Shader * shader);
 
+	// test variable
+	int printCounter = 0;
+
 private:
 	Camera playerCamera;
 	Transform transform;
