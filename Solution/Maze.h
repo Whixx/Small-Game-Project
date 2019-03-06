@@ -24,7 +24,7 @@ const unsigned int DRAWDISTANCE = 7;
 class Maze
 {
 public:
-	Maze();
+	Maze(irrklang::ISoundEngine * engine);
 	~Maze();
 
 	int GetMazeHeight();
@@ -76,6 +76,7 @@ private:
 	int keystonesCapacity;
 	int nrOfKeystones;
 	Model keyStoneModel;
+	SoundHandler keystoneSound;
 
 	Transform transform;
 

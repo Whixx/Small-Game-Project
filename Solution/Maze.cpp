@@ -1,7 +1,8 @@
 #include "Maze.h"
 
-Maze::Maze()
-	:keyStoneModel("Models/Cube/cube.obj")
+Maze::Maze(irrklang::ISoundEngine * engine)
+	:keyStoneModel("Models/Cube/cube.obj"),
+	keystoneSound("Sounds/keystoneSound.wav", false, engine)
 {
 	this->imageData = nullptr;
 	this->path = "";
@@ -13,7 +14,6 @@ Maze::Maze()
 	this->mazeTbo = 0;
 	this->mazeVbo = 0;
 	this->mazeVao = 0;
-
 
 	// Set maze position, rotation and scale
 	this->transform.SetPos(glm::vec3(0, 0, 0));
@@ -39,11 +39,11 @@ Maze::Maze()
 		this->AddKeystone();
 
 	// TEST PRINT
-	//for (int i = 0; i < this->nrOfKeystones; i++)
-	//{
-	//	std::cout << "X: " << this->keystones[i].GetTransform()->GetPos().x << std::endl;
-	//	std::cout << "Z: " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
-	//}
+	for (int i = 0; i < this->nrOfKeystones; i++)
+	{
+		std::cout << "X: " << this->keystones[i].GetTransform()->GetPos().x << std::endl;
+		std::cout << "Z: " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
+	}
 
 
 	this->InitiateMazeBuffers();
@@ -301,6 +301,8 @@ bool Maze::ActivateKeystone(glm::vec3 playerPos, SoundHandler * minotaurGrowlSou
 #ifdef DEBUG
 				std::cout << "Keystone " << i << " Activated!" << std::endl;
 #endif
+
+				keystoneSound.Play();
 				minotaurGrowlSound->Play();
 			}
 		}	
