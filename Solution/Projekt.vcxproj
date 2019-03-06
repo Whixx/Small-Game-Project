@@ -93,6 +93,7 @@
     <ClCompile Include="CollisionHandler.cpp" />
     <ClCompile Include="Display.cpp" />
     <ClCompile Include="EventHandler.cpp" />
+    <ClCompile Include="Exit.cpp" />
     <ClCompile Include="FinalFBO.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="InputHandler.cpp" />
@@ -127,6 +128,7 @@
     <ClInclude Include="CollisionHandler.h" />
     <ClInclude Include="Display.h" />
     <ClInclude Include="EventHandler.h" />
+    <ClInclude Include="Exit.h" />
     <ClInclude Include="FinalFBO.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="Keystone.h" />

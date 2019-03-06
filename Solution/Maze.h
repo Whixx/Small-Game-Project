@@ -12,6 +12,7 @@
 #include "Shader.h"
 #include "MaterialHandler.h"
 
+#include "Exit.h"
 #include "Model.h"
 #include "Keystone.h"
 #include "SoundHandler.h"
@@ -20,12 +21,6 @@
 using namespace std;
 
 const unsigned int DRAWDISTANCE = 7;
-
-struct ExitPosDir
-{
-	glm::vec2 uvPos;
-	glm::vec2 uvDir;
-};
 
 class Maze
 {
@@ -36,8 +31,8 @@ public:
 	int GetMazeHeight();
 	int GetMazeWidth();
 
-	glm::vec3 GetExitWorldPos() const;
-	glm::vec3 GetExitDir() const;
+	glm::vec3 GetExitWorldPos();
+	Exit* GetExit();
 
 	Transform *GetTransform();
 	glm::vec2* GetDrawOrder();
@@ -63,6 +58,7 @@ public:
 	void BindMaterial(Shader* shader);
 
 	void LoadMaze(const std::string& fileName);
+	
 
 	bool IsWallAtWorld(float x, float y);
 
@@ -77,9 +73,8 @@ private:
 	GLuint mazeTexture;
 	glm::vec2 drawOrder[(1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE)];
 
-	glm::vec3 exitWorldPos;
-	glm::vec2 exitPos;
-	glm::vec3 exitDir;
+	Exit exit;
+	Model exitModel;
 
 	Keystone * keystones;
 	int keystonesCapacity;
@@ -109,6 +104,7 @@ private:
 	// Returns the color of the pixel
 	glm::vec3 readPixel(unsigned int x, unsigned int y);
 	ExitPosDir FindExit();
+	Exit CreateExit();
 
 	// Keystone functions
 	glm::vec3 CreateCubePosition();

@@ -95,6 +95,7 @@
       <Filter>Class cpp Files</Filter>
     </ClCompile>
     <ClCompile Include="Keystone.cpp" />
+    <ClCompile Include="Exit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloom.h">
@@ -197,6 +198,9 @@
       <Filter>Class h Files</Filter>
     </ClInclude>
     <ClInclude Include="Keystone.h" />
+    <ClInclude Include="Exit.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="blurShader.fs">

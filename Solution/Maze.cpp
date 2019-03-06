@@ -1,7 +1,7 @@
 #include "Maze.h"
 
 Maze::Maze()
-	:keyStoneModel("Models/Torch/torch.obj")
+	:keyStoneModel("Models/Torch/torch.obj"), exitModel("Models/Exit/exit.obj")
 {
 	this->imageData = nullptr;
 	this->path = "";
@@ -25,14 +25,7 @@ Maze::Maze()
 
 	this->LoadMaze("MazePNG/mazeColorCoded.png");
 
-	// Find the exit
-	ExitPosDir a = this->FindExit();
-	this->exitPos = a.uvPos;
-	this->exitWorldPos = this->TransformToWorldCoords(glm::vec3(exitPos.x, 0, exitPos.y));
-	this->exitDir = this->TransformToWorldCoords(glm::vec3(a.uvDir.x, 0.0, a.uvDir.y)) -
-					this->exitWorldPos;
-	//this->exitDir.x *= -1;
-	this->exitDir.z *= -1;
+	this->exit = this->CreateExit();
 
 	this->nrOfKeystones = 0;
 	this->keystonesCapacity = 3; // Initvalue of the number of keystones
@@ -76,14 +69,14 @@ int Maze::GetMazeWidth()
 	return this->width;
 }
 
-glm::vec3 Maze::GetExitWorldPos() const
+glm::vec3 Maze::GetExitWorldPos()
 {
-	return this->exitWorldPos;
+	return this->exit.GetTransform()->GetPos();
 }
 
-glm::vec3 Maze::GetExitDir() const
+Exit * Maze::GetExit()
 {
-	return this->exitDir;
+	return &this->exit;
 }
 
 Transform * Maze::GetTransform()
@@ -181,7 +174,7 @@ bool Maze::IsWallAtWorld(float x, float y)
 
 	glm::vec3 transformed = this->TransformToMazeCoords(glm::vec3(x, 0.0f, y));
 
-	if (!this->IsExitOpen() && transformed.x == this->exitPos.x && transformed.z == this->exitPos.y)
+	if (!this->IsExitOpen() && transformed.x == this->exit.GetExitUVPos().x && transformed.z == this->exit.GetExitUVPos().y)
 		return true;
 
 	glm::vec3 pixel = readPixel(transformed.x, transformed.z);
@@ -228,6 +221,18 @@ void Maze::LoadMaze(const std::string & fileName)
 
 	// Skickar texturen till GPU'n
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, this->imageData);
+}
+
+Exit Maze::CreateExit()
+{
+	// Find the exit
+	ExitPosDir a = this->FindExit();
+	glm::vec3 exitWorldPos = this->TransformToWorldCoords(glm::vec3(a.uvPos.x, 0, a.uvPos.y));
+	glm::vec3 exitDir = this->TransformToWorldCoords(glm::vec3(a.uvDir.x, 0.0, a.uvDir.y)) - exitWorldPos;
+	exitDir.z *= -1;
+
+	// Create exit
+	return Exit(&this->exitModel, exitWorldPos, exitDir, a.uvPos);
 }
 
 void Maze::DrawMazeToBuffer()
