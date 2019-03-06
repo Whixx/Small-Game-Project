@@ -15,6 +15,8 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	this->mazeVbo = 0;
 	this->mazeVao = 0;
 
+	this->keystoneSound.SetVolume(1);
+
 	// Set maze position, rotation and scale
 	this->transform.SetPos(glm::vec3(0, 0, 0));
 	this->transform.SetRot(glm::vec3(0, 0, 0));
@@ -301,8 +303,8 @@ bool Maze::ActivateKeystone(glm::vec3 playerPos, SoundHandler * minotaurGrowlSou
 #ifdef DEBUG
 				std::cout << "Keystone " << i << " Activated!" << std::endl;
 #endif
-
-				keystoneSound.Play();
+				this->keystoneSound.SetPosition(this->keystones[i].GetTransform()->GetPos());
+				this->keystoneSound.Play();
 				minotaurGrowlSound->Play();
 			}
 		}	
