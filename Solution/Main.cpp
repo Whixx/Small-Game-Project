@@ -175,6 +175,7 @@ int main()
 		minotaur.Update(player.GetCamera()->GetCameraPosition());
 
 		OH.UpdateAllObjects(deltaTime);
+		maze.UpdateKeystones(deltaTime);
 		lights.UpdateShadowTransform(0);
 
 		// update sound engine with position and view direction

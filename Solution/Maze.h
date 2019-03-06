@@ -50,6 +50,7 @@ public:
 	void DrawKeystone(unsigned int index, Shader * shader);
 
 	bool ActivateKeystone(glm::vec3 playerPos, SoundHandler * minotaurGrowlSound);
+	void UpdateKeystones(float deltaTime);
 
 	void BindMaterial(Shader* shader);
 
@@ -69,6 +70,7 @@ private:
 	glm::vec2 drawOrder[(1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE)];
 	glm::vec3 exitWorldPos;
 	glm::vec2 exitPos;
+	bool isExitOpen;
 
 	Keystone * keystones;
 	int keystonesCapacity;
