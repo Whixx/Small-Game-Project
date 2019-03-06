@@ -73,6 +73,6 @@ void Texture::LoadTexture()
 	}
 	else
 	{
-		std::cout << "[ERROR] Failed loading texture " << path << std::endl;
+		std::cout << "[WARNING] Failed loading texture " << path << std::endl;
 	}
 }
