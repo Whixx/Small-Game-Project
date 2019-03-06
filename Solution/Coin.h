@@ -25,9 +25,11 @@ public:
 
 	void SetCoinState(unsigned int state);
 	void SetVelocity(glm::vec3 initThrowDir);
+	void SetMaze(Maze* maze);
 
 	bool UpdateDropCoin(double dt);
 	bool UpdateTossCoin(double dt);
+	bool DetectWalls(glm::vec3 pos, glm::vec3 oldPos, glm::vec3 &velocity);
 
 	void Draw(Model * coinModel, Shader * shader);
 private:
@@ -40,8 +42,9 @@ private:
 	double coinSpeed;
 	glm::vec3 gravity;
 	glm::vec3 oldCoinPosition;
+	glm::vec3 rotation;
 
-	Maze maze;
+	Maze * maze;
 };
 
 #endif

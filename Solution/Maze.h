@@ -16,6 +16,25 @@ using namespace std;
 
 const unsigned int DRAWDISTANCE = 7;
 
+enum Wall
+{
+	NO_WALL,
+	WALL_VERTICAL,
+	WALL_HORIZONTAL,
+	WALL_CORNER_RIGHT_UP,
+	WALL_CORNER_RIGHT_DOWN,
+	WALL_CORNER_LEFT_UP,
+	WALL_CORNER_LEFT_DOWN,
+	WALL_END_UP,
+	WALL_END_DOWN,
+	WALL_END_RIGHT,
+	WALL_END_LEFT,
+	WALL_UP,
+	WALL_DOWN,
+	WALL_LEFT,
+	WALL_RIGHT
+};
+
 class Maze
 {
 public:
@@ -44,6 +63,8 @@ public:
 	void LoadMaze(const std::string& fileName);
 
 	bool IsWallAtWorld(float x, float y);
+
+	Wall GetWallType(float x, float y);
 
 	void BindTexture(unsigned int textureUnit);
 private:
