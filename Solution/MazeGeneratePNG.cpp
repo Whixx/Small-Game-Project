@@ -136,6 +136,9 @@ void MazeGeneratePNG::GenerateExit()
 		bool below = rand() % 2;
 		int random = rand() % (this->width - 1);
 
+		horizontal = 0;
+		below = 1;
+
 		if (horizontal && !below)
 			exitPos = glm::vec2(random, 0);
 		else if (horizontal && below)

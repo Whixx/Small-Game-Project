@@ -6,6 +6,7 @@
 #include "Mesh.h"
 #include "Texture.h"
 #include "Model.h"
+#include <glm/gtx/norm.hpp>
 
 using namespace std;
 
@@ -14,6 +15,8 @@ class Object
 public:
 	Object(string path = "Models/Cube/cube.obj");
 	virtual ~Object();
+
+	void SetDir(glm::vec3 newDir);
 
 	glm::mat4 GetWorldMatrix() const;
 	Transform GetTransform() const;

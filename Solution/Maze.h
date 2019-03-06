@@ -21,6 +21,12 @@ using namespace std;
 
 const unsigned int DRAWDISTANCE = 7;
 
+struct ExitPosDir
+{
+	glm::vec2 uvPos;
+	glm::vec2 uvDir;
+};
+
 class Maze
 {
 public:
@@ -29,7 +35,10 @@ public:
 
 	int GetMazeHeight();
 	int GetMazeWidth();
+
 	glm::vec3 GetExitWorldPos() const;
+	glm::vec3 GetExitDir() const;
+
 	Transform *GetTransform();
 	glm::vec2* GetDrawOrder();
 	glm::vec3 TransformToMazeCoords(glm::vec3 pos);
@@ -67,8 +76,10 @@ private:
 	int numComponents;
 	GLuint mazeTexture;
 	glm::vec2 drawOrder[(1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE)];
+
 	glm::vec3 exitWorldPos;
 	glm::vec2 exitPos;
+	glm::vec3 exitDir;
 
 	Keystone * keystones;
 	int keystonesCapacity;
@@ -97,7 +108,7 @@ private:
 
 	// Returns the color of the pixel
 	glm::vec3 readPixel(unsigned int x, unsigned int y);
-	glm::vec2 FindExit();
+	ExitPosDir FindExit();
 
 	// Keystone functions
 	glm::vec3 CreateCubePosition();

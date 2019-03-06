@@ -26,9 +26,13 @@ Maze::Maze()
 	this->LoadMaze("MazePNG/mazeColorCoded.png");
 
 	// Find the exit
-	this->exitPos = this->FindExit();
+	ExitPosDir a = this->FindExit();
+	this->exitPos = a.uvPos;
 	this->exitWorldPos = this->TransformToWorldCoords(glm::vec3(exitPos.x, 0, exitPos.y));
-
+	this->exitDir = this->TransformToWorldCoords(glm::vec3(a.uvDir.x, 0.0, a.uvDir.y)) -
+					this->exitWorldPos;
+	//this->exitDir.x *= -1;
+	this->exitDir.z *= -1;
 
 	this->nrOfKeystones = 0;
 	this->keystonesCapacity = 3; // Initvalue of the number of keystones
@@ -75,6 +79,11 @@ int Maze::GetMazeWidth()
 glm::vec3 Maze::GetExitWorldPos() const
 {
 	return this->exitWorldPos;
+}
+
+glm::vec3 Maze::GetExitDir() const
+{
+	return this->exitDir;
 }
 
 Transform * Maze::GetTransform()
@@ -438,9 +447,10 @@ glm::vec3 Maze::readPixel(unsigned int x, unsigned int y)
 	return glm::vec3(pixel[0], pixel[1], pixel[2]);
 }
 
-glm::vec2 Maze::FindExit()
+ExitPosDir Maze::FindExit()
 {
 	glm::vec2 exitPos(-1.0);
+	glm::vec2 exitDir(-1.0);
 
 	// Find exit
 	for (int x= 0; x < this->width; x++)
@@ -449,6 +459,7 @@ glm::vec2 Maze::FindExit()
 		if (this->readPixel(x, 0) == glm::vec3(0.0))
 		{
 			exitPos = glm::vec2(x, 0);
+			exitDir = glm::vec2(x, 1);
 			break;
 		}
 
@@ -457,6 +468,7 @@ glm::vec2 Maze::FindExit()
 		if (this->readPixel(0, x) == glm::vec3(0.0))
 		{
 			exitPos = glm::vec2(0, x);
+			exitDir = glm::vec2(1, x);
 			break;
 		}
 
@@ -464,6 +476,7 @@ glm::vec2 Maze::FindExit()
 		if (this->readPixel(x, this->height - 2) == glm::vec3(0.0))
 		{
 			exitPos = glm::vec2(x, this->height - 2);
+			exitDir = glm::vec2(x, this->height - 3);
 			break;
 		}
 
@@ -472,14 +485,22 @@ glm::vec2 Maze::FindExit()
 		if (this->readPixel(this->width - 2, x) == glm::vec3(0.0))
 		{
 			exitPos = glm::vec2(this->width - 2, x);
+			exitDir = glm::vec2(this->width - 3, x);
 			break;
 		}
 	}
 
-	cout << "ExitPos:x :" << exitPos.x << endl << "ExitPos:y :" << exitPos.y << endl;
-	
+	if (exitPos == glm::vec2(-1.0))
+	{
+		cout << "[ERROR]: Exit not found" << endl;
+	}
 
-	return exitPos;
+#ifdef DEBUG
+	cout << "ExitPos:x :" << exitPos.x << endl << "ExitPos:y :" << exitPos.y << endl;
+#endif
+
+	ExitPosDir r = {exitPos, exitDir};
+	return r;
 }
 
 glm::vec3 Maze::CreateCubePosition()
@@ -538,5 +559,6 @@ void Maze::AddKeystone()
 
 	// Add a keystone
 	this->keystones[this->nrOfKeystones] = Keystone(this->CreateCubePosition());
+
 	this->nrOfKeystones++;
 }

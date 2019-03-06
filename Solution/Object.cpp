@@ -10,6 +10,17 @@ Object::~Object()
 	delete this->model;
 }
 
+void Object::SetDir(glm::vec3 newDir)
+{
+	float angle = glm::acos(newDir.x);
+	
+	// Check if under the unit circle
+	if (glm::sin(newDir.z) < 0.0)
+		angle *= -1;
+
+	this->transform.GetRot().y = angle;
+}
+
 glm::mat4 Object::GetWorldMatrix() const
 {
 	return this->transform.GetWorldMatrix();

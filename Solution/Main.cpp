@@ -134,6 +134,7 @@ int main()
 	int exit = OH.CreateObject("Models/Exit/exit.obj");
 	Object* oExit = OH.GetObject(exit);
 	oExit->GetPos() = maze.GetExitWorldPos();
+	oExit->SetDir(maze.GetExitDir());
 
 	//TODO: Byta ground.png till floor.png
 	
