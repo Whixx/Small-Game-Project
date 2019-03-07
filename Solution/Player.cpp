@@ -5,6 +5,8 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	: playerCamera(glm::vec3(0, height, 0), fov, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)),
 	playerTorch(this->transform, glm::vec3(0.5f, 0.15f, 0.15f), engine, PLH, torchSize),
 	footStep("Sounds/playerfootstep.ogg", false, engine),
+	dropSound("Sounds/CoinHitGround.wav", false, engine),
+	collisionSound("Sounds/CoinHitWall.wav", false, engine),
 	coinModel("Models/Coin/coin.obj")
 {
 	this->playerHeight = height;
@@ -14,6 +16,8 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	this->soundEngine = engine;
 
 	this->footStep.SetVolume(0.2);
+	this->dropSound.SetVolume(0.2);
+	this->collisionSound.SetVolume(2.0);
 
 	CenterPlayer(); //Space to return to origin
 
@@ -407,6 +411,7 @@ void Player::Update(double dt)
 		this->walkingVector, 
 		this->boundingBoxHalfSize);
 
+	// Update coins
 	this->UpdateCoins(dt);
 	
 #ifdef DEBUG
@@ -489,11 +494,20 @@ void Player::TossCoin()
 	this->AddCoinToWorld(COIN_TOSS);
 }
 
+void Player::PlayWallCollisionSound()
+{
+	this->collisionSound.Play();
+}
+
+void Player::PlayGroundCollisionSound()
+{
+	this->dropSound.Play();
+}
+
 void Player::DrawCoin(unsigned int index, Shader * shader)
 {
 	this->worldCoins.at(index).Draw(&this->coinModel, shader);
 }
-
 
 void Player::AddCoinToWorld(unsigned int state)
 {
@@ -520,9 +534,8 @@ void Player::AddCoinToWorld(unsigned int state)
 	transformTmp.SetPos(throwPos);
 	transformTmp.SetScale(this->inventoryCoins[this->nrOfInventoryCoins - 1].GetTransform()->GetScale());
 
-
 	// Set the state (if coin is tossed or dropped)
-	Coin coinTmp = Coin(transformTmp, state, this->soundEngine, this->maze);
+	Coin coinTmp = Coin(transformTmp, state, this->maze);
 	this->worldCoins.push_back(coinTmp);
 
 	// Give coins the initThrowDir
@@ -556,6 +569,16 @@ void Player::UpdateCoins(double dt)
 				std::cout << "Invalid State for coin" << std::endl;
 				#endif
 				break;
+			}
+
+			if (this->worldCoins.at(i).GetWallHit() == true)
+			{
+				this->PlayWallCollisionSound();
+			}
+
+			if (this->worldCoins.at(i).IsOnGround() == true)
+			{
+				this->PlayGroundCollisionSound();
 			}
 		}
 	}

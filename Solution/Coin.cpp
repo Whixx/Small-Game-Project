@@ -1,23 +1,16 @@
 #include "Coin.h"
 
-Coin::Coin(Transform transform, unsigned int state, irrklang::ISoundEngine * engine, Maze * maze)
-	:tossSound("Sounds/CoinToss.wav", false, engine),
-	dropSound("Sounds/CoinHitGround/.wav", false, engine),
-	collisionSound("Sounds/CoinHitWall.wav", false, engine)
+Coin::Coin(Transform transform, unsigned int state, Maze * maze)
 {
-	//this->tossSound.SetVolume(0.7);
-	//this->dropSound.SetVolume(0.3);
-	//this->collisionSound.SetVolume(1.0);
-
 	this->maze = maze;
 	this->transform = transform;
 	this->coinState = state;
 
-	this->coinSpeed = 8.0f;
+	this->coinSpeed = 10.0f;
 	this->isOnGround = false;
-	this->tossed = false;
+	this->wallHit = false;
 	this->gravity = glm::vec3(0.0, -9.82, 0.0f);
-	this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	this->rotation = glm::vec3(3.0f, 1.0f, 2.0f);
 }
 
 Coin::Coin()
@@ -266,12 +259,17 @@ bool Coin::DetectWalls(glm::vec3 newPos, glm::vec3 oldPos, glm::vec3 &velocity)
 	}
 
 	// If no wall detection was found
-	if (type != NO_WALL) 
+	if (type == NO_WALL) 
 	{
 		hit = false;
 	}
 
 	return hit;
+}
+
+bool Coin::GetWallHit()
+{
+	return this->wallHit;
 }
 
 void Coin::SetCoinState(unsigned int state)
@@ -293,14 +291,11 @@ void Coin::SetVelocity(glm::vec3 initThrowDir)
 
 bool Coin::UpdateDropCoin(double dt)
 {
-	glm::vec3 rotation = glm::vec3(3.0f, 1.0f, 2.0f);
-
 	// Check if the coin allready is on the ground
 	if (this->transform.GetPos().y < 0.01f)
 	{
 		this->transform.SetRot(glm::vec3(0.0f, 0.0f, 0.0f));
 		this->transform.SetPos(glm::vec3(this->oldCoinPosition.x, 0.1f, this->oldCoinPosition.z));
-		//this->dropSound.Play();
 		this->isOnGround = true;
 		return this->isOnGround;
 	}
@@ -317,11 +312,7 @@ bool Coin::UpdateDropCoin(double dt)
 
 bool Coin::UpdateTossCoin(double dt)
 {
-	if (tossed == false)
-	{
-		//tossSound.Play();
-		tossed = true;
-	}
+	wallHit = false;
 
 	// Check if the coin allready is on the ground
 	if (this->transform.GetPos().y < 0.01f)
@@ -331,7 +322,6 @@ bool Coin::UpdateTossCoin(double dt)
 
 		this->transform.SetRot(glm::vec3(0.0f, 0.0f, 0.0f));
 		this->transform.SetPos(glm::vec3(this->oldCoinPosition.x - offset.x, 0.1f, this->oldCoinPosition.z - offset.z));
-		//this->dropSound.Play();
 		this->isOnGround = true;
 		return this->isOnGround;
 	}
@@ -345,10 +335,7 @@ bool Coin::UpdateTossCoin(double dt)
 	glm::vec3 newPos = this->transform.GetPos() + this->velocity * float(dt) + (this->gravity * pow(float(dt), 2.0f) / 2.0f);
 
 	// Detect collision
-	if (this->DetectWalls(newPos, this->oldCoinPosition, this->velocity) == true)
-	{
-		//collisionSound.Play();
-	}
+	wallHit = this->DetectWalls(newPos, this->oldCoinPosition, this->velocity);
 
 	this->transform.SetPos(newPos);
 

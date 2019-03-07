@@ -58,6 +58,8 @@ public:
 	// Coin mechanics
 	void DropCoin();
 	void TossCoin();
+	virtual void PlayWallCollisionSound();
+	void PlayGroundCollisionSound();
 	
 	void DrawCoin(unsigned int index, Shader * shader);
 
@@ -82,6 +84,8 @@ private:
 	glm::vec3 walkingVector;
 
 	SoundHandler footStep;
+	SoundHandler dropSound;
+	SoundHandler collisionSound;
 
 	// Private Functions
 	void AddCoinToWorld(unsigned int state);
