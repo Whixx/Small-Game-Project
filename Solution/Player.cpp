@@ -444,7 +444,7 @@ void Player::Update(double dt)
 		//this->printCounter++;
 		//if (this->printCounter == 1000)
 		//{
-			//printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+			printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
 			//this->printCounter = 0;
 		//}
 	
@@ -583,6 +583,13 @@ void Player::UpdateCoins(double dt)
 			if (this->worldCoins.at(i).IsOnGround() == true)
 			{
 				this->PlayGroundCollisionSound();
+				
+				if (this->worldCoins.at(i).GetCoinState() == COIN_TOSS)
+				{
+					// Change minotaur destination
+					glm::vec3 coinMazePosition = this->maze->TransformToMazeCoords(this->worldCoins.at(i).GetTransform()->GetPos());
+					this->minotaur->reactToSound(coinMazePosition);
+				}			
 			}
 		}
 	}

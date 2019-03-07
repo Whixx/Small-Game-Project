@@ -15,14 +15,11 @@ Keystone::Keystone(KeystonePosDir * keystonePosDir, const int ScaleXZ)
 		this->direction = keystonePosDir->direction;
 	}
 
-	// Offset to make the cube go abit further in
-	float offset = 0.01 * this->transform.GetScale().x;
-
 	// To avoid translating the cube inside displaced walls, we need a tesselation offset to avoid this
 	float tesselationOffset = 0.08 * ScaleXZ;
 
 	// The length the cube should be translated
-	this->TranslationLength = this->transform.GetScale().x - tesselationOffset + offset;
+	this->TranslationLength = this->transform.GetScale().x - tesselationOffset + 0.06f;
 
 	this->isActive = false;
 	this->isTranslatedBack = false;

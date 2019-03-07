@@ -106,6 +106,7 @@ private:
 	int nrOfKeystones;
 	Model keyStoneModel;
 	Sound keystoneSound;
+	glm::vec3 lastActivatedKeystone;
 
 	Transform transform;
 

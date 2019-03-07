@@ -32,6 +32,7 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	this->nrOfKeystones = 0;
 	this->keystonesCapacity = 3; // Initvalue of the number of keystones
 	this->keystones = new Keystone[this->keystonesCapacity];
+	this->lastActivatedKeystone = glm::vec3();
 
 	// Create 3 cubes. Each on a separate floor in the maze
 	for (int i = 0; i < 3; i++)
@@ -39,11 +40,11 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 
 #ifdef DEBUG
 	// TEST PRINT
-	//for (int i = 0; i < this->nrOfKeystones; i++)
-	//{
-	//	std::cout << "X: " << this->keystones[i].GetTransform()->GetPos().x << std::endl;
-	//	std::cout << "Z: " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
-	//}
+	for (int i = 0; i < this->nrOfKeystones; i++)
+	{
+		std::cout << "X: " << this->keystones[i].GetTransform()->GetPos().x << std::endl;
+		std::cout << "Z: " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
+	}
 #endif
 
 	this->InitiateMazeBuffers();
@@ -152,6 +153,7 @@ Transform * Maze::GetKeystoneTransform(unsigned int index)
 {
 	return this->keystones[index].GetTransform();
 }
+
 
 int Maze::GetNrOfKeystones()
 {

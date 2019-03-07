@@ -6,8 +6,9 @@ Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>
 	stepSound("Sounds/minotaurstep.ogg", false, engine),
 	growlSound("Sounds/minotaurgrowl.wav", false, engine)
 {
-	this->transform.GetScale() = glm::vec3(0.04f, 0.04f, 0.04f);
-	this->movementSpeed = 1 * this->transform.GetScale().y;
+	this->transform.GetScale() = glm::vec3(0.025f, 0.025f, 0.025f);
+	this->transform.GetPos().y = 0.1f;
+	this->movementSpeed = 4 * this->transform.GetScale().y;
 	this->mazeGrid = mazeGrid;
 	this->maze = maze;
 
@@ -36,18 +37,23 @@ void Minotaur::increaseAgressionLevel()
 	this->searchArea--;
 }
 
-void Minotaur::reactToSound(glm::vec3 soundMapPos)
+void Minotaur::reactToSound(glm::vec3 soundMazePos)
 {
 	this->alerted = 3;
 
-	this->lastSoundHeardPos = soundMapPos;
+	//glm::vec2 toNearbyFloortemp;
+	//toNearbyFloortemp = this->toNearbyFloor(glm::vec2(soundMazePos.x, soundMazePos.z));
+	//
+	//soundMazePos = glm::vec3(toNearbyFloortemp.x, 0, toNearbyFloortemp.y);
+
+	this->lastSoundHeardPos = soundMazePos;
 
 	while (!this->generatedPath.empty())
 		this->generatedPath.pop_back();
 
 	glm::vec3 currentPos = this->maze->TransformToMazeCoords(this->transform.GetPos());
 
-	GeneratePath(currentPos.z, currentPos.x, soundMapPos.z, soundMapPos.x);
+	GeneratePath(currentPos.z, currentPos.x, soundMazePos.z, soundMazePos.x);
 }
 
 void Minotaur::Update(glm::vec3 playerPos)
@@ -426,10 +432,10 @@ void Minotaur::drawPath()
 	
 	if (!stbi_write_png("MazePNG/MINOTAURPATH.png", 64, 64, 3, c.data(), 3 * (64)))
 	{
-		//std::cout << "ERROR MINOTAURPATH NOT WRITTEN" << std::endl;
+		std::cout << "ERROR MINOTAURPATH NOT WRITTEN" << std::endl;
 	}
 	else
 	{
-		//std::cout << "MINOTAURPATH WRITTEN" << std::endl;
+		std::cout << "MINOTAURPATH WRITTEN" << std::endl;
 	}
 }

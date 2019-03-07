@@ -472,7 +472,7 @@ GLuint CreateScreenQuad()
 	return screenQuad;
 }
 
-void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound)
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur)
 {
 	EventHandler& EH = EventHandler::GetInstance();
 	while (!EH.IsEmpty())
@@ -501,8 +501,14 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		}
 		else if (event == EVENT_MAZE_KEYSTONE_PRESSED)
 		{
+			glm::vec3 keystonePosition = player->GetCamera()->GetCameraPosition();
 			// The function will check with keystone that was pressed
-			maze->ActivateKeystone(player->GetPos(), minotaurGrowlSound);
+			if (maze->ActivateKeystone(player->GetPos(), minotaurGrowlSound))
+			{
+				keystonePosition = maze->TransformToMazeCoords(keystonePosition);
+
+				minotaur->reactToSound(keystonePosition);
+			}	
 		}
 	}
 }
