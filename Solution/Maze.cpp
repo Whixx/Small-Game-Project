@@ -110,8 +110,10 @@ glm::vec3 Maze::TransformToMazeCoords(glm::vec3 pos)
 	newX += (this->GetMazeWidth() / 2) + pixelOffset;
 	newZ += (this->GetMazeHeight() / 2) + pixelOffset;
 
-	pos.x = (int)newX;
-	pos.z = (int)newZ;
+	pos.x = newX;
+	pos.z = newZ;
+
+	printf("X: %f, Y: %f\n", pos.x, pos.z);
 
 	return pos;
 }
