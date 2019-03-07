@@ -113,8 +113,6 @@ glm::vec3 Maze::TransformToMazeCoords(glm::vec3 pos)
 	pos.x = newX;
 	pos.z = newZ;
 
-	printf("X: %f, Y: %f\n", pos.x, pos.z);
-
 	return pos;
 }
 
