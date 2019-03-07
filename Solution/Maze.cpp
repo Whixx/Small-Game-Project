@@ -37,15 +37,15 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	this->keystones = new Keystone[this->keystonesCapacity];
 
 	// Create 3 cubes. Each on a separate floor in the maze
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 3; i++)
 		this->AddKeystone();
 
 	// TEST PRINT
-	for (int i = 0; i < this->nrOfKeystones; i++)
-	{
-		std::cout << "X: " << this->keystones[i].GetTransform()->GetPos().x << std::endl;
-		std::cout << "Z: " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
-	}
+	//for (int i = 0; i < this->nrOfKeystones; i++)
+	//{
+	//	std::cout << "X: " << this->keystones[i].GetTransform()->GetPos().x << std::endl;
+	//	std::cout << "Z: " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
+	//}
 
 
 	this->InitiateMazeBuffers();
@@ -271,7 +271,7 @@ void Maze::DrawKeystone(unsigned int index, Shader * shader)
 	this->keystones[index].Draw(&this->keyStoneModel, shader);
 }
 
-bool Maze::ActivateKeystone(glm::vec3 playerPos, SoundHandler * minotaurGrowlSound)
+bool Maze::ActivateKeystone(glm::vec3 playerPos, Sound * minotaurGrowlSound)
 {
 	bool activated = false;
 
@@ -303,8 +303,8 @@ bool Maze::ActivateKeystone(glm::vec3 playerPos, SoundHandler * minotaurGrowlSou
 #ifdef DEBUG
 				std::cout << "Keystone " << i << " Activated!" << std::endl;
 #endif
-				this->keystoneSound.SetPosition(this->keystones[i].GetTransform()->GetPos());
 				this->keystoneSound.Play();
+				this->keystoneSound.SetPosition(glm::vec3(tempKeystonePos.x, 0.5f, tempKeystonePos.y));
 				minotaurGrowlSound->Play();
 			}
 		}	
@@ -536,9 +536,16 @@ KeystonePosDir Maze::CreateCubePosition()
 
 		glm::vec3 randomPosWorld = this->TransformToWorldCoords(glm::vec3(randomWidth, 0, randomHeight));
 
+		// Dont allow keystones to spawn next to the exit
+		if(abs(randomPosWorld.x - this->exitWorldPos.x < 3 * this->scaleXZ) &&
+			abs(randomPosWorld.z - this->exitWorldPos.z < 3 * this->scaleXZ))
+		{
+			goto start;
+		}
 		// Check distance between other cubes (if there is any)
 		for (int i = 0; i < this->nrOfKeystones; i++)
 		{
+			// Dont allow keystones to spawn next to eachother
 			if (abs(randomPosWorld.x - this->keystones[i].GetTransform()->GetPos().x) < 5 * this->scaleXZ &&
 				abs(randomPosWorld.z - this->keystones[i].GetTransform()->GetPos().z) < 5 * this->scaleXZ)
 			{
@@ -557,31 +564,31 @@ KeystonePosDir Maze::CreateCubePosition()
 		glm::vec3 pixelColor = this->readPixel(randomWidth, randomHeight);
 		
 		glm::vec3 nearbyFloorPos;
-		if (pixelColor != floorColor)
+		// Find nearby floor, This is used to place the keystone towards the floor
+		nearbyFloorPos = this->FindNearbyFloor(glm::vec2(randomWidth, randomHeight));
+
+		// If a nearbyfloor wasn't found we restart the function, to find another position
+		if (nearbyFloorPos != glm::vec3(-1.0f))
 		{
-
-			// Find nearby floor, This is used to place the keystone towards the floor
-			nearbyFloorPos = this->FindNearbyFloor(glm::vec2(randomWidth, randomHeight));
-
-			// If a nearbyfloor wasn't found we restart the function, to find another position
-			if (nearbyFloorPos == glm::vec3(-1.0f))
+			if (pixelColor != floorColor)
 			{
-				goto start;
+
+
+				// Transform to world coords
+				nearbyFloorPos = this->TransformToWorldCoords(nearbyFloorPos);
+				glm::vec3 wallPos = this->TransformToWorldCoords(glm::vec3(randomWidth, 0.5f, randomHeight));
+
+				// Vector from wall to floor
+				glm::vec3 direction = normalize(nearbyFloorPos - wallPos);
+
+				// Translate the cube so that its location is in the middle of a wall and a floor
+				glm::vec3 finalPosition = wallPos + (direction * float(this->scaleXZ) / 2.0f);
+
+				KeystonePosDir keystonePosDir = { finalPosition, direction };
+
+				return keystonePosDir;
 			}
-			// Transform to world coords
-			nearbyFloorPos = this->TransformToWorldCoords(nearbyFloorPos);
-			glm::vec3 wallPos = this->TransformToWorldCoords(glm::vec3(randomWidth, 0.5f, randomHeight));
-
-			// Vector from wall to floor
-			glm::vec3 direction = normalize(nearbyFloorPos - wallPos);
-			
-			// Translate the cube so that its location is in the middle of a wall and a floor
-			glm::vec3 finalPosition = wallPos + (direction * float(this->scaleXZ) / 2.0f);
-
-			KeystonePosDir keystonePosDir = { finalPosition, direction };
-
-			return keystonePosDir;
-		}
+		}	
 	}
 }
 

@@ -431,12 +431,12 @@ void Player::Update(double dt)
 #ifdef DEBUG
 	if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
 	{
-		this->printCounter++;
-		if (this->printCounter == 1000)
-		{
-			printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
-			this->printCounter = 0;
-		}
+		//this->printCounter++;
+		//if (this->printCounter == 1000)
+		//{
+			//printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+			//this->printCounter = 0;
+		//}
 	
 		//std::cout << "Forward Vector! X: " << this->playerCamera.GetForwardVector().x << std::endl;
 		//std::cout << "Forward Vector! Y: " << this->playerCamera.GetForwardVector().y << std::endl;

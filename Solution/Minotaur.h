@@ -3,7 +3,7 @@
 
 #include "Transform.h"
 #include "Model.h"
-#include "SoundHandler.h"
+#include "Sound.h"
 #include "Maze.h"
 #include <vector>
 
@@ -26,8 +26,8 @@ public:
 
 private:
 	Model model;
-	SoundHandler stepSound;
-	SoundHandler growlSound;
+	Sound stepSound;
+	Sound growlSound;
 	Transform transform;
 	float movementSpeed;
 	int alerted = 0;

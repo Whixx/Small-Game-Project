@@ -5,7 +5,7 @@
 #include "Transform.h"
 #include "PointLight.h"
 #include "Particle.h"
-#include "SoundHandler.h"
+#include "Sound.h"
 #include "Model.h"
 
 class Torch
@@ -35,7 +35,7 @@ private:
 	Model model;
 	Particle particle;
 	Transform transform;
-	SoundHandler torchSound;
+	Sound torchSound;
 	float size;
 	PointLight* torchLight;
 	const glm::vec4 lightStartingPos = glm::vec4(0, 4.6f, 0, 0);

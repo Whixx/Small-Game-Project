@@ -2,7 +2,7 @@
 
 Keystone::Keystone(KeystonePosDir * keystonePosDir, const int ScaleXZ)
 {
-	this->transform.GetScale() = glm::vec3(0.5f);	// .25 in diamater
+	this->transform.GetScale() = glm::vec3(0.125f);	// .25 in diamater
 
 	if (keystonePosDir == nullptr)
 	{
@@ -27,7 +27,7 @@ Keystone::Keystone(KeystonePosDir * keystonePosDir, const int ScaleXZ)
 	this->isActive = false;
 	this->isTranslatedBack = false;
 
-	this->movementSpeed = 0.05f;
+	this->movementSpeed = 0.035f;
 }
 
 Keystone::~Keystone()
