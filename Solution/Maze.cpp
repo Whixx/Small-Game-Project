@@ -35,13 +35,14 @@ Maze::Maze()
 	for (int i = 0; i < 3; i++)
 		this->AddKeystone();
 
+#ifdef DEBUG
 	// TEST PRINT
 	for (int i = 0; i < this->nrOfKeystones; i++)
 	{
-		std::cout << "X: " << this->keystones[i].GetWorldPosition().x << std::endl;
-		std::cout << "Z: " << this->keystones[i].GetWorldPosition().z << std::endl;
+		std::cout << "Keystone Pos X: " << this->keystones[i].GetWorldPosition().x << std::endl;
+		std::cout << "Keystone Pos Z: " << this->keystones[i].GetWorldPosition().z << std::endl;
 	}
-
+#endif
 
 	this->InitiateMazeBuffers();
 

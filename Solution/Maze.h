@@ -111,7 +111,7 @@ private:
 	GLuint mazeVbo;
 	GLuint mazeVao;
 
-	const int scaleXZ = 1;
+	const int scaleXZ = 2;
 	const int scaleY  = 2;
 
 	// Private functions

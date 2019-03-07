@@ -6,6 +6,7 @@ class SoundHandler
 {
 public:
 	SoundHandler(const char* filePath, bool loopSound, irrklang::ISoundEngine* engine);
+	SoundHandler();
 	~SoundHandler();
 
 	void SetPosition(glm::vec3 position);

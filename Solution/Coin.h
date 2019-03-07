@@ -16,6 +16,7 @@ enum COIN_STATE
 class Coin
 {
 public:
+	Coin(Transform transform, unsigned int state, Maze * maze);
 	Coin();
 	~Coin();
 
@@ -25,16 +26,18 @@ public:
 
 	void SetCoinState(unsigned int state);
 	void SetVelocity(glm::vec3 initThrowDir);
-	void SetMaze(Maze* maze);
 
 	bool UpdateDropCoin(double dt);
 	bool UpdateTossCoin(double dt);
 	bool DetectWalls(glm::vec3 pos, glm::vec3 oldPos, glm::vec3 &velocity);
+	bool GetWallHit();
 
 	void Draw(Model * coinModel, Shader * shader);
+
 private:
 	Transform transform;
 
+	bool wallHit;
 	bool isOnGround;
 	unsigned int coinState;
 

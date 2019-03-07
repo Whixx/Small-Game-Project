@@ -121,7 +121,7 @@ int main()
 	float playerHeight = 1.8f;
 	float torchSize = 0.02f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize);
-	player.SetPlayerSpeed(10.0f);
+	player.SetPlayerSpeed(2.0f);
 	player.CenterPlayer(); //Space to return to origin
 
 	Minotaur minotaur(enginePtr, mazeGrid, &maze);

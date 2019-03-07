@@ -1,11 +1,20 @@
 #include "Coin.h"
 
-Coin::Coin()
+Coin::Coin(Transform transform, unsigned int state, Maze * maze)
 {
+	this->maze = maze;
+	this->transform = transform;
+	this->coinState = state;
+
 	this->coinSpeed = 10.0f;
 	this->isOnGround = false;
+	this->wallHit = false;
 	this->gravity = glm::vec3(0.0, -9.82, 0.0f);
-	this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	this->rotation = glm::vec3(3.0f, 1.0f, 2.0f);
+}
+
+Coin::Coin()
+{
 }
 
 Coin::~Coin()
@@ -250,12 +259,17 @@ bool Coin::DetectWalls(glm::vec3 newPos, glm::vec3 oldPos, glm::vec3 &velocity)
 	}
 
 	// If no wall detection was found
-	if (type != NO_WALL) 
+	if (type == NO_WALL) 
 	{
 		hit = false;
 	}
 
 	return hit;
+}
+
+bool Coin::GetWallHit()
+{
+	return this->wallHit;
 }
 
 void Coin::SetCoinState(unsigned int state)
@@ -275,15 +289,8 @@ void Coin::SetVelocity(glm::vec3 initThrowDir)
 	}
 }
 
-void Coin::SetMaze(Maze *maze)
-{
-	this->maze = maze;
-}
-
 bool Coin::UpdateDropCoin(double dt)
 {
-	glm::vec3 rotation = glm::vec3(3.0f, 1.0f, 2.0f);
-
 	// Check if the coin allready is on the ground
 	if (this->transform.GetPos().y < 0.01f)
 	{
@@ -305,6 +312,8 @@ bool Coin::UpdateDropCoin(double dt)
 
 bool Coin::UpdateTossCoin(double dt)
 {
+	wallHit = false;
+
 	// Check if the coin allready is on the ground
 	if (this->transform.GetPos().y < 0.01f)
 	{
@@ -326,7 +335,7 @@ bool Coin::UpdateTossCoin(double dt)
 	glm::vec3 newPos = this->transform.GetPos() + this->velocity * float(dt) + (this->gravity * pow(float(dt), 2.0f) / 2.0f);
 
 	// Detect collision
-	this->DetectWalls(newPos, this->oldCoinPosition, this->velocity);
+	wallHit = this->DetectWalls(newPos, this->oldCoinPosition, this->velocity);
 
 	this->transform.SetPos(newPos);
 

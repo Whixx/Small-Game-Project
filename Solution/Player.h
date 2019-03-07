@@ -59,6 +59,8 @@ public:
 	// Coin mechanics
 	void DropCoin();
 	void TossCoin();
+	virtual void PlayWallCollisionSound();
+	void PlayGroundCollisionSound();
 	
 	void DrawCoin(unsigned int index, Shader * shader);
 
@@ -68,9 +70,10 @@ private:
 	Torch playerTorch;
 
 	Model coinModel;
-	
+	irrklang::ISoundEngine* soundEngine;
+
 	Coin inventoryCoins[MAX_NR_OF_COINS];	// Coins in the players inventory
-	Coin worldCoins[256];					// Coins on the ground in the world // DYNAMIC FIX
+	std::vector<Coin> worldCoins;				// Coins on the ground in the world // DYNAMIC FIX
 
 	unsigned int nrOfInventoryCoins;
 	unsigned int nrOfWorldCoins;
@@ -82,6 +85,8 @@ private:
 	glm::vec3 walkingVector;
 
 	SoundHandler footStep;
+	SoundHandler dropSound;
+	SoundHandler collisionSound;
 
 	// Private Functions
 	void AddCoinToWorld(unsigned int state);
