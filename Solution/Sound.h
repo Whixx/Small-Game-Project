@@ -1,13 +1,12 @@
-#ifndef SOUNDHANDLER_H
-#define SOUNDHANDLER_H
+#ifndef Sound_H
+#define Sound_H
 #include "SoundEngine.h"
 
-class SoundHandler
+class Sound
 {
 public:
-	SoundHandler(const char* filePath, bool loopSound, irrklang::ISoundEngine* engine);
-	SoundHandler();
-	~SoundHandler();
+	Sound(const char* filePath, bool loopSound, irrklang::ISoundEngine* engine);
+	~Sound();
 
 	void SetPosition(glm::vec3 position);
 	void Play();
@@ -27,4 +26,4 @@ private:
 
 };
 
-#endif // !SOUNDHANDLER_H
+#endif // !Sound_H

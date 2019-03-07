@@ -3,7 +3,7 @@
 
 #include "Transform.h"
 #include "Model.h"
-#include "SoundHandler.h"
+#include "Sound.h"
 #include "Maze.h"
 #include <vector>
 
@@ -18,6 +18,7 @@ public:
 
 	void Update(glm::vec3 playerPos);
 	void Draw(Shader* shader);
+	glm::vec2 ClampToEdges(glm::vec2 mazeCoords);	// takes in maze coords and spits out mazecoords
 
 	// TEST
 	void setupColorData();
@@ -25,8 +26,8 @@ public:
 
 private:
 	Model model;
-	SoundHandler stepSound;
-	SoundHandler growlSound;
+	Sound stepSound;
+	Sound growlSound;
 	Transform transform;
 	float movementSpeed;
 	int alerted = 0;
@@ -44,7 +45,7 @@ private:
 
 	void GeneratePath(int startY, int startX, int destinationY, int destinationX);
 	void Move();
-	glm::vec2 toNearbyFloor(glm::vec2 pos);
+	glm::vec2 toNearbyFloor(glm::vec2 mazePos);
 
 	// TEST
 	// color data for image

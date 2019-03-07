@@ -31,7 +31,11 @@ int main()
 	//GenerateMazeBitmaps(63, 63); // Creates maze.png + maze_d.png
 	std::vector<std::vector<int>> mazeGrid = GenerateMazePNG(63, 63);
 
-	Maze maze;
+	// Sound engine that plays all the sounds, pass reference to classes that will use sound with enginePtr
+	SoundEngine soundEngine;
+	irrklang::ISoundEngine* enginePtr = soundEngine.GetEngine();
+
+	Maze maze(enginePtr);
 
 	//=========================== Creating Shaders ====================================//
 
@@ -110,16 +114,11 @@ int main()
 	PointLightHandler lights;	// use .CreateLight()
 
 
-	// Sound engine that plays all the sounds, pass reference to classes that will use sound with enginePtr
-	SoundEngine soundEngine;
-	irrklang::ISoundEngine* enginePtr = soundEngine.GetEngine();
-
-	SoundHandler winSound("Sounds/winSound.mp3", false, enginePtr);
-	SoundHandler deathSound("Sounds/death.mp3", false, enginePtr);
-	SoundHandler minotaurGrowlSound("Sounds/minotaurgrowl.wav", false, enginePtr);
+	Sound winSound("Sounds/winSound.mp3", false, enginePtr);
+	Sound deathSound("Sounds/death.mp3", false, enginePtr);
+	Sound minotaurGrowlSound("Sounds/minotaurgrowl.wav", false, enginePtr);
 
 	Minotaur minotaur(enginePtr, mazeGrid, &maze);
-
 	float playerHeight = 1.8f;
 	float torchSize = 0.02f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize, &minotaur);
@@ -174,6 +173,7 @@ int main()
 		minotaur.Update(player.GetCamera()->GetCameraPosition());
 
 		OH.UpdateAllObjects(deltaTime);
+		maze.UpdateKeystones(deltaTime);
 		lights.UpdateShadowTransform(0);
 
 		// update sound engine with position and view direction

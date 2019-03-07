@@ -15,7 +15,7 @@
 #include "Exit.h"
 #include "Model.h"
 #include "Keystone.h"
-#include "SoundHandler.h"
+#include "Sound.h"
 
 #include <time.h>
 using namespace std;
@@ -44,7 +44,7 @@ enum Wall
 class Maze
 {
 public:
-	Maze();
+	Maze(irrklang::ISoundEngine * engine);
 	~Maze();
 
 	int GetMazeHeight();
@@ -72,7 +72,8 @@ public:
 	// Draw Keystones
 	void DrawKeystone(unsigned int index, Shader * shader);
 
-	bool ActivateKeystone(glm::vec3 playerPos, SoundHandler * minotaurGrowlSound);
+	bool ActivateKeystone(glm::vec3 playerPos, Sound * minotaurGrowlSound);
+	void UpdateKeystones(float deltaTime);
 
 	void BindMaterial(Shader* shader);
 
@@ -93,6 +94,9 @@ private:
 	int numComponents;
 	GLuint mazeTexture;
 	glm::vec2 drawOrder[(1 + 2 * DRAWDISTANCE)*(1 + 2 * DRAWDISTANCE)];
+	glm::vec3 exitWorldPos;
+	glm::vec2 exitPos;
+	bool isExitOpen;
 
 	Exit exit;
 	Model exitModel;
@@ -101,6 +105,7 @@ private:
 	int keystonesCapacity;
 	int nrOfKeystones;
 	Model keyStoneModel;
+	Sound keystoneSound;
 
 	Transform transform;
 
@@ -128,7 +133,8 @@ private:
 	Exit CreateExit();
 
 	// Keystone functions
-	glm::vec3 CreateCubePosition();
+	KeystonePosDir CreateCubePosition();
+	glm::vec3 FindNearbyFloor(glm::vec2 wallPos);
 	void AddKeystone();
 };
 #endif

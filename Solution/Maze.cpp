@@ -1,7 +1,8 @@
 #include "Maze.h"
 
-Maze::Maze()
-	:keyStoneModel("Models/Torch/torch.obj"), exitModel("Models/Exit/exit.obj")
+Maze::Maze(irrklang::ISoundEngine * engine)
+	:keyStoneModel("Models/Cube/cube.obj"),
+	keystoneSound("Sounds/keystoneSound.wav", false, engine)
 {
 	this->imageData = nullptr;
 	this->path = "";
@@ -14,6 +15,7 @@ Maze::Maze()
 	this->mazeVbo = 0;
 	this->mazeVao = 0;
 
+	this->keystoneSound.SetVolume(1);
 
 	// Set maze position, rotation and scale
 	this->transform.SetPos(glm::vec3(0, 0, 0));
@@ -37,12 +39,11 @@ Maze::Maze()
 
 #ifdef DEBUG
 	// TEST PRINT
-	for (int i = 0; i < this->nrOfKeystones; i++)
-	{
-		std::cout << "Keystone Pos X: " << this->keystones[i].GetWorldPosition().x << std::endl;
-		std::cout << "Keystone Pos Z: " << this->keystones[i].GetWorldPosition().z << std::endl;
-	}
-#endif
+	//for (int i = 0; i < this->nrOfKeystones; i++)
+	//{
+	//	std::cout << "X: " << this->keystones[i].GetTransform()->GetPos().x << std::endl;
+	//	std::cout << "Z: " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
+	//}
 
 	this->InitiateMazeBuffers();
 
@@ -158,17 +159,10 @@ int Maze::GetNrOfKeystones()
 
 bool Maze::IsExitOpen()
 {
-	for (int i = 0; i < this->nrOfKeystones; i++)
-	{
-		// if a keystone isn't active. We stop looping and return false
-		if (this->keystones[i].IsActive() == false)	
-		{
-			return false;
-		}
-	}
-	return true;
+	return this->isExitOpen;
 }
 
+// Input in world coords
 bool Maze::IsWallAtWorld(float x, float y)
 {
 	bool isAWall = true;
@@ -358,7 +352,7 @@ void Maze::DrawKeystone(unsigned int index, Shader * shader)
 	this->keystones[index].Draw(&this->keyStoneModel, shader);
 }
 
-bool Maze::ActivateKeystone(glm::vec3 playerPos, SoundHandler * minotaurGrowlSound)
+bool Maze::ActivateKeystone(glm::vec3 playerPos, Sound * minotaurGrowlSound)
 {
 	bool activated = false;
 
@@ -374,8 +368,8 @@ bool Maze::ActivateKeystone(glm::vec3 playerPos, SoundHandler * minotaurGrowlSou
 	for (int i = 0; (i < this->nrOfKeystones) && (activated == false); i++)
 	{
 		// Fill the tempKeystonePos with the keystone position
-		tempKeystonePos.x = this->keystones[i].GetWorldPosition().x;
-		tempKeystonePos.y = this->keystones[i].GetWorldPosition().z;
+		tempKeystonePos.x = this->keystones[i].GetTransform()->GetPos().x;
+		tempKeystonePos.y = this->keystones[i].GetTransform()->GetPos().z;
 
 		distance = length(tempPlayerPos - tempKeystonePos);
 
@@ -390,12 +384,53 @@ bool Maze::ActivateKeystone(glm::vec3 playerPos, SoundHandler * minotaurGrowlSou
 #ifdef DEBUG
 				std::cout << "Keystone " << i << " Activated!" << std::endl;
 #endif
+				this->keystoneSound.Play();
+				this->keystoneSound.SetPosition(glm::vec3(tempKeystonePos.x, 0.5f, tempKeystonePos.y));
 				minotaurGrowlSound->Play();
 			}
 		}	
 	}
 
+	// Check if exit is open
+	this->isExitOpen = true;
+	for (int i = 0; i < this->nrOfKeystones; i++)
+	{
+		// if a keystone isn't active. We stop looping and return false
+		if (this->keystones[i].IsActive() == false)
+		{
+			this->isExitOpen = false;
+			break;
+		}
+	}
+
 	return activated;
+}
+
+void Maze::UpdateKeystones(float deltaTime)
+{
+	for (int i = 0; i < this->nrOfKeystones; i++)
+	{
+		if (this->keystones[i].IsActive() == true)
+		{
+			if (this->keystones[i].IsTranslatedBack() == false)
+			{
+				// Declaring some variables to make it look good
+				float movementSpeed = this->keystones[i].GetMovementSpeed() * deltaTime;
+				glm::vec3 direction = -this->keystones[i].GetDirection();
+
+				// Update the position
+				this->keystones[i].GetTransform()->GetPos() += movementSpeed * direction;
+				
+				this->keystones[i].UpdateTranslationLength(abs(movementSpeed));
+
+				// Check if the keystone is done translating
+				if (this->keystones[i].GetTranslationLength() <= 0)
+				{
+					this->keystones[i].SetIsTranslatedBack(true);
+				}
+			}	
+		}
+	}
 }
 
 void Maze::BindMaterial(Shader* shader)
@@ -509,6 +544,12 @@ void Maze::LoadTextures()
 // Returns a vector with the rgb value of a pixel
 glm::vec3 Maze::readPixel(unsigned int x, unsigned int y)
 {
+	// Check if pixel is outside of the texture
+	if (x > this->width - 1 || y > this->height - 1)
+	{
+		return glm::vec3(-1.0f);
+	}
+
 	unsigned char* pixelOffset = this->imageData + (x + this->width * y) * this->numComponents;
 
 	vector<unsigned char> pixel;
@@ -576,25 +617,34 @@ ExitPosDir Maze::FindExit()
 	return r;
 }
 
-glm::vec3 Maze::CreateCubePosition()
+KeystonePosDir Maze::CreateCubePosition()
 {
 	while (true)
 	{
+	start:	// This function will restart if the position found isn't a wall AND if it cannot find a adjecent floor
+
 		srand(time(NULL));
-		int randomWidth = rand() % this->width;
-		int randomHeight = rand() % this->height;	
+		int randomWidth = rand() % this->width -2;
+		int randomHeight = rand() % this->height -2;	
 
 		glm::vec3 randomPosWorld = this->TransformToWorldCoords(glm::vec3(randomWidth, 0, randomHeight));
 
+		// Dont allow keystones to spawn next to the exit
+		if(abs(randomPosWorld.x - this->exitWorldPos.x < 3 * this->scaleXZ) &&
+			abs(randomPosWorld.z - this->exitWorldPos.z < 3 * this->scaleXZ))
+		{
+			goto start;
+		}
 		// Check distance between other cubes (if there is any)
 		for (int i = 0; i < this->nrOfKeystones; i++)
 		{
-			if (abs(randomPosWorld.x - this->keystones[i].GetWorldPosition().x) < 5 &&
-				abs(randomPosWorld.z - this->keystones[i].GetWorldPosition().z) < 5)
+			// Dont allow keystones to spawn next to eachother
+			if (abs(randomPosWorld.x - this->keystones[i].GetTransform()->GetPos().x) < 5 * this->scaleXZ &&
+				abs(randomPosWorld.z - this->keystones[i].GetTransform()->GetPos().z) < 5 * this->scaleXZ)
 			{
 				// The points are to close to eachother, we need to find a new position
-				randomWidth = rand() % 64 + 1;
-				randomHeight = rand() % 64 + 1;
+				randomWidth = rand() % this->width -2;
+				randomHeight = rand() % this->height -2;
 		
 				randomPosWorld = this->TransformToWorldCoords(glm::vec3(randomWidth, 0, randomHeight));
 		
@@ -605,11 +655,110 @@ glm::vec3 Maze::CreateCubePosition()
 
 		glm::vec3 floorColor = glm::vec3(0.0f, 0.0f, 0.0f);
 		glm::vec3 pixelColor = this->readPixel(randomWidth, randomHeight);
-		if (pixelColor == floorColor)
+		
+		glm::vec3 nearbyFloorPos;
+		// Find nearby floor, This is used to place the keystone towards the floor
+		nearbyFloorPos = this->FindNearbyFloor(glm::vec2(randomWidth, randomHeight));
+
+		// If a nearbyfloor wasn't found we restart the function, to find another position
+		if (nearbyFloorPos != glm::vec3(-1.0f))
 		{
-			return this->TransformToWorldCoords(glm::vec3(randomWidth, 0, randomHeight));
+			if (pixelColor != floorColor)
+			{
+
+
+				// Transform to world coords
+				nearbyFloorPos = this->TransformToWorldCoords(nearbyFloorPos);
+				glm::vec3 wallPos = this->TransformToWorldCoords(glm::vec3(randomWidth, 0.5f, randomHeight));
+
+				// Vector from wall to floor
+				glm::vec3 direction = normalize(nearbyFloorPos - wallPos);
+
+				// Translate the cube so that its location is in the middle of a wall and a floor
+				glm::vec3 finalPosition = wallPos + (direction * float(this->scaleXZ) / 2.0f);
+
+				KeystonePosDir keystonePosDir = { finalPosition, direction };
+
+				return keystonePosDir;
+			}
+		}	
+	}
+}
+
+// This functions takes a position in mazeCoords, and returns a nearby floor in maze coords
+glm::vec3 Maze::FindNearbyFloor(glm::vec2 wallPos)
+{
+	glm::vec3 floorPixel;
+
+	// Read NEARby pixels
+	// 
+	//	    _0_	
+	//	 3 | . | 1
+	//	   |___|
+	//	  	 2   
+
+	glm::vec3 wallPosAtWorld;
+
+	// Read 0 (up)
+	floorPixel = this->readPixel(wallPos.x, wallPos.y + 1);	
+	if (floorPixel != glm::vec3(-1.0f))
+	{
+		wallPosAtWorld = this->TransformToWorldCoords(glm::vec3(wallPos.x, 0.0f, wallPos.y + 1));
+
+		if (this->IsWallAtWorld(wallPosAtWorld.x, wallPosAtWorld.z) == false)
+		{
+			if (floorPixel == glm::vec3(0.0f, 0.0f, 0.0f))
+			{
+				return glm::vec3(wallPos.x, 0.5f, wallPos.y + 1);
+			}
 		}
 	}
+	
+
+	// Read 2 (down)
+	floorPixel = this->readPixel(wallPos.x, wallPos.y - 1);
+	if (floorPixel != glm::vec3(-1.0f))
+	{
+		wallPosAtWorld = this->TransformToWorldCoords(glm::vec3(wallPos.x, 0.0f, wallPos.y - 1));
+		if (this->IsWallAtWorld(wallPosAtWorld.x, wallPosAtWorld.z) == false)
+		{
+			if (floorPixel == glm::vec3(0.0f, 0.0f, 0.0f))
+			{
+				return glm::vec3(wallPos.x, 0.5f, wallPos.y - 1);
+			}
+		}
+	}
+
+	// Read 1 (right)
+	floorPixel = this->readPixel(wallPos.x + 1, wallPos.y);
+	if (floorPixel != glm::vec3(-1.0f))
+	{
+		wallPosAtWorld = this->TransformToWorldCoords(glm::vec3(wallPos.x + 1, 0.0f, wallPos.y));
+		if (this->IsWallAtWorld(wallPosAtWorld.x, wallPosAtWorld.z) == false)
+		{
+			if (floorPixel == glm::vec3(0.0f, 0.0f, 0.0f))
+			{
+				return glm::vec3(wallPos.x + 1, 0.5f, wallPos.y);
+			}
+		}
+	}
+
+	// Read 3 (left)
+	floorPixel = this->readPixel(wallPos.x -1, wallPos.y);
+	if (floorPixel != glm::vec3(-1.0f))
+	{
+		wallPosAtWorld = this->TransformToWorldCoords(glm::vec3(wallPos.x - 1, 0.0f, wallPos.y));
+		if (this->IsWallAtWorld(wallPosAtWorld.x, wallPosAtWorld.z) == false)
+		{
+			if (floorPixel == glm::vec3(0.0f, 0.0f, 0.0f))
+			{
+				return glm::vec3(wallPos.x - 1, 0.5f, wallPos.y);
+			}
+		}
+	}
+
+	// If a nearbyFloor wasn't found
+	return glm::vec3(-1.0f);
 }
 
 void Maze::AddKeystone()
@@ -631,7 +780,6 @@ void Maze::AddKeystone()
 	}
 
 	// Add a keystone
-	this->keystones[this->nrOfKeystones] = Keystone(this->CreateCubePosition());
-
+	this->keystones[this->nrOfKeystones] = Keystone(&this->CreateCubePosition(), this->scaleXZ);
 	this->nrOfKeystones++;
 }

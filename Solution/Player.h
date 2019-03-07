@@ -6,7 +6,7 @@
 #include "Camera.h"
 #include "Display.h"
 #include "Torch.h"
-#include "SoundHandler.h"
+#include "Sound.h"
 #include "Maze.h"
 #include "Coin.h"
 #include "EventHandler.h"
@@ -64,6 +64,9 @@ public:
 	void PlayGroundCollisionSound();
 	
 	void DrawCoin(unsigned int index, Shader * shader);
+
+	// test variable
+	int printCounter = 0;
 
 private:
 	Camera playerCamera;

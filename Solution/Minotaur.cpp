@@ -7,16 +7,14 @@ Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>
 	growlSound("Sounds/minotaurgrowl.wav", false, engine)
 {
 	this->transform.GetScale() = glm::vec3(0.04f, 0.04f, 0.04f);
-	this->transform.GetPos() = glm::vec3(0.0f, 0.1f, 0.0f);
 	this->movementSpeed = 1 * this->transform.GetScale().y;
 	this->mazeGrid = mazeGrid;
 	this->maze = maze;
 
 	// Adjust spawn position to a floor-tile
-	glm::vec3 currentPos = this->maze->TransformToMazeCoords(this->transform.GetPos());
+	glm::vec3 currentPos = this->maze->TransformToMazeCoords(glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::vec2 newPos = this->toNearbyFloor(glm::vec2(currentPos.x, currentPos.z));
-	currentPos = glm::vec3(newPos.x, this->transform.GetPos().y, newPos.y);
-	this->transform.GetPos() = currentPos;
+	this->transform.GetPos() = this->maze->TransformToWorldCoords(glm::vec3(newPos.x, currentPos.y, newPos.y));
 
 	// Initiate destination to the current position (It will then set the real destination in Update())
 	this->destination = glm::vec2(
@@ -64,7 +62,6 @@ void Minotaur::Update(glm::vec3 playerPos)
 		// Calculate the starting position of the path in the maze
 		glm::vec3 startPos = this->maze->TransformToMazeCoords(currentPos);
 		glm::vec2 endPos;
-		glm::vec3 trueEndPos;
 
 		if (this->alerted == 0)
 		{
@@ -73,9 +70,6 @@ void Minotaur::Update(glm::vec3 playerPos)
 			// Choose a location in the player-area at random
 			endPos = glm::vec2(	currentPlayerPos.x + rand() % (this->searchArea * 2) - this->searchArea,
 								currentPlayerPos.z + rand() % (this->searchArea * 2) - this->searchArea);
-			// Adjust spawn position to a floor-tile
-			endPos = this->toNearbyFloor(glm::vec2(endPos.x, endPos.y));
-			trueEndPos = this->maze->TransformToMazeCoords(glm::vec3(endPos.x, 0.0f, endPos.y));
 		}
 		else if (this->alerted > 0)
 		{
@@ -85,17 +79,20 @@ void Minotaur::Update(glm::vec3 playerPos)
 			// Choose a location in the sound-area at random
 			endPos = glm::vec2(	this->lastSoundHeardPos.x + rand() % (this->searchArea * 2) - this->searchArea,
 								this->lastSoundHeardPos.z + rand() % (this->searchArea * 2) - this->searchArea);
-			// Adjust spawn position to a floor-tile
-			endPos = this->toNearbyFloor(glm::vec2(endPos.x, endPos.y));
-			trueEndPos = this->maze->TransformToMazeCoords(glm::vec3(endPos.x, 0.0f, endPos.y));
 		}
 
+		// clamp to edges and adjust spawn position to a floor-tile
+		endPos = this->ClampToEdges(endPos);
+		endPos = this->toNearbyFloor(endPos);
+
+		//cout << "endPos X: " << endPos.x << endl;
+		//cout << "endPos Y: " << endPos.y << endl;
 
 		// Generate path between current location and goal location
-		GeneratePath(startPos.z, startPos.x, trueEndPos.z, trueEndPos.x);
+		GeneratePath(startPos.z, startPos.x, endPos.y, endPos.x);
 
 		// Play growl sound
-		growlSound.Play();
+		this->growlSound.Play();
 	}
 
 	glm::vec3 worldDestination = this->maze->TransformToWorldCoords(glm::vec3(this->destination.x, 0, this->destination.y));
@@ -128,12 +125,20 @@ void Minotaur::Update(glm::vec3 playerPos)
 		this->transform.GetPos().z = worldDestination.z;
 	}
 
-	// Play step sound
+	// update sound positions and play stepsound
+	this->growlSound.SetPosition(currentPos);
+	this->stepSound.SetPosition(currentPos);
 	this->stepSound.Play();
 }
 
 void Minotaur::GeneratePath(int startY, int startX, int destinationY, int destinationX)
 {
+	//// TEST print
+	//if (mazeGrid[destinationY][destinationX] == 1)
+	//	cout << "DESTINATION IS A WALL AND THE GAME WILL CRASH" << endl;
+	//else if (mazeGrid[destinationY][destinationX] == 0)
+	//	cout << "DESTINATION IS A PATH" << endl;
+
 	// make a copy of grid to write the path in a new image
 	std::vector<std::vector<int>> newGrid = this->mazeGrid;
 
@@ -248,7 +253,6 @@ void Minotaur::GeneratePath(int startY, int startX, int destinationY, int destin
 			}
 		}
 	}
-
 }
 
 void Minotaur::Move()
@@ -256,39 +260,69 @@ void Minotaur::Move()
 	
 }
 
-glm::vec2 Minotaur::toNearbyFloor(glm::vec2 pos)
+glm::vec2 Minotaur::toNearbyFloor(glm::vec2 mazePos)
 {
-	float x = pos.x;
-	float y = pos.y;
+	int x = mazePos.x;
+	int y = mazePos.y;
 
-	glm::vec3 positionWorld(x, 0, y);
-	positionWorld = this->maze->TransformToWorldCoords(positionWorld);
-	
-	x = positionWorld.x;
-	y = positionWorld.z;
-
-	bool pingpong = false;
-	while (this->maze->IsWallAtWorld(x, y) == true)
+	if (this->mazeGrid[y][x] == 1)
 	{
-		//If wall, move start position
-		if (pingpong = false)
+		x = x - 1;
+		y = y - 1;
+
+		for (int i = 0; i < 3; i++)
 		{
-			x += this->maze->GetTransform()->GetScale().x;
-			pingpong = true;
-		}
-		else
-		{
-			y += this->maze->GetTransform()->GetScale().z;
-			pingpong = false;
+			for (int j = 0; j < 3; j++)
+			{
+				if (this->mazeGrid[y + i][x + j] == 0)
+					return glm::vec2(x + j, y + i);
+			}
 		}
 	}
-
-	return glm::vec2(x, y);
+	else
+	{
+		return glm::vec2(x, y);
+	}
 }
 
 void Minotaur::Draw(Shader * shader)
 {
 	this->model.Draw(shader);
+}
+
+glm::vec2 Minotaur::ClampToEdges(glm::vec2 mazeCoords)
+{
+	// make sure destination is within the maze boundary
+	bool xOutLeft = false;
+	bool xOutRight = false;
+	bool yOutTop = false;
+	bool yOutBottom = false;
+
+	if (mazeCoords.x > 61)
+	{
+		mazeCoords.x = 61;
+		xOutRight = true;
+	}
+	if (mazeCoords.x < 1)
+	{
+		mazeCoords.x = 1;
+		xOutLeft = true;
+	}
+	if (mazeCoords.y > 61)
+	{
+		mazeCoords.y = 61;
+		yOutBottom = true;
+	}
+	if (mazeCoords.y < 1)
+	{
+		mazeCoords.y = 1;
+		yOutTop = true;
+	}
+
+	//cout << "CHANGED TRUEENDPOS X: " << mazeCoords.x << endl;
+	//cout << "CHANGED TRUEENDPOS Y: " << mazeCoords.y << endl;
+
+	return mazeCoords;
 }
 
 void Minotaur::setupColorData()
@@ -367,10 +401,10 @@ void Minotaur::drawPath()
 	
 	if (!stbi_write_png("MazePNG/MINOTAURPATH.png", 64, 64, 3, c.data(), 3 * (64)))
 	{
-		std::cout << "ERROR MINOTAURPATH NOT WRITTEN" << std::endl;
+		//std::cout << "ERROR MINOTAURPATH NOT WRITTEN" << std::endl;
 	}
 	else
 	{
-		std::cout << "MINOTAURPATH WRITTEN" << std::endl;
+		//std::cout << "MINOTAURPATH WRITTEN" << std::endl;
 	}
 }

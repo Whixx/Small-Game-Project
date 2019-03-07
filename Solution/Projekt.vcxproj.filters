@@ -70,9 +70,6 @@
     <ClCompile Include="SoundEngine.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
-    <ClCompile Include="SoundHandler.cpp">
-      <Filter>Class cpp Files</Filter>
-    </ClCompile>
     <ClCompile Include="Maze.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
@@ -94,7 +91,12 @@
     <ClCompile Include="Coin.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
-    <ClCompile Include="Keystone.cpp" />
+    <ClCompile Include="Keystone.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
     <ClCompile Include="Exit.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -176,9 +178,6 @@
     <ClInclude Include="Maze.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
-    <ClInclude Include="SoundHandler.h">
-      <Filter>Class h Files</Filter>
-    </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
@@ -197,7 +196,12 @@
     <ClInclude Include="Coin.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
-    <ClInclude Include="Keystone.h" />
+    <ClInclude Include="Keystone.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
     <ClInclude Include="Exit.h">
       <Filter>Class h Files</Filter>
     </ClInclude>

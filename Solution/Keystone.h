@@ -6,25 +6,46 @@
 #include "Model.h"
 #include "Shader.h"
 
+// Used when creating the keystone
+struct KeystonePosDir
+{
+	glm::vec3 position;
+	glm::vec3 direction;
+};
+
 class Keystone
 {
 public:
-	Keystone();
-	Keystone(glm::vec3 worldPosition);
+	//Keystone();
+	Keystone(KeystonePosDir * keystonePosDir = nullptr, const int ScaleXZ = 1);
 	~Keystone();
 
 	// Get functions
 	bool IsActive();
-	glm::vec3 GetWorldPosition();
+	bool IsTranslatedBack();
+	glm::vec3 GetDirection();
+	float GetTranslationLength();
+	float GetMovementSpeed();
 	Transform * GetTransform();
+
+	// Set functions
+	void SetIsTranslatedBack(bool isTranslatedBack);
+	void UpdateTranslationLength(float lengthMoved);
 
 	void Draw(Model* keyStoneModel, Shader* shader);
 
 	void ActivateKeystone();
 private:
-	bool isActive;
-	glm::vec3 worldPosition;
+	
 	Transform transform;
+
+	glm::vec3 direction;
+	float TranslationLength;
+
+	bool isActive;
+	bool isTranslatedBack;
+
+	float movementSpeed;
 };
 
 #endif
