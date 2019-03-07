@@ -44,6 +44,7 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	//	std::cout << "X: " << this->keystones[i].GetTransform()->GetPos().x << std::endl;
 	//	std::cout << "Z: " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
 	//}
+#endif
 
 	this->InitiateMazeBuffers();
 

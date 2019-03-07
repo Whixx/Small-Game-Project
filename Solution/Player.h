@@ -90,9 +90,9 @@ private:
 
 	Minotaur * minotaur;
 
-	SoundHandler footStep;
-	SoundHandler dropSound;
-	SoundHandler collisionSound;
+	Sound footStep;
+	Sound dropSound;
+	Sound collisionSound;
 
 	// Private Functions
 	void AddCoinToWorld(unsigned int state);
