@@ -17,7 +17,7 @@ enum COIN_STATE
 class Coin
 {
 public:
-	Coin(irrklang::ISoundEngine* engine, Maze * maze);
+	Coin(Transform transform, unsigned int state, irrklang::ISoundEngine* engine, Maze * maze);
 	Coin();
 	~Coin();
 

@@ -67,10 +67,10 @@ private:
 	Torch playerTorch;
 
 	Model coinModel;
-	
-	Coin coin;
+	irrklang::ISoundEngine* soundEngine;
+
 	Coin inventoryCoins[MAX_NR_OF_COINS];	// Coins in the players inventory
-	Coin worldCoins[256];				// Coins on the ground in the world // DYNAMIC FIX
+	std::vector<Coin> worldCoins;				// Coins on the ground in the world // DYNAMIC FIX
 
 	unsigned int nrOfInventoryCoins;
 	unsigned int nrOfWorldCoins;

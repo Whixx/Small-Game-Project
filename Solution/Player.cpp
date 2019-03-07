@@ -5,13 +5,13 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	: playerCamera(glm::vec3(0, height, 0), fov, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)),
 	playerTorch(this->transform, glm::vec3(0.5f, 0.15f, 0.15f), engine, PLH, torchSize),
 	footStep("Sounds/playerfootstep.ogg", false, engine),
-	coinModel("Models/Coin/coin.obj"),
-	coin(engine, maze)
+	coinModel("Models/Coin/coin.obj")
 {
 	this->playerHeight = height;
 	this->playerSpeed = 0;
 	this->walkingVector = glm::vec3(0.0f, 0.0f, 1.0f);
 	this->maze = maze;
+	this->soundEngine = engine;
 
 	this->footStep.SetVolume(0.2);
 
@@ -24,8 +24,6 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	for (int i = 0; i < MAX_NR_OF_COINS; i++)
 	{
 		this->AddCoinToInventory();	// Incrementing nrOfInventoryCoins
-		this->worldCoins[i].SetEngine(engine);
-		this->inventoryCoins[i].SetEngine(engine);
 	}
 		
 }
@@ -493,7 +491,7 @@ void Player::TossCoin()
 
 void Player::DrawCoin(unsigned int index, Shader * shader)
 {
-	this->worldCoins[index].Draw(&this->coinModel, shader);
+	this->worldCoins.at(index).Draw(&this->coinModel, shader);
 }
 
 
@@ -516,15 +514,19 @@ void Player::AddCoinToWorld(unsigned int state)
 		- this->playerCamera.GetRightVector() * 0.075f
 		+ this->playerCamera.GetUpVector() * -0.11f;
 
-	// Set the starting position of the coin to be on the player and set the scale
-	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetPos(throwPos); //+ this->GetCamera()->GetForwardVector() * this->boundingBoxHalfSize);
-	this->worldCoins[this->nrOfWorldCoins].GetTransform()->SetScale(this->inventoryCoins[this->nrOfInventoryCoins - 1].GetTransform()->GetScale());
-	// Set the state (if coin is tossed or dropped)
-	this->worldCoins[this->nrOfWorldCoins].SetCoinState(state);
 
+	Transform transformTmp = this->transform;
+	// Set the starting position of the coin to be on the player and set the scale
+	transformTmp.SetPos(throwPos);
+	transformTmp.SetScale(this->inventoryCoins[this->nrOfInventoryCoins - 1].GetTransform()->GetScale());
+
+
+	// Set the state (if coin is tossed or dropped)
+	Coin coinTmp = Coin(transformTmp, state, this->soundEngine, this->maze);
+	this->worldCoins.push_back(coinTmp);
 
 	// Give coins the initThrowDir
-	this->worldCoins[this->nrOfWorldCoins].SetVelocity(this->GetCamera()->GetForwardVector());
+	this->worldCoins.at(this->nrOfWorldCoins).SetVelocity(this->GetCamera()->GetForwardVector());
 
 	this->nrOfWorldCoins++;
 	this->nrOfInventoryCoins--;
@@ -536,17 +538,17 @@ void Player::UpdateCoins(double dt)
 	for (int i = 0; i < this->nrOfWorldCoins; i++)
 	{
 		// Check if the coin should be updated 
-		if (this->worldCoins[i].IsOnGround() == false)
+		if (this->worldCoins.at(i).IsOnGround() == false)
 		{
 			// Check the type of update for the coin
-			switch (this->worldCoins[i].GetCoinState())
+			switch (this->worldCoins.at(i).GetCoinState())
 			{
 			case COIN_DROP:
-				this->worldCoins[i].UpdateDropCoin(dt);
+				this->worldCoins.at(i).UpdateDropCoin(dt);
 				break;
 
 			case COIN_TOSS:
-				this->worldCoins[i].UpdateTossCoin(dt);
+				this->worldCoins.at(i).UpdateTossCoin(dt);
 				break;
 
 			default:

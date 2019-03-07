@@ -1,15 +1,17 @@
 #include "Coin.h"
 
-Coin::Coin(irrklang::ISoundEngine * engine, Maze * maze)
+Coin::Coin(Transform transform, unsigned int state, irrklang::ISoundEngine * engine, Maze * maze)
 	:tossSound("Sounds/CoinToss.wav", false, engine),
-	dropSound("CoinHitGround/.wav", false, engine),
+	dropSound("Sounds/CoinHitGround/.wav", false, engine),
 	collisionSound("Sounds/CoinHitWall.wav", false, engine)
 {
-	this->tossSound.SetVolume(0.7);
-	this->dropSound.SetVolume(0.3);
-	this->collisionSound.SetVolume(1.0);
+	//this->tossSound.SetVolume(0.7);
+	//this->dropSound.SetVolume(0.3);
+	//this->collisionSound.SetVolume(1.0);
 
 	this->maze = maze;
+	this->transform = transform;
+	this->coinState = state;
 
 	this->coinSpeed = 8.0f;
 	this->isOnGround = false;
@@ -289,11 +291,6 @@ void Coin::SetVelocity(glm::vec3 initThrowDir)
 	}
 }
 
-void Coin::SetEngine(irrklang::ISoundEngine * engine)
-{
-	this->engine = engine;
-}
-
 bool Coin::UpdateDropCoin(double dt)
 {
 	glm::vec3 rotation = glm::vec3(3.0f, 1.0f, 2.0f);
@@ -303,7 +300,7 @@ bool Coin::UpdateDropCoin(double dt)
 	{
 		this->transform.SetRot(glm::vec3(0.0f, 0.0f, 0.0f));
 		this->transform.SetPos(glm::vec3(this->oldCoinPosition.x, 0.1f, this->oldCoinPosition.z));
-		this->dropSound.Play();
+		//this->dropSound.Play();
 		this->isOnGround = true;
 		return this->isOnGround;
 	}
@@ -322,7 +319,7 @@ bool Coin::UpdateTossCoin(double dt)
 {
 	if (tossed == false)
 	{
-		tossSound.Play();
+		//tossSound.Play();
 		tossed = true;
 	}
 
@@ -334,7 +331,7 @@ bool Coin::UpdateTossCoin(double dt)
 
 		this->transform.SetRot(glm::vec3(0.0f, 0.0f, 0.0f));
 		this->transform.SetPos(glm::vec3(this->oldCoinPosition.x - offset.x, 0.1f, this->oldCoinPosition.z - offset.z));
-		this->dropSound.Play();
+		//this->dropSound.Play();
 		this->isOnGround = true;
 		return this->isOnGround;
 	}
@@ -350,7 +347,7 @@ bool Coin::UpdateTossCoin(double dt)
 	// Detect collision
 	if (this->DetectWalls(newPos, this->oldCoinPosition, this->velocity) == true)
 	{
-		collisionSound.Play();
+		//collisionSound.Play();
 	}
 
 	this->transform.SetPos(newPos);
