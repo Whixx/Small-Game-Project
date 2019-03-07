@@ -81,16 +81,12 @@ void Minotaur::Update(glm::vec3 playerPos)
 								this->lastSoundHeardPos.z + rand() % (this->searchArea * 2) - this->searchArea);
 		}
 
-		// Adjust spawn position to a floor-tile
-		//endPos = this->toNearbyFloor(glm::vec2(endPos.x, endPos.y));
-		//glm::vec3 fulkodsvektor = this->maze->TransformToMazeCoords(glm::vec3(endPos.x, 0, endPos.y));
-		//endPos = glm::vec2(fulkodsvektor.x, fulkodsvektor.z);
+		// clamp to edges and adjust spawn position to a floor-tile
 		endPos = this->ClampToEdges(endPos);
 		endPos = this->toNearbyFloor(endPos);
 
-		cout << "endPos X: " << endPos.x << endl;
-		cout << "endPos Y: " << endPos.y << endl;
-
+		//cout << "endPos X: " << endPos.x << endl;
+		//cout << "endPos Y: " << endPos.y << endl;
 
 		// Generate path between current location and goal location
 		GeneratePath(startPos.z, startPos.x, endPos.y, endPos.x);
@@ -137,13 +133,11 @@ void Minotaur::Update(glm::vec3 playerPos)
 
 void Minotaur::GeneratePath(int startY, int startX, int destinationY, int destinationX)
 {
-	// TEST print
-	if (mazeGrid[destinationY][destinationX] == 1)
-		cout << "DESTINATION IS A WALL AND THE GAME WILL CRASH" << endl;
-	else if (mazeGrid[destinationY][destinationX] == 0)
-		cout << "DESTINATION IS A PATH" << endl;
-
-
+	//// TEST print
+	//if (mazeGrid[destinationY][destinationX] == 1)
+	//	cout << "DESTINATION IS A WALL AND THE GAME WILL CRASH" << endl;
+	//else if (mazeGrid[destinationY][destinationX] == 0)
+	//	cout << "DESTINATION IS A PATH" << endl;
 
 	// make a copy of grid to write the path in a new image
 	std::vector<std::vector<int>> newGrid = this->mazeGrid;
@@ -259,7 +253,6 @@ void Minotaur::GeneratePath(int startY, int startX, int destinationY, int destin
 			}
 		}
 	}
-
 }
 
 void Minotaur::Move()
@@ -269,33 +262,6 @@ void Minotaur::Move()
 
 glm::vec2 Minotaur::toNearbyFloor(glm::vec2 mazePos)
 {
-	//float x = mazePos.x;
-	//float y = mazePos.y;
-
-	//glm::vec3 positionWorld(x, 0, y);
-	//positionWorld = this->maze->TransformToWorldCoords(positionWorld);
-	//
-	//x = positionWorld.x;
-	//y = positionWorld.z;
-
-	//bool pingpong = false;
-	//while (this->maze->IsWallAtWorld(x, y) == true)
-	//{
-	//	//If wall, move start position
-	//	if (pingpong = false)
-	//	{
-	//		x += this->maze->GetTransform()->GetScale().x;
-	//		pingpong = true;
-	//	}
-	//	else
-	//	{
-	//		y += this->maze->GetTransform()->GetScale().z;
-	//		pingpong = false;
-	//	}
-	//}
-
-	//return glm::vec2(x, y);
-
 	int x = mazePos.x;
 	int y = mazePos.y;
 
@@ -317,11 +283,6 @@ glm::vec2 Minotaur::toNearbyFloor(glm::vec2 mazePos)
 	{
 		return glm::vec2(x, y);
 	}
-
-
-
-
-
 }
 
 void Minotaur::Draw(Shader * shader)
@@ -358,52 +319,8 @@ glm::vec2 Minotaur::ClampToEdges(glm::vec2 mazeCoords)
 		yOutTop = true;
 	}
 
-	//if (xOutLeft || xOutRight || yOutTop || yOutBottom)
-	//{
-	//	// if on the left or right edge
-	//	if (xOutLeft || xOutRight)
-	//	{
-	//		if (this->mazeGrid[mazeCoords.y][mazeCoords.x] == 1 && mazeCoords.y <= 31)
-	//		{
-	//			while (this->mazeGrid[mazeCoords.y][mazeCoords.x] == 1)
-	//			{
-	//				mazeCoords.y += 1;
-	//			}
-	//		}
-	//		else if (this->mazeGrid[mazeCoords.y][mazeCoords.x] == 1 && mazeCoords.y > 31)
-	//		{
-	//			while (this->mazeGrid[mazeCoords.y][mazeCoords.x] == 1)
-	//			{
-	//				mazeCoords.y -= 1;
-	//			}
-	//		}
-	//	}
-
-	//	// if on the top or bottom 
-	//	if (yOutTop || yOutBottom)
-	//	{
-	//		if (this->mazeGrid[mazeCoords.y][mazeCoords.x] == 1 && mazeCoords.x <= 31)
-	//		{
-	//			while (this->mazeGrid[mazeCoords.y][mazeCoords.x] == 1)
-	//			{
-	//				mazeCoords.x += 1;
-	//			}
-	//		}
-	//		else if (this->mazeGrid[mazeCoords.y][mazeCoords.x] == 1 && mazeCoords.x > 31)
-	//		{
-	//			while (this->mazeGrid[mazeCoords.y][mazeCoords.x] == 1)
-	//			{
-	//				mazeCoords.x -= 1;
-	//			}
-	//		}
-	//	}
-
-	//	cout << "CHANGED TRUEENDPOS X: " << mazeCoords.x << endl;
-	//	cout << "CHANGED TRUEENDPOS Y: " << mazeCoords.y << endl;
-	//}
-
-	cout << "CHANGED TRUEENDPOS X: " << mazeCoords.x << endl;
-	cout << "CHANGED TRUEENDPOS Y: " << mazeCoords.y << endl;
+	//cout << "CHANGED TRUEENDPOS X: " << mazeCoords.x << endl;
+	//cout << "CHANGED TRUEENDPOS Y: " << mazeCoords.y << endl;
 
 	return mazeCoords;
 }
@@ -484,10 +401,10 @@ void Minotaur::drawPath()
 	
 	if (!stbi_write_png("MazePNG/MINOTAURPATH.png", 64, 64, 3, c.data(), 3 * (64)))
 	{
-		std::cout << "ERROR MINOTAURPATH NOT WRITTEN" << std::endl;
+		//std::cout << "ERROR MINOTAURPATH NOT WRITTEN" << std::endl;
 	}
 	else
 	{
-		std::cout << "MINOTAURPATH WRITTEN" << std::endl;
+		//std::cout << "MINOTAURPATH WRITTEN" << std::endl;
 	}
 }
