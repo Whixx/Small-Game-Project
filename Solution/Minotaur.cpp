@@ -2,12 +2,12 @@
 #include "stb_image_write.h"
 
 Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>> mazeGrid, Maze* maze)
-	:model("Models/Deer/deer.obj"),
+	:model("Models/Minotaur/mino.obj"),
 	stepSound("Sounds/minotaurstep.ogg", false, engine),
 	growlSound("Sounds/minotaurgrowl.wav", false, engine)
 {
-	this->transform.GetScale() = glm::vec3(0.01f, 0.01f, 0.01f);
-	this->transform.GetPos() = glm::vec3(0.0f, 1.0f, 0.0f);
+	this->transform.GetScale() = glm::vec3(0.04f, 0.04f, 0.04f);
+	this->transform.GetPos() = glm::vec3(0.0f, 0.1f, 0.0f);
 	this->movementSpeed = 1 * this->transform.GetScale().y;
 	this->mazeGrid = mazeGrid;
 	this->maze = maze;

@@ -483,15 +483,13 @@ void HandleEvents(Player* player, Maze * maze, SoundHandler *winSound, SoundHand
 		{
 			//player->CenterPlayer();
 
-			// IRRITERANDE LJUD
 			winSound->SetPosition(player->GetPos());
 			winSound->Play();
 		}
 		else if (event == EVENT_PLAYER_LOSE)
 		{
 			player->CenterPlayer();
-			// IRRITERANDE LJUD
-			//deathSound->Play();
+			deathSound->Play();
 		}
 		else if (event == EVENT_PLAYER_DROPCOIN)
 		{

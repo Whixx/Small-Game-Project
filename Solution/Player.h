@@ -10,6 +10,7 @@
 #include "Maze.h"
 #include "Coin.h"
 #include "EventHandler.h"
+#include "Minotaur.h"
 
 #define PI 3.1415926535
 const unsigned int MAX_NR_OF_COINS = 100;
@@ -20,7 +21,7 @@ class Player
 {
 public:
 	// Default constructor
-	Player(float height, float fov, float near, float far, Maze * maze, irrklang::ISoundEngine* engine, PointLightHandler* PLH, float torchSize);
+	Player(float height, float fov, float near, float far, Maze * maze, irrklang::ISoundEngine* engine, PointLightHandler* PLH, float torchSize, Minotaur * minotaur);
 	virtual ~Player();
 	
 	glm::vec3 GetPos();
@@ -83,6 +84,8 @@ private:
 	float playerHeight;
 	const float boundingBoxHalfSize = 0.15f;
 	glm::vec3 walkingVector;
+
+	Minotaur * minotaur;
 
 	SoundHandler footStep;
 	SoundHandler dropSound;

@@ -1,7 +1,7 @@
 #include "Player.h"
 #include <iostream> // TODO: Remove after testing
 
-Player::Player(float height, float fov, float near, float far, Maze * maze, irrklang::ISoundEngine * engine, PointLightHandler * PLH, float torchSize)
+Player::Player(float height, float fov, float near, float far, Maze * maze, irrklang::ISoundEngine * engine, PointLightHandler * PLH, float torchSize, Minotaur * minotaur)
 	: playerCamera(glm::vec3(0, height, 0), fov, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)),
 	playerTorch(this->transform, glm::vec3(0.5f, 0.15f, 0.15f), engine, PLH, torchSize),
 	footStep("Sounds/playerfootstep.ogg", false, engine),
@@ -14,6 +14,7 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	this->walkingVector = glm::vec3(0.0f, 0.0f, 1.0f);
 	this->maze = maze;
 	this->soundEngine = engine;
+	this->minotaur = minotaur;
 
 	this->footStep.SetVolume(0.2);
 	this->dropSound.SetVolume(0.2);
@@ -426,12 +427,12 @@ void Player::Update(double dt)
 
 	this->CheckIfWin();
 
-	// temp until we get the minotaur
-	glm::vec3 minoPos = glm::vec3(1000, 4, 3);
+	glm::vec3 minoPos = this->minotaur->GetTransform().GetPos();
+	float minoBB = this->minotaur->GetTransform().GetScale().x * 10.0f;
 
 	// Check if player dies
-	if ((minoPos.x <= this->transform.GetPos().x + this->boundingBoxHalfSize && minoPos.x >= this->transform.GetPos().x - this->boundingBoxHalfSize) || 
-		(minoPos.z <= this->transform.GetPos().z + this->boundingBoxHalfSize && minoPos.z >= this->transform.GetPos().z - this->boundingBoxHalfSize))
+	if ((minoPos.x <= this->transform.GetPos().x + this->boundingBoxHalfSize + minoBB && minoPos.x >= this->transform.GetPos().x - this->boundingBoxHalfSize - minoBB) && 
+		(minoPos.z <= this->transform.GetPos().z + this->boundingBoxHalfSize + minoBB && minoPos.z >= this->transform.GetPos().z - this->boundingBoxHalfSize - minoBB))
 	{
 		EventHandler& EH = EventHandler::GetInstance();
 		EH.AddEvent(EVENT_PLAYER_LOSE);
