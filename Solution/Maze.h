@@ -14,7 +14,7 @@
 
 #include "Model.h"
 #include "Keystone.h"
-#include "SoundHandler.h"
+#include "Sound.h"
 
 #include <time.h>
 using namespace std;
@@ -49,7 +49,7 @@ public:
 	// Draw Keystones
 	void DrawKeystone(unsigned int index, Shader * shader);
 
-	bool ActivateKeystone(glm::vec3 playerPos, SoundHandler * minotaurGrowlSound);
+	bool ActivateKeystone(glm::vec3 playerPos, Sound * minotaurGrowlSound);
 	void UpdateKeystones(float deltaTime);
 
 	void BindMaterial(Shader* shader);
@@ -76,7 +76,7 @@ private:
 	int keystonesCapacity;
 	int nrOfKeystones;
 	Model keyStoneModel;
-	SoundHandler keystoneSound;
+	Sound keystoneSound;
 
 	Transform transform;
 

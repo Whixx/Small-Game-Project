@@ -1,6 +1,6 @@
-#include "SoundHandler.h"
+#include "Sound.h"
 
-SoundHandler::SoundHandler(const char* filePath, bool loopSound, irrklang::ISoundEngine* engine)
+Sound::Sound(const char* filePath, bool loopSound, irrklang::ISoundEngine* engine)
 {
 	this->engine = engine;
 	this->source = this->engine->addSoundSourceFromFile(filePath);
@@ -8,11 +8,11 @@ SoundHandler::SoundHandler(const char* filePath, bool loopSound, irrklang::ISoun
 	this->loopSound = loopSound;
 }
 
-SoundHandler::~SoundHandler()
+Sound::~Sound()
 {
 }
 
-void SoundHandler::SetPosition(glm::vec3 position)
+void Sound::SetPosition(glm::vec3 position)
 {
 	if (this->sound)
 	{
@@ -23,7 +23,7 @@ void SoundHandler::SetPosition(glm::vec3 position)
 	}
 }
 
-void SoundHandler::Play()
+void Sound::Play()
 {
 	// if statement makes sure only one instance of the sound is played, this might have to change for certain sounds in the future?
 	if (!this->engine->isCurrentlyPlaying(this->source))
@@ -32,22 +32,22 @@ void SoundHandler::Play()
 	}
 }
 
-void SoundHandler::Stop()
+void Sound::Stop()
 {
 	this->engine->stopAllSoundsOfSoundSource(source);
 }
 
-void SoundHandler::SetLooped(bool value)
+void Sound::SetLooped(bool value)
 {
 	this->loopSound = value;
 }
 
-void SoundHandler::SetMinDistance(float value)
+void Sound::SetMinDistance(float value)
 {
 	this->source->setDefaultMinDistance(value);
 }
 
-void SoundHandler::SetVolume(float value)
+void Sound::SetVolume(float value)
 {
 	this->source->setDefaultVolume(value);
 }

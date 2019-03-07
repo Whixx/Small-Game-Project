@@ -271,7 +271,7 @@ void Maze::DrawKeystone(unsigned int index, Shader * shader)
 	this->keystones[index].Draw(&this->keyStoneModel, shader);
 }
 
-bool Maze::ActivateKeystone(glm::vec3 playerPos, SoundHandler * minotaurGrowlSound)
+bool Maze::ActivateKeystone(glm::vec3 playerPos, Sound * minotaurGrowlSound)
 {
 	bool activated = false;
 
@@ -303,8 +303,8 @@ bool Maze::ActivateKeystone(glm::vec3 playerPos, SoundHandler * minotaurGrowlSou
 #ifdef DEBUG
 				std::cout << "Keystone " << i << " Activated!" << std::endl;
 #endif
-				this->keystoneSound.SetPosition(this->keystones[i].GetTransform()->GetPos());
 				this->keystoneSound.Play();
+				this->keystoneSound.SetPosition(glm::vec3(tempKeystonePos.x, 0.5f, tempKeystonePos.y));
 				minotaurGrowlSound->Play();
 			}
 		}	

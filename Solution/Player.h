@@ -6,7 +6,7 @@
 #include "Camera.h"
 #include "Display.h"
 #include "Torch.h"
-#include "SoundHandler.h"
+#include "Sound.h"
 #include "Maze.h"
 #include "Coin.h"
 #include "EventHandler.h"
@@ -84,7 +84,7 @@ private:
 	const float boundingBoxHalfSize = 0.15f;
 	glm::vec3 walkingVector;
 
-	SoundHandler footStep;
+	Sound footStep;
 
 	// Private Functions
 	void AddCoinToWorld(unsigned int state);

@@ -114,7 +114,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="SoundEngine.cpp" />
-    <ClCompile Include="SoundHandler.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="timer.c" />
     <ClCompile Include="Torch.cpp" />
@@ -147,7 +147,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="SoundEngine.h" />
-    <ClInclude Include="SoundHandler.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="Texture.h" />

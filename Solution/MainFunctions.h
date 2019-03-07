@@ -14,7 +14,7 @@
 #include "FinalFBO.h"
 #include "Player.h"
 #include "Maze.h"
-#include "SoundHandler.h"
+#include "Sound.h"
 #include "Particle.h"
 #include "InputHandler.h"
 #include "MaterialHandler.h"
@@ -58,7 +58,7 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width);
 GLuint CreateScreenQuad();
 void SetMaxPatchVertices();
 
-void HandleEvents(Player* player, Maze* maze, SoundHandler* winSound, SoundHandler* deathSound, SoundHandler * minotaurGrowlSound);
+void HandleEvents(Player* player, Maze* maze, Sound* winSound, Sound* deathSound, Sound * minotaurGrowlSound);
 
 
 #endif

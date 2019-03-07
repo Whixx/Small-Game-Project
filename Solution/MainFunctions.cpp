@@ -465,7 +465,7 @@ GLuint CreateScreenQuad()
 	return screenQuad;
 }
 
-void HandleEvents(Player* player, Maze * maze, SoundHandler *winSound, SoundHandler * deathSound, SoundHandler * minotaurGrowlSound)
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound)
 {
 	EventHandler& EH = EventHandler::GetInstance();
 	while (!EH.IsEmpty())
