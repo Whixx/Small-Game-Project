@@ -106,13 +106,38 @@ void Minotaur::Update(glm::vec3 playerPos)
 	}
 		
 
-	// Move towards the current destination
-
 	// Identify the current direction
 	glm::vec2 direction = glm::vec2(
 		worldDestination.x - this->transform.GetPos().x,
 		worldDestination.z - this->transform.GetPos().z);
 
+	// Rotate the minotaur to face the right way
+	glm::vec3 rotation = this->transform.GetRot();
+
+	switch ((int)direction.x)
+	{
+	case -1:
+		rotation = glm::vec3(0, glm::radians(-90.0f), 0);
+		break;
+	case 1:
+		rotation = glm::vec3(0, glm::radians(90.0f), 0);
+		break;
+	}
+
+	switch ((int)direction.y)
+	{
+	case -1:
+		rotation = glm::vec3(0, glm::radians(180.0f), 0);
+		break;
+	case 1:
+		rotation = glm::vec3(0, 0, 0);
+		break;
+	}
+
+	this->transform.GetRot() = rotation;
+
+
+	// Move towards the current destination
 	// If we are not walking past the destination
 	if (glm::length(direction) > glm::length(this->movementSpeed*glm::normalize(direction)))
 	{
