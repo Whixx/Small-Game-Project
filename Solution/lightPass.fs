@@ -9,6 +9,7 @@ struct PointLight
 {
 	vec3 position;
 	vec3 color;
+	float intensity;
 };
 
 uniform int NR_OF_POINT_LIGHTS;   
@@ -83,7 +84,7 @@ void main()
 	float radius = 6;
 	float a = 0;
 	float b = 0;
-	float minLight = 0.1f;
+	float minLight = 0.001f;
 	float attenuation;
 	float distancePixelToLight;
 
@@ -106,12 +107,12 @@ void main()
 	{
 		distancePixelToLight = length(PointLights[i].position - pixelPos);
 
-		//if(distancePixelToLight < radius)
-		//{
+		if(distancePixelToLight < radius)
+		{
 			// Diffuse
 			lightDir = normalize(PointLights[i].position.xyz - pixelPos.xyz);
 			alpha = dot(normal.xyz,lightDir);
-			diffuse += vec4(materialColor.rgb,1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * max(alpha, 0);
+			diffuse += vec4(materialColor.rgb,1.0f) * PointLights[i].intensity * vec4(PointLights[i].color.rgb, 1.0f) * max(alpha, 0);
 
 			// Specular (Blinn-Phong) 
 			vecToCam = normalize(vec3(cameraPos.xyz - pixelPos.xyz));	
@@ -122,7 +123,7 @@ void main()
 			// attenuation
 			b = 1.0f/(radius*radius*minLight);
 			attenuation = 1.0f / (1.0f + (a * distancePixelToLight) + (b/800 * pow(distancePixelToLight, 4.5f)));
-		//}
+		}
 	}
 
 	float shadow = calculateShadows(pixelPos, cameraPos, normal);
