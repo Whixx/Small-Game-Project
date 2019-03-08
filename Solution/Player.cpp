@@ -6,7 +6,7 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	playerTorch(this->transform, glm::vec3(0.5f, 0.15f, 0.15f), engine, PLH, torchSize),
 	footStep("Sounds/playerfootstep.ogg", false, engine),
 	dropSound("Sounds/CoinHitGround.wav", false, engine),
-	collisionSound("Sounds/CoinHitWall.wav", false, engine),
+	collisionSound("Sounds/CoinHitWall2.ogg", false, engine),
 	coinModel("Models/Coin/coin.obj")
 {
 	this->playerHeight = height;
@@ -17,8 +17,8 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	this->minotaur = minotaur;
 
 	this->footStep.SetVolume(0.2);
-	this->dropSound.SetVolume(0.2);
-	this->collisionSound.SetVolume(2.0);
+	this->dropSound.SetVolume(0.5);
+	this->collisionSound.SetVolume(1.0);
 
 	CenterPlayer(); //Space to return to origin
 
@@ -361,8 +361,8 @@ glm::vec3 Player::DetectCollision(glm::vec3 newPos, glm::vec3 oldPos)
 
 void Player::CenterPlayer()
 {
-	float x = 0.0f;
-	float y = 0.0f;
+	float x = 0.5f;
+	float y = 0.5f;
 
 	// NOT NEEDED Transform world coords to texture coords. ( 1 pixel on texture corresponds to 1.0, origo is (0, 0) for both spaces
 

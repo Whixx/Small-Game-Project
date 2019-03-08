@@ -3,17 +3,16 @@
 
 Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>> mazeGrid, Maze* maze)
 	:model("Models/Minotaur/mino.obj"),
-	stepSound("Sounds/minotaurstep.ogg", false, engine),
+	stepSound("Sounds/minotaurstep2.mp3", false, engine),
 	growlSound("Sounds/minotaurgrowl.wav", false, engine)
 {
 	this->transform.GetScale() = glm::vec3(0.025f, 0.025f, 0.025f);
-	this->transform.GetPos().y = 0.1f;
-	this->movementSpeed = 4 * this->transform.GetScale().y;
+	this->movementSpeed = 1 * this->transform.GetScale().y;
 	this->mazeGrid = mazeGrid;
 	this->maze = maze;
 
 	// Adjust spawn position to a floor-tile
-	glm::vec3 currentPos = this->maze->TransformToMazeCoords(glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::vec3 currentPos = this->maze->TransformToMazeCoords(glm::vec3(0.0f, 0.05f, 0.0f));
 	glm::vec2 newPos = this->toNearbyFloor(glm::vec2(currentPos.x, currentPos.z));
 	this->transform.GetPos() = this->maze->TransformToWorldCoords(glm::vec3(newPos.x, currentPos.y, newPos.y));
 
@@ -52,6 +51,10 @@ void Minotaur::reactToSound(glm::vec3 soundMazePos)
 		this->generatedPath.pop_back();
 
 	glm::vec3 currentPos = this->maze->TransformToMazeCoords(this->transform.GetPos());
+
+	glm::vec2 tempPos;
+	tempPos = this->toNearbyFloor(glm::vec2(soundMazePos.x, soundMazePos.z));
+	soundMazePos = glm::vec3(tempPos.x, 0, tempPos.y);
 
 	GeneratePath(currentPos.z, currentPos.x, soundMazePos.z, soundMazePos.x);
 }

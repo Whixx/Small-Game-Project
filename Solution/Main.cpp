@@ -115,7 +115,7 @@ int main()
 
 
 	Sound winSound("Sounds/winSound.mp3", false, enginePtr);
-	Sound deathSound("Sounds/death.mp3", false, enginePtr);
+	Sound deathSound("Sounds/death.wav", false, enginePtr);
 	Sound minotaurGrowlSound("Sounds/minotaurgrowl.wav", false, enginePtr);
 
 	Minotaur minotaur(enginePtr, mazeGrid, &maze);
