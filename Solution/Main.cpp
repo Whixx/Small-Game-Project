@@ -115,14 +115,14 @@ int main()
 
 
 	Sound winSound("Sounds/winSound.mp3", false, enginePtr);
-	Sound deathSound("Sounds/death.mp3", false, enginePtr);
+	Sound deathSound("Sounds/death.wav", false, enginePtr);
 	Sound minotaurGrowlSound("Sounds/minotaurgrowl.wav", false, enginePtr);
 
 	Minotaur minotaur(enginePtr, mazeGrid, &maze);
 	float playerHeight = 1.8f;
 	float torchSize = 0.02f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize, &minotaur);
-	player.SetPlayerSpeed(10.0f);
+	player.SetPlayerSpeed(2.0f);
 	player.CenterPlayer(); //Space to return to origin
 
 	minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();
