@@ -20,8 +20,8 @@ uniform int width;
 uniform int height;
 
 // These uniforms are used to scale the UV-coords along with the walls and floor.
-uniform int scaleUVXZ;
-uniform int scaleUVY;
+uniform float scaleUVXZ;
+uniform float scaleUVY;
 
 // Floor function
 void DrawFloor(float i, float j);

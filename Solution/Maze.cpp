@@ -2,7 +2,8 @@
 
 Maze::Maze(irrklang::ISoundEngine * engine)
 	:keyStoneModel("Models/Cube/cube.obj"),
-	keystoneSound("Sounds/keystoneSound.wav", false, engine)
+	keystoneSound("Sounds/keystoneSound.wav", false, engine),
+	exitModel("Models/Exit/exit.obj")
 {
 	this->imageData = nullptr;
 	this->path = "";
@@ -172,6 +173,9 @@ bool Maze::IsWallAtWorld(float x, float y)
 
 	glm::vec3 transformed = this->TransformToMazeCoords(glm::vec3(x, 0.0f, y));
 
+	transformed.x = int(transformed.x);
+	transformed.z = int(transformed.z);
+
 	if (!this->IsExitOpen() && transformed.x == this->exit.GetExitUVPos().x && transformed.z == this->exit.GetExitUVPos().y)
 		return true;
 
@@ -293,6 +297,8 @@ Exit Maze::CreateExit()
 	glm::vec3 exitWorldPos = this->TransformToWorldCoords(glm::vec3(a.uvPos.x, 0, a.uvPos.y));
 	glm::vec3 exitDir = this->TransformToWorldCoords(glm::vec3(a.uvDir.x, 0.0, a.uvDir.y)) - exitWorldPos;
 	exitDir.z *= -1;
+
+	cout << "X: " << exitWorldPos.x << "Y: " << exitWorldPos.y << "Z: " << exitWorldPos.z << endl;
 
 	Exit exit = Exit(&this->exitModel, exitWorldPos, exitDir, a.uvPos);
 	exit.GetTransform()->GetScale() = glm::vec3(this->scaleXZ, this->scaleY, this->scaleXZ);

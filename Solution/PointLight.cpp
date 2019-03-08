@@ -8,7 +8,7 @@ PointLightHandler::PointLightHandler()
 PointLight* PointLightHandler::CreateLight(glm::vec3 position, glm::vec3 color, float intensity)
 {
 	this->lightArray[this->nrOfLights].GetPos() = position;
-	this->lightArray[this->nrOfLights].GetColor() = color * intensity;
+	this->lightArray[this->nrOfLights].GetColor() = color;
 	this->lightArray[this->nrOfLights].GetIntensity() = intensity;
 	this->lightArray[this->nrOfLights].GetScale() = glm::vec3(0.1f,0.1f,0.1f);
 
@@ -24,8 +24,10 @@ void PointLightHandler::SendLightsToShader(Shader* shader)
 	{
 		glm::vec3 position = this->lightArray[i].GetPos();
 		glm::vec3 color = this->lightArray[i].GetColor();
+		float intensity = this->lightArray[i].GetIntensity();
 		shader->SendVec3(("PointLights[" + to_string(i) + "].position").c_str(), position.x, position.y, position.z);
 		shader->SendVec3(("PointLights[" + to_string(i) + "].color").c_str(), color.x, color.y, color.z);
+		shader->SendFloat(("PointLights[" + to_string(i) + "].intensity").c_str(), intensity);
 	}
 
 	// Send the nrOfLights variable

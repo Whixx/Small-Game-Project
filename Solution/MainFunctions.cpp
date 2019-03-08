@@ -12,8 +12,8 @@ void InitMazeGenerationShader(Shader * shader, Maze * maze)
 	shader->SendVec2("translation", maze->GetTransform()->GetPos().x, maze->GetTransform()->GetPos().z);
 
 
-	shader->SendInt("scaleUVXZ", maze->GetTransform()->GetScale().x);
-	shader->SendInt("scaleUVY", maze->GetTransform()->GetScale().y);
+	shader->SendFloat("scaleUVXZ", maze->GetTransform()->GetScale().x);
+	shader->SendFloat("scaleUVY", maze->GetTransform()->GetScale().y);
 
 	glm::vec2* drawOrder = maze->GetDrawOrder();
 	for (int i = 0; i < maze->GetTileCount(); ++i)
@@ -249,13 +249,14 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	}
 
 	// Draw exit
-	Exit* oExit = maze->GetExit();
-	worldMatrix = oExit->GetWorldMatrix();
-	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
-	geometryPass->SendMat4("WorldMatrix", worldMatrix);
-	oExit->Draw(geometryPass);
-
-
+	if (!maze->IsExitOpen())
+	{
+		Exit* oExit = maze->GetExit();
+		worldMatrix = oExit->GetWorldMatrix();
+		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+		geometryPass->SendMat4("WorldMatrix", worldMatrix);
+		oExit->Draw(geometryPass);
+	}
 
 	geometryPass->UnBind();
 
@@ -508,7 +509,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 				keystonePosition = maze->TransformToMazeCoords(keystonePosition);
 
 				minotaur->reactToSound(keystonePosition);
-			}	
+			}
 		}
 	}
 }

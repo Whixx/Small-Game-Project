@@ -4,9 +4,9 @@ Exit::Exit(Model* exitModel, glm::vec3 worldPos, glm::vec3 dir, glm::vec2 uvPos)
 {
 	this->model = exitModel;
 	this->uvPos = uvPos;
-	this->dir = dir;
+	this->dir = glm::normalize(dir);
 	this->transform.GetPos() = worldPos;
-	this->SetDir(dir);
+	this->SetDir(this->dir);
 	this->isOpen = false;
 }
 

@@ -174,7 +174,6 @@
     <None Include="mazeGeometryPass.cs" />
     <None Include="mazeGeometryPass.es" />
     <None Include="mazeGeometryPass.fs" />
-    <None Include="mazeGeometryPass.gs" />
     <None Include="mazeGeometryPass.vs" />
     <None Include="particleShader.fs" />
     <None Include="particleShader.vs" />

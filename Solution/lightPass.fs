@@ -9,6 +9,7 @@ struct PointLight
 {
 	vec3 position;
 	vec3 color;
+	float intensity;
 };
 
 uniform int NR_OF_POINT_LIGHTS;   
@@ -81,9 +82,8 @@ void main()
 
 	// Attenuation
 	float radius = 6;
-	float a = 0;
-	float b = 0;
-	float minLight = 0.001f;
+	float a = 0.07;
+	float b = 0.04;
 	float attenuation;
 	float distancePixelToLight;
 
@@ -93,41 +93,40 @@ void main()
 	
 	// Diffuse
 	vec3 lightDir;
-	vec4 diffuse;
+	vec3 diffuse;
 	float alpha;
 	
 	// Specular
 	vec3 vecToCam;
-	vec4 reflection;
-	vec4 finalSpecular;
+	vec3 reflection;
+	vec3 finalSpecular;
     vec3 halfwayDir;
 
 	for(int i = 0; i < NR_OF_POINT_LIGHTS; i++)
 	{
 		distancePixelToLight = length(PointLights[i].position - pixelPos);
 
-		//if(distancePixelToLight < radius)
-		//{
+		if(distancePixelToLight < radius)
+		{
 			// Diffuse
 			lightDir = normalize(PointLights[i].position.xyz - pixelPos.xyz);
 			alpha = dot(normal.xyz,lightDir);
-			diffuse += vec4(materialColor.rgb,1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * max(alpha, 0);
+			diffuse += materialColor.rgb * PointLights[i].intensity * PointLights[i].color.rgb * max(alpha, 0);
 
 			// Specular (Blinn-Phong) 
-			vecToCam = normalize(vec3(cameraPos.xyz - pixelPos.xyz));	
+			vecToCam = normalize(cameraPos - pixelPos);
 			halfwayDir = normalize(lightDir + vecToCam);
 			float spec = pow(max(dot(normal, halfwayDir), 0.0), ceil(shininess));
-			finalSpecular += specular * vec4(materialColor.rgb, 1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * spec;
+			finalSpecular += specular * materialColor.rgb * PointLights[i].color.rgb * spec;
 
 			// attenuation
-			b = 1.0f/(radius*radius*minLight);
-			attenuation = 1.0f / (1.0f + (a * distancePixelToLight) + (b/800 * pow(distancePixelToLight, 4.5f)));
-		//}
+			attenuation = 1.0f + a * distancePixelToLight + (b * -pow(distancePixelToLight, 2.0f));
+		}
 	}
 
 	float shadow = calculateShadows(pixelPos, cameraPos, normal);
 
-	vec4 finalColor = vec4(ambient, 1.0f) + ((1 - shadow) * attenuation*(diffuse + finalSpecular));
+	vec4 finalColor = vec4(ambient + ((1 - shadow) * attenuation*(diffuse + finalSpecular)), 1.0f);
 	finalColor = min(vec4(1.0f,1.0f,1.0f,1.0f), finalColor);
 
 	fragment_color = vec4(finalColor.xyz, 1.0f);
