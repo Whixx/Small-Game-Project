@@ -3,7 +3,7 @@
 uniform int width;
 uniform int height;
 uniform vec2 translation;
-uniform int scaleUVXZ;
+uniform float scaleUVXZ;
 
 uniform vec2 drawOrder[256];
 uniform vec3 cameraPos;
@@ -14,7 +14,7 @@ void main()
 
     // NOT NEEDED Transform world coords to texture coords. ( 1 pixel on texture corresponds to 1.0, origo is (0, 0) for both spaces
 
-    int i = int(drawOrder[gl_VertexID].x) + int(cameraPos.x);
+	int i = int(drawOrder[gl_VertexID].x) + int(cameraPos.x);
     int j = int(drawOrder[gl_VertexID].y) + int(cameraPos.z);
 
     // The maze can be translated
@@ -22,8 +22,8 @@ void main()
     j -= int(translation.y);
 
     // The maze can be scaled
-    i /= scaleUVXZ;
-    j /= scaleUVXZ;
+    i /= int(scaleUVXZ);
+    j /= int(scaleUVXZ);
 
     i += width / 2;
     j += height / 2;
