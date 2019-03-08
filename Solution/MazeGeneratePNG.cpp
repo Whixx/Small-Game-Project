@@ -122,6 +122,8 @@ void MazeGeneratePNG::Generate(void)
 			// do nothing
 		}
 	}
+
+	this->RemoveRandomWalls(this->width + this->height);
 }
 
 void MazeGeneratePNG::GenerateExit()
@@ -187,6 +189,81 @@ void MazeGeneratePNG::Replace(int setToReplace, int sampleSet)
 				sets[search_y][search_x] = sampleSet;
 			}
 		}
+	}
+}
+
+void MazeGeneratePNG::RemoveRandomWalls(int NrOfWallsToRemove)
+{
+	int x;
+	int y;
+
+	unsigned int counter = 0;
+	bool breaked = false;
+
+	// Break 10 walls
+	for (int i = 0; i < NrOfWallsToRemove && !breaked; i++)
+	{
+		// Run until we find a valid wall to break
+		while (true)
+		{
+			// Find a position
+			// Random number between 2 and 60
+			x = rand() % (this->width - 4) + 2;
+			y = rand() % (this->height - 4) + 2;
+
+			// Check if the wall actually is a wall
+			if (this->grid[y][x] == this->path)
+			{
+				bool closeby[4]; // false for floor
+				// Read closeby pixels
+				// 
+				//    _0_
+				// 3 | . | 1
+				//   |___|
+				//	   2
+
+				// Assume its surrounded by walls
+				closeby[0] = GetCell(y - 1, x);
+				closeby[1] = GetCell(y, x + 1);
+				closeby[2] = GetCell(y + 1, x);
+				closeby[3] = GetCell(y, x - 1);
+
+				if (closeby[0] && closeby[1] && closeby[2] && !closeby[3])
+				{
+					// Break down wall
+					this->grid[y][x+1] = 0;
+					break;
+				}
+				else if (closeby[0] && closeby[1] && !closeby[2] && closeby[3])
+				{
+					// Break down wall
+					this->grid[y-1][x] = 0;
+					break;
+				}
+				else if (closeby[0] && !closeby[1] && closeby[2] && closeby[3])
+				{
+					// Break down wall
+					this->grid[y][x-1] = 0;
+					break;
+				}
+				else if (!closeby[0] && closeby[1] && closeby[2] && closeby[3])
+				{
+					// Break down wall
+					this->grid[y+1][x] = 0;
+					break;
+				}
+			}
+
+			// Prevent infinity loop
+			counter++;
+			if (counter > this->width * this->height)
+			{
+				
+				breaked = true;
+				break;
+			}
+		}
+		counter = 0;
 	}
 }
 
@@ -347,7 +424,7 @@ void MazeGeneratePNG::SetupColorDataForColor()
 					image[y][x][1] = 0;
 					image[y][x][2] = 0;
 				}
-				else if (!closeby[0] && !closeby[1] && closeby[2] && closeby[3]) // 5. Double wall closeby
+				else if (!closeby[0] && !closeby[1] && closeby[2] && closeby[3]) // 5. Corner walls
 				{
 					image[y][x][0] = 200;
 					image[y][x][1] = 0;

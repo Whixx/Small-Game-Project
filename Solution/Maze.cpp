@@ -626,7 +626,6 @@ KeystonePosDir Maze::CreateCubePosition()
 	{
 	start:	// This function will restart if the position found isn't a wall AND if it cannot find a adjecent floor
 
-		srand(time(NULL));
 		int randomWidth = rand() % this->width -2;
 		int randomHeight = rand() % this->height -2;	
 
