@@ -119,7 +119,7 @@ int main()
 	Sound minotaurGrowlSound("Sounds/minotaurgrowl.wav", false, enginePtr);
 
 	Minotaur minotaur(enginePtr, mazeGrid, &maze);
-	float playerHeight = 1.4f;
+	float playerHeight = 1.28f;
 	
 	float torchSize = 0.02f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize, &minotaur);

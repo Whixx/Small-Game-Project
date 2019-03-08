@@ -6,8 +6,8 @@ Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>
 	stepSound("Sounds/minotaurstep2.mp3", false, engine),
 	growlSound("Sounds/minotaurgrowl.wav", false, engine)
 {
-	this->transform.GetScale() = glm::vec3(0.025f, 0.025f, 0.025f);
-	this->movementSpeed = 1.0 * this->transform.GetScale().y;
+	this->transform.GetScale() = glm::vec3(0.032f);
+	this->movementSpeed = 3.0 * this->transform.GetScale().y;
 	this->mazeGrid = mazeGrid;
 	this->maze = maze;
 
