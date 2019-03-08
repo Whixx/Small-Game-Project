@@ -5,6 +5,7 @@
 #include <vector>
 #include <random>
 #include <glm/vec2.hpp>
+#include <time.h>
 
 
 class MazeGeneratePNG
@@ -45,6 +46,7 @@ private:
 	};
 	std::vector<std::vector<int>> sets;
 	void Replace(int setToReplace, int sampleSet);
+	void RemoveRandomWalls(int NrOfWallsToRemove);
 
 	// color data for image
 	std::vector<std::vector<std::vector<unsigned char>>> image;
