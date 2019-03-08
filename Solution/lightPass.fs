@@ -126,7 +126,7 @@ void main()
 
 	float shadow = calculateShadows(pixelPos, cameraPos, normal);
 
-	vec4 finalColor = vec4(ambient + ((1 - shadow) * attenuation*(diffuse + finalSpecular)), 1.0f);
+	vec4 finalColor = vec4(ambient + ((1 - shadow) * attenuation * (diffuse + finalSpecular)), 1.0f);
 	finalColor = min(vec4(1.0f,1.0f,1.0f,1.0f), finalColor);
 
 	fragment_color = vec4(finalColor.xyz, 1.0f);

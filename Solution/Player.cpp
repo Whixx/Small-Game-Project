@@ -3,7 +3,7 @@
 
 Player::Player(float height, float fov, float near, float far, Maze * maze, irrklang::ISoundEngine * engine, PointLightHandler * PLH, float torchSize, Minotaur * minotaur)
 	: playerCamera(glm::vec3(0, height, 0), fov, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)),
-	playerTorch(this->transform, glm::vec3(0.5f, 0.15f, 0.15f), engine, PLH, torchSize),
+	playerTorch(this->transform, glm::vec3(1.0f, 0.25f, 0.2f), engine, PLH, torchSize),
 	footStep("Sounds/playerfootstep.ogg", false, engine),
 	dropSound("Sounds/CoinHitGround.wav", false, engine),
 	collisionSound("Sounds/CoinHitWall2.ogg", false, engine),

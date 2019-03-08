@@ -118,7 +118,7 @@ private:
 	GLuint mazeVao;
 
 	const float scaleXZ = 2;
-	const float scaleY  = 4;
+	const float scaleY  = 2;
 
 	// Private functions
 	void LoadTextures();

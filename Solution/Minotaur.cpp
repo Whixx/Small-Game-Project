@@ -7,7 +7,7 @@ Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>
 	growlSound("Sounds/minotaurgrowl.wav", false, engine)
 {
 	this->transform.GetScale() = glm::vec3(0.025f, 0.025f, 0.025f);
-	this->movementSpeed = 1 * this->transform.GetScale().y;
+	this->movementSpeed = 1.0 * this->transform.GetScale().y;
 	this->mazeGrid = mazeGrid;
 	this->maze = maze;
 
@@ -18,8 +18,8 @@ Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>
 
 	// Initiate destination to the current position (It will then set the real destination in Update())
 	this->destination = glm::vec2(
-		this->maze->TransformToMazeCoords(this->transform.GetPos()).x,
-		this->maze->TransformToMazeCoords(this->transform.GetPos()).z);
+		int(this->maze->TransformToMazeCoords(this->transform.GetPos()).x),
+		int(this->maze->TransformToMazeCoords(this->transform.GetPos()).z));
 }
 
 Minotaur::~Minotaur()
