@@ -677,7 +677,7 @@ KeystonePosDir Maze::CreateCubePosition()
 
 				// Transform to world coords
 				nearbyFloorPos = this->TransformToWorldCoords(nearbyFloorPos);
-				glm::vec3 wallPos = this->TransformToWorldCoords(glm::vec3(randomWidth, 0.5f, randomHeight));
+				glm::vec3 wallPos = this->TransformToWorldCoords(glm::vec3(randomWidth, 1.0f, randomHeight));
 
 				// Vector from wall to floor
 				glm::vec3 direction = normalize(nearbyFloorPos - wallPos);
@@ -717,7 +717,7 @@ glm::vec3 Maze::FindNearbyFloor(glm::vec2 wallPos)
 		{
 			if (floorPixel == glm::vec3(0.0f, 0.0f, 0.0f))
 			{
-				return glm::vec3(wallPos.x, 0.5f, wallPos.y + 1);
+				return glm::vec3(wallPos.x, 1.0f, wallPos.y + 1);
 			}
 		}
 	}
@@ -732,7 +732,7 @@ glm::vec3 Maze::FindNearbyFloor(glm::vec2 wallPos)
 		{
 			if (floorPixel == glm::vec3(0.0f, 0.0f, 0.0f))
 			{
-				return glm::vec3(wallPos.x, 0.5f, wallPos.y - 1);
+				return glm::vec3(wallPos.x, 1.0f, wallPos.y - 1);
 			}
 		}
 	}
@@ -746,7 +746,7 @@ glm::vec3 Maze::FindNearbyFloor(glm::vec2 wallPos)
 		{
 			if (floorPixel == glm::vec3(0.0f, 0.0f, 0.0f))
 			{
-				return glm::vec3(wallPos.x + 1, 0.5f, wallPos.y);
+				return glm::vec3(wallPos.x + 1, 1.0f, wallPos.y);
 			}
 		}
 	}
@@ -760,7 +760,7 @@ glm::vec3 Maze::FindNearbyFloor(glm::vec2 wallPos)
 		{
 			if (floorPixel == glm::vec3(0.0f, 0.0f, 0.0f))
 			{
-				return glm::vec3(wallPos.x - 1, 0.5f, wallPos.y);
+				return glm::vec3(wallPos.x - 1, 1.0f, wallPos.y);
 			}
 		}
 	}

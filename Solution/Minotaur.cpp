@@ -299,6 +299,11 @@ glm::vec2 Minotaur::toNearbyFloor(glm::vec2 mazePos)
 	int x = mazePos.x;
 	int y = mazePos.y;
 
+	if (x > 32 || y > 32)
+	{
+		std::cout << "ERROR!!" << std::endl;
+		std::cout << "x > 32 or y > 32, in ToNearbyFloor in minotaur.cpp" << std::endl;
+	}
 	if (this->mazeGrid[y][x] == 1)
 	{
 		x = x - 1;
