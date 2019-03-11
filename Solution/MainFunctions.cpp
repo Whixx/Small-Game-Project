@@ -126,6 +126,18 @@ void InitFinalShader(Shader * shader)
 	shader->ValidateShaders();
 }
 
+void InitUserInterfaceShader(Shader * shader, Player * player)
+{
+	shader->InitiateShaders();
+
+	// Set constant uniforms
+	shader->Bind();
+	shader->SendInt("texture", 0);
+	shader->SendInt("MAX_NR_OF_INVENTORY_COINS", player->GetNrOfInventoryCoins());
+
+	shader->ValidateShaders();
+}
+
 void MazeGenerationPass(Shader * mazeGenerationShader, Maze * maze, Player * player)
 {
 	mazeGenerationShader->Bind();
@@ -421,6 +433,33 @@ void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint * fullScreenTri
 
 	glDisable(GL_DEPTH_TEST);
 	glBindVertexArray(*fullScreenTriangle);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glEnable(GL_DEPTH_TEST);
+}
+
+void UserInterfacePass(Shader * userInterfaceShader, GLuint *quad, Texture * texture, Player * player)
+{
+	userInterfaceShader->Bind();
+
+	
+	if (player->GetNrOfInventoryCoins() < 0)
+	{
+		// Render Empty texture
+	}
+	else
+	{
+		// Bind the cointexture
+		texture->Bind(0);
+
+		// The shader is using the NrOfInventoryCoins to know what parts of the texture it should render
+		userInterfaceShader->SendInt("index", player->GetNrOfInventoryCoins());
+	}
+		
+	
+	std::cout << "aSHFH: " << player->GetNrOfInventoryCoins() << std::endl;
+
+	glDisable(GL_DEPTH_TEST);
+	glBindVertexArray(*quad);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glEnable(GL_DEPTH_TEST);
 }
