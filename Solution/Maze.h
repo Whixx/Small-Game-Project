@@ -79,7 +79,6 @@ public:
 
 	void LoadMaze(const std::string& fileName);
 	
-
 	bool IsWallAtWorld(float x, float y);
 
 	Wall GetWallType(float x, float y);

@@ -134,7 +134,10 @@ int main()
 
 	Exit exit;
 	exit = *maze.GetExit();
-	exit.GetTransform()->SetScale(glm::vec3(0.2f));
+	exit.GetTransform()->SetScale(glm::vec3(
+		0.10f * maze.GetTransform()->GetScale().x,
+		0.08f * maze.GetTransform()->GetScale().y,
+		0.10f * maze.GetTransform()->GetScale().z));
 
 	// Initiate timer
 	double currentTime = 0;
@@ -190,7 +193,7 @@ int main()
 		MazeGenerationPass(&mazeGenerationShader, &maze, &player);
 		
 		// Here a cube map is calculated and stored in the shadowMap FBO
-		ShadowPass(&shadowShader, &OH, &lights, &shadowMap, &player, &maze);
+		ShadowPass(&shadowShader, &OH, &lights, &shadowMap, &player, &maze, &exit);
 		
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call

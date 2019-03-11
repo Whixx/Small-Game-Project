@@ -145,7 +145,7 @@ void MazeGenerationPass(Shader * mazeGenerationShader, Maze * maze, Player * pla
 	mazeGenerationShader->UnBind();
 }
 
-void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Maze * maze)
+void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Maze * maze, Exit * exit)
 {
 	shadowShader->Bind();
 	glEnable(GL_DEPTH_TEST);
@@ -181,6 +181,19 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		glm::mat4 worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();
 		shadowShader->SendMat4("WorldMatrix", worldMatrix);
 		player->GetTorch()->GetModel()->DrawMeshes(shadowShader);
+
+		// Draw exit
+		worldMatrix = exit->GetWorldMatrix();
+		shadowShader->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+		shadowShader->SendMat4("WorldMatrix", worldMatrix);
+		if (!maze->IsExitOpen())
+		{
+			exit->DrawClosed(shadowShader);
+		}
+		else
+		{
+			exit->DrawOpen(shadowShader);
+		}
 
 		// Same world matrix for walls and floor
 		glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();

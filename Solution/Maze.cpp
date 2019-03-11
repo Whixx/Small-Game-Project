@@ -3,8 +3,8 @@
 Maze::Maze(irrklang::ISoundEngine * engine)
 	:keyStoneModel("Models/Cube/cube.obj"),
 	keystoneSound("Sounds/keystoneSound.wav", false, engine),
-	exitModelOpen("Models/GateOpen/GateOpen.obj"),
-	exitModelClosed("Models/GateClosed/GateClosed.obj")
+	exitModelOpen("Models/Exit/GateOpen.obj"),
+	exitModelClosed("Models/Exit/GateClosed.obj")
 {
 	this->imageData = nullptr;
 	this->path = "";
@@ -44,8 +44,9 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	// TEST PRINT
 	for (int i = 0; i < this->nrOfKeystones; i++)
 	{
-		std::cout << "X: " << this->keystones[i].GetTransform()->GetPos().x << std::endl;
-		std::cout << "Z: " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
+		std::cout << "Keystone " << i << " on position: ";
+		std::cout << "X: " << this->keystones[i].GetTransform()->GetPos().x;
+		std::cout << " Z: " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
 	}
 #endif
 

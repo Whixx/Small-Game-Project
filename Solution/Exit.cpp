@@ -6,9 +6,26 @@ Exit::Exit(Model* exitModelOpen, Model* exitModelClosed, glm::vec3 worldPos, glm
 	this->modelClosed = exitModelClosed;
 	this->uvPos = uvPos;
 	this->dir = glm::normalize(dir);
-	this->transform.GetPos() = worldPos;
 	this->SetDir(this->dir);
 	this->isOpen = false;
+
+	// Choose a good position
+	if (this->dir.x < 0.0f)
+	{
+		this->transform.GetPos() = worldPos + this->dir;
+	}
+	else if (this->dir.x > 0.0f)
+	{
+		this->transform.GetPos() = worldPos + this->dir;
+	}
+	else if (this->dir.z > 0.0f)
+	{
+		this->transform.GetPos() = worldPos - this->dir;
+	}
+	else if (this->dir.z < 0.0f)
+	{
+		this->transform.GetPos() = worldPos - this->dir;
+	}
 }
 
 Exit::~Exit()
@@ -21,7 +38,9 @@ void Exit::SetDir(glm::vec3 newDir)
 
 	// Check if under the unit circle
 	if (glm::sin(newDir.z) < 0.0)
+	{
 		angle *= -1;
+	}
 
 	this->transform.GetRot().y = angle;
 }
@@ -44,6 +63,11 @@ glm::vec3 Exit::GetExitPos()
 glm::vec2 Exit::GetExitUVPos()
 {
 	return this->uvPos;
+}
+
+glm::vec3 Exit::GetDir()
+{
+	return this->dir;
 }
 
 void Exit::DrawOpen(Shader * shader)
