@@ -499,6 +499,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		else if (event == EVENT_PLAYER_TOSSCOIN)
 		{
 			player->TossCoin();
+			player->SpawnCoinAtMinotaur();
 		}
 		else if (event == EVENT_PLAYER_PICKUPCOIN)
 		{

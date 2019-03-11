@@ -62,6 +62,8 @@ public:
 	void TossCoin();
 	void PickUpCoin();
 
+	void SpawnCoinAtMinotaur();
+
 	virtual void PlayWallCollisionSound();
 	void PlayGroundCollisionSound();
 	

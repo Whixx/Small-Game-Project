@@ -4,6 +4,7 @@ Coin::Coin(Transform transform, unsigned int state, Maze * maze)
 {
 	this->maze = maze;
 	this->transform = transform;
+	this->transform.SetScale(glm::vec3(COINSCALE));
 	this->coinState = state;
 
 	this->coinSpeed = 10.0f;
@@ -286,6 +287,10 @@ void Coin::SetVelocity(glm::vec3 initThrowDir)
 	else if (this->coinState == COIN_TOSS)
 	{
 		this->velocity = initThrowDir * float(this->coinSpeed);
+	}
+	else
+	{
+		this->velocity = glm::vec3(0.0f);
 	}
 }
 

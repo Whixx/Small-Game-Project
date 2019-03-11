@@ -471,7 +471,6 @@ void Player::AddCoinToInventory()
 
 	// Add a coin
 	this->inventoryCoins[this->nrOfInventoryCoins].GetTransform()->SetPos(this->transform.GetPos());
-	this->inventoryCoins[this->nrOfInventoryCoins].GetTransform()->SetScale(glm::vec3(0.025f));
 
 	// Increment NrOfCoins
 	this->nrOfInventoryCoins++;
@@ -522,6 +521,23 @@ void Player::PickUpCoin()
 	}
 }
 
+void Player::SpawnCoinAtMinotaur()
+{
+	Transform transformTmp = minotaur->GetTransform();
+	// Set the starting position of the coin to be on the player and set the scale
+	transformTmp.SetPos(transformTmp.GetPos());
+
+	// Set the state (if coin is tossed or dropped)
+	Coin coinTmp = Coin(transformTmp, COIN_DROP_MINOTAUR, this->maze);
+	this->worldCoins.push_back(coinTmp);
+
+	this->nrOfWorldCoins++;
+
+#ifdef DEBUG
+	std::cout << "Coin Spawned beneath minotaur" << std::endl;
+#endif
+}
+
 void Player::PlayWallCollisionSound()
 {
 	this->collisionSound.Play();
@@ -545,12 +561,6 @@ void Player::AddCoinToWorld(unsigned int state)
 		return;
 	}
 
-	// Check if world can have more coins // DYNAMIC FIX
-	if (this->nrOfWorldCoins == 256)
-	{
-		return;
-	}
-
 	// Update the torch so that it is located in front of the player
 	glm::vec3 throwPos = this->playerCamera.GetCameraPosition()
 		- this->playerCamera.GetRightVector() * 0.075f
@@ -558,9 +568,8 @@ void Player::AddCoinToWorld(unsigned int state)
 
 
 	Transform transformTmp = this->transform;
-	// Set the starting position of the coin to be on the player and set the scale
+	// Set the starting position of the coin to be on the player
 	transformTmp.SetPos(throwPos);
-	transformTmp.SetScale(this->inventoryCoins[this->nrOfInventoryCoins - 1].GetTransform()->GetScale());
 
 	// Set the state (if coin is tossed or dropped)
 	Coin coinTmp = Coin(transformTmp, state, this->maze);
@@ -591,7 +600,9 @@ void Player::UpdateCoins(double dt)
 			case COIN_TOSS:
 				this->worldCoins.at(i).UpdateTossCoin(dt);
 				break;
-
+			case COIN_DROP_MINOTAUR:
+				// Do nothing atm
+				break;
 			default:
 				#ifdef DEBUG
 				std::cout << "Invalid State for coin" << std::endl;
