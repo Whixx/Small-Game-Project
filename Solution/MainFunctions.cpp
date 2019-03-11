@@ -489,7 +489,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		}
 		else if (event == EVENT_PLAYER_LOSE)
 		{
-			player->CenterPlayer();
+			//player->CenterPlayer();
 			deathSound->Play();
 		}
 		else if (event == EVENT_PLAYER_DROPCOIN)
@@ -499,6 +499,10 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		else if (event == EVENT_PLAYER_TOSSCOIN)
 		{
 			player->TossCoin();
+		}
+		else if (event == EVENT_PLAYER_PICKUPCOIN)
+		{
+			player->PickUpCoin();
 		}
 		else if (event == EVENT_MAZE_KEYSTONE_PRESSED)
 		{

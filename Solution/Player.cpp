@@ -444,7 +444,7 @@ void Player::Update(double dt)
 		//this->printCounter++;
 		//if (this->printCounter == 1000)
 		//{
-			printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+			//printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
 			//this->printCounter = 0;
 		//}
 	
@@ -496,6 +496,30 @@ void Player::DropCoin()
 void Player::TossCoin()
 {
 	this->AddCoinToWorld(COIN_TOSS);
+}
+
+void Player::PickUpCoin()
+{
+	// Check if the player can pick up more coins
+	if (this->nrOfInventoryCoins < MAX_NR_OF_COINS)
+	{
+		// Find a nearby coin in world
+		int indexToRemove = 0;
+		indexToRemove = this->FindNearbyCoin();
+
+		// Check if no coin is close enough to be removed
+		if (indexToRemove == -1)
+		{
+			return;
+		}
+
+		// Remove that coin from world
+		this->worldCoins.erase(this->worldCoins.begin() + indexToRemove);
+		this->nrOfWorldCoins--;
+
+		// Add a new coin in inventory
+		this->nrOfInventoryCoins++;
+	}
 }
 
 void Player::PlayWallCollisionSound()
@@ -593,6 +617,46 @@ void Player::UpdateCoins(double dt)
 			}
 		}
 	}
+}
+
+// This function will find the coin thats currently closest to the player, and return the index of that coin.
+int Player::FindNearbyCoin()
+{
+	float minDistance = 1.0f;
+	
+	// Used to allways pick up the closest coin, if more then 1 coin is within the minDistance
+	float currShortestDistance = 100;
+	int currShortestDistIndex = -1;
+
+	float distance = 0;
+
+	// The Y-distance doesn't matter
+	glm::vec2 playerPos;
+	glm::vec2 coinPos;
+
+
+	// Loop through all coins that currently is out in the world
+	for (int i = 0; i < this->worldCoins.size(); i++)
+	{
+		playerPos = glm::vec2(this->playerCamera.GetCameraPosition().x, this->playerCamera.GetCameraPosition().z);
+		coinPos = glm::vec2(this->worldCoins.at(i).GetTransform()->GetPos().x, this->worldCoins.at(i).GetTransform()->GetPos().z);
+
+		distance = length(playerPos - coinPos);
+
+		// Check if the player is is close enough to pick the coin up
+		if (distance < minDistance)
+		{
+			// Update the smallestDistance
+			if (distance < currShortestDistance)
+			{
+				currShortestDistance = distance;
+				currShortestDistIndex = i;
+			}
+		}
+	}
+
+	// If currShortestDistIndex didn't find any coins, it will return -1
+	return currShortestDistIndex;
 }
 
 void Player::CheckIfWin()
