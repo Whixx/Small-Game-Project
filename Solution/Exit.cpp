@@ -1,8 +1,9 @@
 #include "Exit.h"
 
-Exit::Exit(Model* exitModel, glm::vec3 worldPos, glm::vec3 dir, glm::vec2 uvPos)
+Exit::Exit(Model* exitModelOpen, Model* exitModelClosed, glm::vec3 worldPos, glm::vec3 dir, glm::vec2 uvPos)
 {
-	this->model = exitModel;
+	this->modelOpen = exitModelOpen;
+	this->modelClosed = exitModelClosed;
 	this->uvPos = uvPos;
 	this->dir = glm::normalize(dir);
 	this->transform.GetPos() = worldPos;
@@ -45,7 +46,12 @@ glm::vec2 Exit::GetExitUVPos()
 	return this->uvPos;
 }
 
-void Exit::Draw(Shader * shader)
+void Exit::DrawOpen(Shader * shader)
 {
-	this->model->Draw(shader);
+	this->modelOpen->Draw(shader);
+}
+
+void Exit::DrawClosed(Shader * shader)
+{
+	this->modelClosed->Draw(shader);
 }

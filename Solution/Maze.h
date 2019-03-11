@@ -99,7 +99,8 @@ private:
 	bool isExitOpen;
 
 	Exit exit;
-	Model exitModel;
+	Model exitModelOpen;
+	Model exitModelClosed;
 
 	Keystone * keystones;
 	int keystonesCapacity;

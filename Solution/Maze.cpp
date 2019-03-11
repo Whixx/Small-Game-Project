@@ -3,7 +3,8 @@
 Maze::Maze(irrklang::ISoundEngine * engine)
 	:keyStoneModel("Models/Cube/cube.obj"),
 	keystoneSound("Sounds/keystoneSound.wav", false, engine),
-	exitModel("Models/Exit/exit.obj")
+	exitModelOpen("Models/GateOpen/GateOpen.obj"),
+	exitModelClosed("Models/GateClosed/GateClosed.obj")
 {
 	this->imageData = nullptr;
 	this->path = "";
@@ -300,7 +301,7 @@ Exit Maze::CreateExit()
 
 	cout << "X: " << exitWorldPos.x << "Y: " << exitWorldPos.y << "Z: " << exitWorldPos.z << endl;
 
-	Exit exit = Exit(&this->exitModel, exitWorldPos, exitDir, a.uvPos);
+	Exit exit = Exit(&this->exitModelOpen, &this->exitModelClosed, exitWorldPos, exitDir, a.uvPos);
 	exit.GetTransform()->GetScale() = glm::vec3(this->scaleXZ, this->scaleY, this->scaleXZ);
 	// Create exit
 	return exit;

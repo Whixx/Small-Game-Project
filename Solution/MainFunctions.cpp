@@ -194,7 +194,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze * maze, Minotaur * minotaur)
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze * maze, Minotaur * minotaur, Exit * exit)
 {
 	geometryPass->Bind();
 
@@ -249,13 +249,16 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	}
 
 	// Draw exit
+	worldMatrix = exit->GetWorldMatrix();
+	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+	geometryPass->SendMat4("WorldMatrix", worldMatrix);
 	if (!maze->IsExitOpen())
 	{
-		Exit* oExit = maze->GetExit();
-		worldMatrix = oExit->GetWorldMatrix();
-		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
-		geometryPass->SendMat4("WorldMatrix", worldMatrix);
-		oExit->Draw(geometryPass);
+		exit->DrawClosed(geometryPass);
+	}
+	else
+	{
+		exit->DrawOpen(geometryPass);
 	}
 
 	geometryPass->UnBind();

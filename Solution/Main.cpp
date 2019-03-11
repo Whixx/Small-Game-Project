@@ -122,7 +122,7 @@ int main()
 	
 	float torchSize = 0.02f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize, &minotaur);
-	player.SetPlayerSpeed(2.0f);
+	player.SetPlayerSpeed(20.0f);
 	player.CenterPlayer(); //Space to return to origin
 
 	minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();
@@ -131,6 +131,10 @@ int main()
 	
 	Model lightSphereModel("Models/Ball/ball.obj");
 	GLuint screenQuad = CreateScreenQuad();
+
+	Exit exit;
+	exit = *maze.GetExit();
+	exit.GetTransform()->SetScale(glm::vec3(0.2f));
 
 	// Initiate timer
 	double currentTime = 0;
@@ -190,7 +194,7 @@ int main()
 		
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &player, &OH, &maze, &minotaur);
+		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &player, &OH, &maze, &minotaur, &exit);
 		
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU

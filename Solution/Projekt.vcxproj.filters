@@ -97,7 +97,9 @@
     <ClCompile Include="Sound.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
-    <ClCompile Include="Exit.cpp" />
+    <ClCompile Include="Exit.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloom.h">
