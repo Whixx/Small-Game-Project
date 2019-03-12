@@ -170,7 +170,7 @@ int main()
 
 		// Update player
 		player.Update(deltaTime);
-		minotaur.Update(player.GetCamera()->GetCameraPosition());
+		minotaur.Update(deltaTime, player.GetCamera()->GetCameraPosition());
 
 		OH.UpdateAllObjects(deltaTime);
 		maze.UpdateKeystones(deltaTime);

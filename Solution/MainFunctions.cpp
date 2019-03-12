@@ -499,7 +499,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		else if (event == EVENT_MAZE_KEYSTONE_PRESSED)
 		{
 			glm::vec3 keystonePosition = player->GetCamera()->GetCameraPosition();
-			// The function will check with keystone that was pressed
+			// The function will check which keystone was pressed
 			if (maze->ActivateKeystone(player->GetPos(), minotaurGrowlSound))
 			{
 				keystonePosition = maze->TransformToMazeCoords(keystonePosition);
