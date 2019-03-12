@@ -444,7 +444,7 @@ void Player::Update(double dt)
 		//this->printCounter++;
 		//if (this->printCounter == 1000)
 		//{
-			printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
+			//printf("Map position: X:%.2f, Y:%.2f Playerheight:%.2f\n", playerCamera.GetCameraPosition().x, playerCamera.GetCameraPosition().z, playerCamera.GetCameraPosition().y);
 			//this->printCounter = 0;
 		//}
 	

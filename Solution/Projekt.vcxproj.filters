@@ -281,6 +281,12 @@
     <None Include="lightPass.vs">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="userInterfaceShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="userInterfaceShader.fs">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

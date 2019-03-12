@@ -126,6 +126,18 @@ void InitFinalShader(Shader * shader)
 	shader->ValidateShaders();
 }
 
+void InitUserInterfaceShader(Shader * shader, Player * player)
+{
+	shader->InitiateShaders();
+
+	// Set constant uniforms
+	shader->Bind();
+	shader->SendInt("texture", 0);
+	shader->SendInt("MAX_NR_OF_INVENTORY_COINS", player->GetNrOfInventoryCoins());
+
+	shader->ValidateShaders();
+}
+
 void MazeGenerationPass(Shader * mazeGenerationShader, Maze * maze, Player * player)
 {
 	mazeGenerationShader->Bind();
@@ -425,6 +437,30 @@ void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint * fullScreenTri
 	glEnable(GL_DEPTH_TEST);
 }
 
+void UserInterfacePass(Shader * userInterfaceShader, GLuint *quad, Texture * texture, Player * player)
+{
+	userInterfaceShader->Bind();
+
+	
+	if (player->GetNrOfInventoryCoins() < 0)
+	{
+		// Render Empty texture
+	}
+	else
+	{
+		// Bind the cointexture
+		texture->Bind(0);
+
+		// The shader is using the NrOfInventoryCoins to know what parts of the texture it should render
+		userInterfaceShader->SendInt("currNrOfCoins", player->GetNrOfInventoryCoins());
+	}
+
+	glDisable(GL_DEPTH_TEST);
+	glBindVertexArray(*quad);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glEnable(GL_DEPTH_TEST);
+}
+
 std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 {
 	MazeGeneratePNG mazeGen(height, width);
@@ -440,15 +476,21 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 	return mazeGen.GetGrid();
 }
 
-GLuint CreateScreenQuad()
+GLuint CreateSmallScreenQuad()
 {
-	// https://rauwendaal.net/2014/06/14/rendering-a-screen-covering-triangle-in-opengl/
-	 
+	float size = 400;
+	float top = -size / float(SCREEN_HEIGHT);
+	float right = -size / float(SCREEN_WIDTH);
 
-	float fullScreenTriangleData[] = {
-		-1.0, 3.0, 0.0, 0.0, 2.0,
-		-1.0, -1.0, 0.0, 0.0, 0.0,
-		3.0, -1.0, 0.0, 2.0, 0.0
+	// Right coordinate
+	float fullScreenQuadData[] = {
+		-1.0, -1.0, 0.0, 0.0, 0.0,	// Bottom left
+		right, top, 0.0, 1.0, 1.0,	// Top right
+		right, -1.0, 0.0, 1.0, 0.0,	// Bottom Right
+
+		-1.0, -1.0, 0.0, 0.0, 0.0,	// Bottom left
+		-1.0, top, 0.0, 0.0, 1.0,	// Top Left
+		right, top, 0.0, 1.0, 1.0	// Top Right
 	};
 	
 	GLuint screenQuad;
@@ -459,7 +501,7 @@ GLuint CreateScreenQuad()
 	GLuint quadBuffer;
 	glGenBuffers(1, &quadBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, quadBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5 * 3, &fullScreenTriangleData[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5 * 6, &fullScreenQuadData[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(float) * 5, 0);
@@ -467,10 +509,39 @@ GLuint CreateScreenQuad()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, false, sizeof(float) * 5, (void*) (sizeof(float) * 3));
 
-
 	glBindVertexArray(0);
 
 	return screenQuad;
+}
+
+GLuint CreateScreenTriangle()
+{
+	float fullScreenTriangleData[] = {
+		-1.0, 3.0, 0.0, 0.0, 2.0,
+		-1.0, -1.0, 0.0, 0.0, 0.0,
+		3.0, -1.0, 0.0, 2.0, 0.0
+	};
+
+	GLuint screenTriangle;
+
+	glGenVertexArrays(1, &screenTriangle);
+	glBindVertexArray(screenTriangle);
+
+	GLuint triangleBuffer;
+	glGenBuffers(1, &triangleBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, triangleBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5 * 3, &fullScreenTriangleData[0], GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(float) * 5, 0);
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, false, sizeof(float) * 5, (void*)(sizeof(float) * 3));
+
+
+	glBindVertexArray(0);
+
+	return screenTriangle;
 }
 
 void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur)

@@ -36,6 +36,20 @@ int main()
 
 	Maze maze(enginePtr);
 
+	// Create Lights
+	PointLightHandler lights;	// use .CreateLight()
+
+	// PLAYER AND MINOTAUR
+	Minotaur minotaur(enginePtr, mazeGrid, &maze);
+	float playerHeight = 1.4f;
+
+	float torchSize = 0.02f;
+	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize, &minotaur);
+	player.SetPlayerSpeed(2.0f);
+	player.CenterPlayer(); //Space to return to origin
+
+	minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();
+
 	//=========================== Creating Shaders ====================================//
 
 	// MaxVertices supported by the hardware
@@ -85,6 +99,10 @@ int main()
 	finalShader.CreateShader(".\\finalShader.vs", GL_VERTEX_SHADER);
 	finalShader.CreateShader(".\\finalShader.fs", GL_FRAGMENT_SHADER);
 
+	Shader userInterfaceShader;
+	userInterfaceShader.CreateShader(".\\userInterfaceShader.vs", GL_VERTEX_SHADER);
+	userInterfaceShader.CreateShader(".\\userInterfaceShader.fs", GL_FRAGMENT_SHADER);
+
 	InitMazeGenerationShader(&mazeGenerationShader, &maze);
 	InitShadowShader(&shadowShader);
 	InitGeometryPass(&geometryPass);
@@ -95,6 +113,7 @@ int main()
 	InitBlurShader(&blurShader);
 	InitFinalBloomShader(&finalBloomShader);
 	InitFinalShader(&finalShader);
+	InitUserInterfaceShader(&userInterfaceShader, &player);
 
 	//=================================================================================//
 
@@ -107,30 +126,19 @@ int main()
 
 	//=========================== Creating Objects ====================================//
 
-
-
-	// Create Lights
-	PointLightHandler lights;	// use .CreateLight()
-
-
 	Sound winSound("Sounds/winSound.mp3", false, enginePtr);
 	Sound deathSound("Sounds/death.wav", false, enginePtr);
 	Sound minotaurGrowlSound("Sounds/minotaurgrowl.wav", false, enginePtr);
 
-	Minotaur minotaur(enginePtr, mazeGrid, &maze);
-	float playerHeight = 1.4f;
-	
-	float torchSize = 0.02f;
-	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize, &minotaur);
-	player.SetPlayerSpeed(2.0f);
-	player.CenterPlayer(); //Space to return to origin
-
-	minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();
-
 	ObjectHandler OH;
 	
 	Model lightSphereModel("Models/Ball/ball.obj");
-	GLuint screenQuad = CreateScreenQuad();
+	GLuint screenTriangle = CreateScreenTriangle();
+	GLuint screenQuadUI = CreateSmallScreenQuad();
+
+
+	// Userinterface texture
+	Texture coinUITexture = Texture("Textures/UI/coinTest.png", "TextureDiffuse", false);
 
 	// Initiate timer
 	double currentTime = 0;
@@ -193,8 +201,8 @@ int main()
 		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &player, &OH, &maze, &minotaur);
 		
 		// ================== Light Pass - Deffered Rendering ==================
-		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
-		DRLightPass(&gBuffer, &bloomBuffer, &screenQuad, &lightPass, &shadowMap, &lights, player.GetCamera());
+		// Here the fullscreenTriangle is drawn, and lights are sent to the GPU
+		DRLightPass(&gBuffer, &bloomBuffer, &screenTriangle, &lightPass, &shadowMap, &lights, player.GetCamera());
 
 		// Copy the depth from the gBuffer to the bloomBuffer
 		bloomBuffer.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, gBuffer.GetFBO());
@@ -205,10 +213,10 @@ int main()
 		//#endif
 			
 		// Blur the bright texture
-		BlurPass(&blurShader, &bloomBuffer, &blurBuffers, &screenQuad);
+		BlurPass(&blurShader, &bloomBuffer, &blurBuffers, &screenTriangle);
 
 		// Combine the bright texture and the scene and store the Result in FinalFBO.
-		FinalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &screenQuad);
+		FinalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &screenTriangle);
 
 		// Copy the depth from the bloomBuffer to the finalFBO
 		finalFBO.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, bloomBuffer.GetFBO());
@@ -216,9 +224,10 @@ int main()
 		ParticlePass(&finalFBO, player.GetTorch()->GetParticle(), player.GetCamera(), &particleShader);
 
 		// Render everything
-		FinalPass(&finalFBO, &finalShader, &screenQuad);
+		FinalPass(&finalFBO, &finalShader, &screenTriangle);
 
-
+		// Draw UI on top of everyything else
+		UserInterfacePass(&userInterfaceShader, &screenQuadUI, &coinUITexture, &player);
 
 		// ================== POST DRAW ==================
 		display.SwapBuffers(SCREEN_WIDTH, SCREEN_HEIGHT);

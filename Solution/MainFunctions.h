@@ -39,6 +39,7 @@ void InitPointLightPass(Shader *shader);
 void InitBlurShader(Shader *shader);
 void InitFinalBloomShader(Shader *shader);
 void InitFinalShader(Shader *shader);
+void InitUserInterfaceShader(Shader *shader, Player * player);
 
 // Shader pass functions
 void MazeGenerationPass(Shader * mazeGenerationShader, Maze * maze, Player * player);
@@ -50,12 +51,14 @@ void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuff
 void FinalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, GLuint *fullScreenTriangle);
 void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader);
 void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint *fullScreenTriangle);
+void UserInterfacePass(Shader * userInterfaceShader, GLuint *quad, Texture * texture, Player * player);
 
 // height and width must be odd numbers else the resulting maze will be off
 // the function will return a grid with the maze
 std::vector<std::vector<int>> GenerateMazePNG(int height, int width);
 
-GLuint CreateScreenQuad();
+GLuint CreateScreenTriangle();
+GLuint CreateSmallScreenQuad();
 void SetMaxPatchVertices();
 
 void HandleEvents(Player* player, Maze* maze, Sound* winSound, Sound* deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur);
