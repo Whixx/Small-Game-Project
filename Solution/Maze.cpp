@@ -255,6 +255,25 @@ Wall Maze::GetWallType(float x, float y)
 	return type;
 }
 
+glm::vec3 Maze::GetRandomFloorPos()
+{
+	glm::vec3 randomPos = glm::vec3((rand() % this->GetMazeWidth() - 2) + 1, 0.0f, (rand() % this->GetMazeWidth() - 2) + 1);
+	randomPos = this->FindNearbyFloor(glm::vec2(randomPos.x, randomPos.z));
+	while (randomPos == glm::vec3(-1.0f))
+	{
+		randomPos = this->FindNearbyFloor(glm::vec2(randomPos.x, randomPos.z));
+	}
+	
+	float randomOffset = ((rand() % 4) - 4) / 10.0f;
+	randomPos.x += randomOffset;
+	randomOffset = ((rand() % 4) - 4) / 10.0f;
+	randomPos.z += randomOffset;
+
+	randomPos = this->TransformToWorldCoords(randomPos);
+
+	return glm::vec3(randomPos.x, 0.12f, randomPos.z);
+}
+
 void Maze::BindTexture(unsigned int textureUnit)
 {
 	if (textureUnit >= 0 && textureUnit <= 31)

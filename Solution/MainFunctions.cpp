@@ -170,6 +170,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		shadowShader->SendFloat("farPlane", (float)FAR_PLANE);
 		shadowShader->SendVec3("lightPos", lightPos.x, lightPos.y, lightPos.z);
 
+		// Draw landmarks
 		for (unsigned int j = 0; j < OH->GetNrOfObjects(); j++)
 		{
 			glm::mat4 worldMatrix = OH->GetObject(j)->GetTransform().GetWorldMatrix();
@@ -208,7 +209,7 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 
 	glm::mat4 worldMatrix;
 
-	// Update and Draw all objects
+	// Draw landmarks
 	for (unsigned int i = 0; i < OH->GetNrOfObjects(); i++)
 	{
 		worldMatrix = OH->GetObject(i)->GetTransform().GetWorldMatrix();

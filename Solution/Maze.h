@@ -84,6 +84,8 @@ public:
 
 	Wall GetWallType(float x, float y);
 
+	glm::vec3 GetRandomFloorPos();
+
 	void BindTexture(unsigned int textureUnit);
 private:
 
