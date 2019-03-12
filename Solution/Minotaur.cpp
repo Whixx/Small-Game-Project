@@ -177,7 +177,7 @@ void Minotaur::GeneratePath(int startY, int startX, int destinationY, int destin
 	std::vector<std::vector<int>> newGrid = this->mazeGrid;
 
 	std::vector<distance> distances;
-	// distance starts with 3, because the grid is already filled with 0, 1 for paths/walls and 2 is reserved to mark solution path
+	// distance starts with 3, because the grid is already filled with 0/1 for paths/walls and 2 is reserved to mark solution path
 	int distanceCount = 3;
 	distances.push_back({ startY, startX });
 	bool newDistance = true;
@@ -281,7 +281,7 @@ void Minotaur::GeneratePath(int startY, int startX, int destinationY, int destin
 	{
 		for (int x = 0; x < this->mazeGrid[y].size(); x++)
 		{
-			if ((wall != this->mazeGrid[y][x])/* && (solution != this->mazeGrid[y][x])*/)
+			if ((wall != this->mazeGrid[y][x]))
 			{
 				this->mazeGrid[y][x] = path;
 			}
@@ -299,6 +299,11 @@ glm::vec2 Minotaur::toNearbyFloor(glm::vec2 mazePos)
 	int x = mazePos.x;
 	int y = mazePos.y;
 
+	if (x > 32 || y > 32)
+	{
+		std::cout << "ERROR!!" << std::endl;
+		std::cout << "x > 32 or y > 32, in ToNearbyFloor in minotaur.cpp" << std::endl;
+	}
 	if (this->mazeGrid[y][x] == 1)
 	{
 		x = x - 1;
@@ -327,30 +332,27 @@ void Minotaur::Draw(Shader * shader)
 glm::vec2 Minotaur::ClampToEdges(glm::vec2 mazeCoords)
 {
 	// make sure destination is within the maze boundary
-	bool xOutLeft = false;
-	bool xOutRight = false;
-	bool yOutTop = false;
-	bool yOutBottom = false;
 
-	if (mazeCoords.x > 61)
+	int mazeHeight = this->mazeGrid.size();
+	int mazeWidth = this->mazeGrid[0].size();
+	mazeHeight -= 1;
+	mazeWidth -= 1;
+
+	if (mazeCoords.x > mazeWidth)
 	{
-		mazeCoords.x = 61;
-		xOutRight = true;
+		mazeCoords.x = mazeWidth;
 	}
 	if (mazeCoords.x < 1)
 	{
 		mazeCoords.x = 1;
-		xOutLeft = true;
 	}
-	if (mazeCoords.y > 61)
+	if (mazeCoords.y > mazeHeight)
 	{
-		mazeCoords.y = 61;
-		yOutBottom = true;
+		mazeCoords.y = mazeHeight;
 	}
 	if (mazeCoords.y < 1)
 	{
 		mazeCoords.y = 1;
-		yOutTop = true;
 	}
 
 	//cout << "CHANGED TRUEENDPOS X: " << mazeCoords.x << endl;
@@ -362,37 +364,23 @@ glm::vec2 Minotaur::ClampToEdges(glm::vec2 mazeCoords)
 void Minotaur::setupColorData()
 {
 	// set up image vectors to hold color data
-// added +1 to make the maze 64*64 pixels for use in shaders
-	int newHeight = 64;
-	int newWidth = 64;
+	int height = this->mazeGrid.size();
+	int width = this->mazeGrid[0].size();
 
-	image.resize(newHeight);
-	for (int y = 0; y < newHeight; y++)
+	image.resize(height);
+	for (int y = 0; y < height; y++)
 	{
-		image[y].resize(newWidth);
-		for (int x = 0; x < newWidth; x++)
+		image[y].resize(width);
+		for (int x = 0; x < width; x++)
 		{
 			image[y][x].resize(3);
 		}
 	}
 
-	for (int i = 0; i < newWidth; i++)
-	{
-		image[63][i][0] = 0;
-		image[63][i][1] = 0;
-		image[63][i][2] = 0;
-	}
-	for (int i = 0; i < newHeight; i++)
-	{
-		image[i][63][0] = 0;
-		image[i][63][1] = 0;
-		image[i][63][2] = 0;
-	}
-
 	// sets colors, white for walls, black for path
-	for (int y = 0; y < 63; y++)
+	for (int y = 0; y < height; y++)
 	{
-		for (int x = 0; x < 63; x++)
+		for (int x = 0; x < width; x++)
 		{
 			if (mazeGrid[y][x] == 1)
 			{
@@ -423,9 +411,9 @@ void Minotaur::drawPath()
 	setupColorData();
 	
 	std::vector<unsigned char> c;
-	for (int y = 0; y < 63 + 1; y++)
+	for (int y = 0; y < this->mazeGrid.size(); y++)
 	{
-		for (int x = 0; x < 63 + 1; x++)
+		for (int x = 0; x < this->mazeGrid[0].size(); x++)
 		{
 			c.push_back(image[y][x][0]);
 			c.push_back(image[y][x][1]);

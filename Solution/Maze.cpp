@@ -298,8 +298,6 @@ Exit Maze::CreateExit()
 	glm::vec3 exitDir = this->TransformToWorldCoords(glm::vec3(a.uvDir.x, 0.0, a.uvDir.y)) - exitWorldPos;
 	exitDir.z *= -1;
 
-	cout << "X: " << exitWorldPos.x << "Y: " << exitWorldPos.y << "Z: " << exitWorldPos.z << endl;
-
 	Exit exit = Exit(&this->exitModel, exitWorldPos, exitDir, a.uvPos);
 	exit.GetTransform()->GetScale() = glm::vec3(this->scaleXZ, this->scaleY, this->scaleXZ);
 	// Create exit
@@ -619,7 +617,7 @@ ExitPosDir Maze::FindExit()
 	}
 
 #ifdef DEBUG
-	cout << "Exit World Pos X:" << exitPos.x << endl << "Exit World Pos Y:" << exitPos.y << endl;
+	cout << "Exit World Pos (X,Z): " << exitPos.x << ", " << exitPos.y << endl;
 #endif
 
 	ExitPosDir r = {exitPos, exitDir};
