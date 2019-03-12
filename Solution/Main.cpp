@@ -135,9 +135,9 @@ int main()
 	Exit exit;
 	exit = *maze.GetExit();
 	exit.GetTransform()->SetScale(glm::vec3(
-		0.10f * maze.GetTransform()->GetScale().x,
+		0.11f * maze.GetTransform()->GetScale().x,
 		0.08f * maze.GetTransform()->GetScale().y,
-		0.10f * maze.GetTransform()->GetScale().z));
+		0.11f * maze.GetTransform()->GetScale().z));
 
 	// Initiate timer
 	double currentTime = 0;

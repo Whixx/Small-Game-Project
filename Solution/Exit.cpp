@@ -12,19 +12,19 @@ Exit::Exit(Model* exitModelOpen, Model* exitModelClosed, glm::vec3 worldPos, glm
 	// Choose a good position
 	if (this->dir.x < 0.0f)
 	{
-		this->transform.GetPos() = worldPos + this->dir;
+		this->transform.GetPos() = worldPos + this->dir * 0.8f;
 	}
 	else if (this->dir.x > 0.0f)
 	{
-		this->transform.GetPos() = worldPos + this->dir;
+		this->transform.GetPos() = worldPos + this->dir * 0.8f;
 	}
 	else if (this->dir.z > 0.0f)
 	{
-		this->transform.GetPos() = worldPos - this->dir;
+		this->transform.GetPos() = worldPos - this->dir * 0.8f;
 	}
 	else if (this->dir.z < 0.0f)
 	{
-		this->transform.GetPos() = worldPos - this->dir;
+		this->transform.GetPos() = worldPos - this->dir * 0.8f;
 	}
 }
 

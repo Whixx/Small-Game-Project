@@ -11,7 +11,7 @@ Ni 1.000000
 d 1.000000
 illum 2
 disp Metal_002_height.png
-map_Bump Metal_002_normal .png
+map_Bump GateOpen_normal.png
 map_Ka Metal_002_ambient.png
 map_Kd Metal_002_basecolor.png
 map_Ks Metal_002_metallic.png
@@ -27,7 +27,7 @@ Ni 1.000000
 d 1.000000
 illum 2
 disp Metal_002_height.png
-map_Bump Metal_002_normal .png
+map_Bump GateOpen_normal.png
 map_Ka Metal_002_ambient.png
 map_Kd Metal_002_basecolor.png
 map_Ks Metal_002_metallic.png
