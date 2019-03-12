@@ -43,8 +43,8 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	// TEST PRINT
 	for (int i = 0; i < this->nrOfKeystones; i++)
 	{
-		std::cout << "X: " << this->keystones[i].GetTransform()->GetPos().x << std::endl;
-		std::cout << "Z: " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
+		std::cout << "Keystone X: " << this->keystones[i].GetTransform()->GetPos().x << std::endl;
+		std::cout << "Keystone Z: " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
 	}
 #endif
 
@@ -619,7 +619,7 @@ ExitPosDir Maze::FindExit()
 	}
 
 #ifdef DEBUG
-	cout << "ExitPos:x :" << exitPos.x << endl << "ExitPos:y :" << exitPos.y << endl;
+	cout << "Exit World Pos X:" << exitPos.x << endl << "Exit World Pos Y:" << exitPos.y << endl;
 #endif
 
 	ExitPosDir r = {exitPos, exitDir};

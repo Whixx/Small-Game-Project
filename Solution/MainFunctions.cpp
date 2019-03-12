@@ -429,10 +429,6 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 {
 	MazeGeneratePNG mazeGen(height, width);
 
-	// Set_cell can be used to set "entrance and exit" etc
-	//mazeGen.SetCell(0, 1, mazeGen.path);
-	//mazeGen.SetCell(height - 1, width - 2, mazeGen.path);
-
 	mazeGen.Generate();
 	mazeGen.GenerateExit();
 	mazeGen.DrawPNG();

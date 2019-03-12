@@ -433,6 +433,7 @@ void Minotaur::drawPath()
 		}
 	}
 	
+#ifdef DEBUG
 	if (!stbi_write_png("MazePNG/MINOTAURPATH.png", 64, 64, 3, c.data(), 3 * (64)))
 	{
 		std::cout << "ERROR MINOTAURPATH NOT WRITTEN" << std::endl;
@@ -441,4 +442,5 @@ void Minotaur::drawPath()
 	{
 		std::cout << "MINOTAURPATH WRITTEN" << std::endl;
 	}
+#endif
 }
