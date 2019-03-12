@@ -51,6 +51,7 @@ public:
 	void CenterPlayer();
 	void UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime);
 	void Update(double dt);
+	void UpdateOnlyTorch(double dt);
 
 	// AddCoin and RemoveCoin adds/removes on the last index in the coinArray
 	// To be used when throwing and laying coins

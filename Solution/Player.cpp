@@ -460,6 +460,15 @@ void Player::Update(double dt)
 #endif
 }
 
+void Player::UpdateOnlyTorch(double dt)
+{
+	// Update the torch
+	this->playerTorch.Update(dt,
+		this->playerCamera,
+		this->walkingVector,
+		this->boundingBoxHalfSize);
+}
+
 void Player::AddCoinToInventory()
 {
 	// Check if bag is full

@@ -228,7 +228,7 @@ int main()
 		{
 			// ================== UPDATE ==================
 			// Update player
-			player.Update(deltaTime);
+			player.UpdateOnlyTorch(deltaTime);
 
 
 		}
