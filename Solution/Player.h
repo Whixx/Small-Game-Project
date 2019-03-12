@@ -98,6 +98,7 @@ private:
 	void AddCoinToWorld(unsigned int state);
 	void UpdateCoins(double dt);
 	void CheckIfWin();
+	void CheckIfLoose();
 };
 
 #endif //DISPLAY_H

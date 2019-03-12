@@ -35,6 +35,7 @@ int main()
 	irrklang::ISoundEngine* enginePtr = soundEngine.GetEngine();
 
 	Maze maze(enginePtr);
+	Exit exit = *maze.GetExit();
 
 	//=========================== Creating Shaders ====================================//
 
@@ -107,22 +108,19 @@ int main()
 
 	//=========================== Creating Objects ====================================//
 
-
-
 	// Create Lights
 	PointLightHandler lights;	// use .CreateLight()
-
 
 	Sound winSound("Sounds/winSound.mp3", false, enginePtr);
 	Sound deathSound("Sounds/death.wav", false, enginePtr);
 	Sound minotaurGrowlSound("Sounds/minotaurgrowl.wav", false, enginePtr);
 
 	Minotaur minotaur(enginePtr, mazeGrid, &maze);
+
 	float playerHeight = 1.4f;
-	
 	float torchSize = 0.02f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize, &minotaur);
-	player.SetPlayerSpeed(20.0f);
+	player.SetPlayerSpeed(2.0f);
 	player.CenterPlayer(); //Space to return to origin
 
 	minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();
@@ -131,13 +129,6 @@ int main()
 	
 	Model lightSphereModel("Models/Ball/ball.obj");
 	GLuint screenQuad = CreateScreenQuad();
-
-	Exit exit;
-	exit = *maze.GetExit();
-	exit.GetTransform()->SetScale(glm::vec3(
-		0.11f * maze.GetTransform()->GetScale().x,
-		0.08f * maze.GetTransform()->GetScale().y,
-		0.11f * maze.GetTransform()->GetScale().z));
 
 	// Initiate timer
 	double currentTime = 0;
