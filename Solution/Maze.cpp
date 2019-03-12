@@ -40,6 +40,12 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	for (int i = 0; i < 3; i++)
 		this->AddKeystone();
 
+	// Set scale of exit
+	this->exit.GetTransform()->SetScale(glm::vec3(
+		0.11f * this->transform.GetScale().x,
+		0.08f * this->transform.GetScale().y,
+		0.11f * this->transform.GetScale().z));
+
 #ifdef DEBUG
 	// TEST PRINT
 	for (int i = 0; i < this->nrOfKeystones; i++)
