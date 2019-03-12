@@ -58,7 +58,7 @@ void UserInterfacePass(Shader * userInterfaceShader, GLuint *quad, Texture * tex
 std::vector<std::vector<int>> GenerateMazePNG(int height, int width);
 
 GLuint CreateScreenTriangle();
-GLuint CreateSmallScreenQuad();
+GLuint CreateSmallScreenQuad(glm::vec2 topLeftCorner, glm::vec2 topRightCorner, glm::vec2 bottomRightCorner, glm::vec2 bottomLeftCorner);
 void SetMaxPatchVertices();
 
 void HandleEvents(Player* player, Maze* maze, Sound* winSound, Sound* deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, bool* paused);

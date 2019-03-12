@@ -11,6 +11,42 @@
 
 int main()
 {
+	//union Color
+	//{
+	//	unsigned int color;
+	//	struct
+	//	{
+	//		unsigned char R;
+	//		unsigned char G;
+	//		unsigned char B;
+	//		unsigned char A;
+	//	};
+	//};
+	//
+	//Color c;
+	//c.color = 255;
+	//
+	//struct RenderSort
+	//{
+	//	union
+	//	{
+	//		unsigned int value;
+	//		struct
+	//		{
+	//			unsigned int blend_enabled : 1;
+	//			unsigned int material : 4;
+	//			unsigned int rest : 27;
+	//		} bitfield;
+	//	};
+	//} rs;
+	//
+	//rs.bitfield.blend_enabled = 1;
+	//
+	//int rs_size = sizeof(RenderSort);
+
+
+
+
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CRT_SECURE_NO_WARNINGS;
 
@@ -136,8 +172,7 @@ int main()
 	
 	Model lightSphereModel("Models/Ball/ball.obj");
 	GLuint screenTriangle = CreateScreenTriangle();
-	GLuint screenQuadUI = CreateSmallScreenQuad();
-
+	GLuint screenQuadUI = CreateSmallScreenQuad(glm::vec2(-1.0f, -0.2f), glm::vec2(-0.2f, -0.2f), glm::vec2(-0.2f, -1.0f), glm::vec2(-1.0f, -1.0f));
 
 	// Userinterface texture
 	Texture coinUITexture = Texture("Textures/UI/coinTest.png", "TextureDiffuse", false);
@@ -164,7 +199,6 @@ int main()
 			nrOfFrames = 0;
 			lastTime += 1.0;
 		}
-
 
 		// ================== EVENTS ==================
 

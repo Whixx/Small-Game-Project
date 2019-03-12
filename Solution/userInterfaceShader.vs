@@ -13,7 +13,7 @@ void main()
 	gl_Position = vec4(position, 1.0f);
 
 	// Remove one "block" for each coin tossed
-	gl_Position.x *= -1 * (currNrOfCoins * texCoord.x)/MAX_NR_OF_INVENTORY_COINS;
+	gl_Position.x *=  -1 * (currNrOfCoins * texCoord.x)/MAX_NR_OF_INVENTORY_COINS;
 
 	// Translate the quad to the leftside
 	gl_Position.x -= 1;
