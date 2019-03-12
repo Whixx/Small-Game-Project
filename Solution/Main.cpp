@@ -133,7 +133,9 @@ int main()
 	ObjectHandler OH;
 	
 	Model lightSphereModel("Models/Ball/ball.obj");
-	GLuint screenQuad = CreateScreenQuad();
+	GLuint screenTriangle = CreateScreenTriangle();
+	GLuint screenQuadUI = CreateSmallScreenQuad();
+
 
 	// Userinterface texture
 	Texture coinUITexture = Texture("Textures/UI/coinTest.png", "TextureDiffuse", false);
@@ -199,8 +201,8 @@ int main()
 		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &player, &OH, &maze, &minotaur);
 		
 		// ================== Light Pass - Deffered Rendering ==================
-		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
-		DRLightPass(&gBuffer, &bloomBuffer, &screenQuad, &lightPass, &shadowMap, &lights, player.GetCamera());
+		// Here the fullscreenTriangle is drawn, and lights are sent to the GPU
+		DRLightPass(&gBuffer, &bloomBuffer, &screenTriangle, &lightPass, &shadowMap, &lights, player.GetCamera());
 
 		// Copy the depth from the gBuffer to the bloomBuffer
 		bloomBuffer.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, gBuffer.GetFBO());
@@ -211,10 +213,10 @@ int main()
 		//#endif
 			
 		// Blur the bright texture
-		BlurPass(&blurShader, &bloomBuffer, &blurBuffers, &screenQuad);
+		BlurPass(&blurShader, &bloomBuffer, &blurBuffers, &screenTriangle);
 
 		// Combine the bright texture and the scene and store the Result in FinalFBO.
-		FinalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &screenQuad);
+		FinalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &screenTriangle);
 
 		// Copy the depth from the bloomBuffer to the finalFBO
 		finalFBO.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, bloomBuffer.GetFBO());
@@ -222,9 +224,10 @@ int main()
 		ParticlePass(&finalFBO, player.GetTorch()->GetParticle(), player.GetCamera(), &particleShader);
 
 		// Render everything
-		FinalPass(&finalFBO, &finalShader, &screenQuad);
+		FinalPass(&finalFBO, &finalShader, &screenTriangle);
 
-		UserInterfacePass(&userInterfaceShader, &screenQuad, &coinUITexture, &player);
+		// Draw UI on top of everyything else
+		UserInterfacePass(&userInterfaceShader, &screenQuadUI, &coinUITexture, &player);
 
 		// ================== POST DRAW ==================
 		display.SwapBuffers(SCREEN_WIDTH, SCREEN_HEIGHT);
