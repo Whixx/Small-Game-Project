@@ -476,21 +476,17 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 	return mazeGen.GetGrid();
 }
 
-GLuint CreateSmallScreenQuad()
+GLuint CreateSmallScreenQuad(glm::vec2 topLeftCorner, glm::vec2 topRightCorner, glm::vec2 bottomRightCorner, glm::vec2 bottomLeftCorner)
 {
-	float size = 400;
-	float top = -size / float(SCREEN_HEIGHT);
-	float right = -size / float(SCREEN_WIDTH);
+	float fullScreenQuadData[] = 
+	{
+		bottomLeftCorner.x, bottomLeftCorner.y, 0.0, 0.0, 0.0,		// Bottom left
+		topRightCorner.x, topRightCorner.y, 0.0, 1.0, 1.0,			// Top right
+		bottomRightCorner.x, bottomRightCorner.y, 0.0, 1.0, 0.0,	// Bottom Right
 
-	// Right coordinate
-	float fullScreenQuadData[] = {
-		-1.0, -1.0, 0.0, 0.0, 0.0,	// Bottom left
-		right, top, 0.0, 1.0, 1.0,	// Top right
-		right, -1.0, 0.0, 1.0, 0.0,	// Bottom Right
-
-		-1.0, -1.0, 0.0, 0.0, 0.0,	// Bottom left
-		-1.0, top, 0.0, 0.0, 1.0,	// Top Left
-		right, top, 0.0, 1.0, 1.0	// Top Right
+		bottomLeftCorner.x, bottomLeftCorner.y, 0.0, 0.0, 0.0,		// Bottom left
+		topLeftCorner.x, topLeftCorner.y, 0.0, 0.0, 1.0,			// Top Left
+		topRightCorner.x, topRightCorner.y, 0.0, 1.0, 1.0			// Top Right
 	};
 	
 	GLuint screenQuad;
@@ -537,7 +533,6 @@ GLuint CreateScreenTriangle()
 
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, false, sizeof(float) * 5, (void*)(sizeof(float) * 3));
-
 
 	glBindVertexArray(0);
 
