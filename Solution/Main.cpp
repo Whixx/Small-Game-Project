@@ -50,6 +50,8 @@ int main()
 
 	minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();
 
+	bool paused = false;
+
 	//=========================== Creating Shaders ====================================//
 
 	// MaxVertices supported by the hardware
@@ -158,7 +160,7 @@ int main()
 		if (currentTime - lastTime >= 1.0)
 		{
 			// If last print was more than 1 sec ago, print and reset timer
-			display.SetTitle("FPS: " + to_string((int)((double)nrOfFrames)));
+			display.SetTitle("FPS: " + to_string((nrOfFrames)));
 			nrOfFrames = 0;
 			lastTime += 1.0;
 		}
@@ -167,25 +169,36 @@ int main()
 		// ================== EVENTS ==================
 
 		glfwPollEvents();
+		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &paused);
 
-		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur);
+		if (!paused)
+		{
+			// Update movement
+			IH.MouseControls(&display, &player, deltaTime);
+			IH.KeyboardControls(&display, &player, deltaTime);
 
-		// Update movement
-		IH.MouseControls(&display, &player, deltaTime);
-		IH.KeyboardControls(&display, &player, deltaTime);
+			// ================== UPDATE ==================
 
-		// ================== UPDATE ==================
+			// Update player
+			player.Update(deltaTime);
+			minotaur.Update(player.GetCamera()->GetCameraPosition());
 
-		// Update player
-		player.Update(deltaTime);
-		minotaur.Update(player.GetCamera()->GetCameraPosition());
+			OH.UpdateAllObjects(deltaTime);
+			maze.UpdateKeystones(deltaTime);
+			lights.UpdateShadowTransform(0);
 
-		OH.UpdateAllObjects(deltaTime);
-		maze.UpdateKeystones(deltaTime);
-		lights.UpdateShadowTransform(0);
+			// update sound engine with position and view direction
+			soundEngine.Update(player.GetCamera()->GetCameraPosition(), player.GetCamera()->GetForwardVector());
+		}
+		else    // if game is paused
+		{
+			// ================== UPDATE ==================
+			// Update player
+			player.Update(deltaTime);
 
-		// update sound engine with position and view direction
-		soundEngine.Update(player.GetCamera()->GetCameraPosition(), player.GetCamera()->GetForwardVector());
+
+		}
+		
 
 
 		// ================== DRAW ==================
@@ -206,6 +219,7 @@ int main()
 
 		// Copy the depth from the gBuffer to the bloomBuffer
 		bloomBuffer.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, gBuffer.GetFBO());
+
 
 		// Draw lightSpheres
 		//#ifdef DEBUG

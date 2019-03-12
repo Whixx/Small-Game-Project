@@ -544,7 +544,7 @@ GLuint CreateScreenTriangle()
 	return screenTriangle;
 }
 
-void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur)
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, bool * paused)
 {
 	EventHandler& EH = EventHandler::GetInstance();
 	while (!EH.IsEmpty())
@@ -581,6 +581,16 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 
 				minotaur->reactToSound(keystonePosition);
 			}
+		}
+		else if (event == EVENT_PAUSED)
+		{
+			*paused = true;
+			cout << "PAUSED: " << *paused << endl;
+		}
+		else if (event == EVENT_PLAYING)
+		{
+			*paused = false;
+			cout << "PAUSED: " << *paused << endl;
 		}
 	}
 }

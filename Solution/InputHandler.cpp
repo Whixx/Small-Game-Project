@@ -36,6 +36,24 @@ void InputHandler::Key_callback(GLFWwindow * window, int key, int scancode, int 
 		EventHandler& EH = EventHandler::GetInstance();
 		EH.AddEvent(EVENT_MAZE_KEYSTONE_PRESSED);
 	}
+
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+
+		mouseLock = !mouseLock;
+		if (mouseLock)
+		{
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			EH.AddEvent(EVENT_PLAYING);
+		}	
+		else
+		{
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			EH.AddEvent(EVENT_PAUSED);
+		}
+			
+	}
 }
 
 void InputHandler::MouseControls(Display * display, Player * player, float elapsedTime)

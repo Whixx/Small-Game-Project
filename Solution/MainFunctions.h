@@ -61,7 +61,7 @@ GLuint CreateScreenTriangle();
 GLuint CreateSmallScreenQuad();
 void SetMaxPatchVertices();
 
-void HandleEvents(Player* player, Maze* maze, Sound* winSound, Sound* deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur);
+void HandleEvents(Player* player, Maze* maze, Sound* winSound, Sound* deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, bool* paused);
 
 
 #endif
