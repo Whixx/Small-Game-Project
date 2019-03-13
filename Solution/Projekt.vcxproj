@@ -89,6 +89,7 @@
     <ClCompile Include="Bloom.cpp" />
     <ClCompile Include="Blur.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ButtonHandler.cpp" />
     <ClCompile Include="Coin.cpp" />
     <ClCompile Include="CollisionHandler.cpp" />
     <ClCompile Include="Display.cpp" />
@@ -112,6 +113,7 @@
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="ClipSpaceQuad.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="SoundEngine.cpp" />
@@ -124,6 +126,7 @@
     <ClInclude Include="Bloom.h" />
     <ClInclude Include="Blur.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ButtonHandler.h" />
     <ClInclude Include="Coin.h" />
     <ClInclude Include="CollisionHandler.h" />
     <ClInclude Include="Display.h" />
@@ -146,6 +149,7 @@
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PointLight.h" />
+    <ClInclude Include="ClipSpaceQuad.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="SoundEngine.h" />
@@ -160,6 +164,8 @@
   <ItemGroup>
     <None Include="blurShader.fs" />
     <None Include="blurShader.vs" />
+    <None Include="button2DShader.fs" />
+    <None Include="button2DShader.vs" />
     <None Include="finalBloomShader.fs" />
     <None Include="finalBloomShader.vs" />
     <None Include="finalShader.fs" />
@@ -182,8 +188,8 @@
     <None Include="shadowShader.fs" />
     <None Include="shadowShader.gs" />
     <None Include="shadowShader.vs" />
-    <None Include="userInterfaceShader.fs" />
-    <None Include="userInterfaceShader.vs" />
+    <None Include="coinUIShader.fs" />
+    <None Include="coinUIShader.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

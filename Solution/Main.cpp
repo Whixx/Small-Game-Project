@@ -1,6 +1,4 @@
-﻿
-
-// Finns en main funktion i GLEW, d�rmed m�ste vi undefinera den innan vi kan anv�nda v�ran main
+﻿// Finns en main funktion i GLEW, d�rmed m�ste vi undefinera den innan vi kan anv�nda v�ran main
 #include <glew\glew.h>
 #undef main
 
@@ -11,42 +9,6 @@
 
 int main()
 {
-	//union Color
-	//{
-	//	unsigned int color;
-	//	struct
-	//	{
-	//		unsigned char R;
-	//		unsigned char G;
-	//		unsigned char B;
-	//		unsigned char A;
-	//	};
-	//};
-	//
-	//Color c;
-	//c.color = 255;
-	//
-	//struct RenderSort
-	//{
-	//	union
-	//	{
-	//		unsigned int value;
-	//		struct
-	//		{
-	//			unsigned int blend_enabled : 1;
-	//			unsigned int material : 4;
-	//			unsigned int rest : 27;
-	//		} bitfield;
-	//	};
-	//} rs;
-	//
-	//rs.bitfield.blend_enabled = 1;
-	//
-	//int rs_size = sizeof(RenderSort);
-
-
-
-
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CRT_SECURE_NO_WARNINGS;
 
@@ -137,9 +99,13 @@ int main()
 	finalShader.CreateShader(".\\finalShader.vs", GL_VERTEX_SHADER);
 	finalShader.CreateShader(".\\finalShader.fs", GL_FRAGMENT_SHADER);
 
-	Shader userInterfaceShader;
-	userInterfaceShader.CreateShader(".\\userInterfaceShader.vs", GL_VERTEX_SHADER);
-	userInterfaceShader.CreateShader(".\\userInterfaceShader.fs", GL_FRAGMENT_SHADER);
+	Shader coinUIShader;
+	coinUIShader.CreateShader(".\\coinUIShader.vs", GL_VERTEX_SHADER);
+	coinUIShader.CreateShader(".\\coinUIShader.fs", GL_FRAGMENT_SHADER);
+
+	Shader button2DShader;
+	button2DShader.CreateShader(".\\button2DShader.vs", GL_VERTEX_SHADER);
+	button2DShader.CreateShader(".\\button2DShader.fs", GL_FRAGMENT_SHADER);
 
 	InitMazeGenerationShader(&mazeGenerationShader, &maze);
 	InitShadowShader(&shadowShader);
@@ -151,7 +117,8 @@ int main()
 	InitBlurShader(&blurShader);
 	InitFinalBloomShader(&finalBloomShader);
 	InitFinalShader(&finalShader);
-	InitUserInterfaceShader(&userInterfaceShader, &player);
+	InitCoinUIShader(&coinUIShader, &player);
+	InitButton2DShader(&button2DShader);
 
 	//=================================================================================//
 
@@ -171,8 +138,14 @@ int main()
 	ObjectHandler OH;
 	
 	Model lightSphereModel("Models/Ball/ball.obj");
-	GLuint screenTriangle = CreateScreenTriangle();
-	GLuint screenQuadUI = CreateSmallScreenQuad(glm::vec2(-1.0f, -0.2f), glm::vec2(-0.2f, -0.2f), glm::vec2(-0.2f, -1.0f), glm::vec2(-1.0f, -1.0f));
+
+	// 2D quads
+	ClipSpaceQuad fullScreenQuad;
+	//ClipSpaceQuad coinInterfaceQuad(glm::vec2(-1.0f, -0.2f), glm::vec2(-0.2f, -0.2f), glm::vec2(-0.2f, -1.0f), glm::vec2(-1.0f, -1.0f), false);
+	ClipSpaceQuad coinInterfaceQuad(glm::vec2(-0.6, -0.6), 0.4f, 0.4f, false, "Textures/UI/coinTest.png");
+	ButtonHandler buttonHandler;
+	buttonHandler.AddButton(glm::vec2(0.0f, 0.0f), 0.2f, 0.2f, "Textures/UI/coinTest.png");
+	buttonHandler.AddButton(glm::vec2(0.2, -0.4), 0.1f, 0.1f, "Textures/UI/coinTest.png");
 
 	// Userinterface texture
 	Texture coinUITexture = Texture("Textures/UI/coinTest.png", "TextureDiffuse", false);
@@ -199,7 +172,7 @@ int main()
 			nrOfFrames = 0;
 			lastTime += 1.0;
 		}
-
+		
 		// ================== EVENTS ==================
 
 		glfwPollEvents();
@@ -229,12 +202,7 @@ int main()
 			// ================== UPDATE ==================
 			// Update player
 			player.UpdateOnlyTorch(deltaTime);
-
-
 		}
-		
-
-
 		// ================== DRAW ==================
 
 		// Here the mazes is created and stored in a buffer with transform feedback
@@ -249,7 +217,7 @@ int main()
 		
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangle is drawn, and lights are sent to the GPU
-		DRLightPass(&gBuffer, &bloomBuffer, &screenTriangle, &lightPass, &shadowMap, &lights, player.GetCamera());
+		DRLightPass(&gBuffer, &bloomBuffer, &fullScreenQuad, &lightPass, &shadowMap, &lights, player.GetCamera());
 
 		// Copy the depth from the gBuffer to the bloomBuffer
 		bloomBuffer.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, gBuffer.GetFBO());
@@ -261,10 +229,10 @@ int main()
 		//#endif
 			
 		// Blur the bright texture
-		BlurPass(&blurShader, &bloomBuffer, &blurBuffers, &screenTriangle);
+		BlurPass(&blurShader, &bloomBuffer, &blurBuffers, &fullScreenQuad);
 
 		// Combine the bright texture and the scene and store the Result in FinalFBO.
-		FinalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &screenTriangle);
+		FinalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &fullScreenQuad);
 
 		// Copy the depth from the bloomBuffer to the finalFBO
 		finalFBO.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, bloomBuffer.GetFBO());
@@ -272,10 +240,13 @@ int main()
 		ParticlePass(&finalFBO, player.GetTorch()->GetParticle(), player.GetCamera(), &particleShader);
 
 		// Render everything
-		FinalPass(&finalFBO, &finalShader, &screenTriangle);
+		FinalPass(&finalFBO, &finalShader, &fullScreenQuad);
 
 		// Draw UI on top of everyything else
-		UserInterfacePass(&userInterfaceShader, &screenQuadUI, &coinUITexture, &player);
+		CoinUIPass(&coinUIShader, &coinInterfaceQuad, &coinUITexture, &player);
+
+		Button2DPass(&button2DShader, &buttonHandler);
+
 
 		// ================== POST DRAW ==================
 		display.SwapBuffers(SCREEN_WIDTH, SCREEN_HEIGHT);
