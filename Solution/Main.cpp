@@ -90,6 +90,7 @@ int main()
 	minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();
 
 	bool paused = true;
+	bool startMenu = true;		// true = startmenu | false = in game menu
 
 	//=========================== Creating Shaders ====================================//
 
@@ -207,7 +208,7 @@ int main()
 		// ================== EVENTS ==================
 
 		glfwPollEvents();
-		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &paused, &display);
+		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &display, &paused, &startMenu);
 
 		if (!paused)
 		{
@@ -230,10 +231,15 @@ int main()
 		}
 		else    // if game is paused
 		{
-			// ================== UPDATE ==================
-			// Update player
-			player.UpdateOnlyTorch(deltaTime);
+			if (startMenu)
+			{
 
+			}
+			else
+			{
+				// Update player
+				player.UpdateOnlyTorch(deltaTime);
+			}
 
 		}
 		

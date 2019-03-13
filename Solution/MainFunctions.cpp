@@ -539,7 +539,7 @@ GLuint CreateScreenTriangle()
 	return screenTriangle;
 }
 
-void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, bool * paused, Display* window)
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu)
 {
 	EventHandler& EH = EventHandler::GetInstance();
 	while (!EH.IsEmpty())
@@ -587,6 +587,16 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 			*paused = false;
 			cout << "PAUSED: " << *paused << endl;
 			glfwSetCursorPos(window->GetWindow(), player->GetCamera()->GetOldMousePosition().x, player->GetCamera()->GetOldMousePosition().y);
+		}
+		else if (event == EVENT_MENU_START)
+		{
+			*startMenu = true;
+			cout << "MENU CHANGED TO START MENU" << endl;
+		}
+		else if (event == EVENT_MENU_INGAME)
+		{
+			*startMenu = false;
+			cout << "MENU CHANGED TO INGAME MENU" << endl;
 		}
 	}
 }

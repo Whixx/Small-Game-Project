@@ -52,8 +52,22 @@ void InputHandler::Key_callback(GLFWwindow * window, int key, int scancode, int 
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			EH.AddEvent(EVENT_PAUSED);
 		}
-			
 	}
+
+	// these are tests for switching between start/ingame menu
+	if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+
+		EH.AddEvent(EVENT_MENU_START);
+	}
+	if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+
+		EH.AddEvent(EVENT_MENU_INGAME);
+	}
+
 }
 
 void InputHandler::MouseControls(Display * display, Player * player, float elapsedTime)
