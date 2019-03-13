@@ -257,13 +257,12 @@ Wall Maze::GetWallType(float x, float y)
 
 glm::vec3 Maze::GetRandomFloorPos()
 {
-	glm::vec3 randomPos = glm::vec3((rand() % this->GetMazeWidth() - 2) + 1, 0.0f, (rand() % this->GetMazeWidth() - 2) + 1);
+	glm::vec3 randomPos = glm::vec3((rand() % this->GetMazeWidth() - 4) + 2, 0.0f, (rand() % this->GetMazeHeight() - 4) + 2);
 	randomPos = this->FindNearbyFloor(glm::vec2(randomPos.x, randomPos.z));
 	while (randomPos == glm::vec3(-1.0f))
 	{
-		randomPos = glm::vec3((rand() % this->GetMazeWidth() - 2) + 1, 0.0f, (rand() % this->GetMazeWidth() - 2) + 1);
+		randomPos = glm::vec3((rand() % this->GetMazeWidth() - 4) + 2, 0.0f, (rand() % this->GetMazeHeight() - 4) + 2);
 		randomPos = this->FindNearbyFloor(glm::vec2(randomPos.x, randomPos.z));
-		printf("I am stuck\n");
 	}
 	
 	float randomOffset = ((rand() % 2) - 2) / 10.0f;

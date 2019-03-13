@@ -264,6 +264,7 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	// Different geometry pass for the maze
 	mazeGeometryPass->Bind();
 
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	// Same world matrix for walls and floor
 	glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
 	
@@ -273,6 +274,8 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	mazeGeometryPass->SendFloat("Scale", maze->GetTransform()->GetScale().x);
 	maze->BindMaterial(mazeGeometryPass);
 	maze->DrawMaze();
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	mazeGeometryPass->UnBind();
 }
@@ -532,21 +535,49 @@ void CreateLandmarks(ObjectHandler * OH, Maze * maze)
 	int bottle = OH->CreateObject("Models/Landmarks/Broken_bottle/broken_bottle.obj");
 	OH->GetObject(bottle)->GetScale() = glm::vec3(0.8f);
 
-	int vase = OH->CreateObject("Models/Landmarks/Vase/model.obj");
+	int bottle2 = OH->CreateObject("Models/Landmarks/Broken_bottle/broken_bottle.obj");
+	OH->GetObject(bottle2)->GetScale() = glm::vec3(0.8f);
+
+	int bottle3 = OH->CreateObject("Models/Landmarks/Broken_bottle/broken_bottle.obj");
+	OH->GetObject(bottle3)->GetScale() = glm::vec3(0.8f);
+
+	int banner = OH->CreateObject("Models/Landmarks/Banner/Banner.obj");
+	OH->GetObject(banner)->GetScale() = glm::vec3(0.3f);
+
+	int banner1 = OH->CreateObject("Models/Landmarks/Banner/Banner.obj");
+	OH->GetObject(banner1)->GetScale() = glm::vec3(0.3f);
+
+	int banner2 = OH->CreateObject("Models/Landmarks/Banner/Banner.obj");
+	OH->GetObject(banner2)->GetScale() = glm::vec3(0.3f);
+
+	int banner3 = OH->CreateObject("Models/Landmarks/Banner/Banner.obj");
+	OH->GetObject(banner3)->GetScale() = glm::vec3(0.3f);
+
+	int vase = OH->CreateObject("Models/Landmarks/Vase/vase.obj");
 	OH->GetObject(vase)->GetScale() = glm::vec3(1.0f);
 
+	int vase2 = OH->CreateObject("Models/Landmarks/Vase/vase.obj");
+	OH->GetObject(vase2)->GetScale() = glm::vec3(0.8f);
+
+	int vase3 = OH->CreateObject("Models/Landmarks/Vase/vase.obj");
+	OH->GetObject(vase3)->GetScale() = glm::vec3(0.9f);
+
 	int shroom = OH->CreateObject("Models/Landmarks/Shroom/shroom.obj");
-	OH->GetObject(shroom)->GetScale() = glm::vec3(0.2f);
+	OH->GetObject(shroom)->GetScale() = glm::vec3(0.5f);
 
 	int shroom2 = OH->CreateObject("Models/Landmarks/Shroom/shroom.obj");
-	OH->GetObject(shroom2)->GetScale() = glm::vec3(0.3f);
+	OH->GetObject(shroom2)->GetScale() = glm::vec3(0.4f);
 
 	int shroom3 = OH->CreateObject("Models/Landmarks/Shroom/shroom.obj");
-	OH->GetObject(shroom3)->GetScale() = glm::vec3(0.1f);
+	OH->GetObject(shroom3)->GetScale() = glm::vec3(0.3f);
 
 	int skeletonPile = OH->CreateObject("Models/Landmarks/Skeleton_pile/skeleton_pile.obj");
 	OH->GetObject(skeletonPile)->GetScale() = glm::vec3(0.7f);
 	OH->GetObject(skeletonPile)->GetRot().x += glm::radians(180.0f);
+
+	int skeletonPile2 = OH->CreateObject("Models/Landmarks/Skeleton_pile/skeleton_pile.obj");
+	OH->GetObject(skeletonPile2)->GetScale() = glm::vec3(0.7f);
+	OH->GetObject(skeletonPile2)->GetRot().x += glm::radians(180.0f);
 
 	int stone = OH->CreateObject("Models/Landmarks/Stone/Stone.obj");
 	OH->GetObject(stone)->GetScale() = glm::vec3(2.0f);
@@ -580,8 +611,68 @@ void CreateLandmarks(ObjectHandler * OH, Maze * maze)
 			}
 		}
 
-		// Give the object a random rotation
-		OH->GetObject(i)->GetRot().y = glm::radians((float)(rand() % 360));
+		// Turn and place the object towards the wall
+		if (i == vase || i == vase2 || i == vase3)
+		{
+			float tessOffset = 0.3f;
+			OH->GetObject(i)->GetPos() = floor(OH->GetObject(i)->GetPos());
+			OH->GetObject(i)->GetPos().x += tessOffset;
+			OH->GetObject(i)->GetPos().z += tessOffset;
+
+			glm::vec3 pos = OH->GetObject(i)->GetPos();
+
+			if (maze->IsWallAtWorld(pos.x, pos.z + 1) == false && maze->IsWallAtWorld(pos.x, pos.z - 1) == false)
+			{
+				OH->GetObject(i)->GetRot().y += glm::radians(90.0f);
+			}
+		}
+		// Turn, lift and place the banner towards the walls
+		else if (i == banner || i == banner1 || i == banner2 || i == banner3)
+		{
+			float tessOffset = 0.1f;
+			float lift = 0.5f;
+			glm::vec3 pos = OH->GetObject(i)->GetPos();
+			if (maze->IsWallAtWorld(pos.x, pos.z + 1) == true)
+			{
+				OH->GetObject(i)->GetPos().z = ceil(OH->GetObject(i)->GetPos().z);
+				OH->GetObject(i)->GetPos().z -= tessOffset;
+			}
+			else if (maze->IsWallAtWorld(pos.x, pos.z - 1) == true)
+			{
+				OH->GetObject(i)->GetPos().z = floor(OH->GetObject(i)->GetPos().z);
+				OH->GetObject(i)->GetPos().z += tessOffset;
+				OH->GetObject(i)->GetRot().y += glm::radians(180.0f);
+			}
+			else if (maze->IsWallAtWorld(pos.x + 1, pos.z) == true)
+			{
+				OH->GetObject(i)->GetPos().x = ceil(OH->GetObject(i)->GetPos().x);
+				OH->GetObject(i)->GetPos().x -= tessOffset;
+				OH->GetObject(i)->GetRot().y += glm::radians(90.0f);
+			}
+			else if (maze->IsWallAtWorld(pos.x - 1, pos.z) == true)
+			{
+				OH->GetObject(i)->GetPos().x = floor(OH->GetObject(i)->GetPos().x);
+				OH->GetObject(i)->GetPos().x += tessOffset;
+				OH->GetObject(i)->GetRot().y += glm::radians(-90.0f);
+			}
+			else
+			{
+				glm::vec3 translate = maze->TransformToMazeCoords(OH->GetObject(i)->GetPos());
+				translate.z += 1.0f;
+				translate = maze->TransformToWorldCoords(OH->GetObject(i)->GetPos());
+
+				OH->GetObject(i)->GetPos().x = floor(OH->GetObject(i)->GetPos().x) + translate.z;
+				OH->GetObject(i)->GetPos().x += tessOffset;
+				OH->GetObject(i)->GetRot().y += glm::radians(90.0f);
+			}
+
+			OH->GetObject(i)->GetPos().y += lift;
+		}
+		else
+		{
+			// Give the object a random rotation
+			OH->GetObject(i)->GetRot().y = glm::radians((float)(rand() % 360));
+		}
 
 		printf("Object %d, Position: X: %f, Y: %f, Z: %f\n", i, OH->GetObject(i)->GetPos().x, OH->GetObject(i)->GetPos().y, OH->GetObject(i)->GetPos().z);
 	}
