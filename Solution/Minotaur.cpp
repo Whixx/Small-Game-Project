@@ -70,6 +70,9 @@ void Minotaur::Update(double dt, glm::vec3 playerPos)
 	glm::vec3 currentPos = this->transform.GetPos();
 	glm::vec3 currentPlayerPos = this->maze->TransformToMazeCoords(playerPos);
 
+	// Update sound positions
+	this->growlSound.SetPosition(currentPos);
+	this->stepSound.SetPosition(currentPos);
 
 	// If a path is not available
 	if (generatedPath.empty())
@@ -191,13 +194,11 @@ void Minotaur::Update(double dt, glm::vec3 playerPos)
 		}
 		cout << " 'Search Area' is now: " << this->searchArea << endl;
 
-		// Play growl sound
+		// Play growlsound
 		this->growlSound.Play();
 	}
 
-	// update sound positions and play stepsound
-	this->growlSound.SetPosition(currentPos);
-	this->stepSound.SetPosition(currentPos);
+	// Play stepsound
 	this->stepSound.Play();
 }
 
