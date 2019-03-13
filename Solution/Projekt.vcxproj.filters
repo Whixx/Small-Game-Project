@@ -100,6 +100,12 @@
     <ClCompile Include="Exit.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
+    <ClCompile Include="AnimatedMesh.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedSkeleton.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloom.h">
@@ -207,6 +213,15 @@
     <ClInclude Include="Exit.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
+    <ClInclude Include="AnimatedMesh.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatedSkeleton.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshBase.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="blurShader.fs">
@@ -280,6 +295,9 @@
     </None>
     <None Include="lightPass.vs">
       <Filter>Shader Files</Filter>
+    </None>
+    <None Include="AssimpHelper.h">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
