@@ -607,7 +607,6 @@ void Player::CheckIfLoose()
 {
 	glm::vec3 minoPos = this->minotaur->GetTransform().GetPos();
 	float minoBB = this->maze->GetTransform()->GetScale().x / 2.0f;
-	printf("MinoBB %f\n", minoBB);
 
 	// Check if player dies
 	if ((minoPos.x <= this->transform.GetPos().x + this->boundingBoxHalfSize + minoBB && minoPos.x >= this->transform.GetPos().x - this->boundingBoxHalfSize - minoBB) &&
