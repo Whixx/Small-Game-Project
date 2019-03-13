@@ -14,7 +14,7 @@ enum COIN_STATE
 	NR_OF_COIN_STATES
 };
 
-const double COINSCALE = 0.25f;
+const double COINSCALE = 0.065f;
 
 class Coin
 {
