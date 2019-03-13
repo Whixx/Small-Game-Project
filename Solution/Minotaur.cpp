@@ -58,7 +58,8 @@ void Minotaur::reactToSound(glm::vec3 soundMazePos)
 	glm::vec3 currentPos = this->maze->TransformToMazeCoords(this->transform.GetPos());
 
 	glm::vec2 tempPos;
-	tempPos = this->toNearbyFloor(glm::vec2(soundMazePos.x, soundMazePos.z));
+	tempPos = this->ClampToEdges(glm::vec2(soundMazePos.x, soundMazePos.z));
+	tempPos = this->toNearbyFloor(glm::vec2(tempPos.x, tempPos.y));
 	soundMazePos = glm::vec3(tempPos.x, 0, tempPos.y);
 
 	GeneratePath(currentPos.z, currentPos.x, soundMazePos.z, soundMazePos.x);
