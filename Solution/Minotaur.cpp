@@ -422,7 +422,7 @@ void Minotaur::drawPath()
 	}
 	
 #ifdef DEBUG
-	if (!stbi_write_png("MazePNG/MINOTAURPATH.png", 64, 64, 3, c.data(), 3 * (64)))
+	if (!stbi_write_png("MazePNG/MINOTAURPATH.png", this->mazeGrid[0].size(), this->mazeGrid.size(), 3, c.data(), 3 * (this->mazeGrid.size())))
 	{
 		std::cout << "ERROR MINOTAURPATH NOT WRITTEN" << std::endl;
 	}
