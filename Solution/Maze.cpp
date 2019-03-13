@@ -43,8 +43,7 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	// TEST PRINT
 	for (int i = 0; i < this->nrOfKeystones; i++)
 	{
-		std::cout << "Keystone X: " << this->keystones[i].GetTransform()->GetPos().x << std::endl;
-		std::cout << "Keystone Z: " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
+		std::cout << "Keystone (X,Z): " << this->keystones[i].GetTransform()->GetPos().x << ", " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
 	}
 #endif
 
