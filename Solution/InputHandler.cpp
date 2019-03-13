@@ -158,4 +158,4 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	//}
 }
 
-bool InputHandler::mouseLock = true;
+bool InputHandler::mouseLock = false;

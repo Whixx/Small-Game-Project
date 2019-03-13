@@ -55,7 +55,10 @@ int main()
 
 	Display display;
 
-	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	// use GLFW_CURSOS_NORMAL when starting the game "paused"
+	//glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
 	glfwSetKeyCallback(display.GetWindow(), InputHandler::Key_callback);
 
 	EventHandler& EH = EventHandler::GetInstance();
@@ -86,7 +89,7 @@ int main()
 
 	minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();
 
-	bool paused = false;
+	bool paused = true;
 
 	//=========================== Creating Shaders ====================================//
 
@@ -183,6 +186,7 @@ int main()
 	double deltaTime = 0;
 	double constLastTime = 0;
 	int nrOfFrames = 0;
+
 
 	while (!display.IsWindowClosed())
 	{
