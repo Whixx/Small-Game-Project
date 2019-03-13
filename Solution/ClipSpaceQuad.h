@@ -4,7 +4,7 @@
 #include "glm/glm.hpp"
 #include <glew\glew.h>
 #include <iostream>
-#include "Texture.h"
+#include "MaterialHandler.h"
 
 // To handle mouse
 #include <GLFW/glfw3.h>
@@ -32,7 +32,7 @@ private:
 	float width;
 	float height;
 
-	Texture texture;
+	Texture* texture;
 
 	void CreateScreenQuad(glm::vec2 point, float width, float height);
 };

@@ -4,6 +4,7 @@
 
 ButtonHandler::ButtonHandler()
 {
+	// Definera texturer
 }
 
 
@@ -16,7 +17,9 @@ void ButtonHandler::AddButton(	glm::vec2 point,
 								float height,
 								string path)
 {
-	this->quads.push_back(ClipSpaceQuad(point, width, height, true, path));
+	ClipSpaceQuad tempQuad = ClipSpaceQuad(point, width, height, true, path);
+
+	this->quads.push_back(tempQuad);
 }
 
 unsigned int ButtonHandler::GetNrOfQuads()
@@ -38,5 +41,7 @@ void ButtonHandler::DrawQuads()
 
 		// Draw Quad
 		this->quads.at(i).Draw();
+
+		
 	}
 }

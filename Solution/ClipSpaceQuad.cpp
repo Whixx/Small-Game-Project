@@ -16,7 +16,9 @@ ClipSpaceQuad::ClipSpaceQuad(glm::vec2 point,
 
 	this->CreateScreenQuad(point, width, height);
 
-	this->texture = Texture(path, "TextureDiffuse", false);
+	MaterialHandler& MH = MaterialHandler::GetInstance();
+
+	this->texture = MH.LoadTexture(path, "TextureDiffuse");
 }
 
 ClipSpaceQuad::~ClipSpaceQuad()
@@ -25,7 +27,7 @@ ClipSpaceQuad::~ClipSpaceQuad()
 
 void ClipSpaceQuad::BindTexture()
 {
-	this->texture.Bind(0);
+	this->texture->Bind(0);
 }
 
 void ClipSpaceQuad::Draw()
@@ -93,17 +95,6 @@ void ClipSpaceQuad::CreateScreenQuad(glm::vec2 point, float width, float height)
 		point.x - width, point.y + height, 0.0, 0.0, 1.0,		// Top Left
 		point.x + width, point.y + height, 0.0, 1.0, 1.0,		// Top Right
 	};
-
-	//float fullScreenQuadData[] =
-	//{
-	//	bottomLeftCorner.x, bottomLeftCorner.y, 0.0, 0.0, 0.0,		// Bottom left
-	//	topRightCorner.x, topRightCorner.y, 0.0, 1.0, 1.0,			// Top right
-	//	bottomRightCorner.x, bottomRightCorner.y, 0.0, 1.0, 0.0,	// Bottom Right
-	//
-	//	bottomLeftCorner.x, bottomLeftCorner.y, 0.0, 0.0, 0.0,		// Bottom left
-	//	topLeftCorner.x, topLeftCorner.y, 0.0, 0.0, 1.0,			// Top Left
-	//	topRightCorner.x, topRightCorner.y, 0.0, 1.0, 1.0			// Top Right
-	//};
 
 	glGenVertexArrays(1, &this->vao);
 	glBindVertexArray(this->vao);
