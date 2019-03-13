@@ -6,8 +6,8 @@
 #include <glm/gtc/type_ptr.hpp>
 using namespace std;
 
-const int SCREEN_WIDTH = 960;
-const int SCREEN_HEIGHT = 540;
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 600;
 
 class Display
 {

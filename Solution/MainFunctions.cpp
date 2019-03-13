@@ -126,7 +126,7 @@ void InitFinalShader(Shader * shader)
 	shader->ValidateShaders();
 }
 
-void InitUserInterfaceShader(Shader * shader, Player * player)
+void InitCoinUIShader(Shader * shader, Player * player)
 {
 	shader->InitiateShaders();
 
@@ -134,6 +134,17 @@ void InitUserInterfaceShader(Shader * shader, Player * player)
 	shader->Bind();
 	shader->SendInt("texture", 0);
 	shader->SendInt("MAX_NR_OF_INVENTORY_COINS", player->GetNrOfInventoryCoins());
+
+	shader->ValidateShaders();
+}
+
+void InitButton2DShader(Shader * shader)
+{
+	shader->InitiateShaders();
+
+	// Set constant uniforms
+	shader->Bind();
+	shader->SendInt("texture", 0);
 
 	shader->ValidateShaders();
 }
@@ -288,7 +299,7 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	mazeGeometryPass->UnBind();
 }
 
-void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenTriangle, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera)
+void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, ClipSpaceQuad * fullScreenQuad, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera)
 {
 	lightPass->Bind();
 
@@ -303,8 +314,7 @@ void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenT
 	shadowBuffer->BindForReading(5); // Binds texture slot 5
 
 	glDisable(GL_DEPTH_TEST);
-	glBindVertexArray(*fullScreenTriangle);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	fullScreenQuad->Draw();
 	glEnable(GL_DEPTH_TEST);
 
 	lightPass->UnBind();
@@ -364,7 +374,7 @@ void LightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLigh
 	glDisable(GL_CULL_FACE);
 }
 
-void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, GLuint *fullScreenTriangle)
+void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, ClipSpaceQuad * fullScreenQuad)
 {
 	blurShader->Bind();
 	int timesToBlur = 10;
@@ -391,8 +401,7 @@ void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuff
 		}
 
 		glDisable(GL_DEPTH_TEST);
-		glBindVertexArray(*fullScreenTriangle);
-		glDrawArrays(GL_TRIANGLES, 0, 3);;
+		fullScreenQuad->Draw();
 		glEnable(GL_DEPTH_TEST);
 
 		horizontal = !horizontal;
@@ -405,7 +414,7 @@ void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuff
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void FinalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, GLuint *fullScreenTriangle)
+void FinalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, ClipSpaceQuad * fullScreenQuad)
 {
 	finalFBO->BindForWriting();
 
@@ -417,13 +426,12 @@ void FinalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *
 	blurBuffers->BindForReading(1, 1);
 
 	glDisable(GL_DEPTH_TEST);
-	glBindVertexArray(*fullScreenTriangle);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	fullScreenQuad->Draw();
 	glEnable(GL_DEPTH_TEST);
 
 }
 
-void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint * fullScreenTriangle)
+void FinalPass(FinalFBO * finalFBO, Shader * finalShader, ClipSpaceQuad * fullScreenQuad)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -432,14 +440,13 @@ void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint * fullScreenTri
 	finalShader->Bind();
 
 	glDisable(GL_DEPTH_TEST);
-	glBindVertexArray(*fullScreenTriangle);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	fullScreenQuad->Draw();
 	glEnable(GL_DEPTH_TEST);
 }
 
-void UserInterfacePass(Shader * userInterfaceShader, GLuint *quad, Texture * texture, Player * player)
+void CoinUIPass(Shader * coinUIShader, ClipSpaceQuad * coinInterfaceQuad, Texture * texture, Player * player)
 {
-	userInterfaceShader->Bind();
+	coinUIShader->Bind();
 
 	
 	if (player->GetNrOfInventoryCoins() < 0)
@@ -452,12 +459,20 @@ void UserInterfacePass(Shader * userInterfaceShader, GLuint *quad, Texture * tex
 		texture->Bind(0);
 
 		// The shader is using the NrOfInventoryCoins to know what parts of the texture it should render
-		userInterfaceShader->SendInt("currNrOfCoins", player->GetNrOfInventoryCoins());
+		coinUIShader->SendInt("currNrOfCoins", player->GetNrOfInventoryCoins());
 	}
 
 	glDisable(GL_DEPTH_TEST);
-	glBindVertexArray(*quad);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	coinInterfaceQuad->Draw();
+	glEnable(GL_DEPTH_TEST);
+}
+
+void Button2DPass(Shader * button2DShader, ButtonHandler * buttonHandler)
+{
+	button2DShader->Bind();
+
+	glDisable(GL_DEPTH_TEST);
+	buttonHandler->DrawQuads();
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -474,69 +489,6 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 	mazeGen.DrawPNG();
 
 	return mazeGen.GetGrid();
-}
-
-GLuint CreateSmallScreenQuad(glm::vec2 topLeftCorner, glm::vec2 topRightCorner, glm::vec2 bottomRightCorner, glm::vec2 bottomLeftCorner)
-{
-	float fullScreenQuadData[] = 
-	{
-		bottomLeftCorner.x, bottomLeftCorner.y, 0.0, 0.0, 0.0,		// Bottom left
-		topRightCorner.x, topRightCorner.y, 0.0, 1.0, 1.0,			// Top right
-		bottomRightCorner.x, bottomRightCorner.y, 0.0, 1.0, 0.0,	// Bottom Right
-
-		bottomLeftCorner.x, bottomLeftCorner.y, 0.0, 0.0, 0.0,		// Bottom left
-		topLeftCorner.x, topLeftCorner.y, 0.0, 0.0, 1.0,			// Top Left
-		topRightCorner.x, topRightCorner.y, 0.0, 1.0, 1.0			// Top Right
-	};
-	
-	GLuint screenQuad;
-
-	glGenVertexArrays(1, &screenQuad);
-	glBindVertexArray(screenQuad);
-
-	GLuint quadBuffer;
-	glGenBuffers(1, &quadBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, quadBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5 * 6, &fullScreenQuadData[0], GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(float) * 5, 0);
-
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, false, sizeof(float) * 5, (void*) (sizeof(float) * 3));
-
-	glBindVertexArray(0);
-
-	return screenQuad;
-}
-
-GLuint CreateScreenTriangle()
-{
-	float fullScreenTriangleData[] = {
-		-1.0, 3.0, 0.0, 0.0, 2.0,
-		-1.0, -1.0, 0.0, 0.0, 0.0,
-		3.0, -1.0, 0.0, 2.0, 0.0
-	};
-
-	GLuint screenTriangle;
-
-	glGenVertexArrays(1, &screenTriangle);
-	glBindVertexArray(screenTriangle);
-
-	GLuint triangleBuffer;
-	glGenBuffers(1, &triangleBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, triangleBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5 * 3, &fullScreenTriangleData[0], GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(float) * 5, 0);
-
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, false, sizeof(float) * 5, (void*)(sizeof(float) * 3));
-
-	glBindVertexArray(0);
-
-	return screenTriangle;
 }
 
 void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu)
