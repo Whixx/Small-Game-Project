@@ -246,6 +246,21 @@ bool Coin::DetectWalls(glm::vec3 newPos, glm::vec3 oldPos, glm::vec3 &velocity)
 		this->rotation = glm::vec3(3.0f, 1.0f, 2.0f);
 	}
 
+	// Exit
+	else if (this->maze->IsWallAtWorld(newPos.x, newPos.z) == true)
+	{
+		glm::vec3 exitDir = this->maze->GetExit()->GetDir();
+
+		if (exitDir.x < 0.0f || exitDir.x > 0.0f)
+		{
+			this->velocity.x *= -1;
+		}
+		else
+		{
+			this->velocity.z *= -1;
+		}
+	}
+
 	// If the coin hits the exact corner
 	float diffX = ceil(absX) - absX;
 	float diffY = ceil(absY) - absY;

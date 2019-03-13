@@ -427,16 +427,7 @@ void Player::Update(double dt)
 
 	this->CheckIfWin();
 
-	glm::vec3 minoPos = this->minotaur->GetTransform().GetPos();
-	float minoBB = this->minotaur->GetTransform().GetScale().x * 10.0f;
-
-	// Check if player dies
-	if ((minoPos.x <= this->transform.GetPos().x + this->boundingBoxHalfSize + minoBB && minoPos.x >= this->transform.GetPos().x - this->boundingBoxHalfSize - minoBB) && 
-		(minoPos.z <= this->transform.GetPos().z + this->boundingBoxHalfSize + minoBB && minoPos.z >= this->transform.GetPos().z - this->boundingBoxHalfSize - minoBB))
-	{
-		EventHandler& EH = EventHandler::GetInstance();
-		EH.AddEvent(EVENT_PLAYER_LOSE);
-	}
+	this->CheckIfLoose();
 
 #ifdef DEBUG
 	if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
@@ -609,5 +600,20 @@ void Player::CheckIfWin()
 	{
 		EventHandler& EH = EventHandler::GetInstance();
 		EH.AddEvent(EVENT_PLAYER_WIN);
+	}
+}
+
+void Player::CheckIfLoose()
+{
+	glm::vec3 minoPos = this->minotaur->GetTransform().GetPos();
+	float minoBB = this->maze->GetTransform()->GetScale().x / 2.0f;
+	printf("MinoBB %f\n", minoBB);
+
+	// Check if player dies
+	if ((minoPos.x <= this->transform.GetPos().x + this->boundingBoxHalfSize + minoBB && minoPos.x >= this->transform.GetPos().x - this->boundingBoxHalfSize - minoBB) &&
+		(minoPos.z <= this->transform.GetPos().z + this->boundingBoxHalfSize + minoBB && minoPos.z >= this->transform.GetPos().z - this->boundingBoxHalfSize - minoBB))
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+		EH.AddEvent(EVENT_PLAYER_LOSE);
 	}
 }

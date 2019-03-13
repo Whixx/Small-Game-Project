@@ -35,6 +35,7 @@ int main()
 	irrklang::ISoundEngine* enginePtr = soundEngine.GetEngine();
 
 	Maze maze(enginePtr);
+	Exit exit = *maze.GetExit();
 
 	//=========================== Creating Shaders ====================================//
 
@@ -107,11 +108,8 @@ int main()
 
 	//=========================== Creating Objects ====================================//
 
-
-
 	// Create Lights
 	PointLightHandler lights;	// use .CreateLight()
-
 
 	Sound winSound("Sounds/winSound.mp3", false, enginePtr);
 	Sound deathSound("Sounds/death.wav", false, enginePtr);
@@ -186,11 +184,11 @@ int main()
 		MazeGenerationPass(&mazeGenerationShader, &maze, &player);
 		
 		// Here a cube map is calculated and stored in the shadowMap FBO
-		ShadowPass(&shadowShader, &OH, &lights, &shadowMap, &player, &maze);
+		ShadowPass(&shadowShader, &OH, &lights, &shadowMap, &player, &maze, &exit);
 		
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &player, &OH, &maze, &minotaur);
+		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &player, &OH, &maze, &minotaur, &exit);
 		
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU

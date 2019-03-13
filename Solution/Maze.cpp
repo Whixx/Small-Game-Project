@@ -3,7 +3,8 @@
 Maze::Maze(irrklang::ISoundEngine * engine)
 	:keyStoneModel("Models/Cube/cube.obj"),
 	keystoneSound("Sounds/keystoneSound.wav", false, engine),
-	exitModel("Models/Exit/exit.obj")
+	exitModelOpen("Models/Exit/GateOpen.obj"),
+	exitModelClosed("Models/Exit/GateClosed.obj")
 {
 	this->imageData = nullptr;
 	this->path = "";
@@ -39,11 +40,19 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	for (int i = 0; i < 3; i++)
 		this->AddKeystone();
 
+	// Set scale of exit
+	this->exit.GetTransform()->SetScale(glm::vec3(
+		0.11f * this->transform.GetScale().x,
+		0.08f * this->transform.GetScale().y,
+		0.11f * this->transform.GetScale().z));
+
 #ifdef DEBUG
 	// TEST PRINT
 	for (int i = 0; i < this->nrOfKeystones; i++)
 	{
-		std::cout << "Keystone (X,Z): " << this->keystones[i].GetTransform()->GetPos().x << ", " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
+		std::cout << "Keystone " << i << " on position: ";
+		std::cout << "X: " << this->keystones[i].GetTransform()->GetPos().x;
+		std::cout << " Z: " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
 	}
 #endif
 
@@ -297,7 +306,9 @@ Exit Maze::CreateExit()
 	glm::vec3 exitDir = this->TransformToWorldCoords(glm::vec3(a.uvDir.x, 0.0, a.uvDir.y)) - exitWorldPos;
 	exitDir.z *= -1;
 
-	Exit exit = Exit(&this->exitModel, exitWorldPos, exitDir, a.uvPos);
+	cout << "X: " << exitWorldPos.x << "Y: " << exitWorldPos.y << "Z: " << exitWorldPos.z << endl;
+
+	Exit exit = Exit(&this->exitModelOpen, &this->exitModelClosed, exitWorldPos, exitDir, a.uvPos);
 	exit.GetTransform()->GetScale() = glm::vec3(this->scaleXZ, this->scaleY, this->scaleXZ);
 	// Create exit
 	return exit;

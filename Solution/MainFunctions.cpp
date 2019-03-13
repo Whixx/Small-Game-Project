@@ -145,7 +145,7 @@ void MazeGenerationPass(Shader * mazeGenerationShader, Maze * maze, Player * pla
 	mazeGenerationShader->UnBind();
 }
 
-void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Maze * maze)
+void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Maze * maze, Exit * exit)
 {
 	shadowShader->Bind();
 	glEnable(GL_DEPTH_TEST);
@@ -182,6 +182,19 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 		shadowShader->SendMat4("WorldMatrix", worldMatrix);
 		player->GetTorch()->GetModel()->DrawMeshes(shadowShader);
 
+		// Draw exit
+		worldMatrix = exit->GetWorldMatrix();
+		shadowShader->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+		shadowShader->SendMat4("WorldMatrix", worldMatrix);
+		if (!maze->IsExitOpen())
+		{
+			exit->DrawClosed(shadowShader);
+		}
+		else
+		{
+			exit->DrawOpen(shadowShader);
+		}
+
 		// Same world matrix for walls and floor
 		glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
 		// Draw maze
@@ -194,7 +207,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze * maze, Minotaur * minotaur)
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze * maze, Minotaur * minotaur, Exit * exit)
 {
 	geometryPass->Bind();
 
@@ -249,13 +262,16 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	}
 
 	// Draw exit
+	worldMatrix = exit->GetWorldMatrix();
+	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+	geometryPass->SendMat4("WorldMatrix", worldMatrix);
 	if (!maze->IsExitOpen())
 	{
-		Exit* oExit = maze->GetExit();
-		worldMatrix = oExit->GetWorldMatrix();
-		geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
-		geometryPass->SendMat4("WorldMatrix", worldMatrix);
-		oExit->Draw(geometryPass);
+		exit->DrawClosed(geometryPass);
+	}
+	else
+	{
+		exit->DrawOpen(geometryPass);
 	}
 
 	geometryPass->UnBind();
