@@ -134,44 +134,10 @@ int main()
 	double constLastTime = 0;
 	int nrOfFrames = 0;
 
-	//=========================== Creating Landmarks ====================================//
+	//========================== Creating Landmarks =============================//
 
 	ObjectHandler OH;
-
-	int altar = OH.CreateObject("Models/Landmarks/Altar/Blood_Altar.obj");
-	OH.GetObject(altar)->GetScale() = glm::vec3(20.0f);
-	OH.GetObject(altar)->GetRot().z += glm::radians(180.0f);
-	OH.GetObject(altar)->GetPos() = maze.GetRandomFloorPos();
-	printf("Altar pos: %f %f %f\n", OH.GetObject(altar)->GetPos());
-
-	int bottle = OH.CreateObject("Models/Landmarks/Broken_bottle/broken_bottle.obj");
-	OH.GetObject(bottle)->GetScale() = glm::vec3(0.8f);
-	//OH.GetObject(bottle)->GetRot().z += 90.0f;
-	OH.GetObject(bottle)->GetPos() = glm::vec3(player.GetCamera()->GetCameraPosition().x, 0.12f, player.GetCamera()->GetCameraPosition().z);
-	printf("Bottle pos: %f %f %f\n", OH.GetObject(bottle)->GetPos());
-
-	int carpet = OH.CreateObject("Models/Landmarks/Carpet/carpet.fbx");
-	OH.GetObject(carpet)->GetScale() = glm::vec3(0.02f);
-	OH.GetObject(carpet)->GetRot().x += glm::radians(-90.0f);
-	OH.GetObject(carpet)->GetPos() = maze.GetRandomFloorPos();
-	printf("Carpet pos: %f %f %f\n", OH.GetObject(carpet)->GetPos().x, OH.GetObject(carpet)->GetPos().y, OH.GetObject(carpet)->GetPos().z);
-
-	int shroom = OH.CreateObject("Models/Landmarks/Shroom/shroom.obj");
-	OH.GetObject(shroom)->GetScale() = glm::vec3(0.2f);
-	OH.GetObject(shroom)->GetRot().x += glm::radians(-90.0f);
-	OH.GetObject(shroom)->GetPos() = maze.GetRandomFloorPos();
-	printf("Shroom pos: %f %f %f\n", OH.GetObject(shroom)->GetPos());
-
-	int skeletonPile = OH.CreateObject("Models/Landmarks/Skeleton_pile/skeleton_pile.obj");
-	OH.GetObject(skeletonPile)->GetScale() = glm::vec3(0.7f);
-	OH.GetObject(skeletonPile)->GetRot().x += glm::radians(180.0f);
-	OH.GetObject(skeletonPile)->GetPos() = maze.GetRandomFloorPos();
-	printf("SkeletonPile pos: %f %f %f\n", OH.GetObject(skeletonPile)->GetPos());
-
-	int stone = OH.CreateObject("Models/Landmarks/Stone/Stone.obj");
-	OH.GetObject(stone)->GetScale() = glm::vec3(2.0f);
-	OH.GetObject(stone)->GetPos() = maze.GetRandomFloorPos();
-	printf("Stone pos: %f %f %f\n", OH.GetObject(stone)->GetPos());
+	CreateLandmarks(&OH, &maze);
 
 	//=========================== Game Loop ====================================//
 

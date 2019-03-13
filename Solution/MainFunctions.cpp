@@ -522,3 +522,67 @@ void SetMaxPatchVertices()
 	printf("Max supported patch vertices %d\n", MaxPatchVertices);
 	glPatchParameteri(GL_PATCH_VERTICES, 3);
 }
+
+void CreateLandmarks(ObjectHandler * OH, Maze * maze)
+{
+	int altar = OH->CreateObject("Models/Landmarks/Altar/Blood_Altar.obj");
+	OH->GetObject(altar)->GetScale() = glm::vec3(20.0f);
+	OH->GetObject(altar)->GetRot().z += glm::radians(180.0f);
+
+	int bottle = OH->CreateObject("Models/Landmarks/Broken_bottle/broken_bottle.obj");
+	OH->GetObject(bottle)->GetScale() = glm::vec3(0.8f);
+
+	int vase = OH->CreateObject("Models/Landmarks/Vase/model.obj");
+	OH->GetObject(vase)->GetScale() = glm::vec3(1.0f);
+
+	int shroom = OH->CreateObject("Models/Landmarks/Shroom/shroom.obj");
+	OH->GetObject(shroom)->GetScale() = glm::vec3(0.2f);
+
+	int shroom2 = OH->CreateObject("Models/Landmarks/Shroom/shroom.obj");
+	OH->GetObject(shroom2)->GetScale() = glm::vec3(0.3f);
+
+	int shroom3 = OH->CreateObject("Models/Landmarks/Shroom/shroom.obj");
+	OH->GetObject(shroom3)->GetScale() = glm::vec3(0.1f);
+
+	int skeletonPile = OH->CreateObject("Models/Landmarks/Skeleton_pile/skeleton_pile.obj");
+	OH->GetObject(skeletonPile)->GetScale() = glm::vec3(0.7f);
+	OH->GetObject(skeletonPile)->GetRot().x += glm::radians(180.0f);
+
+	int stone = OH->CreateObject("Models/Landmarks/Stone/Stone.obj");
+	OH->GetObject(stone)->GetScale() = glm::vec3(2.0f);
+
+	// Make sure that every object has a unique tile
+	for (int i = 0; i < OH->GetNrOfObjects(); i++)
+	{
+		bool found = true;
+		OH->GetObject(i)->GetPos() = maze->GetRandomFloorPos();
+
+		while (found == true)
+		{
+			for (int j = 0; j < OH->GetNrOfObjects(); j++)
+			{
+				// Skip if it is the same object
+				if (i == j)
+				{
+					continue;
+				}
+
+				// Is this object's position similar to another's?
+				if (floor(OH->GetObject(i)->GetPos()) == floor(OH->GetObject(j)->GetPos()))
+				{
+					// Get a new random position and restart the search
+					OH->GetObject(i)->GetPos() = maze->GetRandomFloorPos();
+				}
+				else 
+				{
+					found = false;
+				}
+			}
+		}
+
+		// Give the object a random rotation
+		OH->GetObject(i)->GetRot().y = glm::radians((float)(rand() % 360));
+
+		printf("Object %d, Position: X: %f, Y: %f, Z: %f\n", i, OH->GetObject(i)->GetPos().x, OH->GetObject(i)->GetPos().y, OH->GetObject(i)->GetPos().z);
+	}
+}

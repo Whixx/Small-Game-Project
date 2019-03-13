@@ -261,12 +261,14 @@ glm::vec3 Maze::GetRandomFloorPos()
 	randomPos = this->FindNearbyFloor(glm::vec2(randomPos.x, randomPos.z));
 	while (randomPos == glm::vec3(-1.0f))
 	{
+		randomPos = glm::vec3((rand() % this->GetMazeWidth() - 2) + 1, 0.0f, (rand() % this->GetMazeWidth() - 2) + 1);
 		randomPos = this->FindNearbyFloor(glm::vec2(randomPos.x, randomPos.z));
+		printf("I am stuck\n");
 	}
 	
-	float randomOffset = ((rand() % 4) - 4) / 10.0f;
+	float randomOffset = ((rand() % 2) - 2) / 10.0f;
 	randomPos.x += randomOffset;
-	randomOffset = ((rand() % 4) - 4) / 10.0f;
+	randomOffset = ((rand() % 2) - 2) / 10.0f;
 	randomPos.z += randomOffset;
 
 	randomPos = this->TransformToWorldCoords(randomPos);
