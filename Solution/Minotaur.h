@@ -16,7 +16,7 @@ public:
 	void increaseAgressionLevel();
 	void reactToSound(glm::vec3 soundPos);
 
-	void Update(glm::vec3 playerPos);
+	void Update(double dt, glm::vec3 playerPos);
 	void Draw(Shader* shader);
 	glm::vec2 ClampToEdges(glm::vec2 mazeCoords);	// takes in maze coords and spits out mazecoords
 
@@ -37,6 +37,9 @@ private:
 	Maze* maze;
 	std::vector<glm::vec2> generatedPath;
 	std::vector<std::vector<int>> mazeGrid;
+	int interval;
+	float timePassed;
+	int agression;
 
 	struct distance {
 		int y;

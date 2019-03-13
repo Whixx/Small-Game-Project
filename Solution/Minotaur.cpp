@@ -7,9 +7,14 @@ Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>
 	growlSound("Sounds/minotaurgrowl.wav", false, engine)
 {
 	this->transform.GetScale() = glm::vec3(0.032f);
-	this->movementSpeed = 3.0 * this->transform.GetScale().y;
+	this->movementSpeed = 50 * this->transform.GetScale().y;
 	this->mazeGrid = mazeGrid;
 	this->maze = maze;
+	this->agression = 0;
+	this->timePassed = 0;
+	this->alerted = false;
+	this->interval = 0;
+	this->searchArea = 13;
 
 	// Adjust spawn position to a floor-tile
 	glm::vec3 currentPos = this->maze->TransformToMazeCoords(glm::vec3(0.0f, 0.05f, 0.0f));
@@ -53,17 +58,21 @@ void Minotaur::reactToSound(glm::vec3 soundMazePos)
 	glm::vec3 currentPos = this->maze->TransformToMazeCoords(this->transform.GetPos());
 
 	glm::vec2 tempPos;
-	tempPos = this->toNearbyFloor(glm::vec2(soundMazePos.x, soundMazePos.z));
+	tempPos = this->ClampToEdges(glm::vec2(soundMazePos.x, soundMazePos.z));
+	tempPos = this->toNearbyFloor(glm::vec2(tempPos.x, tempPos.y));
 	soundMazePos = glm::vec3(tempPos.x, 0, tempPos.y);
 
 	GeneratePath(currentPos.z, currentPos.x, soundMazePos.z, soundMazePos.x);
 }
 
-void Minotaur::Update(glm::vec3 playerPos)
+void Minotaur::Update(double dt, glm::vec3 playerPos)
 {
 	glm::vec3 currentPos = this->transform.GetPos();
 	glm::vec3 currentPlayerPos = this->maze->TransformToMazeCoords(playerPos);
 
+	// Update sound positions
+	this->growlSound.SetPosition(currentPos);
+	this->stepSound.SetPosition(currentPos);
 
 	// If a path is not available
 	if (generatedPath.empty())
@@ -74,20 +83,18 @@ void Minotaur::Update(glm::vec3 playerPos)
 
 		if (this->alerted == 0)
 		{
-			this->searchArea = 8;
-
 			// Choose a location in the player-area at random
 			endPos = glm::vec2(	currentPlayerPos.x + rand() % (this->searchArea * 2) - this->searchArea,
 								currentPlayerPos.z + rand() % (this->searchArea * 2) - this->searchArea);
 		}
 		else if (this->alerted > 0)
 		{
-			this->searchArea = 4;
+			int tempSearchArea = 4;
 			this->alerted--;
 
 			// Choose a location in the sound-area at random
-			endPos = glm::vec2(	this->lastSoundHeardPos.x + rand() % (this->searchArea * 2) - this->searchArea,
-								this->lastSoundHeardPos.z + rand() % (this->searchArea * 2) - this->searchArea);
+			endPos = glm::vec2(	this->lastSoundHeardPos.x + rand() % (tempSearchArea * 2) - tempSearchArea,
+								this->lastSoundHeardPos.z + rand() % (tempSearchArea * 2) - tempSearchArea);
 		}
 
 		// clamp to edges and adjust spawn position to a floor-tile
@@ -99,9 +106,6 @@ void Minotaur::Update(glm::vec3 playerPos)
 
 		// Generate path between current location and goal location
 		GeneratePath(startPos.z, startPos.x, endPos.y, endPos.x);
-
-		// Play growl sound
-		this->growlSound.Play();
 	}
 
 	glm::vec3 worldDestination = this->maze->TransformToWorldCoords(glm::vec3(this->destination.x, 0, this->destination.y));
@@ -148,10 +152,10 @@ void Minotaur::Update(glm::vec3 playerPos)
 
 	// Move towards the current destination
 	// If we are not walking past the destination
-	if (glm::length(direction) > glm::length(this->movementSpeed*glm::normalize(direction)))
+	if (glm::length(direction) > glm::length((this->movementSpeed*(float)dt)*glm::normalize(direction)))
 	{
-		this->transform.GetPos().x += this->movementSpeed*glm::normalize(direction).x;
-		this->transform.GetPos().z += this->movementSpeed*glm::normalize(direction).y;
+		this->transform.GetPos().x += this->movementSpeed*dt*glm::normalize(direction).x;
+		this->transform.GetPos().z += this->movementSpeed*dt*glm::normalize(direction).y;
 	}
 	else	// Else we are about to walk past the destination, which means that we have arrived
 	{
@@ -159,9 +163,42 @@ void Minotaur::Update(glm::vec3 playerPos)
 		this->transform.GetPos().z = worldDestination.z;
 	}
 
-	// update sound positions and play stepsound
-	this->growlSound.SetPosition(currentPos);
-	this->stepSound.SetPosition(currentPos);
+	// Gradually increase difficulty
+	this->timePassed += dt;
+	if ((int)this->timePassed > this->interval && this->agression < 13 && this->agression >= 0)
+	{
+		// Reset time and randomize next interval
+		this->interval = 60 + ((rand() % 30) - 15);
+		this->timePassed = 0;
+
+		// Increase difficulty
+		this->agression++;
+		cout << "Increased Agression!";
+		switch (this->agression)
+		{
+		case 2:
+			this->searchArea = 12;
+			break;
+		case 5:
+			this->searchArea = 10;
+			break;
+		case 8:
+			this->searchArea = 8;
+			break;
+		case 11:
+			this->searchArea = 6;
+			break;
+		case 13:
+			this->searchArea = 4;
+			break;
+		}
+		cout << " 'Search Area' is now: " << this->searchArea << endl;
+
+		// Play growlsound
+		this->growlSound.Play();
+	}
+
+	// Play stepsound
 	this->stepSound.Play();
 }
 
