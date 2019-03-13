@@ -203,7 +203,7 @@ int main()
 		// ================== EVENTS ==================
 
 		glfwPollEvents();
-		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &paused);
+		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &paused, &display);
 
 		if (!paused)
 		{
