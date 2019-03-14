@@ -470,10 +470,13 @@ void CoinUIPass(Shader * coinUIShader, ClipSpaceQuad * coinInterfaceQuad, Textur
 void Button2DPass(Shader * button2DShader, ButtonHandler * buttonHandler)
 {
 	button2DShader->Bind();
-
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	glDisable(GL_DEPTH_TEST);
 	buttonHandler->DrawQuads();
+	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
+
 }
 
 std::vector<std::vector<int>> GenerateMazePNG(int height, int width)

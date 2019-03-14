@@ -28,6 +28,7 @@ void InputHandler::Key_callback(GLFWwindow * window, int key, int scancode, int 
 	if (key == GLFW_KEY_C && action == GLFW_PRESS)
 	{
 		EventHandler& EH = EventHandler::GetInstance();
+		if (mouseLock)
 		EH.AddEvent(EVENT_PLAYER_TOSSCOIN);
 	}
 

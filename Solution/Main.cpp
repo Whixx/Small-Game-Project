@@ -17,6 +17,9 @@ int main()
 
 	Display display;
 
+	bool paused = true;
+	bool startMenu = true;		// true = startmenu | false = in game menu
+
 	// use GLFW_CURSOS_NORMAL when starting the game "paused"
 	//glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -51,8 +54,6 @@ int main()
 
 	minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();
 
-	bool paused = true;
-	bool startMenu = true;		// true = startmenu | false = in game menu
 
 	//=========================== Creating Shaders ====================================//
 
@@ -148,8 +149,8 @@ int main()
 	//ClipSpaceQuad coinInterfaceQuad(glm::vec2(-1.0f, -0.2f), glm::vec2(-0.2f, -0.2f), glm::vec2(-0.2f, -1.0f), glm::vec2(-1.0f, -1.0f), false);
 	ClipSpaceQuad coinInterfaceQuad(glm::vec2(-0.6, -0.6), 0.4f, 0.4f, false, "Textures/UI/coinTest.png");
 	ButtonHandler buttonHandler;
-	buttonHandler.AddButton(glm::vec2(0.0f, 0.0f), 0.2f, 0.2f, "Textures/floor0/floor0_diffuse.png");
-	buttonHandler.AddButton(glm::vec2(0.2, -0.4), 0.1f, 0.1f, "Textures/Menu/quit.png");
+	buttonHandler.AddButton(glm::vec2(0.0f, 0.25f), 0.35f, 0.35f, "Textures/Menu/play.png");
+	buttonHandler.AddButton(glm::vec2(0.0f, -0.25f), 0.25f, 0.25f, "Textures/Menu/quit.png");
 
 	// Userinterface texture
 	Texture coinUITexture = Texture("Textures/UI/coinTest.png", "TextureDiffuse", false);
@@ -254,10 +255,17 @@ int main()
 		// Render everything
 		FinalPass(&finalFBO, &finalShader, &fullScreenQuad);
 
-		// Draw UI on top of everyything else
-		CoinUIPass(&coinUIShader, &coinInterfaceQuad, &coinUITexture, &player);
 
-		Button2DPass(&button2DShader, &buttonHandler);
+		if (paused)
+		{
+			Button2DPass(&button2DShader, &buttonHandler); 
+		}
+		else
+		{
+			// Draw UI on top of everyything else
+			CoinUIPass(&coinUIShader, &coinInterfaceQuad, &coinUITexture, &player);
+		}
+
 
 
 		// ================== POST DRAW ==================
