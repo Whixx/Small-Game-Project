@@ -264,7 +264,8 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	// Different geometry pass for the maze
 	mazeGeometryPass->Bind();
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 	// Same world matrix for walls and floor
 	glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
 	
@@ -275,7 +276,7 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	maze->BindMaterial(mazeGeometryPass);
 	maze->DrawMaze();
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	mazeGeometryPass->UnBind();
 }
@@ -553,6 +554,18 @@ void CreateLandmarks(ObjectHandler * OH, Maze * maze)
 	int banner3 = OH->CreateObject("Models/Landmarks/Banner/Banner.obj");
 	OH->GetObject(banner3)->GetScale() = glm::vec3(0.3f);
 
+	int banner4 = OH->CreateObject("Models/Landmarks/Banner/Banner.obj");
+	OH->GetObject(banner4)->GetScale() = glm::vec3(0.3f);
+
+	int banner5 = OH->CreateObject("Models/Landmarks/Banner/Banner.obj");
+	OH->GetObject(banner5)->GetScale() = glm::vec3(0.3f);
+
+	int banner6 = OH->CreateObject("Models/Landmarks/Banner/Banner.obj");
+	OH->GetObject(banner6)->GetScale() = glm::vec3(0.3f);
+
+	int banner7 = OH->CreateObject("Models/Landmarks/Banner/Banner.obj");
+	OH->GetObject(banner7)->GetScale() = glm::vec3(0.3f);
+
 	int vase = OH->CreateObject("Models/Landmarks/Vase/vase.obj");
 	OH->GetObject(vase)->GetScale() = glm::vec3(1.0f);
 
@@ -582,17 +595,70 @@ void CreateLandmarks(ObjectHandler * OH, Maze * maze)
 	int stone = OH->CreateObject("Models/Landmarks/Stone/Stone.obj");
 	OH->GetObject(stone)->GetScale() = glm::vec3(2.0f);
 
+	int stone2 = OH->CreateObject("Models/Landmarks/Stone/Stone.obj");
+	OH->GetObject(stone2)->GetScale() = glm::vec3(2.3f);
+
+	int stone3 = OH->CreateObject("Models/Landmarks/Stone/Stone.obj");
+	OH->GetObject(stone3)->GetScale() = glm::vec3(1.5f);
+
+	int stone4 = OH->CreateObject("Models/Landmarks/Stone/Stone.obj");
+	OH->GetObject(stone4)->GetScale() = glm::vec3(1.0f);
+
 	// Make sure that every object has a unique tile
 	for (int i = 0; i < OH->GetNrOfObjects(); i++)
 	{
+	RESTART:
 		bool found = true;
 		OH->GetObject(i)->GetPos() = maze->GetRandomFloorPos();
+
+		// Is this object's position similar to a keystone's position?
+		for (int k = 0; k < maze->GetNrOfKeystones(); k++)
+		{
+			// Check right wall
+			glm::vec3 translate = OH->GetObject(i)->GetPos();
+			translate.x += 1.0f;
+
+			if (floor(translate.x) == floor(maze->GetKeystoneTransform(i)->GetPos().x))
+			{
+				// Get a new random position and restart the search
+				goto RESTART;
+			}
+
+			// Check left wall
+			translate = OH->GetObject(i)->GetPos();
+			translate.x -= 1.0f;
+
+			if (floor(translate.x) == floor(maze->GetKeystoneTransform(i)->GetPos().x))
+			{
+				// Get a new random position and restart the search
+				goto RESTART;
+			}
+
+			// Check lower wall
+			translate = OH->GetObject(i)->GetPos();
+
+			if (floor(translate.z) == floor(maze->GetKeystoneTransform(i)->GetPos().z))
+			{
+				// Get a new random position and restart the search
+				goto RESTART;
+			}
+
+			// Check upper wall
+			translate = OH->GetObject(i)->GetPos();
+			translate.z -= 1.0f;
+
+			if (floor(translate.z) == floor(maze->GetKeystoneTransform(i)->GetPos().z))
+			{
+				// Get a new random position and restart the search
+				goto RESTART;
+			}
+		}
 
 		while (found == true)
 		{
 			for (int j = 0; j < OH->GetNrOfObjects(); j++)
 			{
-				// Skip if it is the same object
+				// Skip if it matches with itself
 				if (i == j)
 				{
 					continue;
@@ -614,7 +680,7 @@ void CreateLandmarks(ObjectHandler * OH, Maze * maze)
 		// Turn and place the object towards the wall
 		if (i == vase || i == vase2 || i == vase3)
 		{
-			float tessOffset = 0.3f;
+			float tessOffset = 0.15f * maze->GetTransform()->GetScale().x;
 			OH->GetObject(i)->GetPos() = floor(OH->GetObject(i)->GetPos());
 			OH->GetObject(i)->GetPos().x += tessOffset;
 			OH->GetObject(i)->GetPos().z += tessOffset;
@@ -627,11 +693,15 @@ void CreateLandmarks(ObjectHandler * OH, Maze * maze)
 			}
 		}
 		// Turn, lift and place the banner towards the walls
-		else if (i == banner || i == banner1 || i == banner2 || i == banner3)
+		else if (i == banner || i == banner1
+			|| i == banner2 || i == banner3 
+			|| i == banner4 || i == banner5
+			|| i == banner6 || i == banner7)
 		{
-			float tessOffset = 0.1f;
-			float lift = 0.5f;
+			float tessOffset = 0.05f * maze->GetTransform()->GetScale().x;
+			float lift = 0.13f * maze->GetTransform()->GetScale().y;
 			glm::vec3 pos = OH->GetObject(i)->GetPos();
+
 			if (maze->IsWallAtWorld(pos.x, pos.z + 1) == true)
 			{
 				OH->GetObject(i)->GetPos().z = ceil(OH->GetObject(i)->GetPos().z);
@@ -657,13 +727,8 @@ void CreateLandmarks(ObjectHandler * OH, Maze * maze)
 			}
 			else
 			{
-				glm::vec3 translate = maze->TransformToMazeCoords(OH->GetObject(i)->GetPos());
-				translate.z += 1.0f;
-				translate = maze->TransformToWorldCoords(OH->GetObject(i)->GetPos());
-
-				OH->GetObject(i)->GetPos().x = floor(OH->GetObject(i)->GetPos().x) + translate.z;
-				OH->GetObject(i)->GetPos().x += tessOffset;
-				OH->GetObject(i)->GetRot().y += glm::radians(90.0f);
+				printf("Restarting...\n");
+				goto RESTART;
 			}
 
 			OH->GetObject(i)->GetPos().y += lift;
