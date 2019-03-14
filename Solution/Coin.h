@@ -10,8 +10,11 @@ enum COIN_STATE
 {
 	COIN_DROP,
 	COIN_TOSS,
+	COIN_DROP_MINOTAUR,
 	NR_OF_COIN_STATES
 };
+
+const double COINSCALE = 0.065f;
 
 class Coin
 {
@@ -41,6 +44,7 @@ private:
 	bool isOnGround;
 	unsigned int coinState;
 
+	
 	glm::vec3 velocity;
 	double coinSpeed;
 	glm::vec3 gravity;

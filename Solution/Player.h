@@ -13,7 +13,7 @@
 #include "Minotaur.h"
 
 #define PI 3.1415926535
-const unsigned int MAX_NR_OF_COINS = 100;
+const unsigned int MAX_NR_OF_COINS = 10;
 
 using namespace std;
 
@@ -60,6 +60,10 @@ public:
 	// Coin mechanics
 	void DropCoin();
 	void TossCoin();
+	void PickUpCoin();
+
+	void SpawnCoinAtMinotaur();
+
 	virtual void PlayWallCollisionSound();
 	void PlayGroundCollisionSound();
 	
@@ -97,6 +101,8 @@ private:
 	// Private Functions
 	void AddCoinToWorld(unsigned int state);
 	void UpdateCoins(double dt);
+	// FindNearbyCoin returns the index of the coin in the worldCoinsVector
+	int FindNearbyCoin();
 	void CheckIfWin();
 	void CheckIfLoose();
 };
