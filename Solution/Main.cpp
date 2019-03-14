@@ -148,8 +148,8 @@ int main()
 	ClipSpaceQuad coinInterfaceQuad(glm::vec2(-0.6, -0.6), 0.4f, 0.4f, false, "Textures/UI/coinTest.png");
 
 	ButtonHandler buttonHandler;
-	buttonHandler.AddButton(glm::vec2(0.0f, 0.0f), 0.2f, 0.2f, "Textures/floor0/floor0_diffuse.png");
-	buttonHandler.AddButton(glm::vec2(0.2, -0.4), 0.1f, 0.1f, "Textures/Menu/quit.png");
+	int startButton = buttonHandler.AddButton(glm::vec2(0.0f, 0.0f), 0.2f, 0.2f, "Textures/floor0/floor0_diffuse.png", MENU_START);
+	int quitButton = buttonHandler.AddButton(glm::vec2(0.2, -0.4), 0.1f, 0.1f, "Textures/Menu/quit.png", MENU_START);
 
 	// Userinterface texture
 	Texture coinUITexture = Texture("Textures/UI/coinTest.png", "TextureDiffuse", false);
@@ -260,7 +260,7 @@ int main()
 
 		// TEST
 
-		buttonHandler.IsQuadPressed(display.GetWindow(), 1);
+		buttonHandler.IsQuadPressed(display.GetWindow(), startButton);
 
 		//buttonHandler.IsQuadPressed(display.GetWindow(), 1);
 
