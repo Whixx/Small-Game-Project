@@ -145,14 +145,11 @@ int main()
 
 	// 2D quads
 	ClipSpaceQuad fullScreenQuad;
-	ClipSpaceQuad coinInterfaceQuad(glm::vec2(-0.6, -0.6), 0.4f, 0.4f, false, "Textures/UI/coinTest.png");
+	ClipSpaceQuad coinInterfaceQuad(glm::vec2(-0.4, -0.4), 1.0f, 0.05f, false, "Textures/UI/coins.png");
 
 	ButtonHandler buttonHandler;
 	int startButton = buttonHandler.AddButton(glm::vec2(0.0f, 0.0f), 0.2f, 0.2f, "Textures/floor0/floor0_diffuse.png", MENU_START);
 	int quitButton = buttonHandler.AddButton(glm::vec2(0.2, -0.4), 0.1f, 0.1f, "Textures/Menu/quit.png", MENU_START);
-
-	// Userinterface texture
-	Texture coinUITexture = Texture("Textures/UI/coinTest.png", "TextureDiffuse", false);
 
 	// Initiate timer
 	double currentTime = 0;
@@ -254,9 +251,9 @@ int main()
 		FinalPass(&finalFBO, &finalShader, &fullScreenQuad);
 
 		// Draw UI on top of everyything else
-		CoinUIPass(&coinUIShader, &coinInterfaceQuad, &coinUITexture, &player);
+		CoinUIPass(&coinUIShader, &coinInterfaceQuad, &player);
 
-		Button2DPass(&button2DShader, &buttonHandler, MENU_START);
+		Button2DPass(&button2DShader, &buttonHandler, MENU_INGAME);
 
 		// TEST
 
