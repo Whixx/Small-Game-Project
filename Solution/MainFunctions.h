@@ -54,7 +54,7 @@ void FinalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *
 void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader);
 void FinalPass(FinalFBO * finalFBO, Shader * finalShader, ClipSpaceQuad * fullScreenQuad);
 void CoinUIPass(Shader * coinUIShader, ClipSpaceQuad * coinInterfaceQuad, Texture * texture, Player * player);
-void Button2DPass(Shader * button2DShader, ButtonHandler * buttonHandler);
+void Button2DPass(Shader * button2DShader, ButtonHandler * buttonHandler, MENU_TYPE menuType);
 
 // height and width must be odd numbers else the resulting maze will be off
 // the function will return a grid with the maze

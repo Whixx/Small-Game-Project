@@ -146,11 +146,11 @@ int main()
 
 	// 2D quads
 	ClipSpaceQuad fullScreenQuad;
-	//ClipSpaceQuad coinInterfaceQuad(glm::vec2(-1.0f, -0.2f), glm::vec2(-0.2f, -0.2f), glm::vec2(-0.2f, -1.0f), glm::vec2(-1.0f, -1.0f), false);
 	ClipSpaceQuad coinInterfaceQuad(glm::vec2(-0.6, -0.6), 0.4f, 0.4f, false, "Textures/UI/coinTest.png");
+
 	ButtonHandler buttonHandler;
-	buttonHandler.AddButton(glm::vec2(0.0f, 0.25f), 0.35f, 0.35f, "Textures/Menu/play.png");
-	buttonHandler.AddButton(glm::vec2(0.0f, -0.25f), 0.25f, 0.25f, "Textures/Menu/quit.png");
+	int startButton = buttonHandler.AddButton(glm::vec2(0.0f, 0.0f), 0.2f, 0.2f, "Textures/floor0/floor0_diffuse.png", MENU_START);
+	int quitButton = buttonHandler.AddButton(glm::vec2(0.2, -0.4), 0.1f, 0.1f, "Textures/Menu/quit.png", MENU_START);
 
 	// Userinterface texture
 	Texture coinUITexture = Texture("Textures/UI/coinTest.png", "TextureDiffuse", false);
@@ -180,7 +180,6 @@ int main()
 		}
 		
 		// ================== EVENTS ==================
-
 		glfwPollEvents();
 		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &display, &paused, &startMenu);
 
@@ -258,7 +257,7 @@ int main()
 
 		if (paused)
 		{
-			Button2DPass(&button2DShader, &buttonHandler); 
+		Button2DPass(&button2DShader, &buttonHandler, MENU_START);
 		}
 		else
 		{
@@ -266,6 +265,11 @@ int main()
 			CoinUIPass(&coinUIShader, &coinInterfaceQuad, &coinUITexture, &player);
 		}
 
+		// TEST
+
+		buttonHandler.IsQuadPressed(display.GetWindow(), startButton);
+
+		//buttonHandler.IsQuadPressed(display.GetWindow(), 1);
 
 
 		// ================== POST DRAW ==================

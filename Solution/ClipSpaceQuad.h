@@ -10,6 +10,14 @@
 #include <GLFW/glfw3.h>
 #include "Display.h"
 
+enum MENU_TYPE
+{
+	MENU_START,
+	MENU_INGAME,
+	INVALID	
+};
+
+
 class ClipSpaceQuad
 {
 public:
@@ -17,16 +25,20 @@ public:
 					float width = 1,
 					float height = 1,
 					bool canBePressed = false,
-					string path = "");
+					string path = "",
+					MENU_TYPE = INVALID);
 
 	~ClipSpaceQuad();
 
 	void BindTexture();
 	void Draw();
 	bool IsMouseInQuad(GLFWwindow* window);
+
+	MENU_TYPE GetType();
 private:
 	GLuint vao;
 	bool canBePressed;
+	MENU_TYPE type;
 
 	glm::vec2 point;
 	float width;
