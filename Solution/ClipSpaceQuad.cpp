@@ -77,7 +77,7 @@ bool ClipSpaceQuad::IsMouseInQuad(GLFWwindow* window)
 				if (mousePosY < topSide)
 				{
 					isInQuad = true;
-					std::cout << "Mouse is inside quad!" << std::endl;
+					//std::cout << "Mouse is inside quad!" << std::endl;
 				}
 			}
 		}
@@ -94,13 +94,13 @@ void ClipSpaceQuad::CreateScreenQuad(glm::vec2 point, float width, float height)
 {
 	float fullScreenQuadData[] =
 	{
-		point.x - width, point.y + height, 0.0, 0.0, 0.0,		// Bottom left
-		point.x + width, point.y - height, 0.0, 1.0, 1.0,		// Top right
-		point.x + width, point.y + height, 0.0, 1.0, 0.0,		// Bottom Right
+		point.x - width, point.y - height, 0.0, 0.0, 0.0,		// Bottom left
+		point.x + width, point.y + height, 0.0, 1.0, 1.0,		// Top right
+		point.x + width, point.y - height, 0.0, 1.0, 0.0,		// Bottom Right
 				 				   
-		point.x - width, point.y + height, 0.0, 0.0, 0.0,		// Bottom left
-		point.x - width, point.y - height, 0.0, 0.0, 1.0,		// Top Left
-		point.x + width, point.y - height, 0.0, 1.0, 1.0,		// Top Right
+		point.x - width, point.y - height, 0.0, 0.0, 0.0,		// Bottom left
+		point.x - width, point.y + height, 0.0, 0.0, 1.0,		// Top Left
+		point.x + width, point.y + height, 0.0, 1.0, 1.0,		// Top Right
 	};
 
 	glGenVertexArrays(1, &this->vao);

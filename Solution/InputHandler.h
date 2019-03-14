@@ -14,6 +14,7 @@ public:
 	virtual ~InputHandler();
 
 	static void Key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 	void MouseControls(Display *display, Player *player, float elapsedTime);
 	void KeyboardControls(Display *display, Player *player, float elapsedTime);
 private:

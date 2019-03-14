@@ -25,6 +25,7 @@ int main()
 	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	glfwSetKeyCallback(display.GetWindow(), InputHandler::Key_callback);
+	glfwSetMouseButtonCallback(display.GetWindow(), InputHandler::mouse_button_callback);
 
 	EventHandler& EH = EventHandler::GetInstance();
 	InputHandler IH;
@@ -148,9 +149,13 @@ int main()
 	ClipSpaceQuad fullScreenQuad;
 	ClipSpaceQuad coinInterfaceQuad(glm::vec2(-0.6, -0.6), 0.4f, 0.4f, false, "Textures/UI/coinTest.png");
 
+	// MENU SHIT
 	ButtonHandler buttonHandler;
-	int startButton = buttonHandler.AddButton(glm::vec2(0.0f, 0.0f), 0.2f, 0.2f, "Textures/floor0/floor0_diffuse.png", MENU_START);
-	int quitButton = buttonHandler.AddButton(glm::vec2(0.2, -0.4), 0.1f, 0.1f, "Textures/Menu/quit.png", MENU_START);
+	int startButton = buttonHandler.AddButton(glm::vec2(0.0f, 0.25f), 0.35f, 0.35f, "Textures/Menu/play.png", MENU_START);
+	int quitButton = buttonHandler.AddButton(glm::vec2(0.0f, -0.25f), 0.25f, 0.25f, "Textures/Menu/quit.png", MENU_START);
+	int resumeButton = buttonHandler.AddButton(glm::vec2(0.0f, 0.25f), 0.35f, 0.35f, "Textures/Menu/resume.png", MENU_INGAME);
+	int quitButtonInGame = buttonHandler.AddButton(glm::vec2(0.0f, -0.25f), 0.25f, 0.25f, "Textures/Menu/quit.png", MENU_INGAME);
+
 
 	// Userinterface texture
 	Texture coinUITexture = Texture("Textures/UI/coinTest.png", "TextureDiffuse", false);
@@ -181,7 +186,7 @@ int main()
 		
 		// ================== EVENTS ==================
 		glfwPollEvents();
-		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &display, &paused, &startMenu);
+		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &display, &paused, &startMenu, &buttonHandler);
 
 		if (!paused)
 		{
@@ -257,19 +262,20 @@ int main()
 
 		if (paused)
 		{
-		Button2DPass(&button2DShader, &buttonHandler, MENU_START);
+			if (startMenu)
+			{
+				Button2DPass(&button2DShader, &buttonHandler, MENU_START);
+			}
+			else
+			{
+				Button2DPass(&button2DShader, &buttonHandler, MENU_INGAME);
+			}
 		}
 		else
 		{
 			// Draw UI on top of everyything else
 			CoinUIPass(&coinUIShader, &coinInterfaceQuad, &coinUITexture, &player);
 		}
-
-		// TEST
-
-		buttonHandler.IsQuadPressed(display.GetWindow(), startButton);
-
-		//buttonHandler.IsQuadPressed(display.GetWindow(), 1);
 
 
 		// ================== POST DRAW ==================

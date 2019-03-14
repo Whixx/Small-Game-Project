@@ -25,12 +25,12 @@ void InputHandler::Key_callback(GLFWwindow * window, int key, int scancode, int 
 		EH.AddEvent(EVENT_PLAYER_DROPCOIN);
 	}
 
-	if (key == GLFW_KEY_C && action == GLFW_PRESS)
+	/*if (key == GLFW_KEY_C && action == GLFW_PRESS)
 	{
 		EventHandler& EH = EventHandler::GetInstance();
 		if (mouseLock)
 		EH.AddEvent(EVENT_PLAYER_TOSSCOIN);
-	}
+	}*/
 
 	if (key == GLFW_KEY_T && action == GLFW_PRESS)
 	{
@@ -69,6 +69,16 @@ void InputHandler::Key_callback(GLFWwindow * window, int key, int scancode, int 
 		EH.AddEvent(EVENT_MENU_INGAME);
 	}
 
+}
+
+void InputHandler::mouse_button_callback(GLFWwindow * window, int button, int action, int mods)
+{
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+		EH.AddEvent(EVENT_MOUSE_LEFT_PRESSED);
+		cout << "LEFT MOUSE BUTTON PRESSED" << endl;
+	}
 }
 
 void InputHandler::MouseControls(Display * display, Player * player, float elapsedTime)

@@ -494,7 +494,7 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 	return mazeGen.GetGrid();
 }
 
-void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu)
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, ButtonHandler* buttonHandler)
 {
 	EventHandler& EH = EventHandler::GetInstance();
 	while (!EH.IsEmpty())
@@ -517,10 +517,10 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		{
 			player->DropCoin();
 		}
-		else if (event == EVENT_PLAYER_TOSSCOIN)
-		{
-			player->TossCoin();
-		}
+		//else if (event == EVENT_PLAYER_TOSSCOIN)
+		//{
+		//	//player->TossCoin();
+		//}
 		else if (event == EVENT_MAZE_KEYSTONE_PRESSED)
 		{
 			glm::vec3 keystonePosition = player->GetCamera()->GetCameraPosition();
@@ -552,6 +552,31 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		{
 			*startMenu = false;
 			cout << "MENU CHANGED TO INGAME MENU" << endl;
+		}
+		else if (event == EVENT_MOUSE_LEFT_PRESSED)
+		{
+			if (*paused)
+			{
+				if (*startMenu)
+				{
+					// different stuff for play or quit game
+					// how differentiate between buttons pushed?
+					if (buttonHandler->IsQuadPressed(window->GetWindow(), 2))
+						cout << "PLAY IS CLICKED IN STARTMENY" << endl;
+					if (buttonHandler->IsQuadPressed(window->GetWindow(), 3))
+						cout << "QUIT IS CLICKED IN STARTMENY" << endl;
+
+				}
+				else
+				{
+					// different stuff for resume or quit game
+				}
+			}
+			else	// if playing
+			{
+				// toss coins?
+				player->TossCoin();
+			}
 		}
 	}
 }
