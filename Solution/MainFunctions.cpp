@@ -467,7 +467,7 @@ void CoinUIPass(Shader * coinUIShader, ClipSpaceQuad * coinInterfaceQuad, Textur
 	glEnable(GL_DEPTH_TEST);
 }
 
-void Button2DPass(Shader * button2DShader, ButtonHandler * buttonHandler, MENU_TYPE menuType)
+void Button2DPass(Shader * button2DShader, Menu * buttonHandler, MENU_TYPE menuType)
 {
 	button2DShader->Bind();
 	glEnable(GL_BLEND);
@@ -494,7 +494,7 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 	return mazeGen.GetGrid();
 }
 
-void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, ButtonHandler* buttonHandler)
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, Menu* buttonHandler)
 {
 	EventHandler& EH = EventHandler::GetInstance();
 	while (!EH.IsEmpty())
@@ -510,8 +510,13 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		}
 		else if (event == EVENT_PLAYER_LOSE)
 		{
-			player->CenterPlayer();
+			//player->CenterPlayer();
 			deathSound->Play();
+			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+			EventHandler& EH = EventHandler::GetInstance();
+			EH.AddEvent(EVENT_MENU_START);
+			EH.AddEvent(EVENT_PAUSED);
 		}
 		else if (event == EVENT_PLAYER_DROPCOIN)
 		{
@@ -536,12 +541,14 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		{
 			*paused = true;
 			cout << "PAUSED: " << *paused << endl;
+			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
 		else if (event == EVENT_PLAYING)
 		{
 			*paused = false;
 			cout << "PAUSED: " << *paused << endl;
 			glfwSetCursorPos(window->GetWindow(), player->GetCamera()->GetOldMousePosition().x, player->GetCamera()->GetOldMousePosition().y);
+			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		}
 		else if (event == EVENT_MENU_START)
 		{
@@ -559,22 +566,43 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 			{
 				if (*startMenu)
 				{
-					// different stuff for play or quit game
-					// how differentiate between buttons pushed?
+					// playbutton
 					if (buttonHandler->IsQuadPressed(window->GetWindow(), 2))
-						cout << "PLAY IS CLICKED IN STARTMENY" << endl;
+					{
+						cout << "PLAY IS CLICKED IN STARTMENU" << endl;
+						EventHandler& EH = EventHandler::GetInstance();
+						EH.AddEvent(EVENT_PLAYING);
+						EH.AddEvent(EVENT_MENU_INGAME);
+						//glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+					}
+					// quitbutton
 					if (buttonHandler->IsQuadPressed(window->GetWindow(), 3))
-						cout << "QUIT IS CLICKED IN STARTMENY" << endl;
-
+					{
+						cout << "QUIT IS CLICKED IN STARTMENU" << endl;
+						glfwSetWindowShouldClose(window->GetWindow(), GLFW_TRUE);
+					}
 				}
 				else
 				{
-					// different stuff for resume or quit game
+					// resume button
+					if (buttonHandler->IsQuadPressed(window->GetWindow(), 2))
+					{
+						cout << "RESUME IS CLICKED IN INGAME MENU" << endl;
+						EventHandler& EH = EventHandler::GetInstance();
+						EH.AddEvent(EVENT_PLAYING);
+						//glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+					}
+					// quit button
+					if (buttonHandler->IsQuadPressed(window->GetWindow(), 3))
+					{
+						cout << "QUIT IS CLICKED IN INGAME MENU" << endl;
+						glfwSetWindowShouldClose(window->GetWindow(), GLFW_TRUE);
+					}
 				}
 			}
 			else	// if playing
 			{
-				// toss coins?
+				// toss coins
 				player->TossCoin();
 			}
 		}

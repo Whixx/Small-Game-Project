@@ -20,7 +20,7 @@
 #include "MaterialHandler.h"
 #include "Minotaur.h"
 #include "EventHandler.h"
-#include "ButtonHandler.h"
+#include "Menu.h"
 
 #include "Coin.h"
 
@@ -54,7 +54,7 @@ void FinalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *
 void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader);
 void FinalPass(FinalFBO * finalFBO, Shader * finalShader, ClipSpaceQuad * fullScreenQuad);
 void CoinUIPass(Shader * coinUIShader, ClipSpaceQuad * coinInterfaceQuad, Texture * texture, Player * player);
-void Button2DPass(Shader * button2DShader, ButtonHandler * buttonHandler, MENU_TYPE menuType);
+void Button2DPass(Shader * button2DShader, Menu * buttonHandler, MENU_TYPE menuType);
 
 // height and width must be odd numbers else the resulting maze will be off
 // the function will return a grid with the maze
@@ -62,6 +62,6 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width);
 
 void SetMaxPatchVertices();
 
-void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, ButtonHandler* buttonHandler);
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, Menu* buttonHandler);
 
 #endif

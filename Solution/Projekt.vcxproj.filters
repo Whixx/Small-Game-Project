@@ -103,7 +103,7 @@
     <ClCompile Include="ClipSpaceQuad.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
-    <ClCompile Include="ButtonHandler.cpp">
+    <ClCompile Include="Menu.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -216,7 +216,7 @@
     <ClInclude Include="ClipSpaceQuad.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
-    <ClInclude Include="ButtonHandler.h">
+    <ClInclude Include="Menu.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
   </ItemGroup>

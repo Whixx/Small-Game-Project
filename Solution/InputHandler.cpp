@@ -45,12 +45,12 @@ void InputHandler::Key_callback(GLFWwindow * window, int key, int scancode, int 
 		mouseLock = !mouseLock;
 		if (mouseLock)
 		{
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 			EH.AddEvent(EVENT_PLAYING);
 		}	
 		else
 		{
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			EH.AddEvent(EVENT_PAUSED);
 		}
 	}

@@ -4,11 +4,11 @@
 #include "ClipSpaceQuad.h"
 #include <vector>
 
-class ButtonHandler
+class Menu
 {
 public:
-	ButtonHandler();
-	~ButtonHandler();
+	Menu();
+	~Menu();
 
 	unsigned int AddButton(	glm::vec2 point,
 					float width,

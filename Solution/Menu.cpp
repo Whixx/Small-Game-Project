@@ -1,18 +1,18 @@
-#include "ButtonHandler.h"
+#include "Menu.h"
 
 
 
-ButtonHandler::ButtonHandler()
+Menu::Menu()
 {
 	// Definera texturer
 }
 
 
-ButtonHandler::~ButtonHandler()
+Menu::~Menu()
 {
 }
 
-unsigned int ButtonHandler::AddButton(	glm::vec2 point,
+unsigned int Menu::AddButton(	glm::vec2 point,
 								float width,
 								float height,
 								string path,
@@ -22,17 +22,17 @@ unsigned int ButtonHandler::AddButton(	glm::vec2 point,
 	return this->quads.size() - 1;
 }
 
-unsigned int ButtonHandler::GetNrOfQuads()
+unsigned int Menu::GetNrOfQuads()
 {
 	return this->quads.size();
 }
 
-bool ButtonHandler::IsQuadPressed(GLFWwindow* window, unsigned int ID)
+bool Menu::IsQuadPressed(GLFWwindow* window, unsigned int ID)
 {
 	return this->quads.at(ID).IsMouseInQuad(window);
 }
 
-void ButtonHandler::DrawQuads(MENU_TYPE menuType)
+void Menu::DrawQuads(MENU_TYPE menuType)
 {
 	for (int i = 0; i < this->quads.size(); i++)
 	{
