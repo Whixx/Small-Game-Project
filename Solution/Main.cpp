@@ -70,18 +70,6 @@ int main()
 	particleShader.CreateShader(".\\particleShader.vs", GL_VERTEX_SHADER);
 	particleShader.CreateShader(".\\particleShader.fs", GL_FRAGMENT_SHADER);
 
-	//Shader pointLightPass;
-	//pointLightPass.CreateShader(".\\pointLightShader.vs", GL_VERTEX_SHADER);
-	//pointLightPass.CreateShader(".\\pointLightShader.fs", GL_FRAGMENT_SHADER);
-
-	Shader blurShader;
-	blurShader.CreateShader(".\\blurShader.vs", GL_VERTEX_SHADER);
-	blurShader.CreateShader(".\\blurShader.fs", GL_FRAGMENT_SHADER);
-
-	Shader finalBloomShader;
-	finalBloomShader.CreateShader(".\\finalBloomShader.vs", GL_VERTEX_SHADER);
-	finalBloomShader.CreateShader(".\\finalBloomShader.fs", GL_FRAGMENT_SHADER);
-
 	Shader finalShader;
 	finalShader.CreateShader(".\\finalShader.vs", GL_VERTEX_SHADER);
 	finalShader.CreateShader(".\\finalShader.fs", GL_FRAGMENT_SHADER);
@@ -92,9 +80,6 @@ int main()
 	InitMazeGeometryPass(&mazeGeometryPass);
 	InitLightPass(&lightPass);
 	InitParticleShader(&particleShader);
-	//InitPointLightPass(&pointLightPass);
-	InitBlurShader(&blurShader);
-	InitFinalBloomShader(&finalBloomShader);
 	InitFinalShader(&finalShader);
 
 	//=================================================================================//
@@ -102,8 +87,6 @@ int main()
 	//=========================== Buffers ====================================//
 	ShadowMap shadowMap(SHADOW_WIDTH, SHADOW_HEIGHT);
 	GBuffer gBuffer(SCREEN_WIDTH, SCREEN_HEIGHT);
-	BloomBuffer bloomBuffer(SCREEN_WIDTH, SCREEN_HEIGHT);
-	BlurBuffer blurBuffers(SCREEN_WIDTH, SCREEN_HEIGHT);
 	FinalFBO finalFBO(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	//=========================== Creating Objects ====================================//
@@ -152,8 +135,6 @@ int main()
 			nrOfFrames = 0;
 			lastTime += 1.0;
 		}
-
-
 		// ================== EVENTS ==================
 
 		glfwPollEvents();
@@ -177,7 +158,6 @@ int main()
 		// update sound engine with position and view direction
 		soundEngine.Update(player.GetCamera()->GetCameraPosition(), player.GetCamera()->GetForwardVector());
 
-
 		// ================== DRAW ==================
 
 		// Here the mazes is created and stored in a buffer with transform feedback
@@ -192,31 +172,16 @@ int main()
 		
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
-		DRLightPass(&gBuffer, &bloomBuffer, &screenQuad, &lightPass, &shadowMap, &lights, player.GetCamera());
+		DRLightPass(&gBuffer, &finalFBO, &screenQuad, &lightPass, &shadowMap, &lights, player.GetCamera());
 
-		// Copy the depth from the gBuffer to the bloomBuffer
-		bloomBuffer.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, gBuffer.GetFBO());
+		// Copy the depth from the gBuffer to the finalFBO
+		finalFBO.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, gBuffer.GetFBO());
 
-		// Draw lightSpheres
-		//#ifdef DEBUG
-		//	LightSpherePass(&pointLightPass, &bloomBuffer, &lights, player.GetCamera(), &lightSphereModel);
-		//#endif
-			
-		// Blur the bright texture
-		BlurPass(&blurShader, &bloomBuffer, &blurBuffers, &screenQuad);
-
-		// Combine the bright texture and the scene and store the Result in FinalFBO.
-		FinalBloomPass(&finalBloomShader, &finalFBO, &bloomBuffer, &blurBuffers, &screenQuad);
-
-		// Copy the depth from the bloomBuffer to the finalFBO
-		finalFBO.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, bloomBuffer.GetFBO());
-
+		// In this function, all particles will be drawn to the finalFBO
 		ParticlePass(&finalFBO, player.GetTorch()->GetParticle(), player.GetCamera(), &particleShader);
 
-		// Render everything
+		// Render everything to the default framebuffer
 		FinalPass(&finalFBO, &finalShader, &screenQuad);
-
-
 
 		// ================== POST DRAW ==================
 		display.SwapBuffers(SCREEN_WIDTH, SCREEN_HEIGHT);

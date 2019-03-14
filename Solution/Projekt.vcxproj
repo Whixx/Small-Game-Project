@@ -158,10 +158,6 @@
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="blurShader.fs" />
-    <None Include="blurShader.vs" />
-    <None Include="finalBloomShader.fs" />
-    <None Include="finalBloomShader.vs" />
     <None Include="finalShader.fs" />
     <None Include="finalShader.vs" />
     <None Include="lightPass.fs" />
@@ -177,8 +173,6 @@
     <None Include="mazeGeometryPass.vs" />
     <None Include="particleShader.fs" />
     <None Include="particleShader.vs" />
-    <None Include="pointLightShader.fs" />
-    <None Include="pointLightShader.vs" />
     <None Include="shadowShader.fs" />
     <None Include="shadowShader.gs" />
     <None Include="shadowShader.vs" />

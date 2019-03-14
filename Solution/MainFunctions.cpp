@@ -81,40 +81,6 @@ void InitParticleShader(Shader * shader)
 	shader->ValidateShaders();
 }
 
-void InitPointLightPass(Shader * shader)
-{
-
-	shader->InitiateShaders();
-
-	// Set constant uniforms
-	shader->Bind();
-
-	shader->ValidateShaders();
-}
-
-void InitBlurShader(Shader * shader)
-{
-	shader->InitiateShaders();
-
-	// Set constant uniforms
-	shader->Bind();
-	shader->SendInt("scene", 0);
-
-	shader->ValidateShaders();
-}
-
-void InitFinalBloomShader(Shader * shader)
-{
-	shader->InitiateShaders();
-
-	// Set constant uniforms
-	shader->Bind();
-	shader->SendInt("scene", 0);
-	shader->SendInt("bright", 1);
-
-	shader->ValidateShaders();
-}
-
 void InitFinalShader(Shader * shader)
 {
 	shader->InitiateShaders();
@@ -292,7 +258,7 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	mazeGeometryPass->UnBind();
 }
 
-void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenTriangle, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera)
+void DRLightPass(GBuffer *gBuffer, FinalFBO * finalFBO, GLuint *fullScreenTriangle, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera)
 {
 	lightPass->Bind();
 
@@ -300,7 +266,7 @@ void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenT
 	lightPass->SendCameraLocation(camera);
 
 	// Bloom buffer, write finalColor and brightness.
-	bloomBuffer->BindForWriting();
+	finalFBO->BindForWriting();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	gBuffer->BindForReading(); // Binds texture slot 0,1,2,3,4
@@ -347,84 +313,6 @@ void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 
 	// Unbind the shader
 	particleShader->UnBind();
-}
-
-void LightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, Model *renderModel)
-{
-	bloomBuffer->BindForWriting();
-
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-
-	pointLightPass->Bind();
-	for (unsigned int i = 0; i < lights->GetNrOfLights(); i++)
-	{
-		glm::mat4 worldMatrix = lights->GetTransform(i)->GetWorldMatrix();
-		pointLightPass->SendMat4("transformationMatrix", camera->GetViewProjection() * worldMatrix);
-
-		renderModel->Draw(pointLightPass);
-	}
-	pointLightPass->UnBind();
-	glDisable(GL_CULL_FACE);
-}
-
-void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, GLuint *fullScreenTriangle)
-{
-	blurShader->Bind();
-	int timesToBlur = 10;
-	bool horizontal = true;
-	bool firstBlur = true;
-
-	//GLuint loc = glGetUniformLocation(*blurShader->GetProgram(), "scene");
-
-	for (int i = 0; i < timesToBlur; i++)
-	{
-		blurBuffers->BindForWriting(!horizontal);
-
-		// First we read from the bloom fbo, to get a starting point of the blur. Then after that we will
-		// blur the "blurred" texture over and over again, swapping between vertical and horizontal blurring.
-		if (firstBlur == true)
-		{
-			bloomBuffer->BindForReadingBloomMap(0);
-			blurShader->SendInt("horizontal", !horizontal);
-		}
-		else
-		{
-			blurBuffers->BindForReading(horizontal, 0);
-			blurShader->SendInt("horizontal", !horizontal);
-		}
-
-		glDisable(GL_DEPTH_TEST);
-		glBindVertexArray(*fullScreenTriangle);
-		glDrawArrays(GL_TRIANGLES, 0, 3);;
-		glEnable(GL_DEPTH_TEST);
-
-		horizontal = !horizontal;
-		if (firstBlur)
-		{
-			firstBlur = false;
-		}
-	}
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void FinalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, GLuint *fullScreenTriangle)
-{
-	finalFBO->BindForWriting();
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	finalBloomShader->Bind();
-
-	bloomBuffer->BindForReadingDiffuse();
-	blurBuffers->BindForReading(1, 1);
-
-	glDisable(GL_DEPTH_TEST);
-	glBindVertexArray(*fullScreenTriangle);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-	glEnable(GL_DEPTH_TEST);
-
 }
 
 void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint * fullScreenTriangle)
