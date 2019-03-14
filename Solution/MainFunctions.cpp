@@ -444,7 +444,7 @@ void FinalPass(FinalFBO * finalFBO, Shader * finalShader, ClipSpaceQuad * fullSc
 	glEnable(GL_DEPTH_TEST);
 }
 
-void CoinUIPass(Shader * coinUIShader, ClipSpaceQuad * coinInterfaceQuad, Texture * texture, Player * player)
+void CoinUIPass(Shader * coinUIShader, ClipSpaceQuad * coinInterfaceQuad, Player * player)
 {
 	coinUIShader->Bind();
 
@@ -456,15 +456,19 @@ void CoinUIPass(Shader * coinUIShader, ClipSpaceQuad * coinInterfaceQuad, Textur
 	else
 	{
 		// Bind the cointexture
-		texture->Bind(0);
+		coinInterfaceQuad->BindTexture();
 
 		// The shader is using the NrOfInventoryCoins to know what parts of the texture it should render
 		coinUIShader->SendInt("currNrOfCoins", player->GetNrOfInventoryCoins());
 	}
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 	glDisable(GL_DEPTH_TEST);
 	coinInterfaceQuad->Draw();
 	glEnable(GL_DEPTH_TEST);
+
+	glDisable(GL_BLEND);
 }
 
 void Button2DPass(Shader * button2DShader, Menu * buttonHandler, MENU_TYPE menuType)

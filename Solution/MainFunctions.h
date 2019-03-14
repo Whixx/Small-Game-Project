@@ -53,7 +53,7 @@ void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuff
 void FinalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, ClipSpaceQuad * fullScreenQuad);
 void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader);
 void FinalPass(FinalFBO * finalFBO, Shader * finalShader, ClipSpaceQuad * fullScreenQuad);
-void CoinUIPass(Shader * coinUIShader, ClipSpaceQuad * coinInterfaceQuad, Texture * texture, Player * player);
+void CoinUIPass(Shader * coinUIShader, ClipSpaceQuad * coinInterfaceQuad, Player * player);
 void Button2DPass(Shader * button2DShader, Menu * buttonHandler, MENU_TYPE menuType);
 
 // height and width must be odd numbers else the resulting maze will be off
