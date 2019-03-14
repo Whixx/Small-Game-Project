@@ -4,30 +4,23 @@
 #include "ClipSpaceQuad.h"
 #include <vector>
 
-enum Buttons
-{
-	BUTTON_START,
-	BUTTON_QUIT,
-	NR_OF_BUTTONS
-};
-
-
 class ButtonHandler
 {
 public:
 	ButtonHandler();
 	~ButtonHandler();
 
-	void AddButton(	glm::vec2 point,
+	unsigned int AddButton(	glm::vec2 point,
 					float width,
 					float height,
-					string path);
+					string path,
+					MENU_TYPE button);
 
 	unsigned int GetNrOfQuads();
 
 	bool IsQuadPressed(GLFWwindow* window, unsigned int ID);
 
-	void DrawQuads();
+	void DrawQuads(MENU_TYPE menuType);
 
 private:
 	std::vector<ClipSpaceQuad> quads;

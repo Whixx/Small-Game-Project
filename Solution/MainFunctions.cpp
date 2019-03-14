@@ -467,12 +467,12 @@ void CoinUIPass(Shader * coinUIShader, ClipSpaceQuad * coinInterfaceQuad, Textur
 	glEnable(GL_DEPTH_TEST);
 }
 
-void Button2DPass(Shader * button2DShader, ButtonHandler * buttonHandler)
+void Button2DPass(Shader * button2DShader, ButtonHandler * buttonHandler, MENU_TYPE menuType)
 {
 	button2DShader->Bind();
 
 	glDisable(GL_DEPTH_TEST);
-	buttonHandler->DrawQuads();
+	buttonHandler->DrawQuads(menuType);
 	glEnable(GL_DEPTH_TEST);
 }
 
