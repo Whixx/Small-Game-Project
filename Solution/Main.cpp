@@ -17,7 +17,10 @@ int main()
 
 	Display display;
 
-	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	// use GLFW_CURSOS_NORMAL when starting the game "paused"
+	//glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
 	glfwSetKeyCallback(display.GetWindow(), InputHandler::Key_callback);
 
 	EventHandler& EH = EventHandler::GetInstance();
@@ -48,7 +51,8 @@ int main()
 
 	minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();
 
-	bool paused = false;
+	bool paused = true;
+	bool startMenu = true;		// true = startmenu | false = in game menu
 
 	//=========================== Creating Shaders ====================================//
 
@@ -144,8 +148,8 @@ int main()
 	ClipSpaceQuad coinInterfaceQuad(glm::vec2(-0.6, -0.6), 0.4f, 0.4f, false, "Textures/UI/coinTest.png");
 
 	ButtonHandler buttonHandler;
-	int startButton = buttonHandler.AddButton(glm::vec2(0.0f, 0.0f), 0.2f, 0.2f, "Textures/UI/coinTest.png", MENU_START);
-	int quitButton =  buttonHandler.AddButton(glm::vec2(0.2, -0.4), 0.1f, 0.1f, "Textures/UI/coinTest.png", MENU_START);
+	buttonHandler.AddButton(glm::vec2(0.0f, 0.0f), 0.2f, 0.2f, "Textures/floor0/floor0_diffuse.png");
+	buttonHandler.AddButton(glm::vec2(0.2, -0.4), 0.1f, 0.1f, "Textures/Menu/quit.png");
 
 	// Userinterface texture
 	Texture coinUITexture = Texture("Textures/UI/coinTest.png", "TextureDiffuse", false);
@@ -156,6 +160,7 @@ int main()
 	double deltaTime = 0;
 	double constLastTime = 0;
 	int nrOfFrames = 0;
+
 
 	while (!display.IsWindowClosed())
 	{
@@ -175,7 +180,7 @@ int main()
 		
 		// ================== EVENTS ==================
 		glfwPollEvents();
-		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &paused);
+		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &display, &paused, &startMenu);
 
 		if (!paused)
 		{
@@ -198,9 +203,16 @@ int main()
 		}
 		else    // if game is paused
 		{
-			// ================== UPDATE ==================
-			// Update player
-			player.UpdateOnlyTorch(deltaTime);
+			if (startMenu)
+			{
+
+			}
+			else
+			{
+				// Update player
+				player.UpdateOnlyTorch(deltaTime);
+			}
+
 		}
 		// ================== DRAW ==================
 

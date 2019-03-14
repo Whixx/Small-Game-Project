@@ -4,6 +4,7 @@
 
 ButtonHandler::ButtonHandler()
 {
+	// Definera texturer
 }
 
 

@@ -18,7 +18,9 @@ ClipSpaceQuad::ClipSpaceQuad(glm::vec2 point,
 
 	this->CreateScreenQuad(point, width, height);
 
-	this->texture = Texture(path, "TextureDiffuse", false);
+	MaterialHandler& MH = MaterialHandler::GetInstance();
+
+	this->texture = MH.LoadTexture(path, "TextureDiffuse");
 }
 
 ClipSpaceQuad::~ClipSpaceQuad()
@@ -27,7 +29,7 @@ ClipSpaceQuad::~ClipSpaceQuad()
 
 void ClipSpaceQuad::BindTexture()
 {
-	this->texture.Bind(0);
+	this->texture->Bind(0);
 }
 
 void ClipSpaceQuad::Draw()

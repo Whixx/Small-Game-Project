@@ -62,7 +62,6 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width);
 
 void SetMaxPatchVertices();
 
-void HandleEvents(Player* player, Maze* maze, Sound* winSound, Sound* deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, bool* paused);
-
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu);
 
 #endif
