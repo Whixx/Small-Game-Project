@@ -79,11 +79,6 @@ glm::vec2 Exit::GetExitUVPos()
 	return this->uvPos;
 }
 
-glm::vec3 Exit::GetDir()
-{
-	return this->dir;
-}
-
 void Exit::DrawOpen(Shader * shader)
 {
 	this->modelOpen->Draw(shader);

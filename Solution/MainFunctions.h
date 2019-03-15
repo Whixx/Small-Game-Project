@@ -64,4 +64,6 @@ void SetMaxPatchVertices();
 
 void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, Menu* buttonHandler, InputHandler* ih);
 
+void ResetMinotaur(Minotaur* minotaur, irrklang::ISoundEngine * engine, std::vector<std::vector<int>> mazeGrid, Maze* maze);
+
 #endif

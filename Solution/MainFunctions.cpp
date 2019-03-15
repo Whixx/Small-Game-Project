@@ -530,6 +530,8 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 			deathSound->Play();
 			player->resetCoins();
 
+			minotaur->ResetMinotaur();
+
 			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 			EventHandler& EH = EventHandler::GetInstance();
@@ -543,7 +545,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		//else if (event == EVENT_PLAYER_TOSSCOIN)
 		//{
 		//	//player->TossCoin();
-			player->SpawnCoinAtMinotaur();
+		//	//player->SpawnCoinAtMinotaur();
 		//}
 		else if (event == EVENT_PLAYER_PICKUPCOIN)
 		{
@@ -597,6 +599,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 						EventHandler& EH = EventHandler::GetInstance();
 						EH.AddEvent(EVENT_PLAYING);
 						EH.AddEvent(EVENT_MENU_INGAME);
+						player->CenterPlayer();
 					}
 					// quitbutton
 					if (buttonHandler->IsQuadPressed(window->GetWindow(), 3))
@@ -630,6 +633,12 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 			}
 		}
 	}
+}
+
+void ResetMinotaur(Minotaur* minotaur, irrklang::ISoundEngine * engine, std::vector<std::vector<int>> mazeGrid, Maze * maze)
+{
+	minotaur->~Minotaur();
+
 }
 
 void SetMaxPatchVertices()
