@@ -46,7 +46,7 @@ void InputHandler::Key_callback(GLFWwindow * window, int key, int scancode, int 
 		if (mouseLock)
 		{
 			//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-			EH.AddEvent(EVENT_PLAYING);
+			//EH.AddEvent(EVENT_PLAYING);
 		}	
 		else
 		{
@@ -181,6 +181,11 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	//		irrklang::vec3df(player->GetCamera()->GetCameraPosition().x, player->GetCamera()->GetCameraPosition().y, -player->GetCamera()->GetCameraPosition().z) + 
 	//		irrklang::vec3df(player->GetCamera()->GetForwardVector().x, player->GetCamera()->GetForwardVector().y, -player->GetCamera()->GetForwardVector().z)*30);
 	//}
+}
+
+void InputHandler::ToggleMouseLock()
+{
+	this->mouseLock = !mouseLock;
 }
 
 bool InputHandler::mouseLock = false;

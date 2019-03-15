@@ -4,9 +4,9 @@ Exit::Exit(Model* exitModel, glm::vec3 worldPos, glm::vec3 dir, glm::vec2 uvPos)
 {
 	this->model = exitModel;
 	this->uvPos = uvPos;
-	this->dir = glm::normalize(dir);
 	this->transform.GetPos() = worldPos;
 	this->SetDir(this->dir);
+	this->dir = glm::normalize(dir);
 	this->isOpen = false;
 }
 
@@ -17,12 +17,18 @@ Exit::~Exit()
 void Exit::SetDir(glm::vec3 newDir)
 {
 	float angle = glm::acos(newDir.x);
+	this->dir = newDir;
 
 	// Check if under the unit circle
 	if (glm::sin(newDir.z) < 0.0)
 		angle *= -1;
 
 	this->transform.GetRot().y = angle;
+}
+
+glm::vec3 Exit::GetDir()
+{
+	return this->dir;
 }
 
 glm::mat4 Exit::GetWorldMatrix() const

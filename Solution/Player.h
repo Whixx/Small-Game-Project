@@ -35,6 +35,7 @@ public:
 	Coin * GetWorldCoin(unsigned int index);
 	unsigned int GetNrOfInventoryCoins();
 	unsigned int GetNrOfWorldCoins();
+	void resetCoins();	// reset number of coins to 10
 
 	void SetPlayerHeight(float height);
 	void SetPlayerSpeed(float speed);

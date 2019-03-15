@@ -498,7 +498,7 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 	return mazeGen.GetGrid();
 }
 
-void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, Menu* buttonHandler)
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, Menu* buttonHandler, InputHandler* ih)
 {
 	EventHandler& EH = EventHandler::GetInstance();
 	while (!EH.IsEmpty())
@@ -516,6 +516,8 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		{
 			//player->CenterPlayer();
 			deathSound->Play();
+			player->resetCoins();
+
 			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 			EventHandler& EH = EventHandler::GetInstance();
@@ -551,8 +553,9 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		{
 			*paused = false;
 			cout << "PAUSED: " << *paused << endl;
+			ih->ToggleMouseLock();
+			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);			
 			glfwSetCursorPos(window->GetWindow(), player->GetCamera()->GetOldMousePosition().x, player->GetCamera()->GetOldMousePosition().y);
-			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		}
 		else if (event == EVENT_MENU_START)
 		{
@@ -577,7 +580,6 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 						EventHandler& EH = EventHandler::GetInstance();
 						EH.AddEvent(EVENT_PLAYING);
 						EH.AddEvent(EVENT_MENU_INGAME);
-						//glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 					}
 					// quitbutton
 					if (buttonHandler->IsQuadPressed(window->GetWindow(), 3))

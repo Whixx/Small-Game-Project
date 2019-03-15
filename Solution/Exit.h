@@ -25,6 +25,7 @@ public:
 	glm::vec2 GetExitUVPos();
 
 	void SetDir(glm::vec3 newDir);
+	glm::vec3 GetDir();
 
 	void Draw(Shader* shader);
 private:

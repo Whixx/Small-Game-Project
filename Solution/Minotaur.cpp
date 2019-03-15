@@ -13,6 +13,7 @@ Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>
 
 	// Adjust spawn position to a floor-tile
 	glm::vec3 currentPos = this->maze->TransformToMazeCoords(glm::vec3(0.0f, 0.05f, 0.0f));
+	//glm::vec3 currentPos = this->maze->GetExit()->GetExitPos() + this->maze->GetExit()->GetDir();
 	glm::vec2 newPos = this->toNearbyFloor(glm::vec2(currentPos.x, currentPos.z));
 	this->transform.GetPos() = this->maze->TransformToWorldCoords(glm::vec3(newPos.x, currentPos.y, newPos.y));
 

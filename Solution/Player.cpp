@@ -88,6 +88,14 @@ unsigned int Player::GetNrOfWorldCoins()
 	return this->nrOfWorldCoins;
 }
 
+void Player::resetCoins()
+{
+	for (int i = 0; i < (MAX_NR_OF_COINS - this->GetNrOfInventoryCoins()); i++)
+	{
+		this->AddCoinToInventory();
+	}
+}
+
 void Player::SetPlayerHeight(float height)
 {
 	this->playerHeight = height;
