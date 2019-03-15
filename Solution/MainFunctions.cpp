@@ -576,13 +576,16 @@ void CreateLandmarks(ObjectHandler * OH, Maze * maze)
 	OH->GetObject(vase3)->GetScale() = glm::vec3(0.9f);
 
 	int shroom = OH->CreateObject("Models/Landmarks/Shroom/shroom.obj");
-	OH->GetObject(shroom)->GetScale() = glm::vec3(0.5f);
+	OH->GetObject(shroom)->GetScale() = glm::vec3(0.2f);
 
 	int shroom2 = OH->CreateObject("Models/Landmarks/Shroom/shroom.obj");
-	OH->GetObject(shroom2)->GetScale() = glm::vec3(0.4f);
+	OH->GetObject(shroom2)->GetScale() = glm::vec3(0.2f);
 
 	int shroom3 = OH->CreateObject("Models/Landmarks/Shroom/shroom.obj");
-	OH->GetObject(shroom3)->GetScale() = glm::vec3(0.3f);
+	OH->GetObject(shroom3)->GetScale() = glm::vec3(0.1f);
+
+	int shroom4 = OH->CreateObject("Models/Landmarks/Shroom/shroom.obj");
+	OH->GetObject(shroom4)->GetScale() = glm::vec3(0.1f);
 
 	int skeletonPile = OH->CreateObject("Models/Landmarks/Skeleton_pile/skeleton_pile.obj");
 	OH->GetObject(skeletonPile)->GetScale() = glm::vec3(0.7f);
@@ -668,7 +671,7 @@ void CreateLandmarks(ObjectHandler * OH, Maze * maze)
 				if (floor(OH->GetObject(i)->GetPos()) == floor(OH->GetObject(j)->GetPos()))
 				{
 					// Get a new random position and restart the search
-					OH->GetObject(i)->GetPos() = maze->GetRandomFloorPos();
+					goto RESTART;
 				}
 				else 
 				{
@@ -678,7 +681,7 @@ void CreateLandmarks(ObjectHandler * OH, Maze * maze)
 		}
 
 		// Turn and place the object towards the wall
-		if (i == vase || i == vase2 || i == vase3)
+		if (i == vase || i == vase2 || i == vase3 || i == shroom || i == shroom2 || i == shroom3 || i == shroom4)
 		{
 			float tessOffset = 0.15f * maze->GetTransform()->GetScale().x;
 			OH->GetObject(i)->GetPos() = floor(OH->GetObject(i)->GetPos());
@@ -727,7 +730,6 @@ void CreateLandmarks(ObjectHandler * OH, Maze * maze)
 			}
 			else
 			{
-				printf("Restarting...\n");
 				goto RESTART;
 			}
 
@@ -739,7 +741,9 @@ void CreateLandmarks(ObjectHandler * OH, Maze * maze)
 			OH->GetObject(i)->GetRot().y = glm::radians((float)(rand() % 360));
 		}
 
+#ifdef DEBUG
 		printf("Object %d, Position: X: %f, Y: %f, Z: %f\n", i, OH->GetObject(i)->GetPos().x, OH->GetObject(i)->GetPos().y, OH->GetObject(i)->GetPos().z);
+#endif // DEBUG
 	}
 }
 
