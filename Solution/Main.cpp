@@ -215,7 +215,6 @@ int main()
 				// Update player
 				player.UpdateOnlyTorch(deltaTime);
 			}
-
 		}
 		// ================== DRAW ==================
 

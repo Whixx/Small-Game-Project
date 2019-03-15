@@ -90,10 +90,19 @@ unsigned int Player::GetNrOfWorldCoins()
 
 void Player::resetCoins()
 {
-	for (int i = 0; i < (MAX_NR_OF_COINS - this->GetNrOfInventoryCoins()); i++)
+	// Add coins in inventory
+	for (int i = 0; i < (MAX_NR_OF_COINS); i++)
 	{
 		this->AddCoinToInventory();
 	}
+	this->nrOfInventoryCoins = MAX_NR_OF_COINS;
+
+	// Remove coins from world
+	for (int i = 0; i < this->worldCoins.size(); i++)
+	{
+		this->worldCoins.pop_back();
+	}
+	this->nrOfWorldCoins = 0;
 }
 
 void Player::SetPlayerHeight(float height)

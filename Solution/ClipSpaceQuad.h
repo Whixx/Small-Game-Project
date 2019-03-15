@@ -47,6 +47,7 @@ private:
 	Texture* texture;
 
 	void CreateScreenQuad(glm::vec2 point, float width, float height);
+	void CreateScreenQuad(glm::vec2 topLeft, glm::vec2 topRight, glm::vec2 bottomRight, glm::vec2 bottomLeft);
 };
 
 #endif

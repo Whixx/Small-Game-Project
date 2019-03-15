@@ -304,7 +304,7 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 
 	// Same world matrix for walls and floor
 	glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
-	
+
 	// Draw Maze
 	mazeGeometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
 	mazeGeometryPass->SendMat4("VP", player->GetCamera()->GetViewProjection());
@@ -531,6 +531,9 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 
 			RegenerateMaze(mazeGrid, maze, enginePtr);
 			player->resetCoins();
+
+			maze->ResetKeystones();
+
 			minotaur->ResetMinotaur();
 
 			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);

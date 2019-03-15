@@ -119,3 +119,33 @@ void ClipSpaceQuad::CreateScreenQuad(glm::vec2 point, float width, float height)
 
 	glBindVertexArray(0);
 }
+
+void ClipSpaceQuad::CreateScreenQuad(glm::vec2 topLeft, glm::vec2 topRight, glm::vec2 bottomRight, glm::vec2 bottomLeft)
+{
+	float fullScreenQuadData[] =
+	{
+		bottomLeft.x, bottomLeft.y, 0.0, 0.0, 0.0,		// Bottom left
+		topRight.x, topRight.y, 0.0, 1.0, 1.0,			// Top right
+		bottomRight.x, bottomRight.y, 0.0, 1.0, 0.0,	// Bottom Right
+
+		bottomLeft.x, bottomLeft.y, 0.0, 0.0, 0.0,		// Bottom left
+		topLeft.x, topLeft.y, 0.0, 0.0, 1.0,			// Top Left
+		topRight.x, topRight.y, 0.0, 1.0, 1.0,			// Top Right
+	};
+
+	glGenVertexArrays(1, &this->vao);
+	glBindVertexArray(this->vao);
+
+	GLuint quadBuffer;
+	glGenBuffers(1, &quadBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, quadBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5 * 6, &fullScreenQuadData[0], GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(float) * 5, 0);
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, false, sizeof(float) * 5, (void*)(sizeof(float) * 3));
+
+	glBindVertexArray(0);
+}

@@ -21,6 +21,7 @@
 using namespace std;
 
 const unsigned int DRAWDISTANCE = 7;
+const unsigned int NR_OF_START_KEYSTONES = 3;
 
 enum Wall
 {
@@ -74,6 +75,7 @@ public:
 
 	bool ActivateKeystone(glm::vec3 playerPos, Sound * minotaurGrowlSound);
 	void UpdateKeystones(float deltaTime);
+	void ResetKeystones();
 
 	void BindMaterial(Shader* shader);
 
