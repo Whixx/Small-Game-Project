@@ -2,7 +2,7 @@
 #include "stb_image_write.h"
 
 Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>> mazeGrid, Maze* maze)
-	:model("Models/Minotaur/mino.obj"),
+	:model("Models/Minotaur/mino.fbx"),
 	stepSound("Sounds/minotaurstep2.mp3", false, engine),
 	growlSound("Sounds/minotaurgrowl.wav", false, engine)
 {
