@@ -16,6 +16,7 @@ int main()
 
 	srand(time(NULL));
 	glEnable(GL_NORMALIZE);
+	glEnable(GL_CULL_FACE);
 
 	Display display;
 
@@ -107,8 +108,6 @@ int main()
 	player.CenterPlayer(); //Space to return to origin
 
 	minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();
-
-	ObjectHandler OH;
 	
 	Model lightSphereModel("Models/Ball/ball.obj");
 	GLuint screenQuad = CreateScreenQuad();
@@ -119,6 +118,13 @@ int main()
 	double deltaTime = 0;
 	double constLastTime = 0;
 	int nrOfFrames = 0;
+
+	//========================== Creating Landmarks =============================//
+
+	ObjectHandler OH;
+	CreateLandmarks(&OH, &maze);
+
+	//=========================== Game Loop ====================================//
 
 	while (!display.IsWindowClosed())
 	{
