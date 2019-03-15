@@ -8,8 +8,8 @@
 #include "ObjectHandler.h"
 #include "PointLight.h"
 #include "ShadowMap.h"
-#include "Bloom.h"
-#include "Blur.h"
+//#include "Bloom.h"
+//#include "Blur.h"
 #include "GBuffer.h"
 #include "FinalFBO.h"
 #include "Player.h"
@@ -35,19 +35,13 @@ void InitGeometryPass(Shader *shader);
 void InitMazeGeometryPass(Shader *shader);
 void InitLightPass(Shader *shader);
 void InitParticleShader(Shader *shader);
-void InitPointLightPass(Shader *shader);
-void InitBlurShader(Shader *shader);
-void InitFinalBloomShader(Shader *shader);
 void InitFinalShader(Shader *shader);
 
 // Shader pass functions
 void MazeGenerationPass(Shader * mazeGenerationShader, Maze * maze, Player * player);
 void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Maze* maze, Exit * exit);
 void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze* maze, Minotaur * minotaur, Exit * exit);
-void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenQuad, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera);
-void LightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, Model *renderModel);
-void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, GLuint *fullScreenTriangle);
-void FinalBloomPass(Shader *finalBloomShader, FinalFBO * finalFBO, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, GLuint *fullScreenTriangle);
+void DRLightPass(GBuffer *gBuffer, FinalFBO * finalFBO, GLuint *fullScreenQuad, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera);
 void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader);
 void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint *fullScreenTriangle);
 
