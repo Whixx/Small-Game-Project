@@ -5,7 +5,7 @@ layout (triangle_strip, max_vertices=18) out;
 
 uniform mat4 shadowMatrices[6];
 
-out vec4 worldPos;
+out vec3 worldPos;
 
 void main()
 {
@@ -15,8 +15,8 @@ void main()
 		for(int i = 0; i < 3; ++i)
 		{
 			// Pass on the worldPos and lightSpacePos.
-			worldPos = gl_in[i].gl_Position;
-			gl_Position = shadowMatrices[face] * worldPos;
+			worldPos = gl_in[i].gl_Position.xyz;
+			gl_Position = shadowMatrices[face] * gl_in[i].gl_Position;
 			EmitVertex();
 		}
 		EndPrimitive();
