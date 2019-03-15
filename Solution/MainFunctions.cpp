@@ -510,7 +510,7 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 	return mazeGen.GetGrid();
 }
 
-void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, Menu* buttonHandler, InputHandler* ih)
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, Menu* buttonHandler, InputHandler* ih, std::vector<std::vector<int>>* mazeGrid, irrklang::ISoundEngine* enginePtr)
 {
 	EventHandler& EH = EventHandler::GetInstance();
 	while (!EH.IsEmpty())
@@ -528,8 +528,9 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		{
 			//player->CenterPlayer();
 			deathSound->Play();
-			player->resetCoins();
 
+			RegenerateMaze(mazeGrid, maze, enginePtr);
+			player->resetCoins();
 			minotaur->ResetMinotaur();
 
 			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -572,7 +573,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		{
 			*paused = false;
 			cout << "PAUSED: " << *paused << endl;
-			ih->ToggleMouseLock();
+			ih->SetMouseLockTrue();
 			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);			
 			glfwSetCursorPos(window->GetWindow(), player->GetCamera()->GetOldMousePosition().x, player->GetCamera()->GetOldMousePosition().y);
 		}
@@ -593,7 +594,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 				if (*startMenu)
 				{
 					// playbutton
-					if (buttonHandler->IsQuadPressed(window->GetWindow(), 2))
+					if (buttonHandler->IsQuadPressed(window->GetWindow(), 0))
 					{
 						cout << "PLAY IS CLICKED IN STARTMENU" << endl;
 						EventHandler& EH = EventHandler::GetInstance();
@@ -602,7 +603,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 						player->CenterPlayer();
 					}
 					// quitbutton
-					if (buttonHandler->IsQuadPressed(window->GetWindow(), 3))
+					if (buttonHandler->IsQuadPressed(window->GetWindow(), 1))
 					{
 						cout << "QUIT IS CLICKED IN STARTMENU" << endl;
 						glfwSetWindowShouldClose(window->GetWindow(), GLFW_TRUE);
@@ -635,9 +636,13 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 	}
 }
 
-void ResetMinotaur(Minotaur* minotaur, irrklang::ISoundEngine * engine, std::vector<std::vector<int>> mazeGrid, Maze * maze)
+void RegenerateMaze(std::vector<std::vector<int>>* mazeGrid, Maze* maze, irrklang::ISoundEngine* enginePtr)
 {
-	minotaur->~Minotaur();
+	int height = mazeGrid->size();
+	int width = mazeGrid->size();
+	*mazeGrid = GenerateMazePNG(height, width);
+	
+	maze = &Maze(enginePtr);
 
 }
 

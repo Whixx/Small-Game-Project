@@ -189,9 +189,9 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	//}
 }
 
-void InputHandler::ToggleMouseLock()
+void InputHandler::SetMouseLockTrue()
 {
-	this->mouseLock = !mouseLock;
+	this->mouseLock = true;
 }
 
 bool InputHandler::mouseLock = false;

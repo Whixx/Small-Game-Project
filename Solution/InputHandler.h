@@ -17,7 +17,7 @@ public:
 	static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 	void MouseControls(Display *display, Player *player, float elapsedTime);
 	void KeyboardControls(Display *display, Player *player, float elapsedTime);
-	void ToggleMouseLock();
+	void SetMouseLockTrue();
 
 private:
 	static bool mouseLock;

@@ -62,8 +62,8 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width);
 
 void SetMaxPatchVertices();
 
-void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, Menu* buttonHandler, InputHandler* ih);
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, Menu* buttonHandler, InputHandler* ih, std::vector<std::vector<int>>* mazeGrid, irrklang::ISoundEngine* enginePtr);
 
-void ResetMinotaur(Minotaur* minotaur, irrklang::ISoundEngine * engine, std::vector<std::vector<int>> mazeGrid, Maze* maze);
+void RegenerateMaze(std::vector<std::vector<int>>* mazeGrid, Maze* maze, irrklang::ISoundEngine* enginePtr);
 
 #endif

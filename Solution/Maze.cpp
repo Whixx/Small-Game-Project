@@ -17,7 +17,7 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	this->mazeVbo = 0;
 	this->mazeVao = 0;
 
-	this->keystoneSound.SetVolume(1);
+	//this->keystoneSound.SetVolume(1);
 
 	// Set maze position, rotation and scale
 	this->transform.SetPos(glm::vec3(0, 0, 0));

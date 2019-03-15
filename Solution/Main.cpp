@@ -138,22 +138,9 @@ int main()
 
 	//=========================== Creating Objects ====================================//
 
-	//// Create Lights
-	//PointLightHandler lights;	// use .CreateLight()
-
 	Sound winSound("Sounds/winSound.mp3", false, enginePtr);
 	Sound deathSound("Sounds/death.wav", false, enginePtr);
 	Sound minotaurGrowlSound("Sounds/minotaurgrowl.wav", false, enginePtr);
-
-	//Minotaur minotaur(enginePtr, mazeGrid, &maze);
-	//float playerHeight = 1.28f;
-	//
-	//float torchSize = 0.02f;
-	//Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize, &minotaur);
-	//player.SetPlayerSpeed(2.0f);
-	//player.CenterPlayer(); //Space to return to origin
-
-	//minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();
 
 	ObjectHandler OH;
 	
@@ -196,7 +183,7 @@ int main()
 		
 		// ================== EVENTS ==================
 		glfwPollEvents();
-		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &display, &paused, &startMenu, &buttonHandler, &IH);
+		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &display, &paused, &startMenu, &buttonHandler, &IH, &mazeGrid, enginePtr);
 
 		if (!paused)
 		{
