@@ -88,8 +88,7 @@ void main()
 	float distancePixelToLight;
 
 	// Ambient
-	//vec3 ambient = ambientColor.r * materialColor.rgb;
-    vec3 ambient = 0.2 * materialColor.rgb;
+	vec3 ambient = ambientColor.r * materialColor.rgb;
 	//ambient = vec3(1.0);
 	
 	// Diffuse

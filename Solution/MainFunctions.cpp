@@ -592,17 +592,17 @@ void CreateLandmarks(ObjectHandler * OH, Maze * maze)
 	OH->GetObject(skeletonPile2)->GetScale() = glm::vec3(0.7f);
 	OH->GetObject(skeletonPile2)->GetRot().x += glm::radians(180.0f);
 
-	int stone = OH->CreateObject("Models/Landmarks/Stone/Stone.obj");
-	OH->GetObject(stone)->GetScale() = glm::vec3(2.0f);
+	int stone = OH->CreateObject("Models/Landmarks/Stone/stone.obj");
+	OH->GetObject(stone)->GetScale() = glm::vec3(0.02f);
 
-	int stone2 = OH->CreateObject("Models/Landmarks/Stone/Stone.obj");
-	OH->GetObject(stone2)->GetScale() = glm::vec3(2.3f);
+	int stone2 = OH->CreateObject("Models/Landmarks/Stone/stone.obj");
+	OH->GetObject(stone2)->GetScale() = glm::vec3(0.023f);
 
-	int stone3 = OH->CreateObject("Models/Landmarks/Stone/Stone.obj");
-	OH->GetObject(stone3)->GetScale() = glm::vec3(1.5f);
+	int stone3 = OH->CreateObject("Models/Landmarks/Stone/stone.obj");
+	OH->GetObject(stone3)->GetScale() = glm::vec3(0.015f);
 
-	int stone4 = OH->CreateObject("Models/Landmarks/Stone/Stone.obj");
-	OH->GetObject(stone4)->GetScale() = glm::vec3(1.0f);
+	int stone4 = OH->CreateObject("Models/Landmarks/Stone/stone.obj");
+	OH->GetObject(stone4)->GetScale() = glm::vec3(0.01f);
 
 	// Make sure that every object has a unique tile
 	for (int i = 0; i < OH->GetNrOfObjects(); i++)
