@@ -742,3 +742,9 @@ void CreateLandmarks(ObjectHandler * OH, Maze * maze)
 		printf("Object %d, Position: X: %f, Y: %f, Z: %f\n", i, OH->GetObject(i)->GetPos().x, OH->GetObject(i)->GetPos().y, OH->GetObject(i)->GetPos().z);
 	}
 }
+
+void ResetLandmarks(ObjectHandler * OH, Maze * maze)
+{
+	OH->~ObjectHandler();
+	CreateLandmarks(OH, maze);
+}
