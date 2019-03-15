@@ -32,12 +32,12 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	this->exit = this->CreateExit();
 
 	this->nrOfKeystones = 0;
-	this->keystonesCapacity = 3; // Initvalue of the number of keystones
+	this->keystonesCapacity = 5; // Init Allocation of the keystone arr
 	this->keystones = new Keystone[this->keystonesCapacity];
 	this->lastActivatedKeystone = glm::vec3();
 
 	// Create 3 cubes. Each on a separate floor in the maze
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < NR_OF_START_KEYSTONES; i++)
 		this->AddKeystone();
 
 	// Set scale of exit
@@ -448,6 +448,14 @@ void Maze::UpdateKeystones(float deltaTime)
 			}	
 		}
 	}
+}
+
+void Maze::ResetKeystones()
+{
+	this->nrOfKeystones = 0;
+	// Create 3 cubes. Each on a separate floor in the maze
+	for (int i = 0; i < NR_OF_START_KEYSTONES; i++)
+		this->AddKeystone();
 }
 
 void Maze::BindMaterial(Shader* shader)

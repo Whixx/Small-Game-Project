@@ -304,7 +304,7 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 
 	// Same world matrix for walls and floor
 	glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
-	
+
 	// Draw Maze
 	mazeGeometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
 	mazeGeometryPass->SendMat4("VP", player->GetCamera()->GetViewProjection());
@@ -528,7 +528,10 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		{
 			//player->CenterPlayer();
 			deathSound->Play();
+
 			player->resetCoins();
+
+			maze->ResetKeystones();
 
 			minotaur->ResetMinotaur();
 
@@ -593,7 +596,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 				if (*startMenu)
 				{
 					// playbutton
-					if (buttonHandler->IsQuadPressed(window->GetWindow(), 2))
+					if (buttonHandler->IsQuadPressed(window->GetWindow(), 0))
 					{
 						cout << "PLAY IS CLICKED IN STARTMENU" << endl;
 						EventHandler& EH = EventHandler::GetInstance();
@@ -602,7 +605,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 						player->CenterPlayer();
 					}
 					// quitbutton
-					if (buttonHandler->IsQuadPressed(window->GetWindow(), 3))
+					if (buttonHandler->IsQuadPressed(window->GetWindow(), 1))
 					{
 						cout << "QUIT IS CLICKED IN STARTMENU" << endl;
 						glfwSetWindowShouldClose(window->GetWindow(), GLFW_TRUE);
