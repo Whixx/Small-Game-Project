@@ -38,6 +38,12 @@ void InputHandler::Key_callback(GLFWwindow * window, int key, int scancode, int 
 		EH.AddEvent(EVENT_MAZE_KEYSTONE_PRESSED);
 	}
 
+	if (key == GLFW_KEY_X && action == GLFW_PRESS)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+		EH.AddEvent(EVENT_PLAYER_PICKUPCOIN);
+	}
+
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 	{
 		EventHandler& EH = EventHandler::GetInstance();

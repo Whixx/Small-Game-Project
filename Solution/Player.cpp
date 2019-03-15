@@ -3,7 +3,7 @@
 
 Player::Player(float height, float fov, float near, float far, Maze * maze, irrklang::ISoundEngine * engine, PointLightHandler * PLH, float torchSize, Minotaur * minotaur)
 	: playerCamera(glm::vec3(0, height, 0), fov, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, near, far, glm::vec3(0.0f, 0.0f, 1.0f)),
-	playerTorch(this->transform, glm::vec3(0.5f, 0.15f, 0.15f), engine, PLH, torchSize),
+	playerTorch(this->transform, glm::vec3(0.8f, 0.1975f, 0.1008f), engine, PLH, torchSize),
 	footStep("Sounds/playerfootstep.ogg", false, engine),
 	dropSound("Sounds/CoinHitGround.wav", false, engine),
 	collisionSound("Sounds/CoinHitWall2.ogg", false, engine),
@@ -435,16 +435,7 @@ void Player::Update(double dt)
 
 	this->CheckIfWin();
 
-	glm::vec3 minoPos = this->minotaur->GetTransform().GetPos();
-	float minoBB = this->minotaur->GetTransform().GetScale().x * 10.0f;
-
-	// Check if player dies
-	if ((minoPos.x <= this->transform.GetPos().x + this->boundingBoxHalfSize + minoBB && minoPos.x >= this->transform.GetPos().x - this->boundingBoxHalfSize - minoBB) && 
-		(minoPos.z <= this->transform.GetPos().z + this->boundingBoxHalfSize + minoBB && minoPos.z >= this->transform.GetPos().z - this->boundingBoxHalfSize - minoBB))
-	{
-		EventHandler& EH = EventHandler::GetInstance();
-		EH.AddEvent(EVENT_PLAYER_LOSE);
-	}
+	this->CheckIfLoose();
 
 #ifdef DEBUG
 	if (this->playerCamera.GetCameraPosition() != this->playerCamera.GetOldCameraPosition())
@@ -488,7 +479,6 @@ void Player::AddCoinToInventory()
 
 	// Add a coin
 	this->inventoryCoins[this->nrOfInventoryCoins].GetTransform()->SetPos(this->transform.GetPos());
-	this->inventoryCoins[this->nrOfInventoryCoins].GetTransform()->SetScale(glm::vec3(0.025f));
 
 	// Increment NrOfCoins
 	this->nrOfInventoryCoins++;
@@ -515,6 +505,47 @@ void Player::TossCoin()
 	this->AddCoinToWorld(COIN_TOSS);
 }
 
+void Player::PickUpCoin()
+{
+	// Check if the player can pick up more coins
+	if (this->nrOfInventoryCoins < MAX_NR_OF_COINS)
+	{
+		// Find a nearby coin in world
+		int indexToRemove = 0;
+		indexToRemove = this->FindNearbyCoin();
+
+		// Check if no coin is close enough to be removed
+		if (indexToRemove == -1)
+		{
+			return;
+		}
+
+		// Remove that coin from world
+		this->worldCoins.erase(this->worldCoins.begin() + indexToRemove);
+		this->nrOfWorldCoins--;
+
+		// Add a new coin in inventory
+		this->nrOfInventoryCoins++;
+	}
+}
+
+void Player::SpawnCoinAtMinotaur()
+{
+	Transform transformTmp = minotaur->GetTransform();
+	// Set the starting position of the coin to be on the player and set the scale
+	transformTmp.SetPos(transformTmp.GetPos());
+
+	// Set the state (if coin is tossed or dropped)
+	Coin coinTmp = Coin(transformTmp, COIN_DROP_MINOTAUR, this->maze);
+	this->worldCoins.push_back(coinTmp);
+
+	this->nrOfWorldCoins++;
+
+#ifdef DEBUG
+	std::cout << "Coin Spawned beneath minotaur" << std::endl;
+#endif
+}
+
 void Player::PlayWallCollisionSound()
 {
 	this->collisionSound.Play();
@@ -538,12 +569,6 @@ void Player::AddCoinToWorld(unsigned int state)
 		return;
 	}
 
-	// Check if world can have more coins // DYNAMIC FIX
-	if (this->nrOfWorldCoins == 256)
-	{
-		return;
-	}
-
 	// Update the torch so that it is located in front of the player
 	glm::vec3 throwPos = this->playerCamera.GetCameraPosition()
 		- this->playerCamera.GetRightVector() * 0.075f
@@ -551,9 +576,8 @@ void Player::AddCoinToWorld(unsigned int state)
 
 
 	Transform transformTmp = this->transform;
-	// Set the starting position of the coin to be on the player and set the scale
+	// Set the starting position of the coin to be on the player
 	transformTmp.SetPos(throwPos);
-	transformTmp.SetScale(this->inventoryCoins[this->nrOfInventoryCoins - 1].GetTransform()->GetScale());
 
 	// Set the state (if coin is tossed or dropped)
 	Coin coinTmp = Coin(transformTmp, state, this->maze);
@@ -584,7 +608,9 @@ void Player::UpdateCoins(double dt)
 			case COIN_TOSS:
 				this->worldCoins.at(i).UpdateTossCoin(dt);
 				break;
-
+			case COIN_DROP_MINOTAUR:
+				// Do nothing atm
+				break;
 			default:
 				#ifdef DEBUG
 				std::cout << "Invalid State for coin" << std::endl;
@@ -612,6 +638,46 @@ void Player::UpdateCoins(double dt)
 	}
 }
 
+// This function will find the coin thats currently closest to the player, and return the index of that coin.
+int Player::FindNearbyCoin()
+{
+	float minDistance = 1.0f;
+	
+	// Used to allways pick up the closest coin, if more then 1 coin is within the minDistance
+	float currShortestDistance = 100;
+	int currShortestDistIndex = -1;
+
+	float distance = 0;
+
+	// The Y-distance doesn't matter
+	glm::vec2 playerPos;
+	glm::vec2 coinPos;
+
+
+	// Loop through all coins that currently is out in the world
+	for (int i = 0; i < this->worldCoins.size(); i++)
+	{
+		playerPos = glm::vec2(this->playerCamera.GetCameraPosition().x, this->playerCamera.GetCameraPosition().z);
+		coinPos = glm::vec2(this->worldCoins.at(i).GetTransform()->GetPos().x, this->worldCoins.at(i).GetTransform()->GetPos().z);
+
+		distance = length(playerPos - coinPos);
+
+		// Check if the player is is close enough to pick the coin up
+		if (distance < minDistance)
+		{
+			// Update the smallestDistance
+			if (distance < currShortestDistance)
+			{
+				currShortestDistance = distance;
+				currShortestDistIndex = i;
+			}
+		}
+	}
+
+	// If currShortestDistIndex didn't find any coins, it will return -1
+	return currShortestDistIndex;
+}
+
 void Player::CheckIfWin()
 {
 	// Get a vector with only x and z values
@@ -626,5 +692,19 @@ void Player::CheckIfWin()
 	{
 		EventHandler& EH = EventHandler::GetInstance();
 		EH.AddEvent(EVENT_PLAYER_WIN);
+	}
+}
+
+void Player::CheckIfLoose()
+{
+	glm::vec3 minoPos = this->minotaur->GetTransform().GetPos();
+	float minoBB = this->maze->GetTransform()->GetScale().x / 2.0f;
+
+	// Check if player dies
+	if ((minoPos.x <= this->transform.GetPos().x + this->boundingBoxHalfSize + minoBB && minoPos.x >= this->transform.GetPos().x - this->boundingBoxHalfSize - minoBB) &&
+		(minoPos.z <= this->transform.GetPos().z + this->boundingBoxHalfSize + minoBB && minoPos.z >= this->transform.GetPos().z - this->boundingBoxHalfSize - minoBB))
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+		EH.AddEvent(EVENT_PLAYER_LOSE);
 	}
 }

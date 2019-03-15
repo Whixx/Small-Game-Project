@@ -30,7 +30,7 @@ vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
 void main()
 {
 	// Setting displacement factor
-	float dispFactor = Scale * 0.08;
+	float dispFactor = Scale * 0.03;
 	
    	// Interpolate the attributes of the output vertex using the barycentric coordinates
    	texCoord0_FS_in = interpolate2D(texCoord0_ES_in[0], texCoord0_ES_in[1], texCoord0_ES_in[2]);

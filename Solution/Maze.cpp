@@ -3,7 +3,8 @@
 Maze::Maze(irrklang::ISoundEngine * engine)
 	:keyStoneModel("Models/Cube/cube.obj"),
 	keystoneSound("Sounds/keystoneSound.wav", false, engine),
-	exitModel("Models/Exit/exit.obj")
+	exitModelOpen("Models/Exit/GateOpen.obj"),
+	exitModelClosed("Models/Exit/GateClosed.obj")
 {
 	this->imageData = nullptr;
 	this->path = "";
@@ -39,12 +40,19 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	for (int i = 0; i < 3; i++)
 		this->AddKeystone();
 
+	// Set scale of exit
+	this->exit.GetTransform()->SetScale(glm::vec3(
+		0.11f * this->transform.GetScale().x,
+		0.08f * this->transform.GetScale().y,
+		0.11f * this->transform.GetScale().z));
+
 #ifdef DEBUG
 	// TEST PRINT
 	for (int i = 0; i < this->nrOfKeystones; i++)
 	{
-		std::cout << "X: " << this->keystones[i].GetTransform()->GetPos().x << std::endl;
-		std::cout << "Z: " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
+		std::cout << "Keystone " << i << " on position: ";
+		std::cout << "X: " << this->keystones[i].GetTransform()->GetPos().x;
+		std::cout << " Z: " << this->keystones[i].GetTransform()->GetPos().z << std::endl;
 	}
 #endif
 
@@ -300,7 +308,7 @@ Exit Maze::CreateExit()
 
 	cout << "X: " << exitWorldPos.x << "Y: " << exitWorldPos.y << "Z: " << exitWorldPos.z << endl;
 
-	Exit exit = Exit(&this->exitModel, exitWorldPos, exitDir, a.uvPos);
+	Exit exit = Exit(&this->exitModelOpen, &this->exitModelClosed, exitWorldPos, exitDir, a.uvPos);
 	exit.GetTransform()->GetScale() = glm::vec3(this->scaleXZ, this->scaleY, this->scaleXZ);
 	// Create exit
 	return exit;
@@ -531,7 +539,7 @@ void Maze::LoadTextures()
 	Texture* wallAmbient = MH.LoadTexture("Textures/wall0/wall0_ambient.png", "TextureAmbient");
 	Texture* wallSpecular = MH.LoadTexture("Textures/wall0/wall0_specular.png", "TextureSpecular");
 	Texture* wallHeight = MH.LoadTexture("Textures/wall0/wall0_height.png", "TextureHeight");
-	float wallShininess = 16.0;
+	float wallShininess = 12.0;
 
 	
 	Texture* floorDiffuse = MH.LoadTexture("Textures/floor0/floor0_diffuse.png", "TextureDiffuse");
@@ -539,7 +547,7 @@ void Maze::LoadTextures()
 	Texture* floorAmbient = MH.LoadTexture("Textures/floor0/floor0_ambient.png", "TextureAmbient");
 	Texture* floorSpecular = MH.LoadTexture("Textures/floor0/floor0_specular.png", "TextureSpecular");
 	Texture* floorHeight = MH.LoadTexture("Textures/floor0/floor0_height.png", "TextureHeight");
-	float floorShininess = 16.0;
+	float floorShininess = 12.0;
 
 	
 
@@ -619,7 +627,7 @@ ExitPosDir Maze::FindExit()
 	}
 
 #ifdef DEBUG
-	cout << "ExitPos:x :" << exitPos.x << endl << "ExitPos:y :" << exitPos.y << endl;
+	cout << "Exit World Pos (X,Z): " << exitPos.x << ", " << exitPos.y << endl;
 #endif
 
 	ExitPosDir r = {exitPos, exitDir};
@@ -677,7 +685,7 @@ KeystonePosDir Maze::CreateCubePosition()
 
 				// Transform to world coords
 				nearbyFloorPos = this->TransformToWorldCoords(nearbyFloorPos);
-				glm::vec3 wallPos = this->TransformToWorldCoords(glm::vec3(randomWidth, 1.0f, randomHeight));
+				glm::vec3 wallPos = this->TransformToWorldCoords(glm::vec3(randomWidth, 0.5f, randomHeight));
 
 				// Vector from wall to floor
 				glm::vec3 direction = normalize(nearbyFloorPos - wallPos);
@@ -717,7 +725,7 @@ glm::vec3 Maze::FindNearbyFloor(glm::vec2 wallPos)
 		{
 			if (floorPixel == glm::vec3(0.0f, 0.0f, 0.0f))
 			{
-				return glm::vec3(wallPos.x, 1.0f, wallPos.y + 1);
+				return glm::vec3(wallPos.x, 0.5f, wallPos.y + 1);
 			}
 		}
 	}
@@ -732,7 +740,7 @@ glm::vec3 Maze::FindNearbyFloor(glm::vec2 wallPos)
 		{
 			if (floorPixel == glm::vec3(0.0f, 0.0f, 0.0f))
 			{
-				return glm::vec3(wallPos.x, 1.0f, wallPos.y - 1);
+				return glm::vec3(wallPos.x, 0.5f, wallPos.y - 1);
 			}
 		}
 	}
@@ -746,7 +754,7 @@ glm::vec3 Maze::FindNearbyFloor(glm::vec2 wallPos)
 		{
 			if (floorPixel == glm::vec3(0.0f, 0.0f, 0.0f))
 			{
-				return glm::vec3(wallPos.x + 1, 1.0f, wallPos.y);
+				return glm::vec3(wallPos.x + 1, 0.5f, wallPos.y);
 			}
 		}
 	}
@@ -760,7 +768,7 @@ glm::vec3 Maze::FindNearbyFloor(glm::vec2 wallPos)
 		{
 			if (floorPixel == glm::vec3(0.0f, 0.0f, 0.0f))
 			{
-				return glm::vec3(wallPos.x - 1, 1.0f, wallPos.y);
+				return glm::vec3(wallPos.x - 1, 0.5f, wallPos.y);
 			}
 		}
 	}
