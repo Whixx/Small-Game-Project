@@ -554,22 +554,23 @@ void Maze::LoadTextures()
 {
 	MaterialHandler& MH = MaterialHandler::GetInstance();
 
-	Texture* wallDiffuse = MH.LoadTexture("Textures/wall0/wall0_diffuse.png", "TextureDiffuse");
-	Texture* wallNormal = MH.LoadTexture("Textures/wall0/wall0_normal.png", "TextureNormal");
-	Texture* wallAmbient = MH.LoadTexture("Textures/wall0/wall0_ambient.png", "TextureAmbient");
-	Texture* wallSpecular = MH.LoadTexture("Textures/wall0/wall0_specular.png", "TextureSpecular");
-	Texture* wallHeight = MH.LoadTexture("Textures/wall0/wall0_height.png", "TextureHeight");
+	// Material maps
+	string pathWall = "Textures/wall0/Mud/";
+	string pathFloor = "Textures/floor0/Mud/";
+
+	Texture* wallDiffuse = MH.LoadTexture(pathWall + "wall0_diffuse.png", "TextureDiffuse");
+	Texture* wallNormal = MH.LoadTexture(pathWall + "wall0_normal.png", "TextureNormal");
+	Texture* wallAmbient = MH.LoadTexture(pathWall + "wall0_ambient.png", "TextureAmbient");
+	Texture* wallSpecular = MH.LoadTexture(pathWall + "wall0_specular.png", "TextureSpecular");
+	Texture* wallHeight = MH.LoadTexture(pathWall + "wall0_height.png", "TextureHeight");
 	float wallShininess = 12.0;
 
-	string pathFloor = "Textures/floor0/Mud/";
 	Texture* floorDiffuse = MH.LoadTexture(pathFloor + "floor0_diffuse.png", "TextureDiffuse");
 	Texture* floorNormal = MH.LoadTexture(pathFloor + "floor0_normal.png", "TextureNormal");
 	Texture* floorAmbient = MH.LoadTexture(pathFloor + "floor0_ambient.png", "TextureAmbient");
 	Texture* floorSpecular = MH.LoadTexture(pathFloor + "floor0_specular.png", "TextureSpecular");
 	Texture* floorHeight = MH.LoadTexture(pathFloor + "floor0_height.png", "TextureHeight");
 	float floorShininess = 12.0;
-
-	
 
 	// Wall0
 	this->wall1Mat = MH.AddMaterial(wallDiffuse, wallAmbient, wallSpecular, wallNormal, wallHeight, wallShininess, "wall1");
