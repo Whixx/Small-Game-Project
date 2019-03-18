@@ -97,7 +97,7 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 		vector.z = mesh->mVertices[i].z;
 		vertex.Position = vector;
 
-		// Texture
+		// UV
 		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
 		{
 			glm::vec2 vec;
@@ -133,9 +133,10 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 
 	aiString matName;
 	float matShininess;
+	aiColor3D matAmbient;
 	MaterialHandler& MH = MaterialHandler::GetInstance();
 	std::vector<Texture*> diffuseMaps;
-	std::vector<Texture*> ambientMaps;
+	std::vector<Texture*> emissiveMaps;
 	std::vector<Texture*> specularMaps;
 	std::vector<Texture*> normalMaps;
 	std::vector<Texture*> heightMaps;
@@ -157,11 +158,14 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 		{
 		}
 
-
+		success = material->Get(AI_MATKEY_COLOR_AMBIENT, matAmbient);
+		if (success != AI_SUCCESS)
+		{
+		}
 
 		// Load all texture types
 		diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "TextureDiffuse");
-		ambientMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "TextureAmbient");
+		emissiveMaps = LoadMaterialTextures(material, aiTextureType_EMISSIVE, "TextureEmissive");
 		specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "TextureSpecular");
 		normalMaps = LoadNormalMap(this->directoryPath + '/' + this->name + "_normal.png", "TextureNormal");
 		heightMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "TextureHeight");
@@ -169,8 +173,8 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 		// Add default textures if nothing was loaded
 		if (diffuseMaps.size() == 0)
 			diffuseMaps.push_back(MH.LoadTexture("Textures/default/default_diffuse.png", "TextureDiffuse"));
-		if (ambientMaps.size() == 0)
-			ambientMaps.push_back(MH.LoadTexture("Textures/default/default_ambient.png", "TextureAmbient"));
+		if (emissiveMaps.size() == 0)
+			emissiveMaps.push_back(MH.LoadTexture("Textures/default/default_emissive.png", "TextureEmissive"));
 		if (specularMaps.size() == 0)
 			specularMaps.push_back(MH.LoadTexture("Textures/default/default_specular.png", "TextureSpecular"));
 		if (normalMaps.size() == 0)
@@ -181,13 +185,13 @@ Mesh * Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 	else
 	{
 		diffuseMaps.push_back(MH.LoadTexture("Textures/default/default_diffuse.png", "TextureDiffuse"));
-		ambientMaps.push_back(MH.LoadTexture("Textures/default/default_ambient.png", "TextureAmbient"));
+		emissiveMaps.push_back(MH.LoadTexture("Textures/default/default_emissive.png", "TextureEmissive"));
 		specularMaps.push_back(MH.LoadTexture("Textures/default/default_specular.png", "TextureSpecular"));
-		normalMaps .push_back(MH.LoadTexture("Textures/default/default_normal.png", "TextureNormal"));
-		heightMaps .push_back(MH.LoadTexture("Textures/default/default_height.png", "TextureHeight"));
+		normalMaps.push_back(MH.LoadTexture("Textures/default/default_normal.png", "TextureNormal"));
+		heightMaps.push_back(MH.LoadTexture("Textures/default/default_height.png", "TextureHeight"));
 	}
 
-	Material* mat = MH.AddMaterial(diffuseMaps[0], ambientMaps[0], specularMaps[0], normalMaps[0], heightMaps[0], matShininess, matName.C_Str());
+	Material* mat = MH.AddMaterial(diffuseMaps[0], emissiveMaps[0], specularMaps[0], normalMaps[0], heightMaps[0], matShininess, glm::vec3(matAmbient.r, matAmbient.g, matAmbient.b), matName.C_Str());
 	Mesh* temp = new Mesh(vertices, indices, mat);
 	return temp;
 }
@@ -217,7 +221,9 @@ std::vector<Texture*> Model::LoadNormalMap(std::string path, std::string type)
 
 
 
-AnimatedModel::AnimatedModel(std::string path, bool gammaCorrection) : gammaCorrection(gammaCorrection)
+AnimatedModel::AnimatedModel(std::string path, bool gammaCorrection) 
+	: gammaCorrection(gammaCorrection),
+	skeleton()
 {
 	this->directoryPath = path.substr(0, path.find_last_of('/'));
 	std::string objPath = path.substr(path.find_last_of('/') + 1, string::npos); // Remove directory

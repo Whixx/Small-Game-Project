@@ -20,7 +20,7 @@ out float type0_ES_in[];
 // Decide how detailed the mesh should be
 float GetTessLevel()
 {
-    float divide = 50;
+    float divide = 5;
     return divide;
 }
 

@@ -1,6 +1,7 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
+#include <glm/glm.hpp>
 #include "Shader.h"
 #include "Texture.h"
 #include <vector>
@@ -11,7 +12,7 @@ using namespace std;
 class Material
 {
 public:
-	Material(Texture* tex_diffuse, Texture* tex_ambient, Texture* tex_specular, Texture* tex_normal, Texture* tex_height, float shininess, const char* name);
+	Material(Texture* tex_diffuse, Texture* tex_emissive, Texture* tex_specular, Texture* tex_normal, Texture* tex_height, float shininess, glm::vec3 ambient, const char* name);
 	Material() {}
 	//Material(const Material &other);
 	//Material& operator=(const Material &other);
@@ -28,11 +29,12 @@ private:
 
 	string name;
 	Texture* diffuse;
-	Texture* ambient;
+	Texture* emissive;
 	Texture* specular;
 	Texture* normal;
 	Texture* height;
 	float shininess;
+	glm::vec3 ambient;
 };
 
 #endif

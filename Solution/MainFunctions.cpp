@@ -74,8 +74,9 @@ void InitLightPass(Shader * shader)
 	shader->SendInt("gDiffuse", 1);
 	shader->SendInt("gNormal", 2);
 	shader->SendInt("gSpecularShininessHeight", 3);
-	shader->SendInt("gAmbient", 4);
-	shader->SendInt("shadowMap", 5);
+	shader->SendInt("gEmissive", 4);
+	shader->SendInt("gAmbient", 5);
+	shader->SendInt("shadowMap", 6);
 
 	shader->ValidateShaders();
 }
@@ -304,6 +305,8 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	// Different geometry pass for the maze
 	mazeGeometryPass->Bind();
 
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 	// Same world matrix for walls and floor
 	glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
 	
@@ -315,6 +318,8 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	maze->DrawMaze();
 
 	mazeGeometryPass->UnBind();
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenTriangle, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera)
@@ -328,8 +333,8 @@ void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenT
 	bloomBuffer->BindForWriting();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	gBuffer->BindForReading(); // Binds texture slot 0,1,2,3,4
-	shadowBuffer->BindForReading(5); // Binds texture slot 5
+	gBuffer->BindForReading(); // Binds texture slot 0,1,2,3,4,5
+	shadowBuffer->BindForReading(6); // Binds texture slot 5
 
 	glDisable(GL_DEPTH_TEST);
 	glBindVertexArray(*fullScreenTriangle);

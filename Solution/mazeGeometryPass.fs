@@ -8,14 +8,16 @@ out vec3 WorldPosOut;
 out vec3 TextureRGBOut;
 out vec3 WorldNormalOut;
 out vec3 TextureSpecularAndHeightOut;
+out vec3 EmissiveOut;
 out vec3 AmbientOut;
 
 uniform sampler2D TextureDiffuse[2];
 uniform sampler2D TextureNormal[2];
 uniform sampler2D TextureSpecular[2];
-uniform sampler2D TextureAmbient[2];
+uniform sampler2D TextureEmissive[2];
 
 uniform float shininess[2];
+uniform vec3 ambient[2];
 
 void main()
 {	
@@ -33,8 +35,8 @@ void main()
 	WorldNormalOut = normalize(TBN0_FS_in * WorldNormalOut);
 
 	TextureSpecularAndHeightOut.r = texture2D(TextureSpecular[type], texCoord0_FS_in).r;
-	TextureSpecularAndHeightOut.g = 16.0;//shininess;
-	//TextureSpecularAndHeightOut.b = 0;
+	TextureSpecularAndHeightOut.g = shininess[type]; //shininess;
+	AmbientOut = ambient[type];
 
-	AmbientOut = texture2D(TextureAmbient[type], texCoord0_FS_in).rgb;
+	EmissiveOut = texture2D(TextureEmissive[type], texCoord0_FS_in).rgb;
 }

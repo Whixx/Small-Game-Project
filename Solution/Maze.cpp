@@ -536,26 +536,26 @@ void Maze::LoadTextures()
 
 	Texture* wallDiffuse = MH.LoadTexture("Textures/wall0/wall0_diffuse.png", "TextureDiffuse");
 	Texture* wallNormal = MH.LoadTexture("Textures/wall0/wall0_normal.png", "TextureNormal");
-	Texture* wallAmbient = MH.LoadTexture("Textures/wall0/wall0_ambient.png", "TextureAmbient");
 	Texture* wallSpecular = MH.LoadTexture("Textures/wall0/wall0_specular.png", "TextureSpecular");
 	Texture* wallHeight = MH.LoadTexture("Textures/wall0/wall0_height.png", "TextureHeight");
 	float wallShininess = 12.0;
+	glm::vec3 wallAmbient(0.0);
 
 	
 	Texture* floorDiffuse = MH.LoadTexture("Textures/floor0/floor0_diffuse.png", "TextureDiffuse");
 	Texture* floorNormal = MH.LoadTexture("Textures/floor0/floor0_normal.png", "TextureNormal");
-	Texture* floorAmbient = MH.LoadTexture("Textures/floor0/floor0_ambient.png", "TextureAmbient");
 	Texture* floorSpecular = MH.LoadTexture("Textures/floor0/floor0_specular.png", "TextureSpecular");
 	Texture* floorHeight = MH.LoadTexture("Textures/floor0/floor0_height.png", "TextureHeight");
 	float floorShininess = 12.0;
+	glm::vec3 floorAmbient(0.0);
 
 	
 
 	// Wall0
-	this->wall1Mat = MH.AddMaterial(wallDiffuse, wallAmbient, wallSpecular, wallNormal, wallHeight, wallShininess, "wall1");
+	this->wall1Mat = MH.AddMaterial(wallDiffuse, nullptr, wallSpecular, wallNormal, wallHeight, wallShininess, wallAmbient, "wall1");
 
 	// Floor0
-	this->floor0Mat = MH.AddMaterial(floorDiffuse, floorAmbient, floorSpecular, floorNormal, floorHeight, floorShininess, "floor0");
+	this->floor0Mat = MH.AddMaterial(floorDiffuse, nullptr, floorSpecular, floorNormal, floorHeight, floorShininess, floorAmbient, "floor0");
 }
 
 // Returns a vector with the rgb value of a pixel

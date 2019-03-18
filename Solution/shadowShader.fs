@@ -1,6 +1,6 @@
 #version 440
 
-in vec4 worldPos;
+in vec3 worldPos;
 
 uniform vec3 lightPos;
 uniform float farPlane;

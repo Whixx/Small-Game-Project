@@ -22,6 +22,7 @@ uniform sampler2D gPosition;
 uniform sampler2D gDiffuse;
 uniform sampler2D gNormal;
 uniform sampler2D gSpecularShininessHeight;
+uniform sampler2D gEmissive;
 uniform sampler2D gAmbient;
 
 // ShadowBuffer variables
@@ -75,9 +76,10 @@ void main()
 	vec3 pixelPos = texture2D(gPosition, texCoord0).xyz;
 	vec3 materialColor = texture2D(gDiffuse, texCoord0).rgb;
 	vec3 normal = texture2D(gNormal, texCoord0).xyz;
-	vec3 ambientColor = texture2D(gAmbient, texCoord0).rgb;
+	vec3 emissiveColor = texture2D(gEmissive, texCoord0).rgb;
 	float specular = texture2D(gSpecularShininessHeight, texCoord0).r;
 	float shininess = texture2D(gSpecularShininessHeight, texCoord0).g;
+	vec3 ambientColor = texture2D(gAmbient, texCoord0).rgb;
 	
 
 	// Attenuation
@@ -88,8 +90,10 @@ void main()
 	float distancePixelToLight;
 
 	// Ambient
-	vec3 ambient = ambientColor.r * materialColor.rgb;
-	//ambient = vec3(0);
+	vec3 ambient = ambientColor;
+
+	// Emissive
+	vec3 emissive = emissiveColor.rgb;
 	
 	// Diffuse
 	vec3 lightDir;
@@ -126,7 +130,7 @@ void main()
 
 	float shadow = calculateShadows(pixelPos, cameraPos, normal);
 
-	vec4 finalColor = vec4(ambient + ((1 - shadow) * attenuation * (diffuse + finalSpecular)), 1.0f);
+	vec4 finalColor = vec4(ambient + emissive + ((1 - shadow) * attenuation * (diffuse + finalSpecular)), 1.0f);
 	finalColor = min(vec4(1.0f,1.0f,1.0f,1.0f), finalColor);
 
 	fragment_color = vec4(finalColor.xyz, 1.0f);
