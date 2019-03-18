@@ -530,6 +530,8 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 			deathSound->Play();
 
 			RegenerateMaze(mazeGrid, maze, enginePtr);
+
+
 			player->resetCoins();
 
 			maze->ResetKeystones();
