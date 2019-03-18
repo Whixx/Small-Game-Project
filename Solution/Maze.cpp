@@ -41,10 +41,7 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 		this->AddKeystone();
 
 	// Set scale of exit
-	this->exit.GetTransform()->SetScale(glm::vec3(
-		0.11f * this->transform.GetScale().x,
-		0.08f * this->transform.GetScale().y,
-		0.11f * this->transform.GetScale().z));
+	this->SetExitScale();
 
 #ifdef DEBUG
 	// TEST PRINT
@@ -90,6 +87,11 @@ glm::vec3 Maze::GetExitWorldPos()
 Exit * Maze::GetExit()
 {
 	return &this->exit;
+}
+
+void Maze::SetExit(Exit exit)
+{
+	this->exit = exit;
 }
 
 Transform * Maze::GetTransform()
@@ -274,6 +276,14 @@ void Maze::BindTexture(unsigned int textureUnit)
 	{
 		std::cout << "[ERROR] Texture could not be bound. Unit not in range[0-31]" << std::endl;
 	}
+}
+
+void Maze::SetExitScale()
+{
+	this->exit.GetTransform()->SetScale(glm::vec3(
+		0.11f * this->transform.GetScale().x,
+		0.08f * this->transform.GetScale().y,
+		0.11f * this->transform.GetScale().z));
 }
 
 void Maze::LoadMaze(const std::string & fileName)

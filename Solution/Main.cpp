@@ -51,10 +51,10 @@ int main()
 
 	float torchSize = 0.02f;
 	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize, &minotaur);
-	player.SetPlayerSpeed(2.0f);
-	player.CenterPlayer(); //Space to return to origin
+	//player.SetPlayerSpeed(2.0f);
+	//player.CenterPlayer(); //Space to return to origin
 
-	minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();
+	//minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();		<-- ??
 
 
 	//=========================== Creating Shaders ====================================//
@@ -65,8 +65,8 @@ int main()
 	Shader mazeGenerationShader;
 	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.vs", GL_VERTEX_SHADER);
 	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.gs", GL_GEOMETRY_SHADER);
-	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.fs", GL_FRAGMENT_SHADER);
-	
+	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.fs", GL_FRAGMENT_SHADER);	
+
 	Shader shadowShader;
 	shadowShader.CreateShader(".\\shadowShader.vs", GL_VERTEX_SHADER);
 	shadowShader.CreateShader(".\\shadowShader.gs", GL_GEOMETRY_SHADER);
@@ -150,7 +150,7 @@ int main()
 	ClipSpaceQuad fullScreenQuad;
 	ClipSpaceQuad coinInterfaceQuad(glm::vec2(-0.4, -0.4), 1.0f, 0.05f, false, "Textures/UI/coins.png");
 
-	// MENU SHIT
+	// MENU STUFF
 	Menu buttonHandler;
 	int startButton = buttonHandler.AddButton(glm::vec2(0.0f, 0.25f), 0.35f, 0.35f, "Textures/Menu/play2.png", MENU_START);
 	int quitButton = buttonHandler.AddButton(glm::vec2(0.0f, -0.25f), 0.25f, 0.25f, "Textures/Menu/quit2.png", MENU_START);
@@ -183,7 +183,7 @@ int main()
 		
 		// ================== EVENTS ==================
 		glfwPollEvents();
-		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &display, &paused, &startMenu, &buttonHandler, &IH, &mazeGrid, enginePtr);
+		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &display, &paused, &startMenu, &buttonHandler, &IH, &mazeGrid, enginePtr, &exit, &mazeGenerationShader);
 
 		if (!paused)
 		{
@@ -269,7 +269,7 @@ int main()
 		}
 		else
 		{
-			// Draw UI on top of everyything else
+			// Draw UI on top of everything else
 			CoinUIPass(&coinUIShader, &coinInterfaceQuad, &player);
 		}
 

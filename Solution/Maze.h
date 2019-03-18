@@ -51,8 +51,10 @@ public:
 	int GetMazeHeight();
 	int GetMazeWidth();
 
+	Exit CreateExit();
 	glm::vec3 GetExitWorldPos();
 	Exit* GetExit();
+	void SetExit(Exit exit);
 
 	Transform *GetTransform();
 	glm::vec2* GetDrawOrder();
@@ -86,6 +88,9 @@ public:
 	Wall GetWallType(float x, float y);
 
 	void BindTexture(unsigned int textureUnit);
+
+	void SetExitScale();
+
 private:
 
 	unsigned char* imageData;
@@ -133,7 +138,6 @@ private:
 	// Returns the color of the pixel
 	glm::vec3 readPixel(unsigned int x, unsigned int y);
 	ExitPosDir FindExit();
-	Exit CreateExit();
 
 	// Keystone functions
 	KeystonePosDir CreateCubePosition();

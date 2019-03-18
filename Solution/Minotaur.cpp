@@ -399,8 +399,11 @@ glm::vec2 Minotaur::ClampToEdges(glm::vec2 mazeCoords)
 	return mazeCoords;
 }
 
-void Minotaur::ResetMinotaur()
+void Minotaur::ResetMinotaur(std::vector<std::vector<int>> newMazeGrid, Maze* maze)
 {
+	this->mazeGrid = newMazeGrid;
+	this->maze = maze;
+
 	this->agression = 0;
 	this->timePassed = 0;
 	this->alerted = false;

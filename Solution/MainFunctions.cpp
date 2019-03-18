@@ -510,7 +510,7 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 	return mazeGen.GetGrid();
 }
 
-void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, Menu* buttonHandler, InputHandler* ih, std::vector<std::vector<int>>* mazeGrid, irrklang::ISoundEngine* enginePtr)
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, Menu* buttonHandler, InputHandler* ih, std::vector<std::vector<int>>* mazeGrid, irrklang::ISoundEngine* enginePtr, Exit* exit, Shader* mazeGenerationShader)
 {
 	EventHandler& EH = EventHandler::GetInstance();
 	while (!EH.IsEmpty())
@@ -529,12 +529,28 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 			//player->CenterPlayer();
 			deathSound->Play();
 
-			RegenerateMaze(mazeGrid, maze, enginePtr);
-			player->resetCoins();
+			// generate new mazePNG and Maze object
+			std::vector<std::vector<int>>* newMazeGrid = RegenerateMaze(mazeGrid, maze, enginePtr);
 
-			maze->ResetKeystones();
-
-			minotaur->ResetMinotaur();
+			Maze* newMaze = NewMaze(maze, enginePtr, exit, minotaur, player, mazeGenerationShader);
+			*exit = newMaze->CreateExit();
+			newMaze->SetExit(*exit);
+			newMaze->SetExitScale();
+			exit->GetTransform()->GetScale() = glm::vec3(
+				0.11f * newMaze->GetTransform()->GetScale().x,
+				0.08f * newMaze->GetTransform()->GetScale().y,
+				0.11f * newMaze->GetTransform()->GetScale().z);
+			exit = newMaze->GetExit();
+		
+			//InitMazeGenerationShader(mazeGenerationShader, newMaze);
+			
+			//player->ResetCoins();
+			newMaze->ResetKeystones();
+			minotaur->ResetMinotaur(*newMazeGrid, newMaze);
+			//*minotaur = Minotaur(enginePtr, *mazeGrid, maze);
+			//player->CenterPlayer();
+			player->ResetPlayer(newMaze);
+			player->ResetCoins();
 
 			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
@@ -639,14 +655,21 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 	}
 }
 
-void RegenerateMaze(std::vector<std::vector<int>>* mazeGrid, Maze* maze, irrklang::ISoundEngine* enginePtr)
+std::vector<std::vector<int>>* RegenerateMaze(std::vector<std::vector<int>>* mazeGrid, Maze* maze, irrklang::ISoundEngine* enginePtr)
 {
 	int height = mazeGrid->size();
 	int width = mazeGrid->size();
 	*mazeGrid = GenerateMazePNG(height, width);
 	
-	maze = &Maze(enginePtr);
+	//maze = &Maze(enginePtr); ?? 
 
+	return mazeGrid;
+}
+
+Maze* NewMaze(Maze * maze, irrklang::ISoundEngine * enginePtr, Exit * exit, Minotaur * minotaur, Player * player, Shader * mazeGenerationShader)
+{
+	maze->LoadMaze("MazePNG/mazeColorCoded.png");	
+	return maze;
 }
 
 void SetMaxPatchVertices()

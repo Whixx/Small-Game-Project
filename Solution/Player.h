@@ -35,7 +35,7 @@ public:
 	Coin * GetWorldCoin(unsigned int index);
 	unsigned int GetNrOfInventoryCoins();
 	unsigned int GetNrOfWorldCoins();
-	void resetCoins();	// reset number of coins to 10
+	void ResetCoins();	// reset number of coins to 10
 
 	void SetPlayerHeight(float height);
 	void SetPlayerSpeed(float speed);
@@ -73,6 +73,8 @@ public:
 
 	// test variable
 	int printCounter = 0;
+
+	void ResetPlayer(Maze* maze);
 
 private:
 	Camera playerCamera;
