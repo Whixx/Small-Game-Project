@@ -561,12 +561,12 @@ void Maze::LoadTextures()
 	Texture* wallHeight = MH.LoadTexture("Textures/wall0/wall0_height.png", "TextureHeight");
 	float wallShininess = 12.0;
 
-	
-	Texture* floorDiffuse = MH.LoadTexture("Textures/floor0/floor0_diffuse.png", "TextureDiffuse");
-	Texture* floorNormal = MH.LoadTexture("Textures/floor0/floor0_normal.png", "TextureNormal");
-	Texture* floorAmbient = MH.LoadTexture("Textures/floor0/floor0_ambient.png", "TextureAmbient");
-	Texture* floorSpecular = MH.LoadTexture("Textures/floor0/floor0_specular.png", "TextureSpecular");
-	Texture* floorHeight = MH.LoadTexture("Textures/floor0/floor0_height.png", "TextureHeight");
+	string pathFloor = "Textures/floor0/Mud/";
+	Texture* floorDiffuse = MH.LoadTexture(pathFloor + "floor0_diffuse.png", "TextureDiffuse");
+	Texture* floorNormal = MH.LoadTexture(pathFloor + "floor0_normal.png", "TextureNormal");
+	Texture* floorAmbient = MH.LoadTexture(pathFloor + "floor0_ambient.png", "TextureAmbient");
+	Texture* floorSpecular = MH.LoadTexture(pathFloor + "floor0_specular.png", "TextureSpecular");
+	Texture* floorHeight = MH.LoadTexture(pathFloor + "floor0_height.png", "TextureHeight");
 	float floorShininess = 12.0;
 
 	
