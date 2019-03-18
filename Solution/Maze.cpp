@@ -699,8 +699,6 @@ KeystonePosDir Maze::CreateCubePosition()
 		{
 			if (pixelColor != floorColor)
 			{
-
-
 				// Transform to world coords
 				nearbyFloorPos = this->TransformToWorldCoords(nearbyFloorPos);
 				glm::vec3 wallPos = this->TransformToWorldCoords(glm::vec3(randomWidth, 0.5f, randomHeight));

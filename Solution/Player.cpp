@@ -99,9 +99,11 @@ void Player::ResetCoins()
 		this->AddCoinToInventory();
 		std::cout << "nrofcoins: " << this->nrOfInventoryCoins << std::endl;
 	}
+	 
+	unsigned int nrOfWorldCoins = this->worldCoins.size();
 
 	// Remove coins from world
-	for (int i = 0; i < this->worldCoins.size(); i++)
+	for (int i = 0; i < nrOfWorldCoins; i++)
 	{
 		this->worldCoins.pop_back();
 	}
