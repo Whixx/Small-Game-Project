@@ -16,16 +16,18 @@ public:
 	void increaseAgressionLevel();
 	void reactToSound(glm::vec3 soundPos);
 
+	void Initialize();
 	void Update(double dt, glm::vec3 playerPos);
 	void Draw(Shader* shader);
 	glm::vec2 ClampToEdges(glm::vec2 mazeCoords);	// takes in maze coords and spits out mazecoords
+	const SkeletonBuffer& GetSkeletonBuffer();
 
 	// TEST
 	void setupColorData();
 	void drawPath();
 
 private:
-	Model model;
+	AnimatedModel model;
 	Sound stepSound;
 	Sound growlSound;
 	Transform transform;

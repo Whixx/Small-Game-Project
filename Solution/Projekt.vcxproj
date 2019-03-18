@@ -163,6 +163,8 @@
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="animationPass.fs" />
+    <None Include="animationPass.vs" />
     <None Include="AssimpHelper.h">
       <FileType>Document</FileType>
     </None>

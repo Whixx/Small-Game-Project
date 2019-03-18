@@ -8,6 +8,7 @@
 #include "Texture.h"
 #include "Shader.h"
 #include "Material.h"
+#include "MeshBase.h"
 
 using namespace std;
 
@@ -16,6 +17,7 @@ struct Vertex {
 	glm::vec2 UVCoords;
 	glm::vec3 Normal;
 	glm::vec3 Tangent;
+//	VertexBoneData boneData;
 };
 
 class Mesh

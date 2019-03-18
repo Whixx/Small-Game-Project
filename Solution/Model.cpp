@@ -1,6 +1,7 @@
 #include "Model.h"
 
-Model::Model(std::string path, bool gammaCorrection) : gammaCorrection(gammaCorrection)
+Model::Model(std::string path, bool gammaCorrection) 
+	: gammaCorrection(gammaCorrection)
 {
 	this->directoryPath = path.substr(0, path.find_last_of('/'));
 	std::string objPath = path.substr(path.find_last_of('/') + 1, string::npos); // Remove directory
@@ -204,6 +205,81 @@ std::vector<Texture*> Model::LoadMaterialTextures(aiMaterial * mat, aiTextureTyp
 }
 
 std::vector<Texture*> Model::LoadNormalMap(std::string path, std::string type)
+{
+	std::vector<Texture*> normalMaps;
+	normalMaps.push_back(MaterialHandler::GetInstance().LoadTexture(path.c_str(), type));
+
+	return normalMaps;
+}
+
+
+
+
+
+
+AnimatedModel::AnimatedModel(std::string path, bool gammaCorrection) : gammaCorrection(gammaCorrection)
+{
+	this->directoryPath = path.substr(0, path.find_last_of('/'));
+	std::string objPath = path.substr(path.find_last_of('/') + 1, string::npos); // Remove directory
+	this->name = objPath.erase(objPath.find_last_of('.'), string::npos);
+	this->mesh = AnimatedMesh::ReadColladaFile(path.c_str());
+	this->skeleton->UpdateBoneTransforms(0.0f, this->mesh);
+}
+
+AnimatedModel::~AnimatedModel()
+{
+	// Delete the mesh?
+}
+
+const SkeletonBuffer& AnimatedModel::GetSkeletonBuffer()
+{
+	return this->skeleton->GetSkeletonBuffer();
+}
+
+void AnimatedModel::SetMaterial(Material* newMat)
+{
+	//for (Mesh* m : this->meshes)
+	//{
+	//	m->SetMaterial(newMat);
+	//}
+}
+
+void AnimatedModel::init()
+{
+	this->mesh->Construct();
+}
+
+void AnimatedModel::Update(double dt)
+{
+	this->skeleton->UpdateBoneTransforms(dt, this->mesh);
+}
+
+void AnimatedModel::Draw(Shader * shader)
+{
+	this->mesh->BindMaterial();
+	this->mesh->Bind();
+	this->mesh->Draw();
+}
+
+void AnimatedModel::DrawMeshes(Shader * shader)
+{
+	this->mesh->Bind();
+	this->mesh->Draw();
+}
+
+std::vector<Texture*> AnimatedModel::LoadMaterialTextures(aiMaterial * mat, aiTextureType type, std::string typeName)
+{
+	std::vector<Texture*> textures;
+	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+	{
+		aiString str;
+		mat->GetTexture(type, i, &str); // Get texture name
+		textures.push_back(MaterialHandler::GetInstance().LoadTexture((this->directoryPath + '/' + str.C_Str()).c_str(), typeName));
+	}
+	return textures;
+}
+
+std::vector<Texture*> AnimatedModel::LoadNormalMap(std::string path, std::string type)
 {
 	std::vector<Texture*> normalMaps;
 	normalMaps.push_back(MaterialHandler::GetInstance().LoadTexture(path.c_str(), type));

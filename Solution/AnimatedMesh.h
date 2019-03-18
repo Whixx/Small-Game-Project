@@ -19,7 +19,7 @@ const unsigned int MAX_NUM_BONES = 50;
 class AnimatedMesh// : public IResource
 {
 	//friend class GLContext;
-	friend class MESH;
+	//friend class MESH;
 	//friend class ResourceHandler;
 	friend class AnimatedSkeleton;
 
@@ -58,10 +58,13 @@ public:
 
 	~AnimatedMesh();
 
+	void Draw();
+	void Bind();
+	void BindMaterial();
+	void Construct();
+	static AnimatedMesh* ReadColladaFile(const char* daeFile);
 private:
-	virtual void Construct();
 
-private:
 	unsigned int m_VAO;
 	unsigned int m_VBO;
 	unsigned int m_IBO;
@@ -83,7 +86,4 @@ private:
 	std::vector<MeshEntry> m_Entries;
 	mutable std::map<std::string, unsigned int> m_BoneMap;
 	mutable std::vector<glm::mat4> m_BoneOffsets;
-	
-private:
-	static AnimatedMesh* ReadColladaFile(const char* daeFile);
 };

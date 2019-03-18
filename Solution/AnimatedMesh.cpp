@@ -56,6 +56,22 @@ AnimatedMesh::~AnimatedMesh()
 	DeleteSafe(pImporter);
 }
 
+void AnimatedMesh::Draw()
+{
+	glDrawElements(GL_TRIANGLES, this->m_NumVerts, GL_UNSIGNED_INT, 0);
+
+	glBindVertexArray(0);
+}
+
+void AnimatedMesh::Bind()
+{
+	glBindVertexArray(this->m_VAO);
+}
+
+void AnimatedMesh::BindMaterial()
+{
+}
+
 AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* pFilename)
 {
 	Assimp::Importer* importer = new Assimp::Importer();
@@ -70,10 +86,10 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* pFilename)
 	std::vector<glm::mat4> boneOffsets;
 	std::vector<MeshEntry> entries;
 
-#if !defined(_DEBUG)
-	pScene = importer->ReadFile(pFilename, aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_LimitBoneWeights | aiProcess_GenNormals | aiProcess_ImproveCacheLocality | aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded);
+#if !defined(DEBUG)
+	pScene = importer->ReadFile(pFilename, aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_LimitBoneWeights | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_ImproveCacheLocality | aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded);
 #else
-	pScene = importer->ReadFile(pFilename, aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_LimitBoneWeights | aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded);
+	pScene = importer->ReadFile(pFilename, aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_LimitBoneWeights | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded);
 #endif
 
 	//pScene = importer->ReadFile(daeFile, aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType | aiProcess_ConvertToLeftHanded);
@@ -168,7 +184,7 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* pFilename)
 				data.Position = glm::vec3(paiMeshes.at(i)->mVertices[j].x, paiMeshes.at(i)->mVertices[j].y, paiMeshes.at(i)->mVertices[j].z);
 				data.Normal = (paiMeshes.at(i)->HasNormals()) ? glm::vec3(paiMeshes.at(i)->mNormals[j].x, paiMeshes.at(i)->mNormals[j].y, paiMeshes.at(i)->mNormals[j].z) : glm::vec3();
 				data.TexCoord = (paiMeshes.at(i)->HasTextureCoords(0)) ? glm::vec2(paiMeshes.at(i)->mTextureCoords[0][j].x, paiMeshes.at(i)->mTextureCoords[0][j].y) : glm::vec2();
-
+				data.Tangent = glm::vec3(paiMeshes.at(i)->mTangents[j].x, paiMeshes.at(i)->mTangents[j].y, paiMeshes.at(i)->mTangents[j].z);
 				verts.push_back(data);
 			}
 
@@ -256,17 +272,21 @@ void AnimatedMesh::Construct()
 	//TexCoords
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(BaseVertex), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+	// TANGENT
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_TRUE, sizeof(BaseVertex), (void*)(8 * sizeof(float)));
+	glEnableVertexAttribArray(3);
 
 	//Bone data that will be sent to shader for calculations.
 	glBindBuffer(GL_ARRAY_BUFFER, m_BonesBuffer);
 	glBufferData(GL_ARRAY_BUFFER, m_NumVerts * sizeof(VertexBoneData), m_pBones, GL_STATIC_DRAW);
 
 	//BoneID
-	glVertexAttribIPointer(3, 4, GL_INT, sizeof(VertexBoneData), (void*)0);
-	glEnableVertexAttribArray(3);
-	//BoneWeight
-	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (void*)16);
+	glVertexAttribIPointer(4, 4, GL_INT, sizeof(VertexBoneData), (void*)0);
 	glEnableVertexAttribArray(4);
+	//BoneWeight
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (void*)16);
+	glEnableVertexAttribArray(5);
+
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

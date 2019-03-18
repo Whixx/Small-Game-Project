@@ -299,6 +299,12 @@
     <None Include="AssimpHelper.h">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="animationPass.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="animationPass.fs">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

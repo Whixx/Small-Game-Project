@@ -61,7 +61,11 @@ int main()
 	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.cs", GL_TESS_CONTROL_SHADER);
 	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.es", GL_TESS_EVALUATION_SHADER);
 	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.fs", GL_FRAGMENT_SHADER);
-	
+
+	Shader animationPass;
+	animationPass.CreateShader(".\\animationPass.vs", GL_VERTEX_SHADER);
+	animationPass.CreateShader(".\\animationPass.fs", GL_FRAGMENT_SHADER);
+
 	Shader lightPass;
 	lightPass.CreateShader(".\\lightPass.vs", GL_VERTEX_SHADER);
 	lightPass.CreateShader(".\\lightPass.fs", GL_FRAGMENT_SHADER);
@@ -90,6 +94,7 @@ int main()
 	InitShadowShader(&shadowShader);
 	InitGeometryPass(&geometryPass);
 	InitMazeGeometryPass(&mazeGeometryPass);
+	InitAnimationPass(&animationPass);
 	InitLightPass(&lightPass);
 	InitParticleShader(&particleShader);
 	//InitPointLightPass(&pointLightPass);
@@ -188,7 +193,7 @@ int main()
 		
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &player, &OH, &maze, &minotaur, &exit);
+		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &animationPass, &player, &OH, &maze, &minotaur, &exit);
 		
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU

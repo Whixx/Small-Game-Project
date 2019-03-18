@@ -20,6 +20,7 @@
 #include "MaterialHandler.h"
 #include "Minotaur.h"
 #include "EventHandler.h"
+#include "AnimatedMesh.h"
 
 #include "Coin.h"
 
@@ -33,6 +34,7 @@ void InitMazeGenerationShader(Shader *shader, Maze * maze);
 void InitShadowShader(Shader *shader);
 void InitGeometryPass(Shader *shader);
 void InitMazeGeometryPass(Shader *shader);
+void InitAnimationPass(Shader *shader);
 void InitLightPass(Shader *shader);
 void InitParticleShader(Shader *shader);
 void InitPointLightPass(Shader *shader);
@@ -43,7 +45,7 @@ void InitFinalShader(Shader *shader);
 // Shader pass functions
 void MazeGenerationPass(Shader * mazeGenerationShader, Maze * maze, Player * player);
 void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Maze* maze, Exit * exit);
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze* maze, Minotaur * minotaur, Exit * exit);
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Shader *animationPass, Player *player, ObjectHandler *OH, Maze* maze, Minotaur * minotaur, Exit * exit);
 void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenQuad, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera);
 void LightSpherePass(Shader *pointLightPass, BloomBuffer *bloomBuffer, PointLightHandler *lights, Camera *camera, Model *renderModel);
 void BlurPass(Shader *blurShader, BloomBuffer *bloomBuffer, BlurBuffer *blurBuffers, GLuint *fullScreenTriangle);

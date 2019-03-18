@@ -40,9 +40,17 @@ void Mesh::SetupMesh()
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
 
-	// TANGNET
+	// TANGENT
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+
+	//// BONE ID'S
+	//glEnableVertexAttribArray(4);
+	//glVertexAttribIPointer(4, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, boneData.IDs));
+	//
+	//// BONE WEIGHTS
+	//glEnableVertexAttribArray(5);
+	//glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, boneData.BoneWeights));
 
 	// Create vertexIndexBuffer
 	glGenBuffers(1, &this->vertexIndexBuffer);

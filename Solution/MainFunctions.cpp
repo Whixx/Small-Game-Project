@@ -53,6 +53,16 @@ void InitMazeGeometryPass(Shader * shader)
 	shader->ValidateShaders();
 }
 
+void InitAnimationPass(Shader * shader)
+{
+	shader->InitiateShaders();
+
+	// Set constant uniforms
+	shader->Bind();
+
+	shader->ValidateShaders();
+}
+
 void InitLightPass(Shader * shader)
 {
 	shader->InitiateShaders();
@@ -207,7 +217,7 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	glDisable(GL_DEPTH_TEST);
 }
 
-void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze * maze, Minotaur * minotaur, Exit * exit)
+void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Shader *animationPass, Player *player, ObjectHandler *OH, Maze * maze, Minotaur * minotaur, Exit * exit)
 {
 	geometryPass->Bind();
 
@@ -240,11 +250,26 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 		player->DrawCoin(i, geometryPass);
 	}
 
+	//===================================================
+
+	animationPass->Bind();
 	// Draw minotaur
 	worldMatrix = minotaur->GetTransform().GetWorldMatrix();
-	geometryPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
-	geometryPass->SendMat4("WorldMatrix", worldMatrix);
-	minotaur->Draw(geometryPass);
+	animationPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
+	animationPass->SendMat4("WorldMatrix", worldMatrix);
+
+	const glm::mat4 * boneTransforms = minotaur->GetSkeletonBuffer().BoneTransforms;
+	for (int i = 0; i < MAX_NUM_BONES; ++i)
+	{
+		animationPass->SendMat4(("Bones[" + std::to_string(i) + "]").c_str(), boneTransforms[i]);
+	}
+	
+	minotaur->Draw(animationPass);
+
+
+	animationPass->UnBind();
+	geometryPass->Bind();
+	//===================================================
 
 	// Draw player torch
 	worldMatrix = player->GetTorch()->GetTransform().GetWorldMatrix();

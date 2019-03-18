@@ -65,6 +65,11 @@ void Minotaur::reactToSound(glm::vec3 soundMazePos)
 	GeneratePath(currentPos.z, currentPos.x, soundMazePos.z, soundMazePos.x);
 }
 
+void Minotaur::Initialize()
+{
+	this->model.init();
+}
+
 void Minotaur::Update(double dt, glm::vec3 playerPos)
 {
 	glm::vec3 currentPos = this->transform.GetPos();
@@ -396,6 +401,11 @@ glm::vec2 Minotaur::ClampToEdges(glm::vec2 mazeCoords)
 	//cout << "CHANGED TRUEENDPOS Y: " << mazeCoords.y << endl;
 
 	return mazeCoords;
+}
+
+const SkeletonBuffer & Minotaur::GetSkeletonBuffer()
+{
+	return this->model.GetSkeletonBuffer();
 }
 
 void Minotaur::setupColorData()

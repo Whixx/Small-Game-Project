@@ -9,7 +9,7 @@ const unsigned int MAX_NUM_BONES_PER_VERT = 4;
 struct BaseVertex
 {
 public:
-	BaseVertex(glm::vec3 position = glm::vec3(0.0f), glm::vec3 normal = glm::vec3(0.0f), glm::vec2 texCoord = glm::vec2(0.0f));
+	BaseVertex(glm::vec3 position = glm::vec3(0.0f), glm::vec3 normal = glm::vec3(0.0f), glm::vec2 texCoord = glm::vec2(0.0f), glm::vec3 tangent = glm::vec3(0.0f));
 	
 	bool operator==(const BaseVertex& other);
 	bool operator!=(const BaseVertex& other);
@@ -18,13 +18,15 @@ public:
 	glm::vec3 Position;
 	glm::vec3 Normal;
 	glm::vec2 TexCoord;
+	glm::vec3 Tangent;
 };
 
-inline BaseVertex::BaseVertex(glm::vec3 position, glm::vec3 normal, glm::vec2 texCoord)
+inline BaseVertex::BaseVertex(glm::vec3 position, glm::vec3 normal, glm::vec2 texCoord, glm::vec3 tangent)
 {
 	Position = position;
 	Normal = normal;
 	TexCoord = texCoord;
+	Tangent = tangent;
 }
 
 inline bool BaseVertex::operator==(const BaseVertex& other)
