@@ -2,7 +2,7 @@
 
 Keystone::Keystone(KeystonePosDir * keystonePosDir, const int ScaleXZ)
 {
-	this->transform.GetScale() = glm::vec3(0.125f);	// .25 in diamater
+	this->transform.GetScale() = glm::vec3(0.73f);
 
 	if (keystonePosDir == nullptr)
 	{
@@ -13,13 +13,14 @@ Keystone::Keystone(KeystonePosDir * keystonePosDir, const int ScaleXZ)
 	{
 		this->transform.SetPos(keystonePosDir->position);
 		this->direction = keystonePosDir->direction;
+		this->SetDir(this->direction);
 	}
 
 	// To avoid translating the cube inside displaced walls, we need a tesselation offset to avoid this
-	float tesselationOffset = 0.08 * ScaleXZ;
+	float tesselationOffset = 0.03 * ScaleXZ;
 
 	// The length the cube should be translated
-	this->TranslationLength = this->transform.GetScale().x - tesselationOffset + 0.06f;
+	this->TranslationLength = -tesselationOffset + 0.13;
 
 	this->isActive = false;
 	this->isTranslatedBack = false;
@@ -69,6 +70,20 @@ void Keystone::Draw(Model * keyStoneModel, Shader * shader)
 void Keystone::ActivateKeystone()
 {
 	this->isActive = true;
+}
+
+void Keystone::SetDir(glm::vec3 newDir)
+{
+	newDir = glm::normalize(newDir);
+	float angle = glm::acos(-newDir.x);
+
+	// Check if under the unit circle
+	if (glm::sin(newDir.z) < 0.0)
+	{
+		angle *= -1;
+	}
+
+	this->transform.GetRot().y = angle;
 }
 
 bool Keystone::IsActive()

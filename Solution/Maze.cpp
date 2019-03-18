@@ -1,7 +1,7 @@
 #include "Maze.h"
 
 Maze::Maze(irrklang::ISoundEngine * engine)
-	:keyStoneModel("Models/Cube/cube.obj"),
+	:keyStoneModel("Models/Keystone/keystone.obj"),
 	keystoneSound("Sounds/keystoneSound.wav", false, engine),
 	exitModelOpen("Models/Exit/GateOpen.obj"),
 	exitModelClosed("Models/Exit/GateClosed.obj")
@@ -280,7 +280,7 @@ glm::vec3 Maze::GetRandomFloorPos()
 
 	randomPos = this->TransformToWorldCoords(randomPos);
 
-	return glm::vec3(randomPos.x, 0.12f, randomPos.z);
+	return glm::vec3(randomPos.x, 0.03f, randomPos.z);
 }
 
 void Maze::BindTexture(unsigned int textureUnit)
@@ -705,10 +705,10 @@ KeystonePosDir Maze::CreateCubePosition()
 
 				// Transform to world coords
 				nearbyFloorPos = this->TransformToWorldCoords(nearbyFloorPos);
-				glm::vec3 wallPos = this->TransformToWorldCoords(glm::vec3(randomWidth, 0.5f, randomHeight));
+				glm::vec3 wallPos = this->TransformToWorldCoords(glm::vec3(randomWidth, 1.0f, randomHeight));
 
 				// Vector from wall to floor
-				glm::vec3 direction = normalize(nearbyFloorPos - wallPos);
+				glm::vec3 direction = normalize(glm::vec3(nearbyFloorPos.x - wallPos.x, 0.0, nearbyFloorPos.z - wallPos.z));
 
 				// Translate the cube so that its location is in the middle of a wall and a floor
 				glm::vec3 finalPosition = wallPos + (direction * float(this->scaleXZ) / 2.0f);
