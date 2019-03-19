@@ -385,12 +385,14 @@ void CoinUIPass(Shader * coinUIShader, ClipSpaceQuad * coinInterfaceQuad, Player
 void Button2DPass(Shader * button2DShader, Menu * buttonHandler, MENU_TYPE menuType)
 {
 	button2DShader->Bind();
+	glDepthMask(false);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_DEPTH_TEST);
 	buttonHandler->DrawQuads(menuType);
 	glDisable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
+	glDepthMask(true);
 
 }
 
@@ -405,7 +407,8 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 	return mazeGen.GetGrid();
 }
 
-void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, Menu* buttonHandler, InputHandler* ih, std::vector<std::vector<int>>* mazeGrid, irrklang::ISoundEngine* enginePtr, Exit* exit)
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu,
+					Menu* buttonHandler, InputHandler* ih, std::vector<std::vector<int>>* mazeGrid, irrklang::ISoundEngine* enginePtr, Exit* exit, ObjectHandler * OH)
 {
 	EventHandler& EH = EventHandler::GetInstance();
 	while (!EH.IsEmpty())
@@ -416,32 +419,18 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		{
 			winSound->SetPosition(player->GetPos());
 			winSound->Play();
+
+			ResetGame(mazeGrid, maze, enginePtr, exit, player, minotaur, OH);
+
+			EventHandler& EH = EventHandler::GetInstance();
+			EH.AddEvent(EVENT_MENU_START);
+			EH.AddEvent(EVENT_PAUSED);
 		}
 		else if (event == EVENT_PLAYER_LOSE)
 		{
 			deathSound->Play();
 
-			// generate new mazePNG and Maze object
-			std::vector<std::vector<int>>* newMazeGrid = RegenerateMaze(mazeGrid, maze, enginePtr);
-			maze->FreeImageData();
-			maze->LoadMaze("MazePNG/mazeColorCoded.png");
-
-			// new exit
-			*exit = maze->CreateExit();
-			maze->SetExit(*exit);
-			maze->SetExitScale();
-			exit->GetTransform()->GetScale() = glm::vec3(
-				0.11f * maze->GetTransform()->GetScale().x,
-				0.08f * maze->GetTransform()->GetScale().y,
-				0.11f * maze->GetTransform()->GetScale().z);
-			exit = maze->GetExit();
-
-			// reset the rest
-			maze->SetExitFalse();
-			maze->ResetKeystones();
-			player->ResetPlayer(maze);
-			player->ResetCoins();
-			minotaur->ResetMinotaur(*newMazeGrid, maze);
+			ResetGame(mazeGrid, maze, enginePtr, exit, player, minotaur, OH);
 
 			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
@@ -499,7 +488,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 				if (*startMenu)
 				{
 					// playbutton
-					if (buttonHandler->IsQuadPressed(window->GetWindow(), 0))
+					if (buttonHandler->IsQuadPressed(window->GetWindow(), 1))
 					{
 						cout << "PLAY IS CLICKED IN STARTMENU" << endl;
 						EventHandler& EH = EventHandler::GetInstance();
@@ -508,7 +497,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 						player->CenterPlayer();
 					}
 					// quitbutton
-					if (buttonHandler->IsQuadPressed(window->GetWindow(), 1))
+					if (buttonHandler->IsQuadPressed(window->GetWindow(), 2))
 					{
 						cout << "QUIT IS CLICKED IN STARTMENU" << endl;
 						glfwSetWindowShouldClose(window->GetWindow(), GLFW_TRUE);
@@ -517,14 +506,14 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 				else
 				{
 					// resume button
-					if (buttonHandler->IsQuadPressed(window->GetWindow(), 2))
+					if (buttonHandler->IsQuadPressed(window->GetWindow(), 3))
 					{
 						cout << "RESUME IS CLICKED IN INGAME MENU" << endl;
 						EventHandler& EH = EventHandler::GetInstance();
 						EH.AddEvent(EVENT_PLAYING);
 					}
 					// quit button
-					if (buttonHandler->IsQuadPressed(window->GetWindow(), 3))
+					if (buttonHandler->IsQuadPressed(window->GetWindow(), 4))
 					{
 						cout << "QUIT IS CLICKED IN INGAME MENU" << endl;
 						glfwSetWindowShouldClose(window->GetWindow(), GLFW_TRUE);
@@ -549,6 +538,32 @@ std::vector<std::vector<int>>* RegenerateMaze(std::vector<std::vector<int>>* maz
 	//maze = &Maze(enginePtr); ?? 
 
 	return mazeGrid;
+}
+
+void ResetGame(std::vector<std::vector<int>>* mazeGrid, Maze * maze, irrklang::ISoundEngine * enginePtr, Exit * exit, Player * player, Minotaur * minotaur, ObjectHandler * OH)
+{
+	// generate new mazePNG and Maze object
+	std::vector<std::vector<int>>* newMazeGrid = RegenerateMaze(mazeGrid, maze, enginePtr);
+	maze->FreeImageData();
+	maze->LoadMaze("MazePNG/mazeColorCoded.png");
+
+	// new exit
+	*exit = maze->CreateExit();
+	maze->SetExit(*exit);
+	maze->SetExitScale();
+	exit->GetTransform()->GetScale() = glm::vec3(
+		0.11f * maze->GetTransform()->GetScale().x,
+		0.08f * maze->GetTransform()->GetScale().y,
+		0.11f * maze->GetTransform()->GetScale().z);
+	exit = maze->GetExit();
+
+	// reset the rest
+	maze->SetExitFalse();
+	maze->ResetKeystones();
+	player->ResetPlayer(maze);
+	player->ResetCoins();
+	minotaur->ResetMinotaur(*newMazeGrid, maze);
+	ResetLandmarks(OH, maze);
 }
 
 void SetMaxPatchVertices()

@@ -590,7 +590,6 @@ void Player::ResetPlayer(Maze* maze)
 	//}
 
 	this->SetPlayerSpeed(20.0f);
-	this->CenterPlayer();
 }
 
 void Player::AddCoinToWorld(unsigned int state)

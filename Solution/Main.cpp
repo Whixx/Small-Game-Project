@@ -134,10 +134,11 @@ int main()
 
 	// MENU STUFF
 	Menu buttonHandler;
-	int startButton = buttonHandler.AddButton(glm::vec2(0.0f, 0.25f), 0.35f, 0.35f, "Textures/Menu/play2.png", MENU_START);
-	int quitButton = buttonHandler.AddButton(glm::vec2(0.0f, -0.25f), 0.25f, 0.25f, "Textures/Menu/quit2.png", MENU_START);
-	int resumeButton = buttonHandler.AddButton(glm::vec2(0.0f, 0.25f), 0.35f, 0.35f, "Textures/Menu/resume2.png", MENU_INGAME);
-	int quitButtonInGame = buttonHandler.AddButton(glm::vec2(0.0f, -0.25f), 0.25f, 0.25f, "Textures/Menu/quit2.png", MENU_INGAME);
+	int startMenuBackground = buttonHandler.AddButton(glm::vec2(0.0f, 0.0f), 1.0f, 1.0f, "Textures/Menu/startmenu.jpg", MENU_START);	// Background for start menu
+	int startButton = buttonHandler.AddButton(glm::vec2(-0.6f, 0.0f), 0.35f, 0.35f, "Textures/Menu/play.png", MENU_START);
+	int quitButton = buttonHandler.AddButton(glm::vec2(0.6f, 0.0f), 0.35f, 0.35f, "Textures/Menu/quit.png", MENU_START);
+	int resumeButton = buttonHandler.AddButton(glm::vec2(0.0f, 0.25f), 0.35f, 0.35f, "Textures/Menu/resume.png", MENU_INGAME);
+	int quitButtonInGame = buttonHandler.AddButton(glm::vec2(0.0f, -0.25f), 0.25f, 0.25f, "Textures/Menu/quit.png", MENU_INGAME);
 
 	// Initiate timer
 	double currentTime = 0;
@@ -171,7 +172,7 @@ int main()
 		
 		// ================== EVENTS ==================
 		glfwPollEvents();
-		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &display, &paused, &startMenu, &buttonHandler, &IH, &mazeGrid, enginePtr, &exit);
+		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &display, &paused, &startMenu, &buttonHandler, &IH, &mazeGrid, enginePtr, &exit, &OH);
 
 		if (!paused)
 		{
@@ -191,12 +192,12 @@ int main()
 
 			// update sound engine with position and view direction
 			soundEngine.Update(player.GetCamera()->GetCameraPosition(), player.GetCamera()->GetForwardVector());
+
 		}
 		else    // if game is paused
 		{
 			if (startMenu)
 			{
-
 			}
 			else
 			{
@@ -204,6 +205,7 @@ int main()
 				player.UpdateOnlyTorch(deltaTime);
 			}
 		}
+
 		// ================== DRAW ==================
 
 		// Here the mazes is created and stored in a buffer with transform feedback
@@ -234,6 +236,7 @@ int main()
 		{
 			if (startMenu)
 			{
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				Button2DPass(&button2DShader, &buttonHandler, MENU_START);
 			}
 			else
