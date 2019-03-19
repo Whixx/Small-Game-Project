@@ -20,7 +20,7 @@ Keystone::Keystone(KeystonePosDir * keystonePosDir, const int ScaleXZ)
 	float tesselationOffset = 0.03 * ScaleXZ;
 
 	// The length the cube should be translated
-	this->TranslationLength = -tesselationOffset + 0.13;
+	this->TranslationLength = -tesselationOffset + 0.10;
 
 	this->isActive = false;
 	this->isTranslatedBack = false;
