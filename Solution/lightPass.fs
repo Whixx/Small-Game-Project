@@ -1,7 +1,6 @@
 #version 440
 
 out vec4 fragment_color;
-out vec4 bright_color;
 
 in vec2 texCoord0;
 
@@ -88,9 +87,8 @@ void main()
 	float distancePixelToLight;
 
 	// Ambient
-	//vec3 ambient = ambientColor.r * materialColor.rgb;
-	vec3 ambient = 0.2 * materialColor.rgb;
-	//ambient = vec3(0);
+	vec3 ambient = ambientColor.r * materialColor.rgb;
+	//vec3 ambient = 0.1 * materialColor.rgb;
 	
 	// Diffuse
 	vec3 lightDir;
@@ -131,17 +129,4 @@ void main()
 	finalColor = min(vec4(1.0f,1.0f,1.0f,1.0f), finalColor);
 
 	fragment_color = vec4(finalColor.xyz, 1.0f);
-
-	// Calculate brightness (used for bloom)
-	vec3 lumaVec = vec3(0.2126, 0.7152, 0.0722);
-	float brightness = dot(fragment_color.rgb, lumaVec.xyz);
-
-	if(brightness > 0.84f)
-	{
-		bright_color = vec4(fragment_color.rgb, 1.0f);
-	}
-	else
-	{
-		bright_color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	}
 }

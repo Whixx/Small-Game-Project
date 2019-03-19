@@ -221,18 +221,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="blurShader.fs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="blurShader.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="finalBloomShader.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="finalBloomShader.fs">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="finalShader.fs">
       <Filter>Shader Files</Filter>
     </None>
@@ -252,12 +240,6 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="particleShader.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="pointLightShader.fs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="pointLightShader.vs">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="shadowShader.fs">

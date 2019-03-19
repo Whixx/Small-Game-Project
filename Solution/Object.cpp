@@ -12,7 +12,7 @@ Object::~Object()
 
 void Object::SetDir(glm::vec3 newDir)
 {
-	float angle = glm::acos(newDir.x);
+	float angle = glm::acos(-newDir.x);
 	
 	// Check if under the unit circle
 	if (glm::sin(newDir.z) < 0.0)

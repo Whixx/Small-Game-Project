@@ -35,7 +35,7 @@ Exit::~Exit()
 
 void Exit::SetDir(glm::vec3 newDir)
 {
-	float angle = glm::acos(newDir.x);
+	float angle = glm::acos(-newDir.x);
 	this->dir = newDir;
 
 	// Check if under the unit circle

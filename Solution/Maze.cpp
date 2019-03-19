@@ -1,7 +1,7 @@
 #include "Maze.h"
 
 Maze::Maze(irrklang::ISoundEngine * engine)
-	:keyStoneModel("Models/Cube/cube.obj"),
+	:keyStoneModel("Models/Keystone/keystone.obj"),
 	keystoneSound("Sounds/keystoneSound.wav", false, engine),
 	exitModelOpen("Models/Exit/GateOpen.obj"),
 	exitModelClosed("Models/Exit/GateClosed.obj")
@@ -268,6 +268,26 @@ Wall Maze::GetWallType(float x, float y)
 	}
 
 	return type;
+}
+
+glm::vec3 Maze::GetRandomFloorPos()
+{
+	glm::vec3 randomPos = glm::vec3((rand() % this->GetMazeWidth() - 4) + 2, 0.0f, (rand() % this->GetMazeHeight() - 4) + 2);
+	randomPos = this->FindNearbyFloor(glm::vec2(randomPos.x, randomPos.z));
+	while (randomPos == glm::vec3(-1.0f))
+	{
+		randomPos = glm::vec3((rand() % this->GetMazeWidth() - 4) + 2, 0.0f, (rand() % this->GetMazeHeight() - 4) + 2);
+		randomPos = this->FindNearbyFloor(glm::vec2(randomPos.x, randomPos.z));
+	}
+	
+	float randomOffset = ((rand() % 2) - 2) / 10.0f;
+	randomPos.x += randomOffset;
+	randomOffset = ((rand() % 2) - 2) / 10.0f;
+	randomPos.z += randomOffset;
+
+	randomPos = this->TransformToWorldCoords(randomPos);
+
+	return glm::vec3(randomPos.x, 0.03f, randomPos.z);
 }
 
 void Maze::BindTexture(unsigned int textureUnit)
@@ -562,22 +582,23 @@ void Maze::LoadTextures()
 {
 	MaterialHandler& MH = MaterialHandler::GetInstance();
 
-	Texture* wallDiffuse = MH.LoadTexture("Textures/wall0/wall0_diffuse.png", "TextureDiffuse");
-	Texture* wallNormal = MH.LoadTexture("Textures/wall0/wall0_normal.png", "TextureNormal");
-	Texture* wallAmbient = MH.LoadTexture("Textures/wall0/wall0_ambient.png", "TextureAmbient");
-	Texture* wallSpecular = MH.LoadTexture("Textures/wall0/wall0_specular.png", "TextureSpecular");
-	Texture* wallHeight = MH.LoadTexture("Textures/wall0/wall0_height.png", "TextureHeight");
+	// Material maps
+	string pathWall = "Textures/wall0/Mud/";
+	string pathFloor = "Textures/floor0/Mud/";
+
+	Texture* wallDiffuse = MH.LoadTexture(pathWall + "wall0_diffuse.png", "TextureDiffuse");
+	Texture* wallNormal = MH.LoadTexture(pathWall + "wall0_normal.png", "TextureNormal");
+	Texture* wallAmbient = MH.LoadTexture(pathWall + "wall0_ambient.png", "TextureAmbient");
+	Texture* wallSpecular = MH.LoadTexture(pathWall + "wall0_specular.png", "TextureSpecular");
+	Texture* wallHeight = MH.LoadTexture(pathWall + "wall0_height.png", "TextureHeight");
 	float wallShininess = 12.0;
 
-	
-	Texture* floorDiffuse = MH.LoadTexture("Textures/floor0/floor0_diffuse.png", "TextureDiffuse");
-	Texture* floorNormal = MH.LoadTexture("Textures/floor0/floor0_normal.png", "TextureNormal");
-	Texture* floorAmbient = MH.LoadTexture("Textures/floor0/floor0_ambient.png", "TextureAmbient");
-	Texture* floorSpecular = MH.LoadTexture("Textures/floor0/floor0_specular.png", "TextureSpecular");
-	Texture* floorHeight = MH.LoadTexture("Textures/floor0/floor0_height.png", "TextureHeight");
+	Texture* floorDiffuse = MH.LoadTexture(pathFloor + "floor0_diffuse.png", "TextureDiffuse");
+	Texture* floorNormal = MH.LoadTexture(pathFloor + "floor0_normal.png", "TextureNormal");
+	Texture* floorAmbient = MH.LoadTexture(pathFloor + "floor0_ambient.png", "TextureAmbient");
+	Texture* floorSpecular = MH.LoadTexture(pathFloor + "floor0_specular.png", "TextureSpecular");
+	Texture* floorHeight = MH.LoadTexture(pathFloor + "floor0_height.png", "TextureHeight");
 	float floorShininess = 12.0;
-
-	
 
 	// Wall0
 	this->wall1Mat = MH.AddMaterial(wallDiffuse, wallAmbient, wallSpecular, wallNormal, wallHeight, wallShininess, "wall1");
@@ -711,10 +732,10 @@ KeystonePosDir Maze::CreateCubePosition()
 			{
 				// Transform to world coords
 				nearbyFloorPos = this->TransformToWorldCoords(nearbyFloorPos);
-				glm::vec3 wallPos = this->TransformToWorldCoords(glm::vec3(randomWidth, 0.5f, randomHeight));
+				glm::vec3 wallPos = this->TransformToWorldCoords(glm::vec3(randomWidth, 1.0f, randomHeight));
 
 				// Vector from wall to floor
-				glm::vec3 direction = normalize(nearbyFloorPos - wallPos);
+				glm::vec3 direction = normalize(glm::vec3(nearbyFloorPos.x - wallPos.x, 0.0, nearbyFloorPos.z - wallPos.z));
 
 				// Translate the cube so that its location is in the middle of a wall and a floor
 				glm::vec3 finalPosition = wallPos + (direction * float(this->scaleXZ) / 2.0f);
