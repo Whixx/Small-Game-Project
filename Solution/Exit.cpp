@@ -9,13 +9,6 @@ Exit::Exit(Model* exitModelOpen, Model* exitModelClosed, glm::vec3 worldPos, glm
 	this->SetDir(this->dir);
 	this->isOpen = false;
 
-	/*exit.GetTransform()->SetScale(glm::vec3(
-		0.11f * maze.GetTransform()->GetScale().x,
-		0.08f * maze.GetTransform()->GetScale().y,
-		0.11f * maze.GetTransform()->GetScale().z));*/
-
-	
-
 	// Choose a good position
 	if (this->dir.x < 0.0f)
 	{
@@ -41,7 +34,7 @@ Exit::~Exit()
 
 void Exit::SetDir(glm::vec3 newDir)
 {
-	float angle = glm::acos(newDir.x);
+	float angle = glm::acos(-newDir.x);
 
 	// Check if under the unit circle
 	if (glm::sin(newDir.z) < 0.0)

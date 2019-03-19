@@ -42,6 +42,8 @@ private:
 	glm::vec3 direction;
 	float TranslationLength;
 
+	void SetDir(glm::vec3 newDir);
+
 	bool isActive;
 	bool isTranslatedBack;
 

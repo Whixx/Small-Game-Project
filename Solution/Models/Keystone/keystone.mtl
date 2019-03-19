@@ -1,0 +1,15 @@
+# Blender MTL File: 'keystone.blend'
+# Material Count: 1
+
+newmtl keystone
+Ns 36.000
+Ka 0.000000 0.000000 0.000000
+Kd 0.623158 0.623158 0.623158
+Ks 0.500000 0.427496 0.427496
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Bump keystone_normal.jpg
+map_Kd keystone_diffuse.jpg
+map_Ks keystone_specular.jpg

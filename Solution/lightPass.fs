@@ -88,7 +88,7 @@ void main()
 
 	// Ambient
 	vec3 ambient = ambientColor.r * materialColor.rgb;
-	//ambient = vec3(1.0);
+	//vec3 ambient = 0.1 * materialColor.rgb;
 	
 	// Diffuse
 	vec3 lightDir;
