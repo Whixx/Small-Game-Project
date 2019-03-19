@@ -17,8 +17,9 @@ Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>
 	this->searchArea = 13;
 
 	// Adjust spawn position to a floor-tile
-	glm::vec3 currentPos = this->maze->TransformToMazeCoords(glm::vec3(0.0f, 0.05f, 0.0f));
-	glm::vec2 newPos = this->toNearbyFloor(glm::vec2(currentPos.x, currentPos.z));
+	//glm::vec3 currentPos = this->maze->TransformToMazeCoords(glm::vec3(0.0f, 0.05f, 0.0f));
+	glm::vec3 currentPos = this->maze->GetExit()->GetExitPos();
+	glm::vec2 newPos = this->toNearbyFloor(this->ClampToEdges(glm::vec2(currentPos.x, currentPos.z)));
 	this->transform.GetPos() = this->maze->TransformToWorldCoords(glm::vec3(newPos.x, currentPos.y, newPos.y));
 
 	// Initiate destination to the current position (It will then set the real destination in Update())
@@ -396,6 +397,33 @@ glm::vec2 Minotaur::ClampToEdges(glm::vec2 mazeCoords)
 	//cout << "CHANGED TRUEENDPOS Y: " << mazeCoords.y << endl;
 
 	return mazeCoords;
+}
+
+void Minotaur::ResetMinotaur(std::vector<std::vector<int>> newMazeGrid, Maze* maze)
+{
+	this->mazeGrid = newMazeGrid;
+	this->maze = maze;
+
+	this->agression = 0;
+	this->timePassed = 0;
+	this->alerted = false;
+	this->interval = 0;
+	this->searchArea = 13;
+
+	glm::vec3 currentPos = this->maze->GetExit()->GetExitPos();
+	glm::vec2 newPos = this->toNearbyFloor(this->ClampToEdges(glm::vec2(currentPos.x, currentPos.z)));
+	this->transform.GetPos() = this->maze->TransformToWorldCoords(glm::vec3(newPos.x, currentPos.y, newPos.y));
+
+	// Initiate destination to the current position (It will then set the real destination in Update())
+	this->destination = glm::vec2(
+		int(this->maze->TransformToMazeCoords(this->transform.GetPos()).x),
+		int(this->maze->TransformToMazeCoords(this->transform.GetPos()).z));
+
+	while (!this->generatedPath.empty())
+	{
+		generatedPath.pop_back();
+	}
+
 }
 
 void Minotaur::setupColorData()

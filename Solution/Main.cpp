@@ -1,6 +1,4 @@
-﻿
-
-// Finns en main funktion i GLEW, d�rmed m�ste vi undefinera den innan vi kan anv�nda v�ran main
+﻿// Finns en main funktion i GLEW, d�rmed m�ste vi undefinera den innan vi kan anv�nda v�ran main
 #include <glew\glew.h>
 #undef main
 
@@ -20,8 +18,15 @@ int main()
 
 	Display display;
 
-	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	bool paused = true;
+	bool startMenu = true;		// true = startmenu | false = in game menu
+
+	// use GLFW_CURSOS_NORMAL when starting the game "paused"
+	//glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(display.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
 	glfwSetKeyCallback(display.GetWindow(), InputHandler::Key_callback);
+	glfwSetMouseButtonCallback(display.GetWindow(), InputHandler::mouse_button_callback);
 
 	EventHandler& EH = EventHandler::GetInstance();
 	InputHandler IH;
@@ -38,6 +43,21 @@ int main()
 	Maze maze(enginePtr);
 	Exit exit = *maze.GetExit();
 
+	// Create Lights
+	PointLightHandler lights;	// use .CreateLight()
+
+	// PLAYER AND MINOTAUR
+	Minotaur minotaur(enginePtr, mazeGrid, &maze);
+	float playerHeight = 1.4f;
+
+	float torchSize = 0.02f;
+	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize, &minotaur);
+	//player.SetPlayerSpeed(2.0f);
+	//player.CenterPlayer(); //Space to return to origin
+
+	//minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();		<-- ??
+
+
 	//=========================== Creating Shaders ====================================//
 
 	// MaxVertices supported by the hardware
@@ -46,8 +66,8 @@ int main()
 	Shader mazeGenerationShader;
 	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.vs", GL_VERTEX_SHADER);
 	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.gs", GL_GEOMETRY_SHADER);
-	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.fs", GL_FRAGMENT_SHADER);
-	
+	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.fs", GL_FRAGMENT_SHADER);	
+
 	Shader shadowShader;
 	shadowShader.CreateShader(".\\shadowShader.vs", GL_VERTEX_SHADER);
 	shadowShader.CreateShader(".\\shadowShader.gs", GL_GEOMETRY_SHADER);
@@ -75,6 +95,14 @@ int main()
 	finalShader.CreateShader(".\\finalShader.vs", GL_VERTEX_SHADER);
 	finalShader.CreateShader(".\\finalShader.fs", GL_FRAGMENT_SHADER);
 
+	Shader coinUIShader;
+	coinUIShader.CreateShader(".\\coinUIShader.vs", GL_VERTEX_SHADER);
+	coinUIShader.CreateShader(".\\coinUIShader.fs", GL_FRAGMENT_SHADER);
+
+	Shader button2DShader;
+	button2DShader.CreateShader(".\\button2DShader.vs", GL_VERTEX_SHADER);
+	button2DShader.CreateShader(".\\button2DShader.fs", GL_FRAGMENT_SHADER);
+
 	InitMazeGenerationShader(&mazeGenerationShader, &maze);
 	InitShadowShader(&shadowShader);
 	InitGeometryPass(&geometryPass);
@@ -82,6 +110,8 @@ int main()
 	InitLightPass(&lightPass);
 	InitParticleShader(&particleShader);
 	InitFinalShader(&finalShader);
+	InitCoinUIShader(&coinUIShader, &player);
+	InitButton2DShader(&button2DShader);
 
 	//=================================================================================//
 
@@ -92,25 +122,22 @@ int main()
 
 	//=========================== Creating Objects ====================================//
 
-	// Create Lights
-	PointLightHandler lights;	// use .CreateLight()
-
 	Sound winSound("Sounds/winSound.mp3", false, enginePtr);
 	Sound deathSound("Sounds/death.wav", false, enginePtr);
 	Sound minotaurGrowlSound("Sounds/minotaurgrowl.wav", false, enginePtr);
-
-	Minotaur minotaur(enginePtr, mazeGrid, &maze);
-	float playerHeight = 1.28f;
-	
-	float torchSize = 0.02f;
-	Player player = Player(playerHeight, 70.0f, 0.1f, 100.0f, &maze, enginePtr, &lights, torchSize, &minotaur);
-	player.SetPlayerSpeed(2.0f);
-	player.CenterPlayer(); //Space to return to origin
-
-	minotaur.GetTransform().GetPos() = player.GetCamera()->GetCameraPosition();
 	
 	Model lightSphereModel("Models/Ball/ball.obj");
-	GLuint screenQuad = CreateScreenQuad();
+
+	// 2D quads
+	ClipSpaceQuad fullScreenQuad;
+	ClipSpaceQuad coinInterfaceQuad(glm::vec2(-0.4, -0.4), 1.0f, 0.05f, false, "Textures/UI/coins.png");
+
+	// MENU STUFF
+	Menu buttonHandler;
+	int startButton = buttonHandler.AddButton(glm::vec2(0.0f, 0.25f), 0.35f, 0.35f, "Textures/Menu/play2.png", MENU_START);
+	int quitButton = buttonHandler.AddButton(glm::vec2(0.0f, -0.25f), 0.25f, 0.25f, "Textures/Menu/quit2.png", MENU_START);
+	int resumeButton = buttonHandler.AddButton(glm::vec2(0.0f, 0.25f), 0.35f, 0.35f, "Textures/Menu/resume2.png", MENU_INGAME);
+	int quitButtonInGame = buttonHandler.AddButton(glm::vec2(0.0f, -0.25f), 0.25f, 0.25f, "Textures/Menu/quit2.png", MENU_INGAME);
 
 	// Initiate timer
 	double currentTime = 0;
@@ -137,33 +164,46 @@ int main()
 		if (currentTime - lastTime >= 1.0)
 		{
 			// If last print was more than 1 sec ago, print and reset timer
-			display.SetTitle("FPS: " + to_string((int)((double)nrOfFrames)));
+			display.SetTitle("FPS: " + to_string((nrOfFrames)));
 			nrOfFrames = 0;
 			lastTime += 1.0;
 		}
+		
 		// ================== EVENTS ==================
-
 		glfwPollEvents();
+		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &display, &paused, &startMenu, &buttonHandler, &IH, &mazeGrid, enginePtr, &exit);
 
-		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur);
+		if (!paused)
+		{
+			// Update movement
+			IH.MouseControls(&display, &player, deltaTime);
+			IH.KeyboardControls(&display, &player, deltaTime);
 
-		// Update movement
-		IH.MouseControls(&display, &player, deltaTime);
-		IH.KeyboardControls(&display, &player, deltaTime);
+			// ================== UPDATE ==================
 
-		// ================== UPDATE ==================
+			// Update player
+			player.Update(deltaTime);
+			minotaur.Update(deltaTime, player.GetCamera()->GetCameraPosition());
 
-		// Update player
-		player.Update(deltaTime);
-		minotaur.Update(deltaTime, player.GetCamera()->GetCameraPosition());
+			OH.UpdateAllObjects(deltaTime);
+			maze.UpdateKeystones(deltaTime);
+			lights.UpdateShadowTransform(0);
 
-		OH.UpdateAllObjects(deltaTime);
-		maze.UpdateKeystones(deltaTime);
-		lights.UpdateShadowTransform(0);
+			// update sound engine with position and view direction
+			soundEngine.Update(player.GetCamera()->GetCameraPosition(), player.GetCamera()->GetForwardVector());
+		}
+		else    // if game is paused
+		{
+			if (startMenu)
+			{
 
-		// update sound engine with position and view direction
-		soundEngine.Update(player.GetCamera()->GetCameraPosition(), player.GetCamera()->GetForwardVector());
-
+			}
+			else
+			{
+				// Update player
+				player.UpdateOnlyTorch(deltaTime);
+			}
+		}
 		// ================== DRAW ==================
 
 		// Here the mazes is created and stored in a buffer with transform feedback
@@ -178,7 +218,7 @@ int main()
 		
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU
-		DRLightPass(&gBuffer, &finalFBO, &screenQuad, &lightPass, &shadowMap, &lights, player.GetCamera());
+		DRLightPass(&gBuffer, &finalFBO, &fullScreenQuad, &lightPass, &shadowMap, &lights, player.GetCamera());
 
 		// Copy the depth from the gBuffer to the finalFBO
 		finalFBO.CopyDepth(SCREEN_WIDTH, SCREEN_HEIGHT, gBuffer.GetFBO());
@@ -186,8 +226,27 @@ int main()
 		// In this function, all particles will be drawn to the finalFBO
 		ParticlePass(&finalFBO, player.GetTorch()->GetParticle(), player.GetCamera(), &particleShader);
 
-		// Render everything to the default framebuffer
-		FinalPass(&finalFBO, &finalShader, &screenQuad);
+		// Render everything
+		FinalPass(&finalFBO, &finalShader, &fullScreenQuad);
+
+
+		if (paused)
+		{
+			if (startMenu)
+			{
+				Button2DPass(&button2DShader, &buttonHandler, MENU_START);
+			}
+			else
+			{
+				Button2DPass(&button2DShader, &buttonHandler, MENU_INGAME);
+			}
+		}
+		else
+		{
+			// Draw UI on top of everything else
+			CoinUIPass(&coinUIShader, &coinInterfaceQuad, &player);
+		}
+
 
 		// ================== POST DRAW ==================
 		display.SwapBuffers(SCREEN_WIDTH, SCREEN_HEIGHT);

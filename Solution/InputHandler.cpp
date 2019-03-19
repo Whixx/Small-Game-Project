@@ -25,11 +25,12 @@ void InputHandler::Key_callback(GLFWwindow * window, int key, int scancode, int 
 		EH.AddEvent(EVENT_PLAYER_DROPCOIN);
 	}
 
-	if (key == GLFW_KEY_C && action == GLFW_PRESS)
+	/*if (key == GLFW_KEY_C && action == GLFW_PRESS)
 	{
 		EventHandler& EH = EventHandler::GetInstance();
+		if (mouseLock)
 		EH.AddEvent(EVENT_PLAYER_TOSSCOIN);
-	}
+	}*/
 
 	if (key == GLFW_KEY_T && action == GLFW_PRESS)
 	{
@@ -41,6 +42,48 @@ void InputHandler::Key_callback(GLFWwindow * window, int key, int scancode, int 
 	{
 		EventHandler& EH = EventHandler::GetInstance();
 		EH.AddEvent(EVENT_PLAYER_PICKUPCOIN);
+	}
+
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+
+		mouseLock = !mouseLock;
+		if (mouseLock)
+		{
+			//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			//EH.AddEvent(EVENT_PLAYING);
+		}	
+		else
+		{
+			//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			EH.AddEvent(EVENT_PAUSED);
+		}
+	}
+
+	// these are tests for switching between start/ingame menu
+	if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+
+		EH.AddEvent(EVENT_MENU_START);
+	}
+	if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+
+		EH.AddEvent(EVENT_MENU_INGAME);
+	}
+
+}
+
+void InputHandler::mouse_button_callback(GLFWwindow * window, int button, int action, int mods)
+{
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+		EH.AddEvent(EVENT_MOUSE_LEFT_PRESSED);
+		cout << "LEFT MOUSE BUTTON PRESSED" << endl;
 	}
 }
 
@@ -146,4 +189,9 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	//}
 }
 
-bool InputHandler::mouseLock = true;
+void InputHandler::SetMouseLockTrue()
+{
+	this->mouseLock = true;
+}
+
+bool InputHandler::mouseLock = false;

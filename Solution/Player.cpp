@@ -30,7 +30,9 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	{
 		this->AddCoinToInventory();	// Incrementing nrOfInventoryCoins
 	}
-		
+	
+	this->SetPlayerSpeed(20.0f);
+	this->CenterPlayer();
 }
 
 Player::~Player()
@@ -86,6 +88,26 @@ unsigned int Player::GetNrOfInventoryCoins()
 unsigned int Player::GetNrOfWorldCoins()
 {
 	return this->nrOfWorldCoins;
+}
+
+void Player::ResetCoins()
+{
+	unsigned int nrOfCoinsToAdd = MAX_NR_OF_COINS - this->nrOfInventoryCoins;
+	// Add coins in inventory
+	for (int i = 0; i < nrOfCoinsToAdd; i++)
+	{
+		this->AddCoinToInventory();
+		std::cout << "nrofcoins: " << this->nrOfInventoryCoins << std::endl;
+	}
+	 
+	unsigned int nrOfWorldCoins = this->worldCoins.size();
+
+	// Remove coins from world
+	for (int i = 0; i < nrOfWorldCoins; i++)
+	{
+		this->worldCoins.pop_back();
+	}
+	this->nrOfWorldCoins = 0;
 }
 
 void Player::SetPlayerHeight(float height)
@@ -451,6 +473,15 @@ void Player::Update(double dt)
 #endif
 }
 
+void Player::UpdateOnlyTorch(double dt)
+{
+	// Update the torch
+	this->playerTorch.Update(dt,
+		this->playerCamera,
+		this->walkingVector,
+		this->boundingBoxHalfSize);
+}
+
 void Player::AddCoinToInventory()
 {
 	// Check if bag is full
@@ -542,6 +573,24 @@ void Player::PlayGroundCollisionSound()
 void Player::DrawCoin(unsigned int index, Shader * shader)
 {
 	this->worldCoins.at(index).Draw(&this->coinModel, shader);
+}
+
+void Player::ResetPlayer(Maze* maze)
+{
+	this->maze = maze;
+
+	this->nrOfInventoryCoins = 0;
+	this->nrOfWorldCoins = 0;
+
+	//this->ResetCoins();
+	//// Add startingCoins for the player
+	//for (int i = 0; i < MAX_NR_OF_COINS; i++)
+	//{
+	//	this->AddCoinToInventory();	// Incrementing nrOfInventoryCoins
+	//}
+
+	this->SetPlayerSpeed(20.0f);
+	this->CenterPlayer();
 }
 
 void Player::AddCoinToWorld(unsigned int state)
