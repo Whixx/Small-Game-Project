@@ -100,6 +100,12 @@
     <ClCompile Include="Exit.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
+    <ClCompile Include="ClipSpaceQuad.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloom.h">
@@ -207,6 +213,12 @@
     <ClInclude Include="Exit.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
+    <ClInclude Include="ClipSpaceQuad.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="finalShader.fs">
@@ -261,6 +273,18 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="lightPass.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="coinUIShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="coinUIShader.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="button2DShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="button2DShader.fs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

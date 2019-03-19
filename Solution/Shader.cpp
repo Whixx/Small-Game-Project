@@ -114,6 +114,11 @@ void Shader::SendCameraLocation(Camera * camera)
 	glUniform3f(this->GetUniformLocation("cameraPos"), camera->GetCameraPosition().x, camera->GetCameraPosition().y, camera->GetCameraPosition().z);
 }
 
+Shader * Shader::GetShader()
+{
+	return this;
+}
+
 void CheckShaderError(GLuint shader, GLuint flag, bool isProgram, const std::string & errorMessage)
 {
 	GLint success = 0;

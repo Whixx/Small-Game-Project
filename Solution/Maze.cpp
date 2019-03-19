@@ -17,7 +17,7 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	this->mazeVbo = 0;
 	this->mazeVao = 0;
 
-	this->keystoneSound.SetVolume(1);
+	//this->keystoneSound.SetVolume(1);
 
 	// Set maze position, rotation and scale
 	this->transform.SetPos(glm::vec3(0, 0, 0));
@@ -32,19 +32,16 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	this->exit = this->CreateExit();
 
 	this->nrOfKeystones = 0;
-	this->keystonesCapacity = 3; // Initvalue of the number of keystones
+	this->keystonesCapacity = 5; // Init Allocation of the keystone arr
 	this->keystones = new Keystone[this->keystonesCapacity];
 	this->lastActivatedKeystone = glm::vec3();
 
 	// Create 3 cubes. Each on a separate floor in the maze
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < NR_OF_START_KEYSTONES; i++)
 		this->AddKeystone();
 
 	// Set scale of exit
-	this->exit.GetTransform()->SetScale(glm::vec3(
-		0.11f * this->transform.GetScale().x,
-		0.08f * this->transform.GetScale().y,
-		0.11f * this->transform.GetScale().z));
+	this->SetExitScale();
 
 #ifdef DEBUG
 	// TEST PRINT
@@ -63,7 +60,7 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 
 Maze::~Maze()
 {
-	stbi_image_free(imageData);
+	this->FreeImageData();
 
 	glDeleteBuffers(1, &this->mazeTbo);
 	glDeleteBuffers(1, &this->mazeVbo);
@@ -90,6 +87,16 @@ glm::vec3 Maze::GetExitWorldPos()
 Exit * Maze::GetExit()
 {
 	return &this->exit;
+}
+
+void Maze::SetExit(Exit exit)
+{
+	this->exit = exit;
+}
+
+void Maze::SetExitFalse()
+{
+	this->isExitOpen = false;
 }
 
 Transform * Maze::GetTransform()
@@ -296,6 +303,19 @@ void Maze::BindTexture(unsigned int textureUnit)
 	}
 }
 
+void Maze::SetExitScale()
+{
+	this->exit.GetTransform()->SetScale(glm::vec3(
+		0.11f * this->transform.GetScale().x,
+		0.08f * this->transform.GetScale().y,
+		0.11f * this->transform.GetScale().z));
+}
+
+void Maze::FreeImageData()
+{
+	stbi_image_free(imageData);
+}
+
 void Maze::LoadMaze(const std::string & fileName)
 {
 	this->path = fileName;
@@ -468,6 +488,14 @@ void Maze::UpdateKeystones(float deltaTime)
 			}	
 		}
 	}
+}
+
+void Maze::ResetKeystones()
+{
+	this->nrOfKeystones = 0;
+	// Create 3 cubes. Each on a separate floor in the maze
+	for (int i = 0; i < NR_OF_START_KEYSTONES; i++)
+		this->AddKeystone();
 }
 
 void Maze::BindMaterial(Shader* shader)
@@ -702,8 +730,6 @@ KeystonePosDir Maze::CreateCubePosition()
 		{
 			if (pixelColor != floorColor)
 			{
-
-
 				// Transform to world coords
 				nearbyFloorPos = this->TransformToWorldCoords(nearbyFloorPos);
 				glm::vec3 wallPos = this->TransformToWorldCoords(glm::vec3(randomWidth, 1.0f, randomHeight));

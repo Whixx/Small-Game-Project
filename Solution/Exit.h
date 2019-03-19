@@ -23,9 +23,9 @@ public:
 	Transform * GetTransform();
 	glm::vec3 GetExitPos();
 	glm::vec2 GetExitUVPos();
-	glm::vec3 GetDir();
 
 	void SetDir(glm::vec3 newDir);
+	glm::vec3 GetDir();
 
 	void DrawOpen(Shader* shader);
 	void DrawClosed(Shader * shader);
