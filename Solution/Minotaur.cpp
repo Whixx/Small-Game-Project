@@ -419,6 +419,11 @@ void Minotaur::ResetMinotaur(std::vector<std::vector<int>> newMazeGrid, Maze* ma
 		int(this->maze->TransformToMazeCoords(this->transform.GetPos()).x),
 		int(this->maze->TransformToMazeCoords(this->transform.GetPos()).z));
 
+	while (!this->generatedPath.empty())
+	{
+		generatedPath.pop_back();
+	}
+
 }
 
 void Minotaur::setupColorData()

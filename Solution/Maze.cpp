@@ -60,7 +60,7 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 
 Maze::~Maze()
 {
-	stbi_image_free(imageData);
+	this->FreeImageData();
 
 	glDeleteBuffers(1, &this->mazeTbo);
 	glDeleteBuffers(1, &this->mazeVbo);
@@ -92,6 +92,11 @@ Exit * Maze::GetExit()
 void Maze::SetExit(Exit exit)
 {
 	this->exit = exit;
+}
+
+void Maze::SetExitFalse()
+{
+	this->isExitOpen = false;
 }
 
 Transform * Maze::GetTransform()
@@ -284,6 +289,11 @@ void Maze::SetExitScale()
 		0.11f * this->transform.GetScale().x,
 		0.08f * this->transform.GetScale().y,
 		0.11f * this->transform.GetScale().z));
+}
+
+void Maze::FreeImageData()
+{
+	stbi_image_free(imageData);
 }
 
 void Maze::LoadMaze(const std::string & fileName)

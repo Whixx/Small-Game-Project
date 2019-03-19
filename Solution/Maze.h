@@ -55,6 +55,7 @@ public:
 	glm::vec3 GetExitWorldPos();
 	Exit* GetExit();
 	void SetExit(Exit exit);
+	void SetExitFalse();	// closes exit if you die
 
 	Transform *GetTransform();
 	glm::vec2* GetDrawOrder();
@@ -90,6 +91,8 @@ public:
 	void BindTexture(unsigned int textureUnit);
 
 	void SetExitScale();
+
+	void FreeImageData();
 
 private:
 
