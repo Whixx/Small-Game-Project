@@ -136,20 +136,20 @@ void Minotaur::Update(double dt, glm::vec3 playerPos)
 
 	switch ((int)direction.x)
 	{
-	case -1:
+	case 1:
 		rotation = glm::vec3(0, glm::radians(-90.0f), 0);
 		break;
-	case 1:
+	case -1:
 		rotation = glm::vec3(0, glm::radians(90.0f), 0);
 		break;
 	}
 
 	switch ((int)direction.y)
 	{
-	case -1:
+	case 1:
 		rotation = glm::vec3(0, glm::radians(180.0f), 0);
 		break;
-	case 1:
+	case -1:
 		rotation = glm::vec3(0, 0, 0);
 		break;
 	}
