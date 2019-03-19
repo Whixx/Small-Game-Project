@@ -17,6 +17,7 @@ int main()
 	srand(time(NULL));
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_CULL_FACE);
+	glDepthFunc(GL_LESS);
 
 	Display display;
 

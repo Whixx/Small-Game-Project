@@ -1,14 +1,15 @@
 #include "Material.h"
 
-Material::Material(Texture * tex_diffuse, Texture * tex_ambient, Texture * tex_specular, Texture * tex_normal, Texture * tex_height, float shininess, const char * name)
+Material::Material(Texture * tex_diffuse, Texture * tex_emissive, Texture * tex_specular, Texture * tex_normal, Texture * tex_height, float shininess, glm::vec3 ambient, const char * name)
 {
 	this->diffuse = tex_diffuse;
-	this->ambient= tex_ambient;
+	this->emissive = tex_emissive;
 	this->specular = tex_specular;
 	this->normal = tex_normal;
 	this->height = tex_height;
 
 	this->shininess = shininess;
+	this->ambient = ambient;
 	this->name = name;
 }
 
@@ -32,8 +33,8 @@ void Material::BindMaterialArray(Shader* shader, unsigned int type)
 	shader->SendInt((this->diffuse->GetType() + '[' + to_string(type) + ']').c_str(), type * stride);
 	this->diffuse->Bind(type * stride);
 
-	shader->SendInt((this->ambient->GetType() + '[' + to_string(type) + ']').c_str(), type * stride + 1);
-	this->ambient->Bind(type * stride + 1);
+	shader->SendInt((this->emissive->GetType() + '[' + to_string(type) + ']').c_str(), type * stride + 1);
+	this->emissive->Bind(type * stride + 1);
 
 	shader->SendInt((this->specular->GetType() + '[' + to_string(type) + ']').c_str(), type * stride + 2);
 	this->specular->Bind(type * stride + 2);
@@ -46,11 +47,14 @@ void Material::BindMaterialArray(Shader* shader, unsigned int type)
 
 	// Attributes
 	shader->SendFloat((string("shininess") + '[' + to_string(type) + ']').c_str(), this->shininess);
+
+	shader->SendVec3((string("ambient") + '[' + to_string(type) + ']').c_str(), this->ambient.r, this->ambient.g, this->ambient.b);
 }
 
 void Material::SendMaterial(Shader * shader)
 {
 	shader->SendFloat("shininess", this->shininess);
+	shader->SendVec3("ambient", this->ambient.r, this->ambient.g, this->ambient.b);
 }
 
 void Material::BindTextures(Shader * shader)
@@ -58,8 +62,8 @@ void Material::BindTextures(Shader * shader)
 	shader->SendInt(this->diffuse->GetType().c_str(), 0);
 	this->diffuse->Bind(0);
 
-	shader->SendInt(this->ambient->GetType().c_str(), 1);
-	this->ambient->Bind(1);
+	shader->SendInt(this->emissive->GetType().c_str(), 1);
+	this->emissive->Bind(1);
 
 	shader->SendInt(this->specular->GetType().c_str(), 2);
 	this->specular->Bind(2);

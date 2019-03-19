@@ -64,8 +64,9 @@ void InitLightPass(Shader * shader)
 	shader->SendInt("gDiffuse", 1);
 	shader->SendInt("gNormal", 2);
 	shader->SendInt("gSpecularShininessHeight", 3);
-	shader->SendInt("gAmbient", 4);
-	shader->SendInt("shadowMap", 5);
+	shader->SendInt("gEmissive", 4);
+	shader->SendInt("gAmbient", 5);
+	shader->SendInt("shadowMap", 6);
 
 	shader->ValidateShaders();
 }
@@ -261,6 +262,8 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	mazeGeometryPass->UnBind();
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void DRLightPass(GBuffer *gBuffer, FinalFBO * finalFBO, GLuint *fullScreenTriangle, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera)
@@ -274,8 +277,8 @@ void DRLightPass(GBuffer *gBuffer, FinalFBO * finalFBO, GLuint *fullScreenTriang
 	finalFBO->BindForWriting();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	gBuffer->BindForReading(); // Binds texture slot 0,1,2,3,4
-	shadowBuffer->BindForReading(5); // Binds texture slot 5
+	gBuffer->BindForReading(); // Binds texture slot 0,1,2,3,4,5
+	shadowBuffer->BindForReading(6); // Binds texture slot 6
 
 	glDisable(GL_DEPTH_TEST);
 	glBindVertexArray(*fullScreenTriangle);
@@ -404,7 +407,6 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		else if (event == EVENT_PLAYER_TOSSCOIN)
 		{
 			player->TossCoin();
-			player->SpawnCoinAtMinotaur();
 		}
 		else if (event == EVENT_PLAYER_PICKUPCOIN)
 		{
@@ -619,19 +621,19 @@ void CreateLandmarks(ObjectHandler * OH, Maze * maze)
 			{
 				OH->GetObject(i)->GetPos().z = floor(OH->GetObject(i)->GetPos().z);
 				OH->GetObject(i)->GetPos().z += tessOffset;
-				OH->GetObject(i)->GetRot().y += glm::radians(180.0f);
+				OH->GetObject(i)->GetRot().y += glm::radians(0.0f);
 			}
 			else if (maze->IsWallAtWorld(pos.x + 1, pos.z) == true)
 			{
 				OH->GetObject(i)->GetPos().x = ceil(OH->GetObject(i)->GetPos().x);
 				OH->GetObject(i)->GetPos().x -= tessOffset;
-				OH->GetObject(i)->GetRot().y += glm::radians(90.0f);
+				OH->GetObject(i)->GetRot().y += glm::radians(-90.0f);
 			}
 			else if (maze->IsWallAtWorld(pos.x - 1, pos.z) == true)
 			{
 				OH->GetObject(i)->GetPos().x = floor(OH->GetObject(i)->GetPos().x);
 				OH->GetObject(i)->GetPos().x += tessOffset;
-				OH->GetObject(i)->GetRot().y += glm::radians(-90.0f);
+				OH->GetObject(i)->GetRot().y += glm::radians(+90.0f);
 			}
 			else
 			{
