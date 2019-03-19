@@ -33,6 +33,15 @@ void InitShadowShader(Shader * shader)
 	shader->ValidateShaders();
 }
 
+void InitShadowAnimationShader(Shader * shader)
+{
+	shader->InitiateShaders();
+
+	// Set constant uniforms
+
+	shader->ValidateShaders();
+}
+
 void InitGeometryPass(Shader * shader)
 {
 	shader->InitiateShaders();
@@ -156,7 +165,7 @@ void MazeGenerationPass(Shader * mazeGenerationShader, Maze * maze, Player * pla
 	mazeGenerationShader->UnBind();
 }
 
-void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Maze * maze, Exit * exit)
+void ShadowPass(Shader *shadowShader, Shader* shadowAnimation, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Minotaur* minotaur, Maze * maze, Exit * exit)
 {
 	shadowShader->Bind();
 	glEnable(GL_DEPTH_TEST);
@@ -214,6 +223,44 @@ void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH,
 	}
 
 	shadowShader->UnBind();
+	
+	shadowAnimation->Bind();
+	
+	//glEnable(GL_DEPTH_TEST);
+	//shadowFBO->Bind();
+	//glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+	
+	// For each light, we create a matrix and draws each light.
+	for (unsigned int i = 0; i < PLH->GetNrOfLights(); i++)
+	{
+		shadowTransforms = PLH->GetShadowTransform(i);
+		lightPos = PLH->GetTransform(i)->GetPos();
+	
+		for (int j = 0; j < 6; ++j)
+		{
+			shadowAnimation->SendMat4(("shadowMatrices[" + std::to_string(j) + "]").c_str(), shadowTransforms[j]);
+		}
+		shadowAnimation->SendFloat("farPlane", (float)FAR_PLANE);
+		shadowAnimation->SendVec3("lightPos", lightPos.x, lightPos.y, lightPos.z);
+	
+		// Draw minotaur
+		glm::mat4 worldMatrix = minotaur->GetTransform().GetWorldMatrix();
+		shadowAnimation->SendMat4("WorldMatrix", worldMatrix);
+	
+		const glm::mat4 * boneTransforms = minotaur->GetSkeletonBuffer().BoneTransforms;
+		for (int i = 0; i < MAX_NUM_BONES; ++i)
+		{
+			shadowAnimation->SendMat4(("Bones[" + std::to_string(i) + "]").c_str(), boneTransforms[i]);
+		}
+
+		minotaur->DrawMeshes(shadowAnimation);
+	}
+	
+	shadowAnimation->UnBind();
+
+
+
+
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	glDisable(GL_DEPTH_TEST);
 }

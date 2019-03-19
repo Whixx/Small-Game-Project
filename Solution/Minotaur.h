@@ -18,6 +18,7 @@ public:
 
 	void Initialize();
 	void Update(double dt, glm::vec3 playerPos);
+	void DrawMeshes(Shader* shader);
 	void Draw(Shader* shader);
 	glm::vec2 ClampToEdges(glm::vec2 mazeCoords);	// takes in maze coords and spits out mazecoords
 	const SkeletonBuffer& GetSkeletonBuffer();

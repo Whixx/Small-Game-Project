@@ -235,6 +235,7 @@ AnimatedModel::AnimatedModel(std::string path, bool gammaCorrection)
 AnimatedModel::~AnimatedModel()
 {
 	// Delete the mesh?
+	delete this->mesh;
 	delete this->skeleton;
 }
 

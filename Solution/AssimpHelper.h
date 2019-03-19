@@ -1,8 +1,21 @@
 #ifndef ASSIMPHELPER_H
 #define ASSIMPHELPER_H
 
-#define DeleteSafe(x)
-#define DeleteArrSafe(x)
+#if !defined(Delete)
+#define Delete(x) delete x; x = nullptr
+#endif
+
+#if !defined(DeleteArr)
+#define DeleteArr(x) delete[] x; x = nullptr
+#endif
+
+#if !defined(DeleteSafe)
+#define DeleteSafe(x) if (x != nullptr) { Delete(x); }
+#endif
+
+#if !defined(DeleteArrSafe)
+#define DeleteArrSafe(x) if (x != nullptr) { DeleteArr(x); }
+#endif
 
 inline glm::mat4 AssimpToGLMMat4(const aiMatrix4x4& mat)
 {

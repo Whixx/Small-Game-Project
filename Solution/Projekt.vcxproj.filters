@@ -305,6 +305,15 @@
     <None Include="animationPass.fs">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="shadowAnimationShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="shadowAnimationShader.gs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="shadowAnimationShader.fs">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

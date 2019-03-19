@@ -209,6 +209,11 @@ void Minotaur::Update(double dt, glm::vec3 playerPos)
 	this->stepSound.Play();
 }
 
+void Minotaur::DrawMeshes(Shader * shader)
+{
+	this->model.DrawMeshes(shader);
+}
+
 void Minotaur::GeneratePath(int startY, int startX, int destinationY, int destinationX)
 {
 	//// TEST print

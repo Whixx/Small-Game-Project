@@ -189,6 +189,9 @@
     <None Include="particleShader.vs" />
     <None Include="pointLightShader.fs" />
     <None Include="pointLightShader.vs" />
+    <None Include="shadowAnimationShader.fs" />
+    <None Include="shadowAnimationShader.gs" />
+    <None Include="shadowAnimationShader.vs" />
     <None Include="shadowShader.fs" />
     <None Include="shadowShader.gs" />
     <None Include="shadowShader.vs" />

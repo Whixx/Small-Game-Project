@@ -52,6 +52,11 @@ int main()
 	shadowShader.CreateShader(".\\shadowShader.vs", GL_VERTEX_SHADER);
 	shadowShader.CreateShader(".\\shadowShader.gs", GL_GEOMETRY_SHADER);
 	shadowShader.CreateShader(".\\shadowShader.fs", GL_FRAGMENT_SHADER);
+	
+	Shader shadowAnimationShader;
+	shadowAnimationShader.CreateShader(".\\shadowAnimationShader.vs", GL_VERTEX_SHADER);
+	shadowAnimationShader.CreateShader(".\\shadowAnimationShader.gs", GL_GEOMETRY_SHADER);
+	shadowAnimationShader.CreateShader(".\\shadowAnimationShader.fs", GL_FRAGMENT_SHADER);
 
 	Shader geometryPass;
 	geometryPass.CreateShader(".\\geometryPass.vs", GL_VERTEX_SHADER);
@@ -93,6 +98,9 @@ int main()
 
 	InitMazeGenerationShader(&mazeGenerationShader, &maze);
 	InitShadowShader(&shadowShader);
+
+	InitShadowAnimationShader(&shadowAnimationShader);
+
 	InitGeometryPass(&geometryPass);
 	InitMazeGeometryPass(&mazeGeometryPass);
 	InitAnimationPass(&animationPass);
@@ -191,7 +199,7 @@ int main()
 		MazeGenerationPass(&mazeGenerationShader, &maze, &player);
 		
 		// Here a cube map is calculated and stored in the shadowMap FBO
-		ShadowPass(&shadowShader, &OH, &lights, &shadowMap, &player, &maze, &exit);
+		ShadowPass(&shadowShader, &shadowAnimationShader, &OH, &lights, &shadowMap, &player, &minotaur, &maze, &exit);
 		
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call

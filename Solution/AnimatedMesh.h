@@ -4,7 +4,8 @@
 //#include <Graphics/Buffers/UniformBuffer.h>
 #include "MeshBase.h"
 
-const unsigned int MAX_NUM_BONES = 50;
+
+constexpr unsigned int MAX_NUM_BONES = 50;
 
 #include <glm/glm.hpp>
 #include <map>
