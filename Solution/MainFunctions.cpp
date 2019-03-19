@@ -93,6 +93,29 @@ void InitFinalShader(Shader * shader)
 	shader->ValidateShaders();
 }
 
+void InitCoinUIShader(Shader * shader, Player * player)
+{
+	shader->InitiateShaders();
+
+	// Set constant uniforms
+	shader->Bind();
+	shader->SendInt("texture", 0);
+	shader->SendInt("MAX_NR_OF_INVENTORY_COINS", player->GetNrOfInventoryCoins());
+
+	shader->ValidateShaders();
+}
+
+void InitButton2DShader(Shader * shader)
+{
+	shader->InitiateShaders();
+
+	// Set constant uniforms
+	shader->Bind();
+	shader->SendInt("texture", 0);
+
+	shader->ValidateShaders();
+}
+
 void MazeGenerationPass(Shader * mazeGenerationShader, Maze * maze, Player * player)
 {
 	mazeGenerationShader->Bind();
@@ -251,7 +274,7 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 
 	// Same world matrix for walls and floor
 	glm::mat4 mazeWorldMatrix = maze->GetTransform()->GetWorldMatrix();
-	
+
 	// Draw Maze
 	mazeGeometryPass->SendMat4("WorldMatrix", mazeWorldMatrix);
 	mazeGeometryPass->SendMat4("VP", player->GetCamera()->GetViewProjection());
@@ -266,7 +289,7 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void DRLightPass(GBuffer *gBuffer, FinalFBO * finalFBO, GLuint *fullScreenTriangle, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera)
+void DRLightPass(GBuffer *gBuffer, FinalFBO * finalFBO, ClipSpaceQuad *fullScreenQuad, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera)
 {
 	lightPass->Bind();
 
@@ -281,8 +304,7 @@ void DRLightPass(GBuffer *gBuffer, FinalFBO * finalFBO, GLuint *fullScreenTriang
 	shadowBuffer->BindForReading(6); // Binds texture slot 6
 
 	glDisable(GL_DEPTH_TEST);
-	glBindVertexArray(*fullScreenTriangle);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	fullScreenQuad->Draw();
 	glEnable(GL_DEPTH_TEST);
 
 	lightPass->UnBind();
@@ -323,7 +345,7 @@ void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Sha
 	particleShader->UnBind();
 }
 
-void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint * fullScreenTriangle)
+void FinalPass(FinalFBO * finalFBO, Shader * finalShader, ClipSpaceQuad * fullScreenQuad)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -332,9 +354,47 @@ void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint * fullScreenTri
 	finalShader->Bind();
 
 	glDisable(GL_DEPTH_TEST);
-	glBindVertexArray(*fullScreenTriangle);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	fullScreenQuad->Draw();
 	glEnable(GL_DEPTH_TEST);
+}
+
+void CoinUIPass(Shader * coinUIShader, ClipSpaceQuad * coinInterfaceQuad, Player * player)
+{
+	coinUIShader->Bind();
+
+	
+	if (player->GetNrOfInventoryCoins() < 0)
+	{
+		// Render Empty texture
+	}
+	else
+	{
+		// Bind the cointexture
+		coinInterfaceQuad->BindTexture();
+
+		// The shader is using the NrOfInventoryCoins to know what parts of the texture it should render
+		coinUIShader->SendInt("currNrOfCoins", player->GetNrOfInventoryCoins());
+	}
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+	glDisable(GL_DEPTH_TEST);
+	coinInterfaceQuad->Draw();
+	glEnable(GL_DEPTH_TEST);
+
+	glDisable(GL_BLEND);
+}
+
+void Button2DPass(Shader * button2DShader, Menu * buttonHandler, MENU_TYPE menuType)
+{
+	button2DShader->Bind();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	glDisable(GL_DEPTH_TEST);
+	buttonHandler->DrawQuads(menuType);
+	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
+
 }
 
 std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
@@ -348,40 +408,7 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 	return mazeGen.GetGrid();
 }
 
-GLuint CreateScreenQuad()
-{
-	// https://rauwendaal.net/2014/06/14/rendering-a-screen-covering-triangle-in-opengl/
-	 
-
-	float fullScreenTriangleData[] = {
-		-1.0, 3.0, 0.0, 0.0, 2.0,
-		-1.0, -1.0, 0.0, 0.0, 0.0,
-		3.0, -1.0, 0.0, 2.0, 0.0
-	};
-	
-	GLuint screenQuad;
-
-	glGenVertexArrays(1, &screenQuad);
-	glBindVertexArray(screenQuad);
-
-	GLuint quadBuffer;
-	glGenBuffers(1, &quadBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, quadBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5 * 3, &fullScreenTriangleData[0], GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(float) * 5, 0);
-
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, false, sizeof(float) * 5, (void*) (sizeof(float) * 3));
-
-
-	glBindVertexArray(0);
-
-	return screenQuad;
-}
-
-void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur)
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, Menu* buttonHandler, InputHandler* ih, std::vector<std::vector<int>>* mazeGrid, irrklang::ISoundEngine* enginePtr, Exit* exit)
 {
 	EventHandler& EH = EventHandler::GetInstance();
 	while (!EH.IsEmpty())
@@ -390,40 +417,142 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 
 		if (event == EVENT_PLAYER_WIN)
 		{
-			//player->CenterPlayer();
-
 			winSound->SetPosition(player->GetPos());
 			winSound->Play();
 		}
 		else if (event == EVENT_PLAYER_LOSE)
 		{
-			//player->CenterPlayer();
 			deathSound->Play();
+
+			// generate new mazePNG and Maze object
+			std::vector<std::vector<int>>* newMazeGrid = RegenerateMaze(mazeGrid, maze, enginePtr);
+			maze->FreeImageData();
+			maze->LoadMaze("MazePNG/mazeColorCoded.png");
+
+			// new exit
+			*exit = maze->CreateExit();
+			maze->SetExit(*exit);
+			maze->SetExitScale();
+			exit->GetTransform()->GetScale() = glm::vec3(
+				0.11f * maze->GetTransform()->GetScale().x,
+				0.08f * maze->GetTransform()->GetScale().y,
+				0.11f * maze->GetTransform()->GetScale().z);
+			exit = maze->GetExit();
+
+			// reset the rest
+			maze->SetExitFalse();
+			maze->ResetKeystones();
+			player->ResetPlayer(maze);
+			player->ResetCoins();
+			minotaur->ResetMinotaur(*newMazeGrid, maze);
+
+			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+			EventHandler& EH = EventHandler::GetInstance();
+			EH.AddEvent(EVENT_MENU_START);
+			EH.AddEvent(EVENT_PAUSED);
 		}
 		else if (event == EVENT_PLAYER_DROPCOIN)
 		{
 			player->DropCoin();
 		}
-		else if (event == EVENT_PLAYER_TOSSCOIN)
+		else if (event == EVENT_KEY_E_PRESSED)	// Pick up coins OR press keystones
 		{
-			player->TossCoin();
-		}
-		else if (event == EVENT_PLAYER_PICKUPCOIN)
-		{
-			player->PickUpCoin();
-		}
-		else if (event == EVENT_MAZE_KEYSTONE_PRESSED)
-		{
-			glm::vec3 keystonePosition = player->GetCamera()->GetCameraPosition();
-			// The function will check which keystone was pressed
-			if (maze->ActivateKeystone(player->GetPos(), minotaurGrowlSound))
+			// If the player doesn't pick up a coin, the keystone check will initiate instead
+			if (player->PickUpCoin() == false)
 			{
-				keystonePosition = maze->TransformToMazeCoords(keystonePosition);
+				// Keystone press
+				glm::vec3 keystonePosition = player->GetCamera()->GetCameraPosition();
+				// The function will check which keystone was pressed
+				if (maze->ActivateKeystone(player->GetPos(), minotaurGrowlSound))
+				{
+					keystonePosition = maze->TransformToMazeCoords(keystonePosition);
 
-				minotaur->reactToSound(keystonePosition);
+					minotaur->reactToSound(keystonePosition);
+				}
+			}
+		}
+		else if (event == EVENT_PAUSED)
+		{
+			*paused = true;
+			cout << "PAUSED: " << *paused << endl;
+			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
+		else if (event == EVENT_PLAYING)
+		{
+			*paused = false;
+			cout << "PAUSED: " << *paused << endl;
+			ih->SetMouseLockTrue();
+			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);			
+			glfwSetCursorPos(window->GetWindow(), player->GetCamera()->GetOldMousePosition().x, player->GetCamera()->GetOldMousePosition().y);
+		}
+		else if (event == EVENT_MENU_START)
+		{
+			*startMenu = true;
+			cout << "MENU CHANGED TO START MENU" << endl;
+		}
+		else if (event == EVENT_MENU_INGAME)
+		{
+			*startMenu = false;
+			cout << "MENU CHANGED TO INGAME MENU" << endl;
+		}
+		else if (event == EVENT_MOUSE_LEFT_PRESSED)
+		{
+			if (*paused)
+			{
+				if (*startMenu)
+				{
+					// playbutton
+					if (buttonHandler->IsQuadPressed(window->GetWindow(), 0))
+					{
+						cout << "PLAY IS CLICKED IN STARTMENU" << endl;
+						EventHandler& EH = EventHandler::GetInstance();
+						EH.AddEvent(EVENT_PLAYING);
+						EH.AddEvent(EVENT_MENU_INGAME);
+						player->CenterPlayer();
+					}
+					// quitbutton
+					if (buttonHandler->IsQuadPressed(window->GetWindow(), 1))
+					{
+						cout << "QUIT IS CLICKED IN STARTMENU" << endl;
+						glfwSetWindowShouldClose(window->GetWindow(), GLFW_TRUE);
+					}
+				}
+				else
+				{
+					// resume button
+					if (buttonHandler->IsQuadPressed(window->GetWindow(), 2))
+					{
+						cout << "RESUME IS CLICKED IN INGAME MENU" << endl;
+						EventHandler& EH = EventHandler::GetInstance();
+						EH.AddEvent(EVENT_PLAYING);
+					}
+					// quit button
+					if (buttonHandler->IsQuadPressed(window->GetWindow(), 3))
+					{
+						cout << "QUIT IS CLICKED IN INGAME MENU" << endl;
+						glfwSetWindowShouldClose(window->GetWindow(), GLFW_TRUE);
+					}
+				}
+			}
+			else	// if playing
+			{
+				// toss coins
+				player->TossCoin();
 			}
 		}
 	}
+}
+
+std::vector<std::vector<int>>* RegenerateMaze(std::vector<std::vector<int>>* mazeGrid, Maze* maze, irrklang::ISoundEngine* enginePtr)
+{
+	int height = mazeGrid->size();
+	int width = mazeGrid->size();
+	*mazeGrid = GenerateMazePNG(height, width);
+	
+	//maze = &Maze(enginePtr); ?? 
+
+	return mazeGrid;
 }
 
 void SetMaxPatchVertices()

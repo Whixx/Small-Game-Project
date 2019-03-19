@@ -21,6 +21,7 @@
 using namespace std;
 
 const unsigned int DRAWDISTANCE = 7;
+const unsigned int NR_OF_START_KEYSTONES = 3;
 
 enum Wall
 {
@@ -50,8 +51,11 @@ public:
 	int GetMazeHeight();
 	int GetMazeWidth();
 
+	Exit CreateExit();
 	glm::vec3 GetExitWorldPos();
 	Exit* GetExit();
+	void SetExit(Exit exit);
+	void SetExitFalse();	// closes exit if you die
 
 	Transform *GetTransform();
 	glm::vec2* GetDrawOrder();
@@ -74,6 +78,7 @@ public:
 
 	bool ActivateKeystone(glm::vec3 playerPos, Sound * minotaurGrowlSound);
 	void UpdateKeystones(float deltaTime);
+	void ResetKeystones();
 
 	void BindMaterial(Shader* shader);
 
@@ -86,6 +91,11 @@ public:
 	glm::vec3 GetRandomFloorPos();
 
 	void BindTexture(unsigned int textureUnit);
+
+	void SetExitScale();
+
+	void FreeImageData();
+
 private:
 
 	unsigned char* imageData;
@@ -133,7 +143,6 @@ private:
 	// Returns the color of the pixel
 	glm::vec3 readPixel(unsigned int x, unsigned int y);
 	ExitPosDir FindExit();
-	Exit CreateExit();
 
 	// Keystone functions
 	KeystonePosDir CreateCubePosition();

@@ -30,7 +30,9 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	{
 		this->AddCoinToInventory();	// Incrementing nrOfInventoryCoins
 	}
-		
+	
+	this->SetPlayerSpeed(2.0f);
+	this->CenterPlayer();
 }
 
 Player::~Player()
@@ -86,6 +88,26 @@ unsigned int Player::GetNrOfInventoryCoins()
 unsigned int Player::GetNrOfWorldCoins()
 {
 	return this->nrOfWorldCoins;
+}
+
+void Player::ResetCoins()
+{
+	unsigned int nrOfCoinsToAdd = MAX_NR_OF_COINS - this->nrOfInventoryCoins;
+	// Add coins in inventory
+	for (int i = 0; i < nrOfCoinsToAdd; i++)
+	{
+		this->AddCoinToInventory();
+		std::cout << "nrofcoins: " << this->nrOfInventoryCoins << std::endl;
+	}
+	 
+	unsigned int nrOfWorldCoins = this->worldCoins.size();
+
+	// Remove coins from world
+	for (int i = 0; i < nrOfWorldCoins; i++)
+	{
+		this->worldCoins.pop_back();
+	}
+	this->nrOfWorldCoins = 0;
 }
 
 void Player::SetPlayerHeight(float height)
@@ -451,6 +473,15 @@ void Player::Update(double dt)
 #endif
 }
 
+void Player::UpdateOnlyTorch(double dt)
+{
+	// Update the torch
+	this->playerTorch.Update(dt,
+		this->playerCamera,
+		this->walkingVector,
+		this->boundingBoxHalfSize);
+}
+
 void Player::AddCoinToInventory()
 {
 	// Check if bag is full
@@ -488,8 +519,10 @@ void Player::TossCoin()
 	this->AddCoinToWorld(COIN_TOSS);
 }
 
-void Player::PickUpCoin()
+bool Player::PickUpCoin()
 {
+	bool coinPickedUp = false;
+
 	// Check if the player can pick up more coins
 	if (this->nrOfInventoryCoins < MAX_NR_OF_COINS)
 	{
@@ -500,7 +533,7 @@ void Player::PickUpCoin()
 		// Check if no coin is close enough to be removed
 		if (indexToRemove == -1)
 		{
-			return;
+			return false;
 		}
 
 		// Remove that coin from world
@@ -509,7 +542,10 @@ void Player::PickUpCoin()
 
 		// Add a new coin in inventory
 		this->nrOfInventoryCoins++;
+
+		coinPickedUp = true;
 	}
+	return coinPickedUp;
 }
 
 void Player::SpawnCoinAtMinotaur()
@@ -542,6 +578,24 @@ void Player::PlayGroundCollisionSound()
 void Player::DrawCoin(unsigned int index, Shader * shader)
 {
 	this->worldCoins.at(index).Draw(&this->coinModel, shader);
+}
+
+void Player::ResetPlayer(Maze* maze)
+{
+	this->maze = maze;
+
+	this->nrOfInventoryCoins = 0;
+	this->nrOfWorldCoins = 0;
+
+	//this->ResetCoins();
+	//// Add startingCoins for the player
+	//for (int i = 0; i < MAX_NR_OF_COINS; i++)
+	//{
+	//	this->AddCoinToInventory();	// Incrementing nrOfInventoryCoins
+	//}
+
+	this->SetPlayerSpeed(2.0f);
+	this->CenterPlayer();
 }
 
 void Player::AddCoinToWorld(unsigned int state)
@@ -652,7 +706,12 @@ int Player::FindNearbyCoin()
 			if (distance < currShortestDistance)
 			{
 				currShortestDistance = distance;
-				currShortestDistIndex = i;
+
+				// Check if the coin is on the floor, else it cannot be picked up
+				if (this->worldCoins.at(i).GetTransform()->GetPos().y < 0.5f)
+				{
+					currShortestDistIndex = i;
+				}
 			}
 		}
 	}
