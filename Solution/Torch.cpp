@@ -106,7 +106,7 @@ void Torch::Update(double dt, Camera camera, glm::vec3 camForward, float distFro
 	// Update the torch so that it is located in front of the player
 	this->GetPos() = camera.GetCameraPosition()
 		+ camForward * distFromPlayer
-		+ camera.GetRightVector() * 0.075f
+		+ camera.GetRightVector() * 0.095f
 		+ camera.GetUpVector() * -0.11f;
 	
 	// Update the lights position (Should be in the correct spot on the torch)
