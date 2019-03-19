@@ -21,6 +21,7 @@ public:
 	void SetAnimationTimeTicks(float animationTimeTicks) const noexcept;
 
 	const SkeletonBuffer& GetSkeletonBuffer() const noexcept;
+	glm::mat4& GetBoneTransform(unsigned int id) const noexcept;
 	float GetAnimationTimeSeconds() const noexcept;
 	float GetAnimationTimeTicks() const noexcept;
 
@@ -45,6 +46,11 @@ private:
 inline const SkeletonBuffer& AnimatedSkeleton::GetSkeletonBuffer() const noexcept
 {
 	return m_SkeletonBuffer;
+}
+
+inline glm::mat4 & AnimatedSkeleton::GetBoneTransform(unsigned int id) const noexcept
+{
+	return this->m_SkeletonBuffer.BoneTransforms[id];
 }
 
 inline float AnimatedSkeleton::GetAnimationTimeSeconds() const noexcept

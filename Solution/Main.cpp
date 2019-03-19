@@ -122,6 +122,7 @@ int main()
 	Sound minotaurGrowlSound("Sounds/minotaurgrowl.wav", false, enginePtr);
 
 	Minotaur minotaur(enginePtr, mazeGrid, &maze);
+	minotaur.Initialize();
 	float playerHeight = 1.28f;
 	
 	float torchSize = 0.02f;

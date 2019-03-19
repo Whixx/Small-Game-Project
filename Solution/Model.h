@@ -52,6 +52,7 @@ public:
 	const SkeletonBuffer& GetSkeletonBuffer();
 	void SetMaterial(Material* newMat);
 	void init();
+	const glm::mat4 &GetBoneTransform(unsigned int index);
 
 	void Update(double dt);
 	void Draw(Shader* shader);

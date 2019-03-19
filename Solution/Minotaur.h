@@ -21,6 +21,7 @@ public:
 	void Draw(Shader* shader);
 	glm::vec2 ClampToEdges(glm::vec2 mazeCoords);	// takes in maze coords and spits out mazecoords
 	const SkeletonBuffer& GetSkeletonBuffer();
+	const glm::mat4& GetBoneTransform(unsigned int index);
 
 	// TEST
 	void setupColorData();

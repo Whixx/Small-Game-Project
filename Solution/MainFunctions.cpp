@@ -259,10 +259,15 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	animationPass->SendMat4("transformationMatrix", player->GetCamera()->GetViewProjection() * worldMatrix);
 	animationPass->SendMat4("WorldMatrix", worldMatrix);
 
-	const glm::mat4 * boneTransforms = minotaur->GetSkeletonBuffer().BoneTransforms;
+	//const glm::mat4 * boneTransforms = minotaur->GetSkeletonBuffer().BoneTransforms;
+	//for (int i = 0; i < MAX_NUM_BONES; ++i)
+	//{
+	//	animationPass->SendMat4(("Bones[" + std::to_string(i) + "]").c_str(), boneTransforms[i]);
+	//}
+
 	for (int i = 0; i < MAX_NUM_BONES; ++i)
 	{
-		animationPass->SendMat4(("Bones[" + std::to_string(i) + "]").c_str(), boneTransforms[i]);
+		animationPass->SendMat4(("Bones[" + std::to_string(i) + "]").c_str(), minotaur->GetBoneTransform(i));
 	}
 	
 	minotaur->Draw(animationPass);

@@ -72,6 +72,8 @@ void Minotaur::Initialize()
 
 void Minotaur::Update(double dt, glm::vec3 playerPos)
 {
+	this->model.Update(dt);
+
 	glm::vec3 currentPos = this->transform.GetPos();
 	glm::vec3 currentPlayerPos = this->maze->TransformToMazeCoords(playerPos);
 
@@ -407,6 +409,12 @@ const SkeletonBuffer & Minotaur::GetSkeletonBuffer()
 {
 	return this->model.GetSkeletonBuffer();
 }
+
+const glm::mat4 & Minotaur::GetBoneTransform(unsigned int index)
+{
+	return this->model.GetBoneTransform(index);
+}
+
 
 void Minotaur::setupColorData()
 {

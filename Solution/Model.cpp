@@ -229,7 +229,7 @@ AnimatedModel::AnimatedModel(std::string path, bool gammaCorrection)
 	std::string objPath = path.substr(path.find_last_of('/') + 1, string::npos); // Remove directory
 	this->name = objPath.erase(objPath.find_last_of('.'), string::npos);
 	this->mesh = AnimatedMesh::ReadColladaFile(path.c_str());
-	this->skeleton->UpdateBoneTransforms(0.0f, this->mesh);
+	//this->skeleton->UpdateBoneTransforms(0.0f, this->mesh);
 }
 
 AnimatedModel::~AnimatedModel()
@@ -253,6 +253,11 @@ void AnimatedModel::SetMaterial(Material* newMat)
 void AnimatedModel::init()
 {
 	this->mesh->Construct();
+}
+
+const glm::mat4 & AnimatedModel::GetBoneTransform(unsigned int index)
+{
+	return this->skeleton->GetBoneTransform(index);
 }
 
 void AnimatedModel::Update(double dt)
