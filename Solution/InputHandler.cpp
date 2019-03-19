@@ -154,10 +154,10 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	{
 		player->MoveDown(elapsedTime);
 	}
-	if (Space == GLFW_PRESS)
+	/*if (Space == GLFW_PRESS)
 	{
 		player->CenterPlayer();
-	}
+	}*/
 	//keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_C);
 	//if (keyboardButton == GLFW_PRESS)
 	//{
