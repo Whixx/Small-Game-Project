@@ -17,15 +17,15 @@ uniform vec3 cameraPos;
 uniform PointLight PointLights[256];
 
 // Gbuffer variables
-uniform sampler2D gPosition;
-uniform sampler2D gDiffuse;
-uniform sampler2D gNormal;
-uniform sampler2D gSpecularShininessHeight;
-uniform sampler2D gEmissive;
-uniform sampler2D gAmbient;
+layout(location = 0) uniform sampler2D gPosition;
+layout(location = 1) uniform sampler2D gDiffuse;
+layout(location = 2) uniform sampler2D gNormal;
+layout(location = 3) uniform sampler2D gSpecularShininessHeight;
+layout(location = 4) uniform sampler2D gEmissive;
+layout(location = 5) uniform sampler2D gAmbient;
 
 // ShadowBuffer variables
-uniform samplerCube shadowMap;
+layout(location = 6) uniform samplerCube shadowMap;
 uniform float farPlane;
 
 float calculateShadows(vec3 objPos, vec3 camPos, vec3 normal)
@@ -89,7 +89,8 @@ void main()
 	float distancePixelToLight;
 
 	// Ambient
-	vec3 ambient = ambientColor;
+	vec3 ambient = ambientColor * materialColor;
+	//ambient = 0.1 * materialColor;
 
 	// Emissive
 	vec3 emissive = emissiveColor.rgb;
