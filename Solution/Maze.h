@@ -85,6 +85,7 @@ public:
 	void LoadMaze(const std::string& fileName);
 	
 	bool IsWallAtWorld(float x, float y);
+	bool GetOpening();
 
 	Wall GetWallType(float x, float y);
 
@@ -93,8 +94,11 @@ public:
 	void BindTexture(unsigned int textureUnit);
 
 	void SetExitScale();
+	void SetOpening(bool opening);
 
 	void FreeImageData();
+
+	void PlayOpeningSound();
 
 private:
 
@@ -108,6 +112,7 @@ private:
 	glm::vec3 exitWorldPos;
 	glm::vec2 exitPos;
 	bool isExitOpen;
+	bool opening;
 
 	Exit exit;
 	Model exitModelOpen;
@@ -118,6 +123,7 @@ private:
 	int nrOfKeystones;
 	Model keyStoneModel;
 	Sound keystoneSound;
+	Sound openingSound;
 	glm::vec3 lastActivatedKeystone;
 
 	Transform transform;

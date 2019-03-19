@@ -258,10 +258,16 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	geometryPass->SendMat4("WorldMatrix", worldMatrix);
 	if (!maze->IsExitOpen())
 	{
+
 		exit->DrawClosed(geometryPass);
 	}
 	else
 	{
+		if (maze->GetOpening() == false)
+		{
+			maze->SetOpening(true);
+			maze->PlayOpeningSound();
+		}
 		exit->DrawOpen(geometryPass);
 	}
 
@@ -560,6 +566,7 @@ void ResetGame(std::vector<std::vector<int>>* mazeGrid, Maze * maze, irrklang::I
 		0.08f * maze->GetTransform()->GetScale().y,
 		0.11f * maze->GetTransform()->GetScale().z);
 	exit = maze->GetExit();
+	maze->SetOpening(false);
 
 	// reset the rest
 	maze->SetExitFalse();

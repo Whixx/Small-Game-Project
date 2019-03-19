@@ -565,13 +565,15 @@ void Player::SpawnCoinAtMinotaur()
 #endif
 }
 
-void Player::PlayWallCollisionSound()
+void Player::PlayWallCollisionSound(unsigned int index)
 {
+	this->collisionSound.SetPosition(this->worldCoins.at(index).GetTransform()->GetPos());
 	this->collisionSound.Play();
 }
 
-void Player::PlayGroundCollisionSound()
+void Player::PlayGroundCollisionSound(unsigned int index)
 {
+	this->dropSound.SetPosition(this->worldCoins.at(index).GetTransform()->GetPos());
 	this->dropSound.Play();
 }
 
@@ -657,12 +659,12 @@ void Player::UpdateCoins(double dt)
 
 			if (this->worldCoins.at(i).GetWallHit() == true)
 			{
-				this->PlayWallCollisionSound();
+				this->PlayWallCollisionSound(i);
 			}
 
 			if (this->worldCoins.at(i).IsOnGround() == true)
 			{
-				this->PlayGroundCollisionSound();
+				this->PlayGroundCollisionSound(i);
 				
 				if (this->worldCoins.at(i).GetCoinState() == COIN_TOSS)
 				{

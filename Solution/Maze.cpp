@@ -4,7 +4,8 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	:keyStoneModel("Models/Keystone/keystone.obj"),
 	keystoneSound("Sounds/keystoneSound.wav", false, engine),
 	exitModelOpen("Models/Exit/GateOpen.obj"),
-	exitModelClosed("Models/Exit/GateClosed.obj")
+	exitModelClosed("Models/Exit/GateClosed.obj"),
+	openingSound("Sounds/Metal_Rattling.wav", false, engine)
 {
 	this->imageData = nullptr;
 	this->path = "";
@@ -30,6 +31,7 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	this->LoadMaze("MazePNG/mazeColorCoded.png");
 
 	this->exit = this->CreateExit();
+	this->opening = false;
 
 	this->nrOfKeystones = 0;
 	this->keystonesCapacity = 5; // Init Allocation of the keystone arr
@@ -204,6 +206,11 @@ bool Maze::IsWallAtWorld(float x, float y)
 	return isAWall;
 }
 
+bool Maze::GetOpening()
+{
+	return this->opening;
+}
+
 Wall Maze::GetWallType(float x, float y)
 {
 	Wall type = NO_WALL;
@@ -311,9 +318,20 @@ void Maze::SetExitScale()
 		0.11f * this->transform.GetScale().z));
 }
 
+void Maze::SetOpening(bool opening)
+{
+	this->opening = opening;
+}
+
 void Maze::FreeImageData()
 {
 	stbi_image_free(imageData);
+}
+
+void Maze::PlayOpeningSound()
+{
+	this->openingSound.SetPosition(this->exit.GetExitPos());
+	this->openingSound.Play();
 }
 
 void Maze::LoadMaze(const std::string & fileName)
@@ -441,8 +459,8 @@ bool Maze::ActivateKeystone(glm::vec3 playerPos, Sound * minotaurGrowlSound)
 #ifdef DEBUG
 				std::cout << "Keystone " << i << " Activated!" << std::endl;
 #endif
-				this->keystoneSound.Play();
 				this->keystoneSound.SetPosition(glm::vec3(tempKeystonePos.x, 0.5f, tempKeystonePos.y));
+				this->keystoneSound.Play();
 				minotaurGrowlSound->Play();
 			}
 		}	
@@ -534,11 +552,11 @@ void Maze::InitiateMazeBuffers()
 	glEnableVertexAttribArray(2);
 	glEnableVertexAttribArray(3);
 	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3		 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), 0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 3		 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(sizeof(glm::vec3)));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3		 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3		 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2)));
-	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, 3		 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(3 * sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(sizeof(glm::vec3)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(float), (const GLvoid*)(3 * sizeof(glm::vec3) + sizeof(glm::vec2)));
 
 	// Create and bind transform feedback object and buffer to write to.
 	glGenTransformFeedbacks(1, &this->mazeTbo);

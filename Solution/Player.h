@@ -66,8 +66,8 @@ public:
 
 	void SpawnCoinAtMinotaur();
 
-	virtual void PlayWallCollisionSound();
-	void PlayGroundCollisionSound();
+	virtual void PlayWallCollisionSound(unsigned int index);
+	void PlayGroundCollisionSound(unsigned int index);
 	
 	void DrawCoin(unsigned int index, Shader * shader);
 
