@@ -12,36 +12,8 @@ void InputHandler::Key_callback(GLFWwindow * window, int key, int scancode, int 
 {
 	if (key == GLFW_KEY_E && action == GLFW_PRESS)
 	{
-		mouseLock = !mouseLock;
-		if (mouseLock)
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		else
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	}
-
-	if (key == GLFW_KEY_G && action == GLFW_PRESS)
-	{
 		EventHandler& EH = EventHandler::GetInstance();
-		EH.AddEvent(EVENT_PLAYER_DROPCOIN);
-	}
-
-	/*if (key == GLFW_KEY_C && action == GLFW_PRESS)
-	{
-		EventHandler& EH = EventHandler::GetInstance();
-		if (mouseLock)
-		EH.AddEvent(EVENT_PLAYER_TOSSCOIN);
-	}*/
-
-	if (key == GLFW_KEY_T && action == GLFW_PRESS)
-	{
-		EventHandler& EH = EventHandler::GetInstance();
-		EH.AddEvent(EVENT_MAZE_KEYSTONE_PRESSED);
-	}
-
-	if (key == GLFW_KEY_X && action == GLFW_PRESS)
-	{
-		EventHandler& EH = EventHandler::GetInstance();
-		EH.AddEvent(EVENT_PLAYER_PICKUPCOIN);
+		EH.AddEvent(EVENT_KEY_E_PRESSED);
 	}
 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -82,8 +54,14 @@ void InputHandler::mouse_button_callback(GLFWwindow * window, int button, int ac
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
 		EventHandler& EH = EventHandler::GetInstance();
+		// Since leftclick has multiple uses, we instead add a event that its clicked, and check what type of click it is in the eventloop
 		EH.AddEvent(EVENT_MOUSE_LEFT_PRESSED);
-		cout << "LEFT MOUSE BUTTON PRESSED" << endl;
+	}
+
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+		EH.AddEvent(EVENT_PLAYER_DROPCOIN);
 	}
 }
 

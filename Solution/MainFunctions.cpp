@@ -453,19 +453,20 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		{
 			player->DropCoin();
 		}
-		else if (event == EVENT_PLAYER_PICKUPCOIN)
+		else if (event == EVENT_KEY_E_PRESSED)	// Pick up coins OR press keystones
 		{
-			player->PickUpCoin();
-		}
-		else if (event == EVENT_MAZE_KEYSTONE_PRESSED)
-		{
-			glm::vec3 keystonePosition = player->GetCamera()->GetCameraPosition();
-			// The function will check which keystone was pressed
-			if (maze->ActivateKeystone(player->GetPos(), minotaurGrowlSound))
+			// If the player doesn't pick up a coin, the keystone check will initiate instead
+			if (player->PickUpCoin() == false)
 			{
-				keystonePosition = maze->TransformToMazeCoords(keystonePosition);
+				// Keystone press
+				glm::vec3 keystonePosition = player->GetCamera()->GetCameraPosition();
+				// The function will check which keystone was pressed
+				if (maze->ActivateKeystone(player->GetPos(), minotaurGrowlSound))
+				{
+					keystonePosition = maze->TransformToMazeCoords(keystonePosition);
 
-				minotaur->reactToSound(keystonePosition);
+					minotaur->reactToSound(keystonePosition);
+				}
 			}
 		}
 		else if (event == EVENT_PAUSED)

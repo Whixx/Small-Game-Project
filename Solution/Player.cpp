@@ -31,7 +31,7 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 		this->AddCoinToInventory();	// Incrementing nrOfInventoryCoins
 	}
 	
-	this->SetPlayerSpeed(20.0f);
+	this->SetPlayerSpeed(2.0f);
 	this->CenterPlayer();
 }
 
@@ -519,8 +519,10 @@ void Player::TossCoin()
 	this->AddCoinToWorld(COIN_TOSS);
 }
 
-void Player::PickUpCoin()
+bool Player::PickUpCoin()
 {
+	bool coinPickedUp = false;
+
 	// Check if the player can pick up more coins
 	if (this->nrOfInventoryCoins < MAX_NR_OF_COINS)
 	{
@@ -531,7 +533,7 @@ void Player::PickUpCoin()
 		// Check if no coin is close enough to be removed
 		if (indexToRemove == -1)
 		{
-			return;
+			return false;
 		}
 
 		// Remove that coin from world
@@ -540,7 +542,10 @@ void Player::PickUpCoin()
 
 		// Add a new coin in inventory
 		this->nrOfInventoryCoins++;
+
+		coinPickedUp = true;
 	}
+	return coinPickedUp;
 }
 
 void Player::SpawnCoinAtMinotaur()
@@ -589,7 +594,7 @@ void Player::ResetPlayer(Maze* maze)
 	//	this->AddCoinToInventory();	// Incrementing nrOfInventoryCoins
 	//}
 
-	this->SetPlayerSpeed(20.0f);
+	this->SetPlayerSpeed(2.0f);
 	this->CenterPlayer();
 }
 
@@ -701,7 +706,12 @@ int Player::FindNearbyCoin()
 			if (distance < currShortestDistance)
 			{
 				currShortestDistance = distance;
-				currShortestDistIndex = i;
+
+				// Check if the coin is on the floor, else it cannot be picked up
+				if (this->worldCoins.at(i).GetTransform()->GetPos().y < 0.5f)
+				{
+					currShortestDistIndex = i;
+				}
 			}
 		}
 	}

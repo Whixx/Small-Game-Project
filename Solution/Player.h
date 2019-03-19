@@ -62,7 +62,7 @@ public:
 	// Coin mechanics
 	void DropCoin();
 	void TossCoin();
-	void PickUpCoin();
+	bool PickUpCoin();
 
 	void SpawnCoinAtMinotaur();
 
