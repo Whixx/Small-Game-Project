@@ -3,8 +3,8 @@
 
 Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>> mazeGrid, Maze* maze)
 	:model("Models/Minotaur/mino.fbx"),
-	stepSound("Sounds/minotaurstep2.mp3", false, engine),
-	growlSound("Sounds/minotaurgrowl.wav", false, engine)
+	stepSound("Sounds/minotaurstep3.ogg", false, engine),
+	growlSound("Sounds/minotaurgrowlcut.ogg", false, engine)
 {
 	this->transform.GetScale() = glm::vec3(0.032f);
 	this->movementSpeed = 90 * this->transform.GetScale().y;
@@ -25,6 +25,9 @@ Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>
 	this->destination = glm::vec2(
 		int(this->maze->TransformToMazeCoords(this->transform.GetPos()).x),
 		int(this->maze->TransformToMazeCoords(this->transform.GetPos()).z));
+
+	this->stepSound.SetVolume(1.0);
+	this->stepSound.SetMinDistance(5);
 }
 
 Minotaur::~Minotaur()

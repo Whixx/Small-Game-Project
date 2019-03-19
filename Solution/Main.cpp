@@ -98,7 +98,7 @@ int main()
 
 	Sound winSound("Sounds/winSound.mp3", false, enginePtr);
 	Sound deathSound("Sounds/death.wav", false, enginePtr);
-	Sound minotaurGrowlSound("Sounds/minotaurgrowl.wav", false, enginePtr);
+	Sound minotaurGrowlSound("Sounds/minotaurgrowlcut.ogg", false, enginePtr);
 
 	Minotaur minotaur(enginePtr, mazeGrid, &maze);
 	float playerHeight = 1.28f;

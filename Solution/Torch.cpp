@@ -127,5 +127,6 @@ void Torch::Update(double dt, Camera camera, glm::vec3 camForward, float distFro
 	this->particle.Update(dt, camera.GetCameraPosition(), this->lightPos);
 
 	// Updating the sound
+	torchSound.SetPosition(this->GetPos());
 	torchSound.Play();
 }

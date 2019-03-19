@@ -89,8 +89,8 @@ void main()
 	float distancePixelToLight;
 
 	// Ambient
-	vec3 ambient = ambientColor * materialColor;
-	//ambient = 0.1 * materialColor;
+	//vec3 ambient = ambientColor * materialColor;
+	vec3 ambient = 0.2 * materialColor;
 
 	// Emissive
 	vec3 emissive = emissiveColor.rgb;
