@@ -4,12 +4,12 @@ in vec3 posWorld0_FS_in;
 in mat3 TBN0_FS_in;
 in float type0_FS_in;
 
-out vec3 WorldPosOut;
-out vec3 TextureRGBOut;
-out vec3 WorldNormalOut;
-out vec3 TextureSpecularAndHeightOut;
-out vec3 EmissiveOut;
-out vec3 AmbientOut;
+layout(location = 0) out vec3 WorldPosOut;
+layout(location = 1) out vec3 TextureRGBOut;
+layout(location = 2) out vec3 WorldNormalOut;
+layout(location = 3) out vec3 TextureSpecularAndHeightOut;
+layout(location = 4) out vec3 EmissiveOut;
+layout(location = 5) out vec3 AmbientOut;
 
 uniform sampler2D TextureDiffuse[2];
 uniform sampler2D TextureNormal[2];
