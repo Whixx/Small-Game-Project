@@ -15,6 +15,9 @@ const unsigned int MAX_NUM_BONES = 50;
 #include <iostream>
 #include <glew\glew.h>
 #include "AssimpHelper.h"
+#include "Material.h"
+#include "MaterialHandler.h"
+
 
 class AnimatedMesh// : public IResource
 {
@@ -54,13 +57,14 @@ public:
 		const void* pRootNode,
 		const void* pScene,
 		const void* pImporter,
-		std::vector<MeshEntry>& entries) noexcept;
+		std::vector<MeshEntry>& entries,
+		Material* mat) noexcept;
 
 	~AnimatedMesh();
 
 	void Draw();
 	void Bind();
-	void BindMaterial();
+	void BindMaterial(Shader* shader);
 	void Construct();
 	static AnimatedMesh* ReadColladaFile(const char* daeFile);
 private:
@@ -86,4 +90,7 @@ private:
 	std::vector<MeshEntry> m_Entries;
 	mutable std::map<std::string, unsigned int> m_BoneMap;
 	mutable std::vector<glm::mat4> m_BoneOffsets;
+	Material* material;
 };
+
+

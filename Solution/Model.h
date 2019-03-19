@@ -50,7 +50,6 @@ public:
 
 	inline std::string GetDirectory() const { return this->directoryPath; };
 	const SkeletonBuffer& GetSkeletonBuffer();
-	void SetMaterial(Material* newMat);
 	void init();
 	const glm::mat4 &GetBoneTransform(unsigned int index);
 

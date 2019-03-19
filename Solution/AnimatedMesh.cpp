@@ -1,6 +1,9 @@
 //#include <EnginePch.h>
 #include "AnimatedMesh.h"
 
+std::vector<Texture*> LoadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName, const char* path);
+
+
 AnimatedMesh::AnimatedMesh(
 		BaseVertex* pVertices,
 		unsigned int* pIndices,
@@ -14,7 +17,8 @@ AnimatedMesh::AnimatedMesh(
 		const void* pRootNode,
 		const void* pScene,
 		const void* pImporter,
-		std::vector<MeshEntry>& entries) noexcept
+		std::vector<MeshEntry>& entries,
+		Material* mat) noexcept
 	: m_VAO(0),
 	m_VBO(0),
 	m_IBO(0),
@@ -48,6 +52,7 @@ AnimatedMesh::AnimatedMesh(
 	m_pRootNode = pRootNode;
 	m_pScene = pScene;
 	m_Entries = entries;
+	this->material = mat;
 }
 
 AnimatedMesh::~AnimatedMesh()
@@ -68,8 +73,9 @@ void AnimatedMesh::Bind()
 	glBindVertexArray(this->m_VAO);
 }
 
-void AnimatedMesh::BindMaterial()
+void AnimatedMesh::BindMaterial(Shader* shader)
 {
+	this->material->BindMaterial(shader);
 }
 
 AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* pFilename)
@@ -176,6 +182,7 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* pFilename)
 		std::vector<BaseVertex> verts;
 		std::vector<unsigned int> indices;
 		pBones = new VertexBoneData[nrOfVerts];
+		Material* mat = nullptr;
 		for (unsigned int i = 0; i < entries.size(); i++)
 		{
 			for (unsigned int j = 0; j < paiMeshes.at(i)->mNumVertices; j++)
@@ -237,14 +244,93 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* pFilename)
 				}
 			}
 
-			//////load bones and send them to VAO
+
+			aiString matName;
+			float matShininess;
+			aiColor3D matAmbient;
+			MaterialHandler& MH = MaterialHandler::GetInstance();
+			std::vector<Texture*> diffuseMaps;
+			std::vector<Texture*> emissiveMaps;
+			std::vector<Texture*> specularMaps;
+			std::vector<Texture*> normalMaps;
+			std::vector<Texture*> heightMaps;
+
+			// Get Material
+			if (paiMeshes.at(i)->mMaterialIndex >= 0)
+			{
+				aiMaterial *material = pScene->mMaterials[paiMeshes.at(i)->mMaterialIndex];
+
+				unsigned int success;
+				// Load material variables
+				success = material->Get(AI_MATKEY_NAME, matName);
+				if (success != AI_SUCCESS)
+				{
+				}
+
+				success = material->Get(AI_MATKEY_SHININESS, matShininess);
+				if (success != AI_SUCCESS)
+				{
+				}
+
+				success = material->Get(AI_MATKEY_COLOR_AMBIENT, matAmbient);
+				if (success != AI_SUCCESS)
+				{
+				}
+
+				// Load all texture types
+				diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "TextureDiffuse", pFilename);
+				emissiveMaps = LoadMaterialTextures(material, aiTextureType_EMISSIVE, "TextureEmissive", pFilename);
+				specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "TextureSpecular", pFilename);
+				normalMaps = LoadMaterialTextures(material, aiTextureType_NORMALS, "TextureNormal", pFilename);
+				heightMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "TextureHeight", pFilename);
+
+				// Add default textures if nothing was loaded
+				if (diffuseMaps.size() == 0)
+					diffuseMaps.push_back(MH.LoadTexture("Textures/default/default_diffuse.png", "TextureDiffuse"));
+				if (emissiveMaps.size() == 0)
+					emissiveMaps.push_back(MH.LoadTexture("Textures/default/default_emissive.png", "TextureEmissive"));
+				if (specularMaps.size() == 0)
+					specularMaps.push_back(MH.LoadTexture("Textures/default/default_specular.png", "TextureSpecular"));
+				if (normalMaps.size() == 0)
+					normalMaps.push_back(MH.LoadTexture("Textures/default/default_normal.png", "TextureNormal"));
+				if (heightMaps.size() == 0)
+					heightMaps.push_back(MH.LoadTexture("Textures/default/default_height.png", "TextureHeight"));
+			}
+			else
+			{
+				diffuseMaps.push_back(MH.LoadTexture("Textures/default/default_diffuse.png", "TextureDiffuse"));
+				emissiveMaps.push_back(MH.LoadTexture("Textures/default/default_emissive.png", "TextureEmissive"));
+				specularMaps.push_back(MH.LoadTexture("Textures/default/default_specular.png", "TextureSpecular"));
+				normalMaps.push_back(MH.LoadTexture("Textures/default/default_normal.png", "TextureNormal"));
+				heightMaps.push_back(MH.LoadTexture("Textures/default/default_height.png", "TextureHeight"));
+			}
+
+			mat = MH.AddMaterial(diffuseMaps[0], emissiveMaps[0], specularMaps[0], normalMaps[0], heightMaps[0], matShininess, glm::vec3(matAmbient.r, matAmbient.g, matAmbient.b), matName.C_Str());
+
 		}
 
-		AnimatedMesh* pResult = new AnimatedMesh(verts.data(), indices.data(), pBones, nrOfVerts, nrOfIndices, nrOfbones, globalTransform, boneMap, boneOffsets, pRootNode, pScene, importer, entries);
+
+
+		AnimatedMesh* pResult = new AnimatedMesh(verts.data(), indices.data(), pBones, nrOfVerts, nrOfIndices, nrOfbones, globalTransform, boneMap, boneOffsets, pRootNode, pScene, importer, entries, mat);
 		DeleteArrSafe(pBones);
 
 		return pResult;
 	}
+}
+
+std::vector<Texture*> LoadMaterialTextures(aiMaterial * mat, aiTextureType type, std::string typeName, const char* path)
+{
+	std::string tempPath = std::string(path);
+	std::string directory = tempPath.substr(0, tempPath.find_last_of('/'));
+
+	std::vector<Texture*> textures;
+	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+	{
+		aiString str;
+		mat->GetTexture(type, i, &str); // Get texture name
+		textures.push_back(MaterialHandler::GetInstance().LoadTexture((directory + '/' + str.C_Str()).c_str(), typeName));
+	}
+	return textures;
 }
 
 void AnimatedMesh::Construct()

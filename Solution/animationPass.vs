@@ -37,10 +37,9 @@ void main()
 
 	// Apply animation to the position
 	vec4 pos = boneTransform * vec4(position, 1.0);
-	//vec4 pos = vec4(position, 1.0);
 
 	// Transform to worldspace
 	posWorld0 = (WorldMatrix * pos).xyz;
 	texCoord0 = texCoord;
-	gl_Position = transformationMatrix * vec4(position,1.0);
+	gl_Position = transformationMatrix * pos;
 }

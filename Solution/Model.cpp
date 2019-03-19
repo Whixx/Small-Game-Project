@@ -222,32 +222,25 @@ std::vector<Texture*> Model::LoadNormalMap(std::string path, std::string type)
 
 
 AnimatedModel::AnimatedModel(std::string path, bool gammaCorrection) 
-	: gammaCorrection(gammaCorrection),
-	skeleton()
+	: gammaCorrection(gammaCorrection)
 {
 	this->directoryPath = path.substr(0, path.find_last_of('/'));
 	std::string objPath = path.substr(path.find_last_of('/') + 1, string::npos); // Remove directory
 	this->name = objPath.erase(objPath.find_last_of('.'), string::npos);
 	this->mesh = AnimatedMesh::ReadColladaFile(path.c_str());
+	this->skeleton = new AnimatedSkeleton();
 	//this->skeleton->UpdateBoneTransforms(0.0f, this->mesh);
 }
 
 AnimatedModel::~AnimatedModel()
 {
 	// Delete the mesh?
+	delete this->skeleton;
 }
 
 const SkeletonBuffer& AnimatedModel::GetSkeletonBuffer()
 {
 	return this->skeleton->GetSkeletonBuffer();
-}
-
-void AnimatedModel::SetMaterial(Material* newMat)
-{
-	//for (Mesh* m : this->meshes)
-	//{
-	//	m->SetMaterial(newMat);
-	//}
 }
 
 void AnimatedModel::init()
@@ -267,7 +260,7 @@ void AnimatedModel::Update(double dt)
 
 void AnimatedModel::Draw(Shader * shader)
 {
-	this->mesh->BindMaterial();
+	this->mesh->BindMaterial(shader);
 	this->mesh->Bind();
 	this->mesh->Draw();
 }
