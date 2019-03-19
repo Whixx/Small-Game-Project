@@ -68,7 +68,13 @@ Display::Display()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	this->window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Open GL Project", NULL, NULL);
+	GLFWmonitor* primary = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(primary);
+	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+
+	this->window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Daedalus' Maze", primary, NULL);
+	//glfwSetWindowMonitor(window, primary, SCREEN_WIDTH, SCREEN_HEIGHT, mode->width, mode->height, mode->refreshRate);
+	glfwMakeContextCurrent(this->window);
 
 	if (!this->window)
 	{
