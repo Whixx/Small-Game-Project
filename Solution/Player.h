@@ -35,6 +35,7 @@ public:
 	Coin * GetWorldCoin(unsigned int index);
 	unsigned int GetNrOfInventoryCoins();
 	unsigned int GetNrOfWorldCoins();
+	void ResetCoins();	// reset number of coins to 10
 
 	void SetPlayerHeight(float height);
 	void SetPlayerSpeed(float speed);
@@ -51,6 +52,7 @@ public:
 	void CenterPlayer();
 	void UpdateMouse(const glm::vec2& newMousePosition, float elapsedTime);
 	void Update(double dt);
+	void UpdateOnlyTorch(double dt);
 
 	// AddCoin and RemoveCoin adds/removes on the last index in the coinArray
 	// To be used when throwing and laying coins
@@ -60,7 +62,7 @@ public:
 	// Coin mechanics
 	void DropCoin();
 	void TossCoin();
-	void PickUpCoin();
+	bool PickUpCoin();
 
 	void SpawnCoinAtMinotaur();
 
@@ -71,6 +73,8 @@ public:
 
 	// test variable
 	int printCounter = 0;
+
+	void ResetPlayer(Maze* maze);
 
 private:
 	Camera playerCamera;

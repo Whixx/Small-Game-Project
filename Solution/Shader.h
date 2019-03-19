@@ -29,6 +29,7 @@ public:
 	void SendVec3(const char *name, float x, float y, float z);
 	void SendMat4(const char *name, const glm::mat4 &mat);
 	void SendCameraLocation(Camera *camera);
+	Shader* GetShader();
 
 	virtual ~Shader();
 private:

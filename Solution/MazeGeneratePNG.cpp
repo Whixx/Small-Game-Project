@@ -123,7 +123,7 @@ void MazeGeneratePNG::Generate(void)
 		}
 	}
 
-	this->RemoveRandomWalls(this->width + this->height);
+	this->RemoveRandomWalls(this->width);
 }
 
 void MazeGeneratePNG::GenerateExit()

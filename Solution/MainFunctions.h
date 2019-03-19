@@ -20,6 +20,7 @@
 #include "MaterialHandler.h"
 #include "Minotaur.h"
 #include "EventHandler.h"
+#include "Menu.h"
 
 #include "Coin.h"
 
@@ -36,25 +37,29 @@ void InitMazeGeometryPass(Shader *shader);
 void InitLightPass(Shader *shader);
 void InitParticleShader(Shader *shader);
 void InitFinalShader(Shader *shader);
+void InitCoinUIShader(Shader *shader, Player * player);
+void InitButton2DShader(Shader *shader);
 
 // Shader pass functions
 void MazeGenerationPass(Shader * mazeGenerationShader, Maze * maze, Player * player);
 void ShadowPass(Shader *shadowShader, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Maze* maze, Exit * exit);
 void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Player *player, ObjectHandler *OH, Maze* maze, Minotaur * minotaur, Exit * exit);
-void DRLightPass(GBuffer *gBuffer, FinalFBO * finalFBO, GLuint *fullScreenQuad, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera);
+void DRLightPass(GBuffer *gBuffer, FinalFBO * finalFBO, ClipSpaceQuad *fullScreenQuad, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera);
 void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader);
-void FinalPass(FinalFBO * finalFBO, Shader * finalShader, GLuint *fullScreenTriangle);
+void FinalPass(FinalFBO * finalFBO, Shader * finalShader, ClipSpaceQuad * fullScreenQuad);
+void CoinUIPass(Shader * coinUIShader, ClipSpaceQuad * coinInterfaceQuad, Player * player);
+void Button2DPass(Shader * button2DShader, Menu * buttonHandler, MENU_TYPE menuType);
 
 // height and width must be odd numbers else the resulting maze will be off
 // the function will return a grid with the maze
 std::vector<std::vector<int>> GenerateMazePNG(int height, int width);
 
-GLuint CreateScreenQuad();
 void SetMaxPatchVertices();
 void CreateLandmarks(ObjectHandler * OH, Maze * maze);
 void ResetLandmarks(ObjectHandler * OH, Maze * maze);
 
-void HandleEvents(Player* player, Maze* maze, Sound* winSound, Sound* deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur);
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, Menu* buttonHandler, InputHandler* ih, std::vector<std::vector<int>>* mazeGrid, irrklang::ISoundEngine* enginePtr, Exit* exit);
 
+std::vector<std::vector<int>>* RegenerateMaze(std::vector<std::vector<int>>* mazeGrid, Maze* maze, irrklang::ISoundEngine* enginePtr);
 
 #endif

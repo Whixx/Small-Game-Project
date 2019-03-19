@@ -20,6 +20,8 @@ public:
 	void Draw(Shader* shader);
 	glm::vec2 ClampToEdges(glm::vec2 mazeCoords);	// takes in maze coords and spits out mazecoords
 
+	void ResetMinotaur(std::vector<std::vector<int>> newMazeGrid, Maze* newMaze);
+
 	// TEST
 	void setupColorData();
 	void drawPath();
