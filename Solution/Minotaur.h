@@ -16,9 +16,13 @@ public:
 	void increaseAgressionLevel();
 	void reactToSound(glm::vec3 soundPos);
 
+	void Initialize();
 	void Update(double dt, glm::vec3 playerPos);
+	void DrawMeshes(Shader* shader);
 	void Draw(Shader* shader);
 	glm::vec2 ClampToEdges(glm::vec2 mazeCoords);	// takes in maze coords and spits out mazecoords
+	const SkeletonBuffer& GetSkeletonBuffer();
+	const glm::mat4& GetBoneTransform(unsigned int index);
 
 	void ResetMinotaur(std::vector<std::vector<int>> newMazeGrid, Maze* newMaze);
 
@@ -27,7 +31,7 @@ public:
 	void drawPath();
 
 private:
-	Model model;
+	AnimatedModel model;
 	Sound stepSound;
 	Sound growlSound;
 	Transform transform;

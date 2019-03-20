@@ -86,6 +86,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnimatedMesh.cpp" />
+    <ClCompile Include="AnimatedSkeleton.cpp" />
     <ClCompile Include="Bloom.cpp" />
     <ClCompile Include="Blur.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -123,6 +125,8 @@
     <ClCompile Include="Torch.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimatedMesh.h" />
+    <ClInclude Include="AnimatedSkeleton.h" />
     <ClInclude Include="Bloom.h" />
     <ClInclude Include="Blur.h" />
     <ClInclude Include="Camera.h" />
@@ -142,6 +146,7 @@
     <ClInclude Include="Maze.h" />
     <ClInclude Include="MazeGeneratePNG.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshBase.h" />
     <ClInclude Include="Minotaur.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Object.h" />
@@ -164,6 +169,11 @@
   <ItemGroup>
     <None Include="button2DShader.fs" />
     <None Include="button2DShader.vs" />
+    <None Include="animationPass.fs" />
+    <None Include="animationPass.vs" />
+    <None Include="AssimpHelper.h">
+      <FileType>Document</FileType>
+    </None>
     <None Include="finalShader.fs" />
     <None Include="finalShader.vs" />
     <None Include="lightPass.fs" />
@@ -179,6 +189,9 @@
     <None Include="mazeGeometryPass.vs" />
     <None Include="particleShader.fs" />
     <None Include="particleShader.vs" />
+    <None Include="shadowAnimationShader.fs" />
+    <None Include="shadowAnimationShader.gs" />
+    <None Include="shadowAnimationShader.vs" />
     <None Include="shadowShader.fs" />
     <None Include="shadowShader.gs" />
     <None Include="shadowShader.vs" />

@@ -68,6 +68,11 @@ int main()
 	shadowShader.CreateShader(".\\shadowShader.vs", GL_VERTEX_SHADER);
 	shadowShader.CreateShader(".\\shadowShader.gs", GL_GEOMETRY_SHADER);
 	shadowShader.CreateShader(".\\shadowShader.fs", GL_FRAGMENT_SHADER);
+	
+	Shader shadowAnimationShader;
+	shadowAnimationShader.CreateShader(".\\shadowAnimationShader.vs", GL_VERTEX_SHADER);
+	shadowAnimationShader.CreateShader(".\\shadowAnimationShader.gs", GL_GEOMETRY_SHADER);
+	shadowAnimationShader.CreateShader(".\\shadowAnimationShader.fs", GL_FRAGMENT_SHADER);
 
 	Shader geometryPass;
 	geometryPass.CreateShader(".\\geometryPass.vs", GL_VERTEX_SHADER);
@@ -78,7 +83,11 @@ int main()
 	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.cs", GL_TESS_CONTROL_SHADER);
 	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.es", GL_TESS_EVALUATION_SHADER);
 	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.fs", GL_FRAGMENT_SHADER);
-	
+
+	Shader animationPass;
+	animationPass.CreateShader(".\\animationPass.vs", GL_VERTEX_SHADER);
+	animationPass.CreateShader(".\\animationPass.fs", GL_FRAGMENT_SHADER);
+
 	Shader lightPass;
 	lightPass.CreateShader(".\\lightPass.vs", GL_VERTEX_SHADER);
 	lightPass.CreateShader(".\\lightPass.fs", GL_FRAGMENT_SHADER);
@@ -101,8 +110,12 @@ int main()
 
 	InitMazeGenerationShader(&mazeGenerationShader, &maze);
 	InitShadowShader(&shadowShader);
+
+	InitShadowAnimationShader(&shadowAnimationShader);
+
 	InitGeometryPass(&geometryPass);
 	InitMazeGeometryPass(&mazeGeometryPass);
+	InitAnimationPass(&animationPass);
 	InitLightPass(&lightPass);
 	InitParticleShader(&particleShader);
 	InitFinalShader(&finalShader);
@@ -120,6 +133,7 @@ int main()
 
 	Sound winSound("Sounds/winSound.mp3", false, enginePtr);
 	Sound deathSound("Sounds/death.wav", false, enginePtr);
+	minotaur.Initialize();
 	Sound minotaurGrowlSound("Sounds/angryscream.ogg", false, enginePtr);
 	minotaurGrowlSound.SetMinDistance(3);
 	
@@ -209,11 +223,11 @@ int main()
 		MazeGenerationPass(&mazeGenerationShader, &maze, &player);
 		
 		// Here a cube map is calculated and stored in the shadowMap FBO
-		ShadowPass(&shadowShader, &OH, &lights, &shadowMap, &player, &maze, &exit);
+		ShadowPass(&shadowShader, &shadowAnimationShader, &OH, &lights, &shadowMap, &player, &minotaur, &maze, &exit);
 		
 		// ================== Geometry Pass - Deffered Rendering ==================
 		// Here all the objets gets transformed, and then sent to the GPU with a draw call
-		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &player, &OH, &maze, &minotaur, &exit);
+		DRGeometryPass(&gBuffer, &geometryPass, &mazeGeometryPass, &animationPass, &player, &OH, &maze, &minotaur, &exit);
 		
 		// ================== Light Pass - Deffered Rendering ==================
 		// Here the fullscreenTriangel is drawn, and lights are sent to the GPU

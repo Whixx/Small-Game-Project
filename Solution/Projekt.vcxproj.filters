@@ -100,6 +100,12 @@
     <ClCompile Include="Exit.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
+    <ClCompile Include="AnimatedMesh.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedSkeleton.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
     <ClCompile Include="ClipSpaceQuad.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
@@ -213,6 +219,15 @@
     <ClInclude Include="Exit.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
+    <ClInclude Include="AnimatedMesh.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatedSkeleton.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshBase.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
     <ClInclude Include="ClipSpaceQuad.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
@@ -273,6 +288,24 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="lightPass.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="AssimpHelper.h">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="animationPass.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="animationPass.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="shadowAnimationShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="shadowAnimationShader.gs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="shadowAnimationShader.fs">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="coinUIShader.vs">
