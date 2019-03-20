@@ -4,18 +4,20 @@ in vec2 texCoord0;
 in vec3 posWorld0;
 in mat3 TBN0;
 
-out vec3 WorldPosOut;
-out vec3 TextureRGBOut;
-out vec3 WorldNormalOut;
-out vec3 TextureSpecularAndHeightOut;
-out vec3 AmbientOut;
+layout(location = 0) out vec3 WorldPosOut;
+layout(location = 1) out vec3 TextureRGBOut;
+layout(location = 2) out vec3 WorldNormalOut;
+layout(location = 3) out vec3 TextureSpecularAndHeightOut;
+layout(location = 4) out vec3 EmissiveOut;
+layout(location = 5) out vec3 AmbientOut;
 
 uniform sampler2D TextureDiffuse;
 uniform sampler2D TextureNormal;
 uniform sampler2D TextureSpecular;
-uniform sampler2D TextureAmbient;
+uniform sampler2D TextureEmissive;
 
 uniform float shininess;
+uniform vec3 ambient;
 
 void main()
 {	
@@ -32,6 +34,7 @@ void main()
 
 	TextureSpecularAndHeightOut.r = texture2D(TextureSpecular, texCoord0).r;
 	TextureSpecularAndHeightOut.g = shininess;
+	AmbientOut = ambient;
 
-	AmbientOut = texture2D(TextureAmbient, texCoord0).rgb;
+	EmissiveOut = texture2D(TextureEmissive, texCoord0).rgb;
 }

@@ -43,7 +43,7 @@ void InitButton2DShader(Shader *shader);
 void MazeGenerationPass(Shader * mazeGenerationShader, Maze * maze, Player * player);
 void ShadowPass(Shader *shadowShader, Shader * shadowAnimation, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Minotaur* minotaur, Maze* maze, Exit * exit);
 void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometryPass, Shader *animationPass, Player *player, ObjectHandler *OH, Maze* maze, Minotaur * minotaur, Exit * exit);
-void DRLightPass(GBuffer *gBuffer, BloomBuffer *bloomBuffer, GLuint *fullScreenQuad, Shader *geometryPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera);
+void DRLightPass(GBuffer *gBuffer, FinalFBO* finalFBO, ClipSpaceQuad *fullScreenQuad, Shader *lightPass, ShadowMap *shadowBuffer, PointLightHandler *lights, Camera *camera);
 void ParticlePass(FinalFBO * finalFBO, Particle * particle, Camera * camera, Shader * particleShader);
 void FinalPass(FinalFBO * finalFBO, Shader * finalShader, ClipSpaceQuad * fullScreenQuad);
 void CoinUIPass(Shader * coinUIShader, ClipSpaceQuad * coinInterfaceQuad, Player * player);
