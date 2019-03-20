@@ -6,6 +6,7 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	playerTorch(this->transform, glm::vec3(0.8f, 0.1975f, 0.1008f), engine, PLH, torchSize),
 	footStep("Sounds/playerfootstep.ogg", false, engine),
 	dropSound("Sounds/CoinHitGround.wav", false, engine),
+	ambientSound("Sounds/ambient.ogg", true, engine),
 	collisionSound("Sounds/CoinHitWall2.ogg", false, engine),
 	coinModel("Models/Coin/coin.obj")
 {
@@ -19,6 +20,7 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	this->footStep.SetVolume(0.25);
 	this->dropSound.SetVolume(0.5);
 	this->collisionSound.SetVolume(1.0);
+	this->ambientSound.SetVolume(0.6);
 
 	CenterPlayer(); //Space to return to origin
 
@@ -437,6 +439,7 @@ void Player::Update(double dt)
 
 	// Update sound positions
 	footStep.SetPosition(this->GetCamera()->GetCameraPosition());
+	this->ambientSound.SetPosition(this->GetPos());
 
 	// Update the torch
 	this->playerTorch.Update(dt,
@@ -599,6 +602,16 @@ void Player::ResetPlayer(Maze* maze)
 
 	this->SetPlayerSpeed(2.0f);
 	//this->CenterPlayer();
+}
+
+void Player::StopAmbientSound()
+{
+	this->ambientSound.Stop();
+}
+
+void Player::PlayAmbientSound()
+{
+	this->ambientSound.Play();
 }
 
 void Player::AddCoinToWorld(unsigned int state)

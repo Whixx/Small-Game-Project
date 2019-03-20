@@ -76,6 +76,9 @@ public:
 
 	void ResetPlayer(Maze* maze);
 
+	void StopAmbientSound();
+	void PlayAmbientSound();
+
 private:
 	Camera playerCamera;
 	Transform transform;
@@ -101,6 +104,7 @@ private:
 	Sound footStep;
 	Sound dropSound;
 	Sound collisionSound;
+	Sound ambientSound;
 
 	// Private Functions
 	void AddCoinToWorld(unsigned int state);

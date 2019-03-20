@@ -509,7 +509,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 
 			ResetGame(mazeGrid, maze, enginePtr, exit, player, minotaur, OH);
 
-			maze->StopAmbientSound();
+			player->StopAmbientSound();
 			player->GetTorch()->StopTorchSound();
 			maze->PlayFluteSound(player->GetPos());
 
@@ -524,7 +524,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 
 			ResetGame(mazeGrid, maze, enginePtr, exit, player, minotaur, OH);
 
-			maze->StopAmbientSound();
+			player->StopAmbientSound();
 			player->GetTorch()->StopTorchSound();
 			maze->PlayFluteSound(player->GetPos());
 
@@ -594,7 +594,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 						EH.AddEvent(EVENT_PLAYING);
 						EH.AddEvent(EVENT_MENU_INGAME);
 						player->CenterPlayer();
-						maze->PlayAmbientSound();
+						player->PlayAmbientSound();
 						player->GetTorch()->PlayTorchSound();
 						maze->StopFluteSound();
 					}
