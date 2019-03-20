@@ -60,53 +60,53 @@ int main()
 	SetMaxPatchVertices();
 
 	Shader mazeGenerationShader;
-	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.vs", GL_VERTEX_SHADER);
-	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.gs", GL_GEOMETRY_SHADER);
-	mazeGenerationShader.CreateShader(".\\mazeGenerationShader.fs", GL_FRAGMENT_SHADER);	
+	mazeGenerationShader.CreateShader("Shaders\\mazeGenerationShader.vs", GL_VERTEX_SHADER);
+	mazeGenerationShader.CreateShader("Shaders\\mazeGenerationShader.gs", GL_GEOMETRY_SHADER);
+	mazeGenerationShader.CreateShader("Shaders\\mazeGenerationShader.fs", GL_FRAGMENT_SHADER);	
 
 	Shader shadowShader;
-	shadowShader.CreateShader(".\\shadowShader.vs", GL_VERTEX_SHADER);
-	shadowShader.CreateShader(".\\shadowShader.gs", GL_GEOMETRY_SHADER);
-	shadowShader.CreateShader(".\\shadowShader.fs", GL_FRAGMENT_SHADER);
+	shadowShader.CreateShader("Shaders\\shadowShader.vs", GL_VERTEX_SHADER);
+	shadowShader.CreateShader("Shaders\\shadowShader.gs", GL_GEOMETRY_SHADER);
+	shadowShader.CreateShader("Shaders\\shadowShader.fs", GL_FRAGMENT_SHADER);
 	
 	Shader shadowAnimationShader;
-	shadowAnimationShader.CreateShader(".\\shadowAnimationShader.vs", GL_VERTEX_SHADER);
-	shadowAnimationShader.CreateShader(".\\shadowAnimationShader.gs", GL_GEOMETRY_SHADER);
-	shadowAnimationShader.CreateShader(".\\shadowAnimationShader.fs", GL_FRAGMENT_SHADER);
+	shadowAnimationShader.CreateShader("Shaders\\shadowAnimationShader.vs", GL_VERTEX_SHADER);
+	shadowAnimationShader.CreateShader("Shaders\\shadowAnimationShader.gs", GL_GEOMETRY_SHADER);
+	shadowAnimationShader.CreateShader("Shaders\\shadowAnimationShader.fs", GL_FRAGMENT_SHADER);
 
 	Shader geometryPass;
-	geometryPass.CreateShader(".\\geometryPass.vs", GL_VERTEX_SHADER);
-	geometryPass.CreateShader(".\\geometryPass.fs", GL_FRAGMENT_SHADER);
+	geometryPass.CreateShader("Shaders\\geometryPass.vs", GL_VERTEX_SHADER);
+	geometryPass.CreateShader("Shaders\\geometryPass.fs", GL_FRAGMENT_SHADER);
 
 	Shader mazeGeometryPass;
-	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.vs", GL_VERTEX_SHADER);
-	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.cs", GL_TESS_CONTROL_SHADER);
-	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.es", GL_TESS_EVALUATION_SHADER);
-	mazeGeometryPass.CreateShader(".\\mazeGeometryPass.fs", GL_FRAGMENT_SHADER);
+	mazeGeometryPass.CreateShader("Shaders\\mazeGeometryPass.vs", GL_VERTEX_SHADER);
+	mazeGeometryPass.CreateShader("Shaders\\mazeGeometryPass.cs", GL_TESS_CONTROL_SHADER);
+	mazeGeometryPass.CreateShader("Shaders\\mazeGeometryPass.es", GL_TESS_EVALUATION_SHADER);
+	mazeGeometryPass.CreateShader("Shaders\\mazeGeometryPass.fs", GL_FRAGMENT_SHADER);
 
 	Shader animationPass;
-	animationPass.CreateShader(".\\animationPass.vs", GL_VERTEX_SHADER);
-	animationPass.CreateShader(".\\animationPass.fs", GL_FRAGMENT_SHADER);
+	animationPass.CreateShader("Shaders\\animationPass.vs", GL_VERTEX_SHADER);
+	animationPass.CreateShader("Shaders\\animationPass.fs", GL_FRAGMENT_SHADER);
 
 	Shader lightPass;
-	lightPass.CreateShader(".\\lightPass.vs", GL_VERTEX_SHADER);
-	lightPass.CreateShader(".\\lightPass.fs", GL_FRAGMENT_SHADER);
+	lightPass.CreateShader("Shaders\\lightPass.vs", GL_VERTEX_SHADER);
+	lightPass.CreateShader("Shaders\\lightPass.fs", GL_FRAGMENT_SHADER);
 
 	Shader particleShader;
-	particleShader.CreateShader(".\\particleShader.vs", GL_VERTEX_SHADER);
-	particleShader.CreateShader(".\\particleShader.fs", GL_FRAGMENT_SHADER);
+	particleShader.CreateShader("Shaders\\particleShader.vs", GL_VERTEX_SHADER);
+	particleShader.CreateShader("Shaders\\particleShader.fs", GL_FRAGMENT_SHADER);
 
 	Shader finalShader;
-	finalShader.CreateShader(".\\finalShader.vs", GL_VERTEX_SHADER);
-	finalShader.CreateShader(".\\finalShader.fs", GL_FRAGMENT_SHADER);
+	finalShader.CreateShader("Shaders\\finalShader.vs", GL_VERTEX_SHADER);
+	finalShader.CreateShader("Shaders\\finalShader.fs", GL_FRAGMENT_SHADER);
 
 	Shader coinUIShader;
-	coinUIShader.CreateShader(".\\coinUIShader.vs", GL_VERTEX_SHADER);
-	coinUIShader.CreateShader(".\\coinUIShader.fs", GL_FRAGMENT_SHADER);
+	coinUIShader.CreateShader("Shaders\\coinUIShader.vs", GL_VERTEX_SHADER);
+	coinUIShader.CreateShader("Shaders\\coinUIShader.fs", GL_FRAGMENT_SHADER);
 
 	Shader button2DShader;
-	button2DShader.CreateShader(".\\button2DShader.vs", GL_VERTEX_SHADER);
-	button2DShader.CreateShader(".\\button2DShader.fs", GL_FRAGMENT_SHADER);
+	button2DShader.CreateShader("Shaders\\button2DShader.vs", GL_VERTEX_SHADER);
+	button2DShader.CreateShader("Shaders\\button2DShader.fs", GL_FRAGMENT_SHADER);
 
 	InitMazeGenerationShader(&mazeGenerationShader, &maze);
 	InitShadowShader(&shadowShader);

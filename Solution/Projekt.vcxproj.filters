@@ -236,89 +236,89 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="finalShader.fs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="finalShader.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="geometryPass.fs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="geometryPass.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="lightPass.fs">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="particleShader.fs">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="particleShader.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="shadowShader.fs">
+    <None Include="Shaders\animationPass.fs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="shadowShader.gs">
+    <None Include="Shaders\animationPass.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="shadowShader.vs">
+    <None Include="Shaders\button2DShader.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="mazeGenerationShader.fs">
+    <None Include="Shaders\button2DShader.fs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="mazeGenerationShader.gs">
+    <None Include="Shaders\coinUIShader.fs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="mazeGenerationShader.vs">
+    <None Include="Shaders\coinUIShader.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="mazeGeometryPass.vs">
+    <None Include="Shaders\finalShader.fs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="mazeGeometryPass.fs">
+    <None Include="Shaders\finalShader.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="mazeGeometryPass.es">
+    <None Include="Shaders\geometryPass.fs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="mazeGeometryPass.cs">
+    <None Include="Shaders\geometryPass.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="lightPass.vs">
+    <None Include="Shaders\lightPass.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\lightPass.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\mazeGenerationShader.gs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\mazeGenerationShader.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\mazeGenerationShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\mazeGeometryPass.cs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\mazeGeometryPass.es">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\mazeGeometryPass.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\mazeGeometryPass.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\shadowAnimationShader.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\shadowAnimationShader.gs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\shadowAnimationShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\shadowShader.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\shadowShader.gs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\shadowShader.vs">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="AssimpHelper.h">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="animationPass.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="animationPass.fs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="shadowAnimationShader.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="shadowAnimationShader.gs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="shadowAnimationShader.fs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="coinUIShader.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="coinUIShader.fs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="button2DShader.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="button2DShader.fs">
-      <Filter>Shader Files</Filter>
+      <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
