@@ -99,6 +99,10 @@ public:
 	void FreeImageData();
 
 	void PlayOpeningSound();
+	void StopAmbientSound();
+	void PlayAmbientSound();
+	void PlayFluteSound();
+	void StopFluteSound();
 
 	Sound GetKeyStoneSound();
 
@@ -126,6 +130,8 @@ private:
 	Model keyStoneModel;
 	Sound keystoneSound;
 	Sound openingSound;
+	Sound ambientSound;
+	Sound fluteSound;
 	glm::vec3 lastActivatedKeystone;
 
 	Transform transform;

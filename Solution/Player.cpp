@@ -16,7 +16,7 @@ Player::Player(float height, float fov, float near, float far, Maze * maze, irrk
 	this->soundEngine = engine;
 	this->minotaur = minotaur;
 
-	this->footStep.SetVolume(0.2);
+	this->footStep.SetVolume(0.25);
 	this->dropSound.SetVolume(0.5);
 	this->collisionSound.SetVolume(1.0);
 

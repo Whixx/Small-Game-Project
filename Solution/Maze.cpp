@@ -5,7 +5,9 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	keystoneSound("Sounds/keystoneSound.wav", false, engine),
 	exitModelOpen("Models/Exit/GateOpen.obj"),
 	exitModelClosed("Models/Exit/GateClosed.obj"),
-	openingSound("Sounds/Metal_Rattling.wav", false, engine)
+	openingSound("Sounds/Metal_Rattling.wav", false, engine),
+	ambientSound("Sounds/ambient.ogg", true, engine),
+	fluteSound("Sounds/flutes.ogg", true, engine)
 {
 	this->imageData = nullptr;
 	this->path = "";
@@ -19,6 +21,9 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 	this->mazeVao = 0;
 
 	//this->keystoneSound.SetVolume(1);
+	this->ambientSound.SetVolume(0.8);
+	this->fluteSound.SetVolume(0.15);
+	this->PlayFluteSound();
 
 	// Set maze position, rotation and scale
 	this->transform.SetPos(glm::vec3(0, 0, 0));
@@ -332,6 +337,26 @@ void Maze::PlayOpeningSound()
 {
 	this->openingSound.Play();
 	this->openingSound.SetPosition(this->exit.GetExitPos());
+}
+
+void Maze::StopAmbientSound()
+{
+	this->ambientSound.Stop();
+}
+
+void Maze::PlayAmbientSound()
+{
+	this->ambientSound.Play();
+}
+
+void Maze::PlayFluteSound()
+{
+	this->fluteSound.Play();
+}
+
+void Maze::StopFluteSound()
+{
+	this->fluteSound.Stop();
 }
 
 Sound Maze::GetKeyStoneSound()

@@ -28,6 +28,9 @@ public:
 
 	glm::vec3 GetFirePos();
 
+	void PlayTorchSound();
+	void StopTorchSound();
+
 	void Draw(Shader* shader);
 	virtual void Update(double dt, Camera camera, glm::vec3 camForward, float distFromPlayer);
 	

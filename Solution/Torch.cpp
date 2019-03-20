@@ -93,6 +93,16 @@ glm::vec3 Torch::GetFirePos()
 	return this->lightPos;
 }
 
+void Torch::PlayTorchSound()
+{
+	torchSound.Play();
+}
+
+void Torch::StopTorchSound()
+{
+	torchSound.Stop();
+}
+
 void Torch::Draw(Shader* shader)
 {
 	this->model.Draw(shader);
@@ -128,5 +138,4 @@ void Torch::Update(double dt, Camera camera, glm::vec3 camForward, float distFro
 
 	// Updating the sound
 	torchSound.SetPosition(this->GetPos());
-	torchSound.Play();
 }
