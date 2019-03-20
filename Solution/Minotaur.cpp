@@ -27,8 +27,8 @@ Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>
 		int(this->maze->TransformToMazeCoords(this->transform.GetPos()).x),
 		int(this->maze->TransformToMazeCoords(this->transform.GetPos()).z));
 
-	this->stepSound.SetVolume(1.0);
-	this->stepSound.SetMinDistance(5);
+	this->stepSound.SetMinDistance(3);
+	this->growlSound.SetMinDistance(3);
 }
 
 Minotaur::~Minotaur()

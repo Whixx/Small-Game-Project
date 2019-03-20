@@ -100,6 +100,8 @@ public:
 
 	void PlayOpeningSound();
 
+	Sound GetKeyStoneSound();
+
 private:
 
 	unsigned char* imageData;

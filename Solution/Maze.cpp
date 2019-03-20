@@ -334,6 +334,11 @@ void Maze::PlayOpeningSound()
 	this->openingSound.Play();
 }
 
+Sound Maze::GetKeyStoneSound()
+{
+	return this->keystoneSound;
+}
+
 void Maze::LoadMaze(const std::string & fileName)
 {
 	this->path = fileName;

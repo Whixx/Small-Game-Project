@@ -396,7 +396,7 @@ void Button2DPass(Shader * button2DShader, Menu * buttonHandler, MENU_TYPE menuT
 	button2DShader->Bind();
 	glDepthMask(false);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glDisable(GL_DEPTH_TEST);
 	buttonHandler->DrawQuads(menuType);
 	glDisable(GL_BLEND);
@@ -461,6 +461,8 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 				// The function will check which keystone was pressed
 				if (maze->ActivateKeystone(player->GetPos(), minotaurGrowlSound))
 				{
+					minotaurGrowlSound->SetPosition(minotaur->GetTransform().GetPos());
+					maze->GetKeyStoneSound().SetPosition(keystonePosition);
 					keystonePosition = maze->TransformToMazeCoords(keystonePosition);
 
 					minotaur->reactToSound(keystonePosition);
