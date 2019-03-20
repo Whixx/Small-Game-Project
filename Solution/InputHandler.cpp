@@ -12,11 +12,41 @@ void InputHandler::Key_callback(GLFWwindow * window, int key, int scancode, int 
 {
 	if (key == GLFW_KEY_E && action == GLFW_PRESS)
 	{
+		EventHandler& EH = EventHandler::GetInstance();
+		EH.AddEvent(EVENT_KEY_E_PRESSED);
+	}
+
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+
 		mouseLock = !mouseLock;
 		if (mouseLock)
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		{
+			//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			//EH.AddEvent(EVENT_PLAYING);
+		}	
 		else
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		{
+			//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			EH.AddEvent(EVENT_PAUSED);
+		}
+	}
+}
+
+void InputHandler::mouse_button_callback(GLFWwindow * window, int button, int action, int mods)
+{
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+		// Since leftclick has multiple uses, we instead add a event that its clicked, and check what type of click it is in the eventloop
+		EH.AddEvent(EVENT_MOUSE_LEFT_PRESSED);
+	}
+
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+	{
+		EventHandler& EH = EventHandler::GetInstance();
+		EH.AddEvent(EVENT_PLAYER_DROPCOIN);
 	}
 }
 
@@ -85,13 +115,10 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	if (W == GLFW_PRESS && doubleKeys == false)
 	{
 		player->MoveForward(elapsedTime);
-		//player->minotaurSound.PlayGrowl();
 	}
 	if (S == GLFW_PRESS && doubleKeys == false)
 	{
 		player->MoveBackward(elapsedTime);
-		//player->minotaurSound.StopAllSounds();
-		//player->sound.StopAllSounds();
 	}
 	if (D == GLFW_PRESS && doubleKeys == false)
 	{
@@ -109,17 +136,15 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	{
 		player->MoveDown(elapsedTime);
 	}
-	if (Space == GLFW_PRESS)
+	/*if (Space == GLFW_PRESS)
 	{
 		player->CenterPlayer();
-	}
-	//keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_C);
-	//if (keyboardButton == GLFW_PRESS)
-	//{
-	//	player->sound.PlayCoinSound(
-	//		irrklang::vec3df(player->GetCamera()->GetCameraPosition().x, player->GetCamera()->GetCameraPosition().y, -player->GetCamera()->GetCameraPosition().z) + 
-	//		irrklang::vec3df(player->GetCamera()->GetForwardVector().x, player->GetCamera()->GetForwardVector().y, -player->GetCamera()->GetForwardVector().z)*30);
-	//}
+	}*/
 }
 
-bool InputHandler::mouseLock = true;
+void InputHandler::SetMouseLockTrue()
+{
+	this->mouseLock = true;
+}
+
+bool InputHandler::mouseLock = false;

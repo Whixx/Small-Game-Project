@@ -15,16 +15,24 @@ public:
 	MaterialHandler& operator=(const MaterialHandler& other) = delete;
 
 	static MaterialHandler& GetInstance();
-	Material* AddMaterial(Texture* tex_diffuse, Texture* tex_ambient, Texture* tex_specular, Texture* tex_normal, Texture* tex_height, float shininess = 16, const char* name = "default");
+	Material* AddMaterial(Texture* tex_diffuse, Texture* tex_emissive, Texture* tex_specular, Texture* tex_normal, Texture* tex_height, float shininess, glm::vec3 ambient, const char* name);
 	Material* GetMaterial(string name);
 
 	Texture* LoadTexture(string path, string type);
 
 private:
-	MaterialHandler() {}
+	MaterialHandler() { this->LoadDefaultTextures(); }
 	~MaterialHandler();
 	std::unordered_map<std::string, Material*> materials;
 	std::vector<Texture*> loadedTextures;
+
+	Texture* default_diffuse;
+	Texture* default_specular;
+	Texture* default_normal;
+	Texture* default_emissive;
+	Texture* default_height;
+
+	void LoadDefaultTextures();
 };
 
 #endif

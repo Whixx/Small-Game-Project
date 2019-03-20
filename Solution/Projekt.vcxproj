@@ -86,14 +86,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnimatedMesh.cpp" />
+    <ClCompile Include="AnimatedSkeleton.cpp" />
     <ClCompile Include="Bloom.cpp" />
     <ClCompile Include="Blur.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="Coin.cpp" />
     <ClCompile Include="CollisionHandler.cpp" />
     <ClCompile Include="Display.cpp" />
+    <ClCompile Include="EventHandler.cpp" />
+    <ClCompile Include="Exit.cpp" />
     <ClCompile Include="FinalFBO.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="InputHandler.cpp" />
+    <ClCompile Include="Keystone.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainFunctions.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -101,28 +108,37 @@
     <ClCompile Include="Maze.cpp" />
     <ClCompile Include="MazeGeneratePNG.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Minotaur.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="ClipSpaceQuad.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="SoundEngine.cpp" />
-    <ClCompile Include="SoundHandler.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="timer.c" />
     <ClCompile Include="Torch.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimatedMesh.h" />
+    <ClInclude Include="AnimatedSkeleton.h" />
     <ClInclude Include="Bloom.h" />
     <ClInclude Include="Blur.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Menu.h" />
+    <ClInclude Include="Coin.h" />
     <ClInclude Include="CollisionHandler.h" />
     <ClInclude Include="Display.h" />
+    <ClInclude Include="EventHandler.h" />
+    <ClInclude Include="Exit.h" />
     <ClInclude Include="FinalFBO.h" />
     <ClInclude Include="GBuffer.h" />
+    <ClInclude Include="Keystone.h" />
     <ClInclude Include="MainFunctions.h" />
     <ClInclude Include="InputHandler.h" />
     <ClInclude Include="Material.h" />
@@ -130,16 +146,19 @@
     <ClInclude Include="Maze.h" />
     <ClInclude Include="MazeGeneratePNG.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshBase.h" />
+    <ClInclude Include="Minotaur.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectHandler.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PointLight.h" />
+    <ClInclude Include="ClipSpaceQuad.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="SoundEngine.h" />
-    <ClInclude Include="SoundHandler.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="Texture.h" />
@@ -148,28 +167,36 @@
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="blurShader.fs" />
-    <None Include="blurShader.vs" />
-    <None Include="finalBloomShader.fs" />
-    <None Include="finalBloomShader.vs" />
+    <None Include="button2DShader.fs" />
+    <None Include="button2DShader.vs" />
+    <None Include="animationPass.fs" />
+    <None Include="animationPass.vs" />
+    <None Include="AssimpHelper.h">
+      <FileType>Document</FileType>
+    </None>
     <None Include="finalShader.fs" />
     <None Include="finalShader.vs" />
     <None Include="lightPass.fs" />
-    <None Include="lightPass.vs" />
     <None Include="geometryPass.fs" />
     <None Include="geometryPass.vs" />
+    <None Include="lightPass.vs" />
     <None Include="mazeGenerationShader.fs" />
     <None Include="mazeGenerationShader.gs" />
     <None Include="mazeGenerationShader.vs" />
+    <None Include="mazeGeometryPass.cs" />
+    <None Include="mazeGeometryPass.es" />
     <None Include="mazeGeometryPass.fs" />
     <None Include="mazeGeometryPass.vs" />
     <None Include="particleShader.fs" />
     <None Include="particleShader.vs" />
-    <None Include="pointLightShader.fs" />
-    <None Include="pointLightShader.vs" />
+    <None Include="shadowAnimationShader.fs" />
+    <None Include="shadowAnimationShader.gs" />
+    <None Include="shadowAnimationShader.vs" />
     <None Include="shadowShader.fs" />
     <None Include="shadowShader.gs" />
     <None Include="shadowShader.vs" />
+    <None Include="coinUIShader.fs" />
+    <None Include="coinUIShader.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

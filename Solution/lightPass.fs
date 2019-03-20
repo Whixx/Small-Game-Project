@@ -1,7 +1,6 @@
 #version 440
 
 out vec4 fragment_color;
-out vec4 bright_color;
 
 in vec2 texCoord0;
 
@@ -9,6 +8,7 @@ struct PointLight
 {
 	vec3 position;
 	vec3 color;
+	float intensity;
 };
 
 uniform int NR_OF_POINT_LIGHTS;   
@@ -17,14 +17,15 @@ uniform vec3 cameraPos;
 uniform PointLight PointLights[256];
 
 // Gbuffer variables
-uniform sampler2D gPosition;
-uniform sampler2D gDiffuse;
-uniform sampler2D gNormal;
-uniform sampler2D gSpecularShininessHeight;
-uniform sampler2D gAmbient;
+layout(location = 0) uniform sampler2D gPosition;
+layout(location = 1) uniform sampler2D gDiffuse;
+layout(location = 2) uniform sampler2D gNormal;
+layout(location = 3) uniform sampler2D gSpecularShininessHeight;
+layout(location = 4) uniform sampler2D gEmissive;
+layout(location = 5) uniform sampler2D gAmbient;
 
 // ShadowBuffer variables
-uniform samplerCube shadowMap;
+layout(location = 6) uniform samplerCube shadowMap;
 uniform float farPlane;
 
 float calculateShadows(vec3 objPos, vec3 camPos, vec3 normal)
@@ -74,32 +75,35 @@ void main()
 	vec3 pixelPos = texture2D(gPosition, texCoord0).xyz;
 	vec3 materialColor = texture2D(gDiffuse, texCoord0).rgb;
 	vec3 normal = texture2D(gNormal, texCoord0).xyz;
-	vec3 ambientColor = texture2D(gAmbient, texCoord0).rgb;
+	vec3 emissiveColor = texture2D(gEmissive, texCoord0).rgb;
 	float specular = texture2D(gSpecularShininessHeight, texCoord0).r;
 	float shininess = texture2D(gSpecularShininessHeight, texCoord0).g;
+	vec3 ambientColor = texture2D(gAmbient, texCoord0).rgb;
 	
 
 	// Attenuation
 	float radius = 6;
-	float a = 0;
-	float b = 0;
-	float minLight = 0.001f;
+	float a = 0.07;
+	float b = 0.04;
 	float attenuation;
 	float distancePixelToLight;
 
 	// Ambient
-	vec3 ambient = ambientColor.r * materialColor.rgb;
-	//ambient = vec3(0);
+	vec3 ambient = ambientColor * materialColor;
+	//vec3 ambient = 0.2 * materialColor;
+
+	// Emissive
+	vec3 emissive = emissiveColor.rgb;
 	
 	// Diffuse
 	vec3 lightDir;
-	vec4 diffuse;
+	vec3 diffuse;
 	float alpha;
 	
 	// Specular
 	vec3 vecToCam;
-	vec4 reflection;
-	vec4 finalSpecular;
+	vec3 reflection;
+	vec3 finalSpecular;
     vec3 halfwayDir;
 
 	for(int i = 0; i < NR_OF_POINT_LIGHTS; i++)
@@ -111,37 +115,23 @@ void main()
 			// Diffuse
 			lightDir = normalize(PointLights[i].position.xyz - pixelPos.xyz);
 			alpha = dot(normal.xyz,lightDir);
-			diffuse += vec4(materialColor.rgb,1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * max(alpha, 0);
+			diffuse += materialColor.rgb * PointLights[i].intensity * PointLights[i].color.rgb * max(alpha, 0);
 
 			// Specular (Blinn-Phong) 
-			vecToCam = normalize(vec3(cameraPos.xyz - pixelPos.xyz));	
+			vecToCam = normalize(cameraPos - pixelPos);
 			halfwayDir = normalize(lightDir + vecToCam);
 			float spec = pow(max(dot(normal, halfwayDir), 0.0), ceil(shininess));
-			finalSpecular += specular * vec4(materialColor.rgb, 1.0f) * vec4(PointLights[i].color.rgb, 1.0f) * spec;
+			finalSpecular += specular * materialColor.rgb * PointLights[i].color.rgb * spec;
 
 			// attenuation
-			b = 1.0f/(radius*radius*minLight);
-			attenuation = 1.0f / (1.0f + (a * distancePixelToLight) + (b/800 * pow(distancePixelToLight, 4.5f)));
+			attenuation = 1.0f + a * distancePixelToLight + (b * -pow(distancePixelToLight, 2.0f));
 		}
 	}
 
 	float shadow = calculateShadows(pixelPos, cameraPos, normal);
 
-	vec4 finalColor = ambient + ((1 - shadow) * attenuation*(diffuse + finalSpecular));
+	vec4 finalColor = vec4(ambient + emissive + ((1 - shadow) * attenuation * (diffuse + finalSpecular)), 1.0f);
 	finalColor = min(vec4(1.0f,1.0f,1.0f,1.0f), finalColor);
 
 	fragment_color = vec4(finalColor.xyz, 1.0f);
-
-	// Calculate brightness (used for bloom)
-	vec3 lumaVec = vec3(0.2126, 0.7152, 0.0722);
-	float brightness = dot(fragment_color.rgb, lumaVec.xyz);
-
-	if(brightness > 0.84f)
-	{
-		bright_color = vec4(fragment_color.rgb, 1.0f);
-	}
-	else
-	{
-		bright_color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	}
 }

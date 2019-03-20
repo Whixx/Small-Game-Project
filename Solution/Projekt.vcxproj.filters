@@ -70,9 +70,6 @@
     <ClCompile Include="SoundEngine.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
-    <ClCompile Include="SoundHandler.cpp">
-      <Filter>Class cpp Files</Filter>
-    </ClCompile>
     <ClCompile Include="Maze.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
@@ -83,6 +80,36 @@
       <Filter>Class cpp Files</Filter>
     </ClCompile>
     <ClCompile Include="MaterialHandler.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minotaur.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EventHandler.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Coin.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Keystone.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Exit.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedMesh.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedSkeleton.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ClipSpaceQuad.cpp">
+      <Filter>Class cpp Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu.cpp">
       <Filter>Class cpp Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -165,9 +192,6 @@
     <ClInclude Include="Maze.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
-    <ClInclude Include="SoundHandler.h">
-      <Filter>Class h Files</Filter>
-    </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
@@ -177,20 +201,41 @@
     <ClInclude Include="Material.h">
       <Filter>Class h Files</Filter>
     </ClInclude>
+    <ClInclude Include="EventHandler.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minotaur.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Coin.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Keystone.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Exit.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatedMesh.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatedSkeleton.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshBase.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClipSpaceQuad.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
+      <Filter>Class h Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="blurShader.fs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="blurShader.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="finalBloomShader.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="finalBloomShader.fs">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="finalShader.fs">
       <Filter>Shader Files</Filter>
     </None>
@@ -206,19 +251,10 @@
     <None Include="lightPass.fs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="lightPass.vs">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="particleShader.fs">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="particleShader.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="pointLightShader.fs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="pointLightShader.vs">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="shadowShader.fs">
@@ -243,6 +279,45 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="mazeGeometryPass.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeGeometryPass.es">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="mazeGeometryPass.cs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="lightPass.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="AssimpHelper.h">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="animationPass.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="animationPass.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="shadowAnimationShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="shadowAnimationShader.gs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="shadowAnimationShader.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="coinUIShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="coinUIShader.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="button2DShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="button2DShader.fs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

@@ -8,6 +8,7 @@
 #include "Texture.h"
 #include "Shader.h"
 #include "Material.h"
+#include "MeshBase.h"
 
 using namespace std;
 

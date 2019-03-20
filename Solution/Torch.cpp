@@ -12,7 +12,6 @@ Torch::Torch(Transform transform, glm::vec3 lightColor, irrklang::ISoundEngine* 
 	this->transform.GetRot().y = -transform.GetRot().y;
 	this->transform.GetRot().z = 0;
 
-
 	// Calculate the position of the torchLight
 	glm::mat4 scaleMatrix = glm::scale(glm::vec3(0, this->transform.GetScale().y, 0));
 
@@ -32,7 +31,7 @@ Torch::Torch(Transform transform, glm::vec3 lightColor, irrklang::ISoundEngine* 
 	rotationZMatrix = glm::rotate(0.0f,						glm::vec3(0, 0, 1));
 	rotationMatrix = rotationZMatrix * rotationYMatrix * rotationXMatrix;
 
-	this->torchSound.SetVolume(0.6);
+	this->torchSound.SetVolume(0.3);
 }
 
 Torch::~Torch()
@@ -94,6 +93,16 @@ glm::vec3 Torch::GetFirePos()
 	return this->lightPos;
 }
 
+void Torch::PlayTorchSound()
+{
+	torchSound.Play();
+}
+
+void Torch::StopTorchSound()
+{
+	torchSound.Stop();
+}
+
 void Torch::Draw(Shader* shader)
 {
 	this->model.Draw(shader);
@@ -107,7 +116,7 @@ void Torch::Update(double dt, Camera camera, glm::vec3 camForward, float distFro
 	// Update the torch so that it is located in front of the player
 	this->GetPos() = camera.GetCameraPosition()
 		+ camForward * distFromPlayer
-		+ camera.GetRightVector() * 0.075f
+		+ camera.GetRightVector() * 0.095f
 		+ camera.GetUpVector() * -0.11f;
 	
 	// Update the lights position (Should be in the correct spot on the torch)
@@ -128,5 +137,5 @@ void Torch::Update(double dt, Camera camera, glm::vec3 camForward, float distFro
 	this->particle.Update(dt, camera.GetCameraPosition(), this->lightPos);
 
 	// Updating the sound
-	torchSound.Play();
+	torchSound.SetPosition(this->GetPos());
 }
