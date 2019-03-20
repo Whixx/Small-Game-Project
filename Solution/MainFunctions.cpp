@@ -509,6 +509,10 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 
 			ResetGame(mazeGrid, maze, enginePtr, exit, player, minotaur, OH);
 
+			maze->StopAmbientSound();
+			player->GetTorch()->StopTorchSound();
+			maze->PlayFluteSound();
+
 			EventHandler& EH = EventHandler::GetInstance();
 			EH.AddEvent(EVENT_MENU_START);
 			EH.AddEvent(EVENT_PAUSED);
@@ -518,6 +522,10 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 			deathSound->Play();
 
 			ResetGame(mazeGrid, maze, enginePtr, exit, player, minotaur, OH);
+
+			maze->StopAmbientSound();
+			player->GetTorch()->StopTorchSound();
+			maze->PlayFluteSound();
 
 			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
@@ -585,6 +593,9 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 						EH.AddEvent(EVENT_PLAYING);
 						EH.AddEvent(EVENT_MENU_INGAME);
 						player->CenterPlayer();
+						maze->PlayAmbientSound();
+						player->GetTorch()->PlayTorchSound();
+						maze->StopFluteSound();
 					}
 					// quitbutton
 					if (buttonHandler->IsQuadPressed(window->GetWindow(), 2))

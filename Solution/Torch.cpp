@@ -31,7 +31,7 @@ Torch::Torch(Transform transform, glm::vec3 lightColor, irrklang::ISoundEngine* 
 	rotationZMatrix = glm::rotate(0.0f,						glm::vec3(0, 0, 1));
 	rotationMatrix = rotationZMatrix * rotationYMatrix * rotationXMatrix;
 
-	this->torchSound.SetVolume(0.6);
+	this->torchSound.SetVolume(0.3);
 }
 
 Torch::~Torch()
@@ -93,6 +93,16 @@ glm::vec3 Torch::GetFirePos()
 	return this->lightPos;
 }
 
+void Torch::PlayTorchSound()
+{
+	torchSound.Play();
+}
+
+void Torch::StopTorchSound()
+{
+	torchSound.Stop();
+}
+
 void Torch::Draw(Shader* shader)
 {
 	this->model.Draw(shader);
@@ -128,5 +138,4 @@ void Torch::Update(double dt, Camera camera, glm::vec3 camForward, float distFro
 
 	// Updating the sound
 	torchSound.SetPosition(this->GetPos());
-	torchSound.Play();
 }

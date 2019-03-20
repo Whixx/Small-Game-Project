@@ -170,7 +170,7 @@ void Minotaur::Update(double dt, glm::vec3 playerPos)
 	if ((int)this->timePassed > this->interval && this->agression < 13 && this->agression >= 0)
 	{
 		// Reset time and randomize next interval
-		this->interval = 60 + ((rand() % 30) - 15);
+		this->interval = 120 + ((rand() % 30) - 15);
 		this->timePassed = 0;
 
 		// Increase difficulty
@@ -181,17 +181,20 @@ void Minotaur::Update(double dt, glm::vec3 playerPos)
 		case 2:
 			this->searchArea = 12;
 			break;
-		case 5:
+		case 4:
 			this->searchArea = 10;
 			break;
-		case 8:
+		case 6:
 			this->searchArea = 8;
 			break;
-		case 11:
+		case 8:
 			this->searchArea = 6;
 			break;
-		case 13:
+		case 10:
 			this->searchArea = 4;
+			break;
+		case 13:
+			this->searchArea = 1;
 			break;
 		}
 		cout << " 'Search Area' is now: " << this->searchArea << endl;
