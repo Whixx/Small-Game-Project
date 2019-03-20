@@ -92,13 +92,15 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* pFilename)
 	std::vector<glm::mat4> boneOffsets;
 	std::vector<MeshEntry> entries;
 
+	/*
 #if !defined(DEBUG)
 	pScene = importer->ReadFile(pFilename, aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_LimitBoneWeights | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_ImproveCacheLocality | aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded);
 #else
 	pScene = importer->ReadFile(pFilename, aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_LimitBoneWeights | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded);
 #endif
+*/
 
-	//pScene = importer->ReadFile(daeFile, aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType | aiProcess_ConvertToLeftHanded);
+	pScene = importer->ReadFile(pFilename, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_FlipUVs | aiProcess_LimitBoneWeights);
 	if (!pScene)
 	{
 		std::cout << "File couldn't be loaded" << std::endl;
@@ -352,12 +354,15 @@ void AnimatedMesh::Construct()
 	//Position
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(BaseVertex), (void*)0);
 	glEnableVertexAttribArray(0);
-	//Normal
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, sizeof(BaseVertex), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	
 	//TexCoords
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(BaseVertex), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(BaseVertex), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	//Normal
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, sizeof(BaseVertex), (void*)(5 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+
 	// TANGENT
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_TRUE, sizeof(BaseVertex), (void*)(8 * sizeof(float)));
 	glEnableVertexAttribArray(3);

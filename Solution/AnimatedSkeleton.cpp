@@ -53,9 +53,6 @@ void AnimatedSkeleton::UpdateBoneTransforms(float dtS, const AnimatedMesh* mesh)
 	const aiScene* scene = reinterpret_cast<const Assimp::Importer*>(mesh->m_pImporter)->GetScene();
 	float ticksPerSec = (scene->mAnimations[0]->mTicksPerSecond != 0) ? (float)scene->mAnimations[0]->mTicksPerSecond : 25.0f;
 
-	std::cout << "animationTimeSec: " << m_AnimationTimeSeconds << std::endl;
-
-	std::cout << "ticksPerSec: " << ticksPerSec << std::endl;
 	float TimeInTicks = m_AnimationTimeSeconds * ticksPerSec;
 	m_AnimationTimeTicks = fmod(TimeInTicks, (float)scene->mAnimations[0]->mDuration);
 
