@@ -156,11 +156,12 @@ void MazeGenerationPass(Shader * mazeGenerationShader, Maze * maze, Player * pla
 
 void ShadowPass(Shader *shadowShader, Shader* shadowAnimation, ObjectHandler *OH, PointLightHandler *PLH, ShadowMap *shadowFBO, Player *player, Minotaur* minotaur, Maze * maze, Exit * exit)
 {
-	shadowShader->Bind();
-	glEnable(GL_DEPTH_TEST);
 	shadowFBO->Bind();
+	glEnable(GL_DEPTH_TEST);
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glClear(GL_DEPTH_BUFFER_BIT);
+
+	shadowShader->Bind();
 
 	vector<glm::mat4> shadowTransforms;
 	glm::vec3 lightPos;
@@ -260,12 +261,10 @@ void DRGeometryPass(GBuffer *gBuffer, Shader *geometryPass, Shader *mazeGeometry
 	geometryPass->Bind();
 
 	gBuffer->BindForWriting();
-
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	glEnable(GL_DEPTH_TEST);
+
+	glClearColor(0.000000001f, 0.000000001f, 0.000000001f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 worldMatrix;
 
@@ -381,10 +380,12 @@ void DRLightPass(GBuffer *gBuffer, FinalFBO * finalFBO, ClipSpaceQuad *fullScree
 
 	// Bloom buffer, write finalColor and brightness.
 	finalFBO->BindForWriting();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	gBuffer->BindForReading(); // Binds texture slot 0,1,2,3,4,5
 	shadowBuffer->BindForReading(6); // Binds texture slot 6
+
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glDisable(GL_DEPTH_TEST);
 	fullScreenQuad->Draw();
