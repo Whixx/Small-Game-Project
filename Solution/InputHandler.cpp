@@ -128,6 +128,7 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	{
 		player->MoveLeft(elapsedTime);
 	}
+#if defined(DEBUG)
 	if (R == GLFW_PRESS && doubleKeys == false)
 	{
 		player->MoveUp(elapsedTime);
@@ -136,6 +137,7 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	{
 		player->MoveDown(elapsedTime);
 	}
+#endif
 	/*if (Space == GLFW_PRESS)
 	{
 		player->CenterPlayer();
