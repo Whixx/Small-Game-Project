@@ -14,7 +14,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{91EE3AFF-6AEC-48D0-B8D7-05B26C35B8E8}</ProjectGuid>
     <RootNamespace>Projekt</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -167,36 +167,36 @@
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="button2DShader.fs" />
-    <None Include="button2DShader.vs" />
-    <None Include="animationPass.fs" />
-    <None Include="animationPass.vs" />
+    <None Include="Shaders\button2DShader.fs" />
+    <None Include="Shaders\button2DShader.vs" />
+    <None Include="Shaders\animationPass.fs" />
+    <None Include="Shaders\animationPass.vs" />
     <None Include="AssimpHelper.h">
       <FileType>Document</FileType>
     </None>
-    <None Include="finalShader.fs" />
-    <None Include="finalShader.vs" />
-    <None Include="lightPass.fs" />
-    <None Include="geometryPass.fs" />
-    <None Include="geometryPass.vs" />
-    <None Include="lightPass.vs" />
-    <None Include="mazeGenerationShader.fs" />
-    <None Include="mazeGenerationShader.gs" />
-    <None Include="mazeGenerationShader.vs" />
-    <None Include="mazeGeometryPass.cs" />
-    <None Include="mazeGeometryPass.es" />
-    <None Include="mazeGeometryPass.fs" />
-    <None Include="mazeGeometryPass.vs" />
+    <None Include="Shaders\finalShader.fs" />
+    <None Include="Shaders\finalShader.vs" />
+    <None Include="Shaders\lightPass.fs" />
+    <None Include="Shaders\geometryPass.fs" />
+    <None Include="Shaders\geometryPass.vs" />
+    <None Include="Shaders\lightPass.vs" />
+    <None Include="Shaders\mazeGenerationShader.fs" />
+    <None Include="Shaders\mazeGenerationShader.gs" />
+    <None Include="Shaders\mazeGenerationShader.vs" />
+    <None Include="Shaders\mazeGeometryPass.cs" />
+    <None Include="Shaders\mazeGeometryPass.es" />
+    <None Include="Shaders\mazeGeometryPass.fs" />
+    <None Include="Shaders\mazeGeometryPass.vs" />
     <None Include="particleShader.fs" />
     <None Include="particleShader.vs" />
-    <None Include="shadowAnimationShader.fs" />
-    <None Include="shadowAnimationShader.gs" />
-    <None Include="shadowAnimationShader.vs" />
-    <None Include="shadowShader.fs" />
-    <None Include="shadowShader.gs" />
-    <None Include="shadowShader.vs" />
-    <None Include="coinUIShader.fs" />
-    <None Include="coinUIShader.vs" />
+    <None Include="Shaders\shadowAnimationShader.fs" />
+    <None Include="Shaders\shadowAnimationShader.gs" />
+    <None Include="Shaders\shadowAnimationShader.vs" />
+    <None Include="Shaders\shadowShader.fs" />
+    <None Include="Shaders\shadowShader.gs" />
+    <None Include="Shaders\shadowShader.vs" />
+    <None Include="Shaders\coinUIShader.fs" />
+    <None Include="Shaders\coinUIShader.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
