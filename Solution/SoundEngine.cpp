@@ -7,6 +7,7 @@ SoundEngine::SoundEngine()
 	if (!this->engine)
 	{
 		std::cout << "Sound engine ERROR" << std::endl;
+		exit(0); // TODO: dont quit, fix sounds
 	}
 	else
 	{
