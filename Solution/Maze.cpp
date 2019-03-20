@@ -330,8 +330,8 @@ void Maze::FreeImageData()
 
 void Maze::PlayOpeningSound()
 {
-	this->openingSound.SetPosition(this->exit.GetExitPos());
 	this->openingSound.Play();
+	this->openingSound.SetPosition(this->exit.GetExitPos());
 }
 
 Sound Maze::GetKeyStoneSound()
