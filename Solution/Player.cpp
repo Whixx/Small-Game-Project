@@ -614,16 +614,6 @@ void Player::PlayAmbientSound()
 	this->ambientSound.Play();
 }
 
-void Player::StopAmbientSound()
-{
-	this->ambientSound.Stop();
-}
-
-void Player::PlayAmbientSound()
-{
-	this->ambientSound.Play();
-}
-
 void Player::AddCoinToWorld(unsigned int state)
 {
 	// Check if the player got coins to drop/toss
