@@ -330,8 +330,8 @@ void Maze::FreeImageData()
 
 void Maze::PlayOpeningSound()
 {
-	this->openingSound.SetPosition(this->exit.GetExitPos());
 	this->openingSound.Play();
+	this->openingSound.SetPosition(this->exit.GetExitPos());
 }
 
 Sound Maze::GetKeyStoneSound()
@@ -473,7 +473,7 @@ bool Maze::ActivateKeystone(glm::vec3 playerPos, Sound * minotaurGrowlSound)
 
 	// Check if exit is open
 	this->isExitOpen = true;
-	for (int i = 0; i < this->nrOfKeystones; i++)
+	/*for (int i = 0; i < this->nrOfKeystones; i++)
 	{
 		// if a keystone isn't active. We stop looping and return false
 		if (this->keystones[i].IsActive() == false)
@@ -481,7 +481,7 @@ bool Maze::ActivateKeystone(glm::vec3 playerPos, Sound * minotaurGrowlSound)
 			this->isExitOpen = false;
 			break;
 		}
-	}
+	}*/
 
 	return activated;
 }
