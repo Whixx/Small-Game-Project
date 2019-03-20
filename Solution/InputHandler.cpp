@@ -32,21 +32,6 @@ void InputHandler::Key_callback(GLFWwindow * window, int key, int scancode, int 
 			EH.AddEvent(EVENT_PAUSED);
 		}
 	}
-
-	// these are tests for switching between start/ingame menu
-	if (key == GLFW_KEY_1 && action == GLFW_PRESS)
-	{
-		EventHandler& EH = EventHandler::GetInstance();
-
-		EH.AddEvent(EVENT_MENU_START);
-	}
-	if (key == GLFW_KEY_2 && action == GLFW_PRESS)
-	{
-		EventHandler& EH = EventHandler::GetInstance();
-
-		EH.AddEvent(EVENT_MENU_INGAME);
-	}
-
 }
 
 void InputHandler::mouse_button_callback(GLFWwindow * window, int button, int action, int mods)
@@ -130,13 +115,10 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	if (W == GLFW_PRESS && doubleKeys == false)
 	{
 		player->MoveForward(elapsedTime);
-		//player->minotaurSound.PlayGrowl();
 	}
 	if (S == GLFW_PRESS && doubleKeys == false)
 	{
 		player->MoveBackward(elapsedTime);
-		//player->minotaurSound.StopAllSounds();
-		//player->sound.StopAllSounds();
 	}
 	if (D == GLFW_PRESS && doubleKeys == false)
 	{
@@ -158,13 +140,6 @@ void InputHandler::KeyboardControls(Display * display, Player * player, float el
 	{
 		player->CenterPlayer();
 	}*/
-	//keyboardButton = glfwGetKey(display->GetWindow(), GLFW_KEY_C);
-	//if (keyboardButton == GLFW_PRESS)
-	//{
-	//	player->sound.PlayCoinSound(
-	//		irrklang::vec3df(player->GetCamera()->GetCameraPosition().x, player->GetCamera()->GetCameraPosition().y, -player->GetCamera()->GetCameraPosition().z) + 
-	//		irrklang::vec3df(player->GetCamera()->GetForwardVector().x, player->GetCamera()->GetForwardVector().y, -player->GetCamera()->GetForwardVector().z)*30);
-	//}
 }
 
 void InputHandler::SetMouseLockTrue()
