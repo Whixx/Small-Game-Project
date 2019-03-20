@@ -101,7 +101,7 @@ public:
 	void PlayOpeningSound();
 	void StopAmbientSound();
 	void PlayAmbientSound();
-	void PlayFluteSound();
+	void PlayFluteSound(glm::vec3 pos);
 	void StopFluteSound();
 
 	Sound GetKeyStoneSound();

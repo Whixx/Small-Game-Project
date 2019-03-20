@@ -511,7 +511,7 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 
 			maze->StopAmbientSound();
 			player->GetTorch()->StopTorchSound();
-			maze->PlayFluteSound();
+			maze->PlayFluteSound(player->GetPos());
 
 			EventHandler& EH = EventHandler::GetInstance();
 			EH.AddEvent(EVENT_MENU_START);
@@ -520,12 +520,13 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 		else if (event == EVENT_PLAYER_LOSE)
 		{
 			deathSound->Play();
+			deathSound->SetPosition(player->GetPos());
 
 			ResetGame(mazeGrid, maze, enginePtr, exit, player, minotaur, OH);
 
 			maze->StopAmbientSound();
 			player->GetTorch()->StopTorchSound();
-			maze->PlayFluteSound();
+			maze->PlayFluteSound(player->GetPos());
 
 			glfwSetInputMode(window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 

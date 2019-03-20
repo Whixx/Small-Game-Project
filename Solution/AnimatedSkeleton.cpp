@@ -53,7 +53,7 @@ void AnimatedSkeleton::UpdateBoneTransforms(float dtS, const AnimatedMesh* mesh)
 	const aiScene* scene = reinterpret_cast<const Assimp::Importer*>(mesh->m_pImporter)->GetScene();
 	float ticksPerSec = (scene->mAnimations[0]->mTicksPerSecond != 0) ? (float)scene->mAnimations[0]->mTicksPerSecond : 25.0f;
 
-	float TimeInTicks = m_AnimationTimeSeconds * ticksPerSec;
+	float TimeInTicks = m_AnimationTimeSeconds * ticksPerSec / 1.755;
 	m_AnimationTimeTicks = fmod(TimeInTicks, (float)scene->mAnimations[0]->mDuration);
 
 	ReadNodeHeirarchy(scene->mRootNode, scene, identity, mesh->m_GlobalInverseTransform, mesh->m_BoneMap, mesh->m_BoneOffsets);

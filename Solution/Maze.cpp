@@ -22,8 +22,8 @@ Maze::Maze(irrklang::ISoundEngine * engine)
 
 	//this->keystoneSound.SetVolume(1);
 	this->ambientSound.SetVolume(0.8);
-	this->fluteSound.SetVolume(0.15);
-	this->PlayFluteSound();
+	this->fluteSound.SetVolume(0.4);
+	this->PlayFluteSound(glm::vec3(0.0));
 
 	// Set maze position, rotation and scale
 	this->transform.SetPos(glm::vec3(0, 0, 0));
@@ -349,9 +349,10 @@ void Maze::PlayAmbientSound()
 	this->ambientSound.Play();
 }
 
-void Maze::PlayFluteSound()
+void Maze::PlayFluteSound(glm::vec3 pos)
 {
 	this->fluteSound.Play();
+	this->fluteSound.SetPosition(pos);
 }
 
 void Maze::StopFluteSound()

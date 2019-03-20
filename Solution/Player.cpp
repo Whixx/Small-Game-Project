@@ -574,6 +574,7 @@ void Player::PlayWallCollisionSound(unsigned int index)
 void Player::PlayGroundCollisionSound(unsigned int index)
 {
 	this->dropSound.SetPosition(this->worldCoins.at(index).GetTransform()->GetPos());
+	
 	this->dropSound.Play();
 }
 
@@ -597,7 +598,7 @@ void Player::ResetPlayer(Maze* maze)
 	//}
 
 	this->SetPlayerSpeed(2.0f);
-	this->CenterPlayer();
+	//this->CenterPlayer();
 }
 
 void Player::AddCoinToWorld(unsigned int state)
