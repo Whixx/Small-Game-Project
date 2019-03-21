@@ -76,7 +76,7 @@ public:
 	// Draw Keystones
 	void DrawKeystone(unsigned int index, Shader * shader);
 
-	bool ActivateKeystone(glm::vec3 playerPos, Sound * minotaurGrowlSound);
+	bool ActivateKeystone(glm::vec3 playerPos);
 	void UpdateKeystones(float deltaTime);
 	void ResetKeystones();
 

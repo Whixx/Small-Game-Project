@@ -57,8 +57,8 @@ void SetMaxPatchVertices();
 void CreateLandmarks(ObjectHandler * OH, Maze * maze);
 void ResetLandmarks(ObjectHandler * OH, Maze * maze);
 
-void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu,
-					Menu* buttonHandler, InputHandler* ih, std::vector<std::vector<int>>* mazeGrid, irrklang::ISoundEngine* enginePtr, Exit* exit, ObjectHandler* OH);
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, Menu* buttonHandler, InputHandler* ih, 
+					std::vector<std::vector<int>>* mazeGrid, irrklang::ISoundEngine* enginePtr, Exit* exit, ObjectHandler* OH);
 
 std::vector<std::vector<int>>* RegenerateMaze(std::vector<std::vector<int>>* mazeGrid, Maze* maze, irrklang::ISoundEngine* enginePtr);
 
