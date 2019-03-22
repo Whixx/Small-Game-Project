@@ -4,7 +4,8 @@
 Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>> mazeGrid, Maze* maze)
 	:model("Models/Minotaur/mino.fbx"),
 	stepSound("Sounds/minotaurstep3.ogg", false, engine),
-	growlSound("Sounds/minotaurgrowlcut.ogg", false, engine)
+	growlSound("Sounds/minotaurgrowlcut.ogg", false, engine),
+	screamSound("Sounds/angryscream2.ogg", false, engine)
 {
 	this->transform.GetScale() = glm::vec3(0.032f);
 	this->movementSpeed = 90 * this->transform.GetScale().y;
@@ -28,6 +29,7 @@ Minotaur::Minotaur(irrklang::ISoundEngine * engine, std::vector<std::vector<int>
 
 	this->stepSound.SetMinDistance(3);
 	this->growlSound.SetMinDistance(3);
+	this->screamSound.SetMinDistance(3);
 }
 
 Minotaur::~Minotaur()
@@ -61,6 +63,11 @@ void Minotaur::reactToSound(glm::vec3 soundMazePos)
 	GeneratePath(currentPos.z, currentPos.x, soundMazePos.z, soundMazePos.x);
 }
 
+void Minotaur::PlayScreamSound()
+{
+	this->screamSound.Play();
+}
+
 void Minotaur::Initialize()
 {
 	this->model.init();
@@ -76,6 +83,7 @@ void Minotaur::Update(double dt, glm::vec3 playerPos)
 	// Update sound positions
 	this->growlSound.SetPosition(currentPos);
 	this->stepSound.SetPosition(currentPos);
+	this->screamSound.SetPosition(currentPos);
 
 	// If a path is not available
 	if (generatedPath.empty())

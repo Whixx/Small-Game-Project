@@ -134,8 +134,6 @@ int main()
 	Sound winSound("Sounds/winSound.mp3", false, enginePtr);
 	Sound deathSound("Sounds/death.wav", false, enginePtr);
 	minotaur.Initialize();
-	Sound minotaurGrowlSound("Sounds/angryscream.ogg", false, enginePtr);
-	minotaurGrowlSound.SetMinDistance(3);
 	
 	Model lightSphereModel("Models/Ball/ball.obj");
 
@@ -183,7 +181,7 @@ int main()
 		
 		// ================== EVENTS ==================
 		glfwPollEvents();
-		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaurGrowlSound, &minotaur, &display, &paused, &startMenu, &buttonHandler, &IH, &mazeGrid, enginePtr, &exit, &OH);
+		HandleEvents(&player, &maze, &winSound, &deathSound, &minotaur, &display, &paused, &startMenu, &buttonHandler, &IH, &mazeGrid, enginePtr, &exit, &OH);
 
 		if (!paused)
 		{

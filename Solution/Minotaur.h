@@ -15,6 +15,7 @@ public:
 	Transform GetTransform();
 	void increaseAgressionLevel();
 	void reactToSound(glm::vec3 soundPos);
+	void PlayScreamSound();
 
 	void Initialize();
 	void Update(double dt, glm::vec3 playerPos);
@@ -34,6 +35,7 @@ private:
 	AnimatedModel model;
 	Sound stepSound;
 	Sound growlSound;
+	Sound screamSound;
 	Transform transform;
 	float movementSpeed;
 	int alerted = 0;

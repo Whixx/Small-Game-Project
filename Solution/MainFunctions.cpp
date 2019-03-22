@@ -494,8 +494,8 @@ std::vector<std::vector<int>> GenerateMazePNG(int height, int width)
 	return mazeGen.GetGrid();
 }
 
-void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Sound * minotaurGrowlSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu,
-					Menu* buttonHandler, InputHandler* ih, std::vector<std::vector<int>>* mazeGrid, irrklang::ISoundEngine* enginePtr, Exit* exit, ObjectHandler * OH)
+void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSound, Minotaur * minotaur, Display* window, bool* paused, bool* startMenu, Menu* buttonHandler, InputHandler* ih, 
+					std::vector<std::vector<int>>* mazeGrid, irrklang::ISoundEngine* enginePtr, Exit* exit, ObjectHandler * OH)
 {
 	EventHandler& EH = EventHandler::GetInstance();
 	while (!EH.IsEmpty())
@@ -546,13 +546,13 @@ void HandleEvents(Player* player, Maze * maze, Sound *winSound, Sound * deathSou
 				// Keystone press
 				glm::vec3 keystonePosition = player->GetCamera()->GetCameraPosition();
 				// The function will check which keystone was pressed
-				if (maze->ActivateKeystone(player->GetPos(), minotaurGrowlSound))
+				if (maze->ActivateKeystone(player->GetPos()))
 				{
-					minotaurGrowlSound->SetPosition(minotaur->GetTransform().GetPos());
 					maze->GetKeyStoneSound().SetPosition(keystonePosition);
 					keystonePosition = maze->TransformToMazeCoords(keystonePosition);
 
 					minotaur->reactToSound(keystonePosition);
+					minotaur->PlayScreamSound();
 				}
 			}
 		}
